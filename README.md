@@ -1,5 +1,8 @@
-# Genius Invokation TCG simulator (in progress)
+# Genius Invokation TCG simulator
 
 ---
 
-Backend of Genius Invokation TCG, written with Python and Pydantic, to easily convert between current match status and JSON.
+Backend of Genius Invokation TCG, written with Python and Pydantic.
+
+This project is created for killing time and learning Pydantic.
+No guarantee for progress and quality.
