@@ -1,4 +1,4 @@
-from .CharactorBase import CharactorBase
+from .charactor_base import CharactorBase
 
 
 Charactors = CharactorBase | CharactorBase

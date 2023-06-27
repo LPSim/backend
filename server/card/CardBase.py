@@ -1,11 +1,16 @@
-from server.virtual_card_base import VirtualCardBase
+from server.object_base import ObjectBase
+from server.action import Actions
+from typing import Literal, List
 
 
-class CardBase(VirtualCardBase):
+class CardBase(ObjectBase):
     """
     Base class of all real cards. 
     """
-    pass
+    name: Literal['CardBase'] = 'CardBase'
 
-
-Cards = CardBase | CardBase
+    def act(self) -> List[Actions]:
+        """
+        Act the card. It will return a list of actions.
+        """
+        raise NotImplementedError()
