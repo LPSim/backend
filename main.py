@@ -21,6 +21,7 @@ if __name__ == '__main__':
         'charactors': [
             {
                 'name': 'CharactorBase',
+                'element': 'DENDRO',
             }
         ] * 3,
         'cards': [
@@ -34,7 +35,9 @@ if __name__ == '__main__':
     main.match.match_config.max_same_card_number = 30
     assert main.match.start()
     main.match.step()  # switch card
-    from server.interaction import SwitchCardResponse, ChooseCharactorResponse
+    from server.interaction import (
+        SwitchCardResponse, ChooseCharactorResponse, RerollDiceResponse
+    )
     main.match.respond(SwitchCardResponse(
         request = main.match.requests[0], card_ids = [3, 1, 2]))
     main.match.respond(SwitchCardResponse(
@@ -45,6 +48,13 @@ if __name__ == '__main__':
     ))
     main.match.respond(ChooseCharactorResponse(
         request = main.match.requests[0], charactor_id = 1
+    ))
+    main.match.step()
+    main.match.respond(RerollDiceResponse(
+        request = main.match.requests[0], reroll_dice_ids = [3, 4, 5, 6, 7]
+    ))
+    main.match.respond(RerollDiceResponse(
+        request = main.match.requests[0], reroll_dice_ids = [3, 4, 5, 6, 7]
     ))
     main.match.step()
     print(main.json())

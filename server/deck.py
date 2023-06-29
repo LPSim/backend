@@ -2,8 +2,8 @@ import logging
 
 from utils import BaseModel
 from typing import Literal, List
-from server.card import Cards
-from server.charactor import Charactors
+from .card import Cards
+from .charactor import Charactors
 
 
 class Deck(BaseModel):

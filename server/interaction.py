@@ -1,6 +1,7 @@
 from utils import BaseModel
 from typing import Literal, List
 from enum import Enum
+from .consts import DiceColor
 
 
 class RequestType(Enum):
@@ -41,6 +42,22 @@ class ChooseCharactorRequest(RequestBase):
     name: Literal['ChooseCharactorRequest'] = 'ChooseCharactorRequest'
     type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
     available_charactor_ids: List[int]
+
+
+class RerollDiceRequest(RequestBase):
+    """
+    Request for reroll dices.
+
+    Args:
+        dice_colors (List[DiceColor]): The colors of the dices to reroll.
+        reroll_times (int): The times of reroll. In one time, player can choose
+            any number of dices to reroll, and after one reroll, the reroll
+            times will decrease by 1. If it reaches 0, the request is removed.
+    """
+    name: Literal['RerollDiceRequest'] = 'RerollDiceRequest'
+    type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
+    dice_colors: List[DiceColor]
+    reroll_times: int
 
 
 class ResponseBase(BaseModel):
@@ -101,7 +118,32 @@ class ChooseCharactorResponse(ResponseBase):
         return self.charactor_id in self.request.available_charactor_ids
 
 
-Responses = ResponseBase | SwitchCardResponse | ChooseCharactorResponse
+class RerollDiceResponse(ResponseBase):
+    name: Literal['RerollDiceResponse'] = 'RerollDiceResponse'
+    request: RerollDiceRequest
+    reroll_dice_ids: List[int]
+
+    @property
+    def is_valid(self) -> bool:
+        """
+        if have duplicate dice ids, or dice ids out of range, return False.
+        """
+        if len(self.reroll_dice_ids) != len(set(self.reroll_dice_ids)):
+            return False
+        if max(self.reroll_dice_ids) >= len(self.request.dice_colors):
+            return False
+        if min(self.reroll_dice_ids) < 0:
+            return False
+        return True
 
 
-Requests = RequestBase | SwitchCardRequest | ChooseCharactorRequest
+Responses = (
+    ResponseBase | SwitchCardResponse | ChooseCharactorResponse
+    | RerollDiceResponse
+)
+
+
+Requests = (
+    RequestBase | SwitchCardRequest | ChooseCharactorRequest
+    | RerollDiceRequest
+)

@@ -1,29 +1,38 @@
 import logging
 
 import numpy as np
-from typing import Literal, Tuple, List
+from typing import Literal, List
 from enum import Enum
 
 from utils import BaseModel
-from server.deck import Deck
-from server.player_table import PlayerTable
-from server.action import (
+from .deck import Deck
+from .player_table import PlayerTable
+from .action import (
     Actions, 
     DrawCardAction,
     RestoreCardAction,
     ChooseCharactorAction,
+    CreateDiceAction,
+    RemoveDiceAction,
 )
-from server.registry import Registry
-from server.interaction import (
+from .registry import Registry
+from .interaction import (
     Requests, Responses, 
     SwitchCardRequest, SwitchCardResponse,
-    ChooseCharactorRequest, ChooseCharactorResponse
+    ChooseCharactorRequest, ChooseCharactorResponse,
+    RerollDiceRequest, RerollDiceResponse,
 )
-
-from server.event import (
+from .consts import DiceColor
+from .dice import Dice
+from .event import (
     DrawCardEventArguments, 
     RestoreCardEventArguments, 
-    ChooseCharactorEventArguments
+    ChooseCharactorEventArguments,
+    CreateDiceEventArguments,
+    RemoveDiceEventArguments,
+)
+from .modifiable_values import (
+    RerollValue, RerollValueArguments,
 )
 
 
@@ -52,24 +61,30 @@ class MatchState(str, Enum):
         ROUND_ENDING (str): Ending phase starts.
         ENDED (str): The match has ended.
     """
-    INVALID = 'invalid'
-    ERROR = 'error'
-    WAITING = 'waiting'
+    INVALID = 'INVALID'
+    ERROR = 'ERROR'
+    WAITING = 'WAITING'
 
-    STARTING = 'starting'
-    STARTING_CARD_SWITCH = 'starting_card_switch'
-    STARTING_CHOOSE_CHARACTOR = 'starting_choose_charactor'
+    STARTING = 'STARTING'
+    STARTING_CARD_SWITCH = 'STARTING_CARD_SWITCH'
+    STARTING_CHOOSE_CHARACTOR = 'STARTING_CHOOSE_CHARACTOR'
 
-    ROUND_START = 'round_start'
-    ROUND_ROLL_DICE = 'round_roll_dice'
-    ROUND_PREPARING = 'round_preparing'
+    ROUND_START = 'ROUND_START'
+    ROUND_ROLL_DICE = 'ROUND_ROLL_DICE'
+    ROUND_PREPARING = 'ROUND_PREPARING'
 
-    PLAYER_ACTION_START = 'player_action_start'
-    PLAYER_ACTION_ACT = 'player_action_act'
+    PLAYER_ACTION_START = 'PLAYER_ACTION_START'
+    PLAYER_ACTION_ACT = 'PLAYER_ACTION_ACT'
 
-    ROUND_ENDING = 'round_ending'
+    ROUND_ENDING = 'ROUND_ENDING'
 
-    ENDED = 'ended'
+    ENDED = 'ENDED'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
 
 
 class MatchConfig(BaseModel):
@@ -79,6 +94,7 @@ class MatchConfig(BaseModel):
     initial_hand_size: int = 5
     initial_card_draw: int = 2
     initial_dice_number: int = 8
+    initial_dice_reroll_times: int = 1
     card_number: int = 30
     max_same_card_number: int = 2
     charactor_number: int = 3
@@ -116,7 +132,7 @@ class Match(BaseModel):
     match_config: MatchConfig = MatchConfig()
 
     # random state
-    random_state: Tuple = ()
+    random_state: List = []
     _random_state: np.random.RandomState = np.random.RandomState()
 
     # match information
@@ -158,7 +174,7 @@ class Match(BaseModel):
             legacy = True))  # type: ignore
         self.random_state[1] = self.random_state[1].tolist()
 
-    def random(self):
+    def _random(self):
         """
         Return a random number ranges 0-1 based on random_state, and save new
         random state.
@@ -167,12 +183,17 @@ class Match(BaseModel):
         self._save_random_state()
         return ret
 
-    def random_shuffle(self, array: List):
+    def _random_shuffle(self, array: List):
         """
         Shuffle the array based on random_state.
         """
         self._random_state.shuffle(array)
         self._save_random_state()
+
+    def _set_match_state(self, new_state: MatchState):
+        logging.info(f'Match state change from {self.match_state} to '
+                     f'{new_state}.')
+        self.match_state = new_state
 
     def start(self) -> bool:
         """
@@ -191,11 +212,11 @@ class Match(BaseModel):
         # make valid check
         if not self.match_config.check_config():
             logging.error('Match config is not valid.')
-            self.match_state = MatchState.ERROR
+            self._set_match_state(MatchState.ERROR)
             return False
         if len(self.player_tables) != 2:
             logging.error('Only support 2 players now.')
-            self.match_state = MatchState.ERROR
+            self._set_match_state(MatchState.ERROR)
             return False
         for pnum, player_table in enumerate(self.player_tables):
             is_legal = player_table.player_deck_information.check_legal(
@@ -205,14 +226,14 @@ class Match(BaseModel):
             )
             if not is_legal:
                 logging.error(f'Player {pnum} deck is not legal.')
-                self.match_state = MatchState.ERROR
+                self._set_match_state(MatchState.ERROR)
                 return False
 
-        self.match_state = MatchState.STARTING
+        self._set_match_state(MatchState.STARTING)
 
         # choose first player
         if self.match_config.random_first_player:
-            self.current_player = int(self.random() > 0.5)
+            self.current_player = int(self._random() > 0.5)
         else:
             self.current_player = 0
 
@@ -230,7 +251,7 @@ class Match(BaseModel):
                 card_copy.player_id = pnum
                 self._registry.register(card_copy)
                 player_table.table_deck.append(card_copy)
-            self.random_shuffle(player_table.table_deck)
+            self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
             event_args = self._action_draw_card(DrawCardAction(
                 object_id = -1,
@@ -243,38 +264,46 @@ class Match(BaseModel):
                 triggered_actions.extend(actions)
             if triggered_actions:
                 logging.error('Initial draw card should not trigger actions.')
-                self.match_state = MatchState.ERROR
+                self._set_match_state(MatchState.ERROR)
                 return False
         return True
 
-    def step(self, run_continuously: bool = True):
+    def step(self, run_continuously: bool = True) -> bool:
         """
         Simulate one step of the match, or run continuously until a response
-        is needed from agents if `run_continuously` is True. Otherwise, 
-        simulate one step and return.
+        is needed from agents.
+
+        Args: 
+            run_continuously (bool): If True, run continuously until a 
+                response is needed from agents. Otherwise, simulate one step
+                and return. Default: True.
+
+        Returns:
+            bool: True if success, False if error occurs.
         """
         while True:
             # check if it need response
             if len(self.requests) != 0:
                 logging.info('There are still requests not responded.')
-                return
+                return False
             # check if action is needed
             if len(self.action_queue) != 0:
                 self._next_action()
             # all response and action are cleared, start state transition
             if self.match_state == MatchState.STARTING:
-                self.match_state = MatchState.STARTING_CARD_SWITCH
+                self._set_match_state(MatchState.STARTING_CARD_SWITCH)
                 self._request_switch_card()
             elif self.match_state == MatchState.STARTING_CARD_SWITCH:
-                self.match_state = MatchState.STARTING_CHOOSE_CHARACTOR
+                self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
                 self._request_choose_charactor()
             elif self.match_state == MatchState.STARTING_CHOOSE_CHARACTOR:
-                self.match_state = MatchState.ROUND_START
+                self._set_match_state(MatchState.ROUND_START)
+                self._round_start()
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
             if len(self.requests) or not run_continuously:
-                return
+                return True
 
     def check_request_exist(self, request: Requests) -> bool:
         """
@@ -285,25 +314,31 @@ class Match(BaseModel):
                 return True
         return False
 
-    def respond(self, response: Responses):
+    def respond(self, response: Responses) -> bool:
         """
         Deal with the response. After start, the match will simulate 
         until it needs response from player, and `self.requests` will have
         requests for all players. A player should choose all requests
-        related to him and respond one of them. If all players have responded,
-        the match will continue to simulate until it needs response again.
+        related to him and respond one of them. Different requests will use
+        different respond function to deal with, and remove requests that do
+        not need to respond or have responded. If all requests have been
+        removed, it will call `self.step` to continue simulation.
+
+        Returns:
+            bool: True if success, False if error occurs.
         """
+        logging.info(f'Response received: {response}')
         if len(self.requests) == 0:
             logging.error('Match is not waiting for response.')
-            return
+            return False
         # check if the response is valid
         if not response.is_valid:
             logging.error('Response is not valid.')
-            return
+            return False
         # check if the request exist
         if not self.check_request_exist(response.request):
             logging.error('Request does not exist.')
-            return
+            return False
         if self.match_state == MatchState.STARTING_CARD_SWITCH:
             if isinstance(response, SwitchCardResponse):
                 self._respond_switch_card(response)
@@ -315,8 +350,59 @@ class Match(BaseModel):
             else:
                 logging.error('Match is waiting for choose charactor '
                               'response.')
+        elif self.match_state == MatchState.ROUND_ROLL_DICE:
+            if isinstance(response, RerollDiceResponse):
+                self._respond_reroll_dice(response)
+            else:
+                logging.error('Match is waiting for reroll dice response.')
         else:
-            NotImplementedError('Match state not implemented.')
+            raise NotImplementedError(
+                f'Response to match state {self.match_state} not implemented.'
+            )
+
+        return True
+
+    def _next_action(self):
+        ...
+
+    def _round_start(self):
+        """
+        Start a round. Will clear existing dices, generate new random dices
+        and asking players to reroll dices.
+        """
+        for pnum, player_table in enumerate(self.player_tables):
+            for dice in player_table.dices:
+                self._registry.unregister(dice)
+            player_table.dices.clear()
+        # generate new dices
+        event_args = []
+        for pnum, player_table in enumerate(self.player_tables):
+            one_event_args = self._action_create_dice(CreateDiceAction(
+                object_id = -1,
+                player_id = pnum,
+                dice_number = self.match_config.initial_dice_number,
+                dice_random = True
+            ))
+            event_args += one_event_args
+        triggered_actions: List[Actions] = []
+        for event_arg in event_args:
+            actions = self._registry.trigger_event(event_arg)
+            triggered_actions.extend(actions)
+        if len(triggered_actions) != 0:
+            logging.error('Create dice should not trigger actions.')
+            self._set_match_state(MatchState.ERROR)
+            return False
+        # collect actions triggered by round start
+        # default reroll dice chance
+        for pnum, player_table in enumerate(self.player_tables):
+            reroll_times = self.match_config.initial_dice_reroll_times
+            reroll_value = RerollValue(value = reroll_times)
+            self._registry.modify_value(
+                reroll_value, 
+                RerollValueArguments(player_id = pnum),
+            )
+            self._request_reroll_dice(pnum, reroll_value.value)
+        self._set_match_state(MatchState.ROUND_ROLL_DICE)
 
     """
     Request functions. To generate specific requests.
@@ -336,18 +422,20 @@ class Match(BaseModel):
         """
         Generate switch card requests.
         """
-        # check if all players have responded
-        if len(self.requests) == 0:
-            # generate choose charactor request
-            for pnum, player_table in enumerate(self.player_tables):
-                self.requests.append(ChooseCharactorRequest(
-                    player_id = pnum,
-                    available_charactor_ids = list(range(len(
-                        player_table.charactors)))
-                ))
-        else:
-            # wait for other players to respond
-            pass
+        for pnum, player_table in enumerate(self.player_tables):
+            self.requests.append(ChooseCharactorRequest(
+                player_id = pnum,
+                available_charactor_ids = list(range(len(
+                    player_table.charactors)))
+            ))
+
+    def _request_reroll_dice(self, player_id: int, reroll_number: int):
+        player_table = self.player_tables[player_id]
+        self.requests.append(RerollDiceRequest(
+            player_id = player_id,
+            dice_colors = [dice.color for dice in player_table.dices],
+            reroll_times = reroll_number
+        ))
 
     """
     Response functions. To deal with specific responses.
@@ -389,14 +477,13 @@ class Match(BaseModel):
         if triggered_actions:
             logging.error('Initial switch card should not trigger '
                           'actions.')
-            self.match_state = MatchState.ERROR
+            self._set_match_state(MatchState.ERROR)
             return
         # remove related requests
         self.requests = [
             req for req in self.requests
             if req.player_id != response.request.player_id
         ]
-        self.step()
 
     def _respond_choose_charactor(self, response: ChooseCharactorResponse):
         event_args = self._action_choose_charactor(
@@ -409,6 +496,7 @@ class Match(BaseModel):
         if len(triggered_actions) > 0:
             if len(self.action_queue) != 0:
                 # already has actions in queue, append new actions
+                # TODO extend or stack?
                 self.action_queue[0].extend(triggered_actions)
             else:
                 # no actions in queue, append new actions
@@ -418,12 +506,51 @@ class Match(BaseModel):
             req for req in self.requests
             if req.player_id != response.request.player_id
         ]
-        # check if all players have responded
-        if len(self.requests) == 0:
-            ...
-        else:
-            # wait for other players to respond
-            pass
+
+    def _respond_reroll_dice(self, response: RerollDiceResponse):
+        """
+        Deal with reroll dice response. If there are still reroll times left,
+        keep request and only substrat reroll times. If there are no reroll
+        times left, remove request.
+        """
+        event_args = self._action_remove_dice(RemoveDiceAction.from_response(
+            response
+        ))
+        triggered_actions: List[Actions] = []
+        for event_arg in event_args:
+            actions = self._registry.trigger_event(event_arg)
+            triggered_actions.extend(actions)
+        if len(triggered_actions) > 0:
+            logging.error('Removing dice in Reroll dice should not trigger '
+                          'actions.')
+            self._set_match_state(MatchState.ERROR)
+            return
+        event_args = self._action_create_dice(CreateDiceAction(
+            object_id = -1,
+            player_id = response.request.player_id,
+            dice_number = len(response.reroll_dice_ids),
+            dice_random = True,
+        ))
+        for event_arg in event_args:
+            actions = self._registry.trigger_event(event_arg)
+            triggered_actions.extend(actions)
+        if len(triggered_actions) > 0:
+            if len(self.action_queue) != 0:
+                # already has actions in queue, append new actions
+                # TODO extend or stack?
+                self.action_queue[0].extend(triggered_actions)
+            else:
+                # no actions in queue, append new actions
+                self.action_queue.append(triggered_actions)
+        # modify request
+        for num, req in enumerate(self.requests):
+            if isinstance(req, RerollDiceRequest):
+                if req.player_id == response.request.player_id:
+                    if req.reroll_times > 1:
+                        req.reroll_times -= 1
+                    else:
+                        self.requests.pop(num)
+                    break
 
     """
     Action functions. An actions function takes Action as input, do 
@@ -477,7 +604,7 @@ class Match(BaseModel):
         )
         return [event_arg]
 
-    def _action_choose_charactor( self, action: ChooseCharactorAction) \
+    def _action_choose_charactor(self, action: ChooseCharactorAction) \
             -> List[ChooseCharactorEventArguments]:
         """
         Choose a charactor.
@@ -497,3 +624,94 @@ class Match(BaseModel):
             original_charactor_id = original_charactor_id
         )
         return [event_arg]
+
+    def _action_create_dice(self, action: CreateDiceAction) \
+            -> List[CreateDiceEventArguments]:
+        """
+        Create dices.
+        """
+        dices: List[Dice] = []
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        number = action.dice_number
+        color = action.dice_color
+        is_random = action.dice_random
+        is_different = action.dice_different
+        if is_random and is_different:
+            logging.error('Dice cannot be both random and different.')
+            self._set_match_state(MatchState.ERROR)
+            return []
+        candidates: List[DiceColor] = [
+            DiceColor.CRYO, DiceColor.PYRO, DiceColor.HYDRO, DiceColor.ELECTRO,
+            DiceColor.GEO, DiceColor.DENDRO, DiceColor.ANEMO
+        ]
+        # generate dices based on color
+        if is_random:
+            candidates.append(DiceColor.OMNI)  # random, can be omni
+            for _ in range(number):
+                selected_color = candidates[int(self._random() 
+                                                * len(candidates))]
+                dices.append(Dice(color = selected_color))
+        elif is_different:
+            if number > len(candidates):
+                logging.error('Not enough dice colors.')
+                self._set_match_state(MatchState.ERROR)
+                return []
+            self._random_shuffle(candidates)
+            candidates = candidates[:number]
+            for selected_color in candidates:
+                dices.append(Dice(color = selected_color))
+        else:
+            if color is None:
+                logging.error('Dice color should be specified.')
+                self._set_match_state(MatchState.ERROR)
+                return []
+            for _ in range(number):
+                dices.append(Dice(color = color))
+        # if there are more dices than the maximum, discard the rest
+        max_obtainable_dices = (self.match_config.max_dice_number 
+                                - len(table.dices))
+        for dice in dices[:max_obtainable_dices]:
+            table.dices.append(dice)
+            self._registry.register(dice)
+        # sort dices by color
+        table.sort_dices()
+        logging.info(
+            f'Create dice action, player {player_id}, '
+            f'number {len(dices)}, '
+            f'dice colors {[dice.color for dice in dices]}, '
+            f'obtain {len(dices[:max_obtainable_dices])}, '
+            f'over maximum {len(dices[max_obtainable_dices:])}, '
+            f'current dices on table {table.dices}'
+        )
+        return [CreateDiceEventArguments(
+            action = action,
+            dice_colors_generated = [dice.color for dice 
+                                     in dices[:max_obtainable_dices]],
+            dice_colors_over_maximum = [dice.color for dice 
+                                        in dices[max_obtainable_dices:]]
+        )]
+
+    def _action_remove_dice(self, action: RemoveDiceAction) \
+            -> List[RemoveDiceEventArguments]:
+        player_id = action.player_id
+        dice_ids = action.dice_ids
+        table = self.player_tables[player_id]
+        removed_dices: List[Dice] = []
+        dice_ids.sort(reverse = True)  # reverse order to avoid index error
+        for idx in dice_ids:
+            removed_dices.append(table.dices.pop(idx))
+        for dice in removed_dices:
+            self._registry.unregister(dice)
+        # sort dices by color
+        table.sort_dices()
+        logging.info(
+            f'Remove dice action, player {player_id}, '
+            f'number {len(dice_ids)}, '
+            f'dice colors {[dice.color for dice in removed_dices]}, '
+            f'current dices on table {table.dices}'
+        )
+        return [RemoveDiceEventArguments(
+            action = action,
+            dice_colors_removed = [dice.color for dice in removed_dices]
+        )]

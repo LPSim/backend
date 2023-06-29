@@ -1,6 +1,6 @@
 from utils import BaseModel
 from typing import List
-from server.action import ActionTypes
+from .action import ActionTypes
 
 
 class ObjectBase(BaseModel):

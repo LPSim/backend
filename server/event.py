@@ -1,11 +1,14 @@
 from utils import BaseModel
 from typing import Literal, List
+from .consts import DiceColor
 from .action import (
     Actions, 
     ActionTypes, 
     DrawCardAction,
     RestoreCardAction,
     ChooseCharactorAction,
+    CreateDiceAction,
+    RemoveDiceAction,
 )
 
 
@@ -44,6 +47,31 @@ class ChooseCharactorEventArguments(EventArgumentsBase):
         ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
     action: ChooseCharactorAction
     original_charactor_id: int
+
+
+class CreateDiceEventArguments(EventArgumentsBase):
+    """
+    Event arguments for create dice event.
+
+    Args:
+        dice_colors_generated (List[DiceColor]): The colors of the dices
+            generated.
+        dice_colors_over_maximum (List[DiceColor]): The colors of the dices
+            that are over the maximum number of dices and not obtained.
+    """
+    type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
+    action: CreateDiceAction
+    dice_colors_generated: List[DiceColor]
+    dice_colors_over_maximum: List[DiceColor]
+
+
+class RemoveDiceEventArguments(EventArgumentsBase):
+    """
+    Event arguments for remove dice event.
+    """
+    type: Literal[ActionTypes.REMOVE_DICE] = ActionTypes.REMOVE_DICE
+    action: RemoveDiceAction
+    dice_colors_removed: List[DiceColor]
 
 
 EventArguments = EventArgumentsBase | DrawCardEventArguments

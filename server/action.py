@@ -3,7 +3,9 @@ from utils import BaseModel
 from typing import Literal, List
 from .interaction import (
     ChooseCharactorResponse,
+    RerollDiceResponse,
 )
+from .consts import DiceColor
 
 
 class ActionTypes(Enum):
@@ -11,6 +13,8 @@ class ActionTypes(Enum):
     DRAW_CARD = 'DRAW_CARD'
     RESTORE_CARD = 'RESTORE_CARD'
     CHOOSE_CHARACTOR = 'CHOOSE_CHARACTOR'
+    CREATE_DICE = 'CREATE_DICE'
+    REMOVE_DICE = 'REMOVE_DICE'
 
 
 class ActionBase(BaseModel):
@@ -62,6 +66,38 @@ class ChooseCharactorAction(ActionBase):
             object_id = -1,
             player_id = response.player_id,
             charactor_id = response.charactor_id,
+        )
+
+
+class CreateDiceAction(ActionBase):
+    """
+    Action for creating dice.
+    """
+    type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
+    player_id: int
+    dice_number: int
+    dice_color: DiceColor | None = None
+    dice_random: bool = False
+    dice_different: bool = False
+
+
+class RemoveDiceAction(ActionBase):
+    """
+    Action for removing dice.
+    """
+    type: Literal[ActionTypes.REMOVE_DICE] = ActionTypes.REMOVE_DICE
+    player_id: int
+    dice_ids: List[int]
+
+    @classmethod
+    def from_response(cls, response: RerollDiceResponse):
+        """
+        Generate RemoveDiceAction from ChooseCharactorResponse.
+        """
+        return cls(
+            object_id = -1,
+            player_id = response.player_id,
+            dice_ids = response.reroll_dice_ids,
         )
 
 

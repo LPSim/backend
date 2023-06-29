@@ -1,17 +1,42 @@
 import logging
-from server.event import EventArguments
-from server.action import Actions, ActionTypes
+from .event import EventArguments
+from .action import Actions, ActionTypes
+from .modifiable_values import (
+    ModifiableValueTypes, 
+    ModifiableValues,
+    ModifiableValueArguments,
+)
 from typing import Dict, Any, List
 
 
 class Registry:
+    """
+    Registry for all objects in the game table. It is used to find objects by
+    their IDs, collect event triggers, and collect value modifiers.
 
+    Args:
+        logger (logging.Logger): The logger for the registry.
+        _registry (Dict[int, Any]): The registry of all objects. Key is the
+            object ID, and value is the object.
+        _id_counter (int): The counter for object ID. When new object is
+            registered, it will be assigned with a new ID and the counter will
+            increase by 1.
+        event_triggers (Dict[ActionTypes, List[Any]]): The event triggers of
+            all objects. Key is the action type, and value is the list of
+            object IDs that will trigger the event.
+        value_modifiers (Dict[ModifiableValueTypes, List[Any]]): The value 
+            modifiers of all objects. Key is the value type, and value is the 
+            list of object IDs that will modify the value.
+    """
     def __init__(self):
         self._registry: Dict[int, Any] = {}
         self._id_counter: int = 0
         self.event_triggers: Dict[ActionTypes, List[Any]] = {}
+        self.value_modifiers: Dict[ModifiableValueTypes, List[Any]] = {}
         for i in ActionTypes:
             self.event_triggers[i] = []
+        for i in ModifiableValueTypes:
+            self.value_modifiers[i] = []
 
     def register(self, obj):
         """
@@ -37,9 +62,9 @@ class Registry:
                 return i
         raise ValueError('Object not found in registry.')
 
-    def destroy(self, obj):
+    def unregister(self, obj):
         """
-        Destroy an object from the registry.
+        Unregister an object from the registry.
         """
         obj_id = self.find_id(obj)
         for i in obj.event_triggers:
@@ -56,3 +81,13 @@ class Registry:
                           f'{self._registry[obj_id].name}:{obj_id}.')
             ...
         return ret
+
+    def modify_value(self, value: ModifiableValues, 
+                     modify_arg: ModifiableValueArguments) -> None:
+        """
+        Modify values. It will directly modify the value arguments.
+        """
+        for obj_id in self.value_modifiers[value.type]:
+            logging.debug(f'Modify value {value.type} for '
+                          f'{self._registry[obj_id].name}:{obj_id}.')
+            ...
