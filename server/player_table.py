@@ -69,7 +69,6 @@ class PlayerTable(BaseModel):
             color = ELEMENT_TO_DICE_COLOR[element]
             if color not in result:
                 result.append(color)
-        print(result)
         return result
 
     def sort_dices(self):
