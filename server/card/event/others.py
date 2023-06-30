@@ -3,7 +3,7 @@ Event cards that not belong to any other categories.
 """
 
 from typing import Literal
-from server.card.CardBase import CardBase
+from server.card.card_base import CardBase
 from server.action import Actions, DrawCardAction
 
 

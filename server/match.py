@@ -15,7 +15,7 @@ from .action import (
     CreateDiceAction,
     RemoveDiceAction,
 )
-from .registry import Registry
+from .registry import Registry, ObjectSortRule
 from .interaction import (
     Requests, Responses, 
     SwitchCardRequest, SwitchCardResponse,
@@ -195,6 +195,19 @@ class Match(BaseModel):
                      f'{new_state}.')
         self.match_state = new_state
 
+    def _get_sort_rule(self) -> ObjectSortRule:
+        """
+        Return the sort rule of the match.
+        """
+        return ObjectSortRule(
+            current_player_id = self.current_player,
+            max_charactor_number = self.match_config.charactor_number,
+            front_charactor_ids = [
+                0 if table.front_charactor_id == -1 
+                else table.front_charactor_id for table in self.player_tables
+            ],
+        )
+
     def start(self) -> bool:
         """
         Start a new match. MatchState should be WAITING. Check the config and
@@ -260,7 +273,8 @@ class Match(BaseModel):
             ))
             triggered_actions: List[Actions] = []
             for event_arg in event_args:
-                actions = self._registry.trigger_event(event_arg)
+                actions = self._registry.trigger_event(
+                    event_arg, self._get_sort_rule())
                 triggered_actions.extend(actions)
             if triggered_actions:
                 logging.error('Initial draw card should not trigger actions.')
@@ -299,10 +313,14 @@ class Match(BaseModel):
             elif self.match_state == MatchState.STARTING_CHOOSE_CHARACTOR:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
+            elif self.match_state == MatchState.ROUND_ROLL_DICE:
+                raise NotImplementedError()
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
             if len(self.requests) or not run_continuously:
+                if len(self.requests):
+                    logging.info(f'{len(self.requests)} requests generated.')
                 return True
 
     def check_request_exist(self, request: Requests) -> bool:
@@ -386,7 +404,14 @@ class Match(BaseModel):
             event_args += one_event_args
         triggered_actions: List[Actions] = []
         for event_arg in event_args:
-            actions = self._registry.trigger_event(event_arg)
+            sort_rule = ObjectSortRule(
+                current_player_id = self.current_player,
+                max_charactor_number = self.match_config.charactor_number,
+                front_charactor_ids = [
+                    table.front_charactor_id for table in self.player_tables
+                ],
+            )
+            actions = self._registry.trigger_event(event_arg, sort_rule)
             triggered_actions.extend(actions)
         if len(triggered_actions) != 0:
             logging.error('Create dice should not trigger actions.')
@@ -399,6 +424,7 @@ class Match(BaseModel):
             reroll_value = RerollValue(value = reroll_times)
             self._registry.modify_value(
                 reroll_value, 
+                self._get_sort_rule(),
                 RerollValueArguments(player_id = pnum),
             )
             self._request_reroll_dice(pnum, reroll_value.value)
@@ -472,7 +498,8 @@ class Match(BaseModel):
         )
         triggered_actions: List[Actions] = []
         for event_arg in event_args:
-            actions = self._registry.trigger_event(event_arg)
+            actions = self._registry.trigger_event(
+                event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if triggered_actions:
             logging.error('Initial switch card should not trigger '
@@ -491,7 +518,8 @@ class Match(BaseModel):
         )
         triggered_actions: List[Actions] = []
         for event_arg in event_args:
-            actions = self._registry.trigger_event(event_arg)
+            actions = self._registry.trigger_event(
+                event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
             if len(self.action_queue) != 0:
@@ -518,7 +546,8 @@ class Match(BaseModel):
         ))
         triggered_actions: List[Actions] = []
         for event_arg in event_args:
-            actions = self._registry.trigger_event(event_arg)
+            actions = self._registry.trigger_event(
+                event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
             logging.error('Removing dice in Reroll dice should not trigger '
@@ -532,7 +561,8 @@ class Match(BaseModel):
             dice_random = True,
         ))
         for event_arg in event_args:
-            actions = self._registry.trigger_event(event_arg)
+            actions = self._registry.trigger_event(
+                event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
             if len(self.action_queue) != 0:
@@ -563,15 +593,22 @@ class Match(BaseModel):
         """
         Draw cards from the deck, and return the argument of triggered events.
         TODO: Input have draw rule, e.g. NRE.
+        TODO: maintain card type from DECK_CARD to HAND_CARD
+        TODO: destroy card if maximum hand size is reached
         """
         player_id = action.player_id
         number = action.number
-        logging.info(f'Draw card action, player {player_id}, number {number}')
         table = self.player_tables[player_id]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
+        names = [x.name for x in table.table_deck[:number]]
         table.hands.extend(table.table_deck[:number])
         table.table_deck = table.table_deck[number:]
+        logging.info(
+            f'Draw card action, player {player_id}, number {number}, '
+            f'cards {names}, '
+            f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
+        )
         event_arg = DrawCardEventArguments(
             action = action,
         )
@@ -588,16 +625,17 @@ class Match(BaseModel):
         card_ids = action.card_ids[:]
         card_ids.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cid].name for cid in card_ids]
-        logging.info(
-            f'Restore card action, player {player_id}, number {len(card_ids)},'
-            f' cards: {card_names}'
-        )
         # all_card_names = [card.name for card in table.hands]
         # card_id = [all_card_names.index(card_name) for card_name in card_ids]
         # card_id.sort(reverse = True)  # reverse order to avoid index error
         for cid in card_ids:
             table.table_deck.append(table.hands[cid])
             table.hands = table.hands[:cid] + table.hands[cid + 1:]
+        logging.info(
+            f'Restore card action, player {player_id}, number {len(card_ids)},'
+            f' cards: {card_names}, '
+            f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
+        )
         event_arg = RestoreCardEventArguments(
             action = action,
             card_names = card_names

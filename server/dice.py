@@ -1,6 +1,6 @@
 from typing import Literal
 from .consts import DiceColor
-from .object_base import ObjectBase
+from .object_base import ObjectBase, ObjectType
 
 
 class Dice(ObjectBase):
@@ -11,7 +11,7 @@ class Dice(ObjectBase):
     Attributes:
         color (DiceColor): The color of the dice.
     """
-    name: Literal['Dice'] = 'Dice'
+    type: Literal[ObjectType.DICE] = ObjectType.DICE
     color: DiceColor
 
     def __str__(self):

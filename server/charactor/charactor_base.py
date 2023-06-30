@@ -1,8 +1,9 @@
 from typing import Literal
-from ..object_base import ObjectBase
+from ..object_base import ObjectBase, ObjectType
 from ..consts import ElementType
 
 
 class CharactorBase(ObjectBase):
-    name: Literal['CharactorBase'] = 'CharactorBase'
+    name: str
+    type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     element: ElementType

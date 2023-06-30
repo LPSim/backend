@@ -1,4 +1,4 @@
-from server.object_base import ObjectBase
+from server.object_base import ObjectBase, ObjectType
 from server.action import Actions
 from typing import Literal, List
 
@@ -7,7 +7,9 @@ class CardBase(ObjectBase):
     """
     Base class of all real cards. 
     """
-    name: Literal['CardBase'] = 'CardBase'
+    name: str
+    type: Literal[ObjectType.DECK_CARD, ObjectType.HAND_CARD] = \
+        ObjectType.DECK_CARD
 
     def act(self) -> List[Actions]:
         """

@@ -21,6 +21,12 @@ class RequestType(Enum):
     BATTLE = 'BATTLE'
     QUICK = 'QUICK'
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
 
 class RequestBase(BaseModel):
     """

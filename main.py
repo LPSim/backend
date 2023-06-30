@@ -38,11 +38,14 @@ if __name__ == '__main__':
     from server.interaction import (
         SwitchCardResponse, ChooseCharactorResponse, RerollDiceResponse
     )
+    from server.consts import DiceColor
+    # switch 3 cards
     main.match.respond(SwitchCardResponse(
         request = main.match.requests[0], card_ids = [3, 1, 2]))
     main.match.respond(SwitchCardResponse(
         request = main.match.requests[0], card_ids = [3, 1, 2]))
-    main.match.step()  # choose charactor
+    main.match.step()
+    # choose charactor
     main.match.respond(ChooseCharactorResponse(
         request = main.match.requests[0], charactor_id = 0
     ))
@@ -50,11 +53,24 @@ if __name__ == '__main__':
         request = main.match.requests[0], charactor_id = 1
     ))
     main.match.step()
+    # reroll dice not dendro or omni
     main.match.respond(RerollDiceResponse(
-        request = main.match.requests[0], reroll_dice_ids = [3, 4, 5, 6, 7]
+        request = main.match.requests[0], 
+        reroll_dice_ids = [
+            x for x in range(8) 
+            if main.match.requests[0].dice_colors[x] not in (
+                DiceColor.DENDRO, DiceColor.OMNI
+            )
+        ]
     ))
     main.match.respond(RerollDiceResponse(
-        request = main.match.requests[0], reroll_dice_ids = [3, 4, 5, 6, 7]
+        request = main.match.requests[0],
+        reroll_dice_ids = [
+            x for x in range(8) 
+            if main.match.requests[0].dice_colors[x] not in (
+                DiceColor.DENDRO, DiceColor.OMNI
+            )
+        ]
     ))
     main.match.step()
     print(main.json())

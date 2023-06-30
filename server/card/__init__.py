@@ -1,4 +1,4 @@
-from .CardBase import CardBase
+from .card_base import CardBase
 from .event.others import Strategize
 
 
