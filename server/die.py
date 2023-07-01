@@ -1,18 +1,18 @@
 from typing import Literal
-from .consts import DiceColor
+from .consts import DieColor
 from .object_base import ObjectBase, ObjectType
 
 
-class Dice(ObjectBase):
+class Die(ObjectBase):
     """
-    Class representing a dice. 
-    TODO: is combining all dices into one class a good idea?
+    Class representing a die. 
+    TODO: is combining all dice into one class a good idea?
 
     Attributes:
         color (DiceColor): The color of the dice.
     """
-    type: Literal[ObjectType.DICE] = ObjectType.DICE
-    color: DiceColor
+    type: Literal[ObjectType.DIE] = ObjectType.DIE
+    color: DieColor
 
     def __str__(self):
         return str(self.color)

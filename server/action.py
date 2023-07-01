@@ -5,7 +5,7 @@ from .interaction import (
     ChooseCharactorResponse,
     RerollDiceResponse,
 )
-from .consts import DiceColor
+from .consts import DieColor
 
 
 class ActionTypes(Enum):
@@ -15,6 +15,9 @@ class ActionTypes(Enum):
     CHOOSE_CHARACTOR = 'CHOOSE_CHARACTOR'
     CREATE_DICE = 'CREATE_DICE'
     REMOVE_DICE = 'REMOVE_DICE'
+
+    # system actions
+    ROUND_PREPARE = 'ROUND_PREPARE'
 
 
 class ActionBase(BaseModel):
@@ -72,18 +75,30 @@ class ChooseCharactorAction(ActionBase):
 class CreateDiceAction(ActionBase):
     """
     Action for creating dice.
+
+    Args:
+        player_id (int): The ID of the player to create the dice for.
+        number (int): The number of dice to create.
+        color (DieColor | None): The color of the dice to create. If None,
+            the following generate rules will be activated.
+        random (bool): Whether to randomly generate the color of dice.
+        different (bool): Whether to generate different colors of dice.
     """
     type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
     player_id: int
-    dice_number: int
-    dice_color: DiceColor | None = None
-    dice_random: bool = False
-    dice_different: bool = False
+    number: int
+    color: DieColor | None = None
+    random: bool = False
+    different: bool = False
 
 
 class RemoveDiceAction(ActionBase):
     """
     Action for removing dice.
+
+    Args:
+        player_id (int): The ID of the player to remove the dice for.
+        dice_ids (List[int]): The IDs of the dice to remove.
     """
     type: Literal[ActionTypes.REMOVE_DICE] = ActionTypes.REMOVE_DICE
     player_id: int
@@ -92,7 +107,8 @@ class RemoveDiceAction(ActionBase):
     @classmethod
     def from_response(cls, response: RerollDiceResponse):
         """
-        Generate RemoveDiceAction from ChooseCharactorResponse.
+        Generate RemoveDiceAction from RerollDiceResponse.
+        TODO: from other responses, i.e. use skill response.
         """
         return cls(
             object_id = -1,

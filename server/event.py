@@ -1,6 +1,6 @@
 from utils import BaseModel
 from typing import Literal, List
-from .consts import DiceColor
+from .consts import DieColor
 from .action import (
     Actions, 
     ActionTypes, 
@@ -17,6 +17,10 @@ class EventArgumentsBase(BaseModel):
     Base class of event arguments. event arguments are generated when new
     Action is triggered by events. It is a superset of Action arguments, and
     will record nesessary information about the event.
+
+    If new cards need more information about the event (e.g. Chinju Forest
+    need to know which player goes first, which is not needed before version
+    3.7), the information can be added to the event arguments.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
     action: Actions
@@ -54,24 +58,27 @@ class CreateDiceEventArguments(EventArgumentsBase):
     Event arguments for create dice event.
 
     Args:
-        dice_colors_generated (List[DiceColor]): The colors of the dices
+        colors_generated (List[DieColor]): The colors of the dice
             generated.
-        dice_colors_over_maximum (List[DiceColor]): The colors of the dices
-            that are over the maximum number of dices and not obtained.
+        colors_over_maximum (List[DieColor]): The colors of the dice
+            that are over the maximum number of dice and not obtained.
     """
     type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
     action: CreateDiceAction
-    dice_colors_generated: List[DiceColor]
-    dice_colors_over_maximum: List[DiceColor]
+    colors_generated: List[DieColor]
+    colors_over_maximum: List[DieColor]
 
 
 class RemoveDiceEventArguments(EventArgumentsBase):
     """
     Event arguments for remove dice event.
+
+    Args:
+        colors_removed (List[DieColor]): The colors of the dice.
     """
     type: Literal[ActionTypes.REMOVE_DICE] = ActionTypes.REMOVE_DICE
     action: RemoveDiceAction
-    dice_colors_removed: List[DiceColor]
+    colors_removed: List[DieColor]
 
 
 EventArguments = EventArgumentsBase | DrawCardEventArguments

@@ -7,7 +7,7 @@ from .action import ActionTypes
 class ObjectType(Enum):
     EMPTY = 'EMPTY'
     CHARACTOR = 'CHARACTOR'
-    DICE = 'DICE'
+    DIE = 'DIE'
     DECK_CARD = 'DECK_CARD'
     HAND_CARD = 'HAND_CARD'
     SUMMON = 'SUMMON'

@@ -38,7 +38,7 @@ if __name__ == '__main__':
     from server.interaction import (
         SwitchCardResponse, ChooseCharactorResponse, RerollDiceResponse
     )
-    from server.consts import DiceColor
+    from server.consts import DieColor
     # switch 3 cards
     main.match.respond(SwitchCardResponse(
         request = main.match.requests[0], card_ids = [3, 1, 2]))
@@ -58,8 +58,8 @@ if __name__ == '__main__':
         request = main.match.requests[0], 
         reroll_dice_ids = [
             x for x in range(8) 
-            if main.match.requests[0].dice_colors[x] not in (
-                DiceColor.DENDRO, DiceColor.OMNI
+            if main.match.requests[0].colors[x] not in (
+                DieColor.DENDRO, DieColor.OMNI
             )
         ]
     ))
@@ -67,8 +67,8 @@ if __name__ == '__main__':
         request = main.match.requests[0],
         reroll_dice_ids = [
             x for x in range(8) 
-            if main.match.requests[0].dice_colors[x] not in (
-                DiceColor.DENDRO, DiceColor.OMNI
+            if main.match.requests[0].colors[x] not in (
+                DieColor.DENDRO, DieColor.OMNI
             )
         ]
     ))

@@ -22,8 +22,8 @@ from .interaction import (
     ChooseCharactorRequest, ChooseCharactorResponse,
     RerollDiceRequest, RerollDiceResponse,
 )
-from .consts import DiceColor
-from .dice import Dice
+from .consts import DieColor
+from .die import Die
 from .event import (
     DrawCardEventArguments, 
     RestoreCardEventArguments, 
@@ -57,7 +57,7 @@ class MatchState(str, Enum):
         PLAYER_ACTION_START (str): Player is deciding its action.
         PLAYER_ACTION_ACT (str): After player has decided its action, the 
             action is being executed. Execution may be interrupted by requests,
-            e.g. someone is knocked out, or need to re-roll dice.
+            e.g. someone is knocked out, need to re-roll dice.
         ROUND_ENDING (str): Ending phase starts.
         ENDED (str): The match has ended.
     """
@@ -202,9 +202,9 @@ class Match(BaseModel):
         return ObjectSortRule(
             current_player_id = self.current_player,
             max_charactor_number = self.match_config.charactor_number,
-            front_charactor_ids = [
-                0 if table.front_charactor_id == -1 
-                else table.front_charactor_id for table in self.player_tables
+            active_charactor_ids = [
+                0 if table.active_charactor_id == -1 
+                else table.active_charactor_id for table in self.player_tables
             ],
         )
 
@@ -314,7 +314,11 @@ class Match(BaseModel):
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
             elif self.match_state == MatchState.ROUND_ROLL_DICE:
-                raise NotImplementedError()
+                self._set_match_state(MatchState.ROUND_PREPARING)
+                self._round_prepare()
+            elif self.match_state == MatchState.ROUND_PREPARING:
+                self._set_match_state(MatchState.PLAYER_ACTION_START)
+                self._player_action_start()
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
@@ -381,44 +385,40 @@ class Match(BaseModel):
         return True
 
     def _next_action(self):
-        ...
+        raise NotImplementedError()
 
     def _round_start(self):
         """
-        Start a round. Will clear existing dices, generate new random dices
-        and asking players to reroll dices.
+        Start a round. Will clear existing dice, generate new random dice
+        and asking players to reroll dice.
+
+        # TODO: implement locking dice colors like Jade Chamber.
         """
         for pnum, player_table in enumerate(self.player_tables):
-            for dice in player_table.dices:
+            for dice in player_table.dice:
                 self._registry.unregister(dice)
-            player_table.dices.clear()
-        # generate new dices
+            player_table.dice.clear()
+        # generate new dice
         event_args = []
         for pnum, player_table in enumerate(self.player_tables):
             one_event_args = self._action_create_dice(CreateDiceAction(
                 object_id = -1,
                 player_id = pnum,
-                dice_number = self.match_config.initial_dice_number,
-                dice_random = True
+                number = self.match_config.initial_dice_number,
+                random = True
             ))
             event_args += one_event_args
         triggered_actions: List[Actions] = []
         for event_arg in event_args:
-            sort_rule = ObjectSortRule(
-                current_player_id = self.current_player,
-                max_charactor_number = self.match_config.charactor_number,
-                front_charactor_ids = [
-                    table.front_charactor_id for table in self.player_tables
-                ],
-            )
-            actions = self._registry.trigger_event(event_arg, sort_rule)
+            actions = self._registry.trigger_event(
+                event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) != 0:
             logging.error('Create dice should not trigger actions.')
             self._set_match_state(MatchState.ERROR)
             return False
         # collect actions triggered by round start
-        # default reroll dice chance
+        # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
             reroll_times = self.match_config.initial_dice_reroll_times
             reroll_value = RerollValue(value = reroll_times)
@@ -429,6 +429,29 @@ class Match(BaseModel):
             )
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
+
+    def _round_prepare(self):
+        """
+        Activate round_prepare event, and add to actions.
+        """
+
+    def _player_action_start(self):
+        """
+        Start player action. Will generate requests of available actions
+        of the player. There will be the following actions:
+        1. Use Skill: Pay the relevant cost and use your active character's 
+            Skill(s).
+        Switch Characters: Pay 1 Elemental Die of your choice to switch your 
+            active character.
+        Play Card: Pay the relevant cost and play card(s) from your Hand.
+        Elemental Tuning: Discard a card from your Hand and change the 
+            Elemental Type of 1 of your Elemental Die which Elemental Type
+            does not match your active character's Elemental Type, and also
+            not Omni.
+        Declare Round End: End your actions for this Round. The first player 
+            to declare the end of their Round will go first during the next 
+            Round.
+        """
 
     """
     Request functions. To generate specific requests.
@@ -459,7 +482,7 @@ class Match(BaseModel):
         player_table = self.player_tables[player_id]
         self.requests.append(RerollDiceRequest(
             player_id = player_id,
-            dice_colors = [dice.color for dice in player_table.dices],
+            colors = [dice.color for dice in player_table.dice],
             reroll_times = reroll_number
         ))
 
@@ -550,15 +573,15 @@ class Match(BaseModel):
                 event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
-            logging.error('Removing dice in Reroll dice should not trigger '
+            logging.error('Removing dice in Reroll Dice should not trigger '
                           'actions.')
             self._set_match_state(MatchState.ERROR)
             return
         event_args = self._action_create_dice(CreateDiceAction(
             object_id = -1,
             player_id = response.request.player_id,
-            dice_number = len(response.reroll_dice_ids),
-            dice_random = True,
+            number = len(response.reroll_dice_ids),
+            random = True,
         ))
         for event_arg in event_args:
             actions = self._registry.trigger_event(
@@ -655,8 +678,8 @@ class Match(BaseModel):
             f'charactor id {charactor_id}, '
             f'name {table.charactors[charactor_id].name}'
         )
-        original_charactor_id = table.front_charactor_id
-        table.front_charactor_id = charactor_id
+        original_charactor_id = table.active_charactor_id
+        table.active_charactor_id = charactor_id
         event_arg = ChooseCharactorEventArguments(
             action = action,
             original_charactor_id = original_charactor_id
@@ -666,30 +689,30 @@ class Match(BaseModel):
     def _action_create_dice(self, action: CreateDiceAction) \
             -> List[CreateDiceEventArguments]:
         """
-        Create dices.
+        Create dice.
         """
-        dices: List[Dice] = []
+        dice: List[Die] = []
         player_id = action.player_id
         table = self.player_tables[player_id]
-        number = action.dice_number
-        color = action.dice_color
-        is_random = action.dice_random
-        is_different = action.dice_different
+        number = action.number
+        color = action.color
+        is_random = action.random
+        is_different = action.different
         if is_random and is_different:
             logging.error('Dice cannot be both random and different.')
             self._set_match_state(MatchState.ERROR)
             return []
-        candidates: List[DiceColor] = [
-            DiceColor.CRYO, DiceColor.PYRO, DiceColor.HYDRO, DiceColor.ELECTRO,
-            DiceColor.GEO, DiceColor.DENDRO, DiceColor.ANEMO
+        candidates: List[DieColor] = [
+            DieColor.CRYO, DieColor.PYRO, DieColor.HYDRO, DieColor.ELECTRO,
+            DieColor.GEO, DieColor.DENDRO, DieColor.ANEMO
         ]
-        # generate dices based on color
+        # generate dice based on color
         if is_random:
-            candidates.append(DiceColor.OMNI)  # random, can be omni
+            candidates.append(DieColor.OMNI)  # random, can be omni
             for _ in range(number):
                 selected_color = candidates[int(self._random() 
                                                 * len(candidates))]
-                dices.append(Dice(color = selected_color))
+                dice.append(Die(color = selected_color))
         elif is_different:
             if number > len(candidates):
                 logging.error('Not enough dice colors.')
@@ -698,36 +721,36 @@ class Match(BaseModel):
             self._random_shuffle(candidates)
             candidates = candidates[:number]
             for selected_color in candidates:
-                dices.append(Dice(color = selected_color))
+                dice.append(Die(color = selected_color))
         else:
             if color is None:
                 logging.error('Dice color should be specified.')
                 self._set_match_state(MatchState.ERROR)
                 return []
             for _ in range(number):
-                dices.append(Dice(color = color))
-        # if there are more dices than the maximum, discard the rest
-        max_obtainable_dices = (self.match_config.max_dice_number 
-                                - len(table.dices))
-        for dice in dices[:max_obtainable_dices]:
-            table.dices.append(dice)
-            self._registry.register(dice)
-        # sort dices by color
-        table.sort_dices()
+                dice.append(Die(color = color))
+        # if there are more dice than the maximum, discard the rest
+        max_obtainable_dice = (self.match_config.max_dice_number 
+                               - len(table.dice))
+        for die in dice[:max_obtainable_dice]:
+            table.dice.append(die)
+            self._registry.register(die)
+        # sort dice by color
+        table.sort_dice()
         logging.info(
             f'Create dice action, player {player_id}, '
-            f'number {len(dices)}, '
-            f'dice colors {[dice.color for dice in dices]}, '
-            f'obtain {len(dices[:max_obtainable_dices])}, '
-            f'over maximum {len(dices[max_obtainable_dices:])}, '
-            f'current dices on table {table.dices}'
+            f'number {len(dice)}, '
+            f'dice colors {[die.color for die in dice]}, '
+            f'obtain {len(dice[:max_obtainable_dice])}, '
+            f'over maximum {len(dice[max_obtainable_dice:])}, '
+            f'current dice on table {table.dice}'
         )
         return [CreateDiceEventArguments(
             action = action,
-            dice_colors_generated = [dice.color for dice 
-                                     in dices[:max_obtainable_dices]],
-            dice_colors_over_maximum = [dice.color for dice 
-                                        in dices[max_obtainable_dices:]]
+            colors_generated = [die.color for die 
+                                in dice[:max_obtainable_dice]],
+            colors_over_maximum = [die.color for die 
+                                   in dice[max_obtainable_dice:]]
         )]
 
     def _action_remove_dice(self, action: RemoveDiceAction) \
@@ -735,21 +758,21 @@ class Match(BaseModel):
         player_id = action.player_id
         dice_ids = action.dice_ids
         table = self.player_tables[player_id]
-        removed_dices: List[Dice] = []
+        removed_dice: List[Die] = []
         dice_ids.sort(reverse = True)  # reverse order to avoid index error
         for idx in dice_ids:
-            removed_dices.append(table.dices.pop(idx))
-        for dice in removed_dices:
-            self._registry.unregister(dice)
-        # sort dices by color
-        table.sort_dices()
+            removed_dice.append(table.dice.pop(idx))
+        for die in removed_dice:
+            self._registry.unregister(die)
+        # sort dice by color
+        table.sort_dice()
         logging.info(
             f'Remove dice action, player {player_id}, '
             f'number {len(dice_ids)}, '
-            f'dice colors {[dice.color for dice in removed_dices]}, '
-            f'current dices on table {table.dices}'
+            f'dice colors {[die.color for die in removed_dice]}, '
+            f'current dice on table {table.dice}'
         )
         return [RemoveDiceEventArguments(
             action = action,
-            dice_colors_removed = [dice.color for dice in removed_dices]
+            colors_removed = [die.color for die in removed_dice]
         )]

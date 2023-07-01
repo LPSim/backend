@@ -1,7 +1,7 @@
 from utils import BaseModel
 from typing import Literal, List
 from enum import Enum
-from .consts import DiceColor
+from .consts import DieColor
 
 
 class RequestType(Enum):
@@ -9,8 +9,8 @@ class RequestType(Enum):
     Enum representing the type of a request.
 
     Attributes:
-        SYSTEM (str): The request is a system request, e.g. roll dices, choose
-            front charactor, change cards. It should not be mixed with the 
+        SYSTEM (str): The request is a system request, e.g. roll dice, choose
+            active charactor, change cards. It should not be mixed with the 
             following types.
         BATTLE (str): The request is a battle request, e.g. use skill, use
             talent card, switch charactor.
@@ -52,17 +52,17 @@ class ChooseCharactorRequest(RequestBase):
 
 class RerollDiceRequest(RequestBase):
     """
-    Request for reroll dices.
+    Request for reroll dice.
 
     Args:
-        dice_colors (List[DiceColor]): The colors of the dices to reroll.
+        colors (List[DieColor]): The colors of the dice to reroll.
         reroll_times (int): The times of reroll. In one time, player can choose
-            any number of dices to reroll, and after one reroll, the reroll
+            any number of dice to reroll, and after one reroll, the reroll
             times will decrease by 1. If it reaches 0, the request is removed.
     """
     name: Literal['RerollDiceRequest'] = 'RerollDiceRequest'
     type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
-    dice_colors: List[DiceColor]
+    colors: List[DieColor]
     reroll_times: int
 
 
@@ -136,7 +136,7 @@ class RerollDiceResponse(ResponseBase):
         """
         if len(self.reroll_dice_ids) != len(set(self.reroll_dice_ids)):
             return False
-        if max(self.reroll_dice_ids) >= len(self.request.dice_colors):
+        if max(self.reroll_dice_ids) >= len(self.request.colors):
             return False
         if min(self.reroll_dice_ids) < 0:
             return False

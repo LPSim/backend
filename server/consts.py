@@ -38,20 +38,21 @@ ELEMENT_DEFAULT_ORDER = [
 ]
 
 
-class DiceColor(Enum):
+class DieColor(Enum):
     """
-    Enum representing the color of a dice. Besides existing elements, there are
+    Enum representing the color of a die. It can also be called as elemental
+    type, elemental attributes. Besides existing element types, there are
     also Onmi, which can be used as any color.
 
     Attributes:
-        CRYO (str): The dice color is cryo.
-        HYDRO (str): The dice color is hydro.
-        PYRO (str): The dice color is pyro.
-        ELECTRO (str): The dice color is electro.
-        GEO (str): The dice color is geo.
-        DENDRO (str): The dice color is dendro.
-        ANEMO (str): The dice color is anemo.
-        OMNI (str): The dice color is omni.
+        CRYO (str): The die color is cryo.
+        HYDRO (str): The die color is hydro.
+        PYRO (str): The die color is pyro.
+        ELECTRO (str): The die color is electro.
+        GEO (str): The die color is geo.
+        DENDRO (str): The die color is dendro.
+        ANEMO (str): The die color is anemo.
+        OMNI (str): The die color is omni.
     """
     CRYO = 'CRYO'
     HYDRO = 'HYDRO'
@@ -69,21 +70,21 @@ class DiceColor(Enum):
         return self.value
 
 
-ELEMENT_TO_DICE_COLOR = {
-    ElementType.CRYO: DiceColor.CRYO,
-    ElementType.HYDRO: DiceColor.HYDRO,
-    ElementType.PYRO: DiceColor.PYRO,
-    ElementType.ELECTRO: DiceColor.ELECTRO,
-    ElementType.GEO: DiceColor.GEO,
-    ElementType.DENDRO: DiceColor.DENDRO,
-    ElementType.ANEMO: DiceColor.ANEMO,
+ELEMENT_TO_DIE_COLOR = {
+    ElementType.CRYO: DieColor.CRYO,
+    ElementType.HYDRO: DieColor.HYDRO,
+    ElementType.PYRO: DieColor.PYRO,
+    ElementType.ELECTRO: DieColor.ELECTRO,
+    ElementType.GEO: DieColor.GEO,
+    ElementType.DENDRO: DieColor.DENDRO,
+    ElementType.ANEMO: DieColor.ANEMO,
 }
-DICE_COLOR_TO_ELEMENT = {
-    DiceColor.CRYO: ElementType.CRYO,
-    DiceColor.HYDRO: ElementType.HYDRO,
-    DiceColor.PYRO: ElementType.PYRO,
-    DiceColor.ELECTRO: ElementType.ELECTRO,
-    DiceColor.GEO: ElementType.GEO,
-    DiceColor.DENDRO: ElementType.DENDRO,
-    DiceColor.ANEMO: ElementType.ANEMO,
+DIE_COLOR_TO_ELEMENT = {
+    DieColor.CRYO: ElementType.CRYO,
+    DieColor.HYDRO: ElementType.HYDRO,
+    DieColor.PYRO: ElementType.PYRO,
+    DieColor.ELECTRO: ElementType.ELECTRO,
+    DieColor.GEO: ElementType.GEO,
+    DieColor.DENDRO: ElementType.DENDRO,
+    DieColor.ANEMO: ElementType.ANEMO,
 }

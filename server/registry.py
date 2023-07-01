@@ -21,14 +21,14 @@ class ObjectSortRule(BaseModel):
             active player.
         max_charactor_number (int): The maximum number of charactors for one
             player.
-        front_charactor_ids (List[int]): The IDs of the front charactors.
+        active_charactor_ids (List[int]): The IDs of the active charactors.
         max_index_number (int): The maximum number of objects in one 
             region. Default is 100. It should larger than 
             `self.max_charactor_number`.
     """
     current_player_id: int
     max_charactor_number: int
-    front_charactor_ids: List[int]
+    active_charactor_ids: List[int]
     max_index_number: int = 100
 
     def sort_key(self, obj: Any) -> int:
@@ -40,7 +40,7 @@ class ObjectSortRule(BaseModel):
         represent the key. The rules are:
         1. objects is `self.current_player_id` or not.
         2. object belongs to charactor or not.
-            2.1. front charactor first, otherwise the default order.
+            2.1. active charactor first, otherwise the default order.
             2.2. for one charactor, order is weapon, artifact, talent, buff.
             2.3. for buff, order is their index in buff list, i.e. generated
                 time.
@@ -77,13 +77,13 @@ class ObjectSortRule(BaseModel):
         if obj.type in charactor_object_order:
             key.append(0)
 
-            # Rule 2.1: front charactor first, otherwise the default order.
-            front_charactor_id = self.front_charactor_ids[obj.charactor_id]
-            if obj.charactor_id == front_charactor_id:
+            # Rule 2.1: active charactor first, otherwise the default order.
+            active_charactor_id = self.active_charactor_ids[obj.charactor_id]
+            if obj.charactor_id == active_charactor_id:
                 key.append(0)
             else:
                 char_id = obj.charactor_id
-                if char_id < front_charactor_id:
+                if char_id < active_charactor_id:
                     char_id += 1
                 key.append(char_id)
 
@@ -102,7 +102,7 @@ class ObjectSortRule(BaseModel):
         # the list. If type is not in the list, it will put into last.
         other_object_order = [
             ObjectType.SUMMON, ObjectType.SUPPORT, ObjectType.HAND_CARD,
-            ObjectType.DICE, ObjectType.DECK_CARD
+            ObjectType.DIE, ObjectType.DECK_CARD
         ]
         if obj.type in other_object_order:
             key.append(other_object_order.index(obj.type))
