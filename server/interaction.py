@@ -2,23 +2,24 @@ from utils import BaseModel
 from typing import Literal, List
 from enum import Enum
 from .consts import DieColor
+from .modifiable_values import DiceCostValue
 
 
-class RequestType(Enum):
+class RequestActionType(Enum):
     """
-    Enum representing the type of a request.
+    Enum representing the action type of a request.
 
     Attributes:
         SYSTEM (str): The request is a system request, e.g. roll dice, choose
             active charactor, change cards. It should not be mixed with the 
             following types.
-        BATTLE (str): The request is a battle request, e.g. use skill, use
+        COMBAT (str): The request is a combat request, e.g. use skill, use
             talent card, switch charactor.
         QUICK (str): The request is a quick request, e.g. play a event card,
             switch charactor with Leave It To Me, attack with Wind and Freedom.
     """
     SYSTEM = 'SYSTEM'
-    BATTLE = 'BATTLE'
+    COMBAT = 'COMBAT'
     QUICK = 'QUICK'
 
     def __str__(self):
@@ -33,20 +34,20 @@ class RequestBase(BaseModel):
     Base class of request.
     """
     name: Literal['RequestBase'] = 'RequestBase'
-    type: RequestType
+    type: RequestActionType
     player_id: int
 
 
 class SwitchCardRequest(RequestBase):
     name: Literal['SwitchCardRequest'] = 'SwitchCardRequest'
-    type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
+    type: Literal[RequestActionType.SYSTEM] = RequestActionType.SYSTEM
     card_names: List[str]
     maximum_switch_number: int = 999
 
 
 class ChooseCharactorRequest(RequestBase):
     name: Literal['ChooseCharactorRequest'] = 'ChooseCharactorRequest'
-    type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
+    type: Literal[RequestActionType.SYSTEM] = RequestActionType.SYSTEM
     available_charactor_ids: List[int]
 
 
@@ -61,9 +62,39 @@ class RerollDiceRequest(RequestBase):
             times will decrease by 1. If it reaches 0, the request is removed.
     """
     name: Literal['RerollDiceRequest'] = 'RerollDiceRequest'
-    type: Literal[RequestType.SYSTEM] = RequestType.SYSTEM
+    type: Literal[RequestActionType.SYSTEM] = RequestActionType.SYSTEM
     colors: List[DieColor]
     reroll_times: int
+
+
+class SwitchCharactorRequest(RequestBase):
+    """
+    Request for switch charactor. It can be combat or quick request.
+    """
+    name: Literal['SwitchCharactorRequest'] = 'SwitchCharactorRequest'
+    type: Literal[RequestActionType.COMBAT, RequestActionType.QUICK]
+    active_charactor_id: int
+    candidate_charactor_ids: List[int]
+    dice_colors: List[DieColor]
+    cost: DiceCostValue
+
+
+class ElementalTuningRequest(RequestBase):
+    """
+    Request for elemental tuning.
+    """
+    name: Literal['ElementalTuningRequest'] = 'ElementalTuningRequest'
+    type: Literal[RequestActionType.QUICK] = RequestActionType.QUICK
+    dice_colors: List[DieColor]
+    card_ids: List[int]
+
+
+class DeclareRoundEndRequest(RequestBase):
+    """
+    Request for declare round end.
+    """
+    name: Literal['DeclareRoundEndRequest'] = 'DeclareRoundEndRequest'
+    type: Literal[RequestActionType.COMBAT] = RequestActionType.COMBAT
 
 
 class ResponseBase(BaseModel):
@@ -141,6 +172,45 @@ class RerollDiceResponse(ResponseBase):
         if min(self.reroll_dice_ids) < 0:
             return False
         return True
+
+
+class SwitchCharactorResponse(ResponseBase):
+    name: Literal['SwitchCharactorResponse'] = 'SwitchCharactorResponse'
+    request: SwitchCharactorRequest
+    charactor_id: int
+    cost_ids: List[int]
+
+    @property
+    def is_valid(self) -> bool:
+        """
+        Charactor is in the candidate charactors.
+        Cost matches the request.
+        """
+        if self.charactor_id not in self.request.candidate_charactor_ids:
+            return False
+        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
+        self.request.cost.is_valid(cost_colors)
+        return True
+
+
+class ElementalTuningResponse(ResponseBase):
+    name: Literal['ElementalTuningResponse'] = 'ElementalTuningResponse'
+    request: ElementalTuningRequest
+    die_color: DieColor  # TODO: use die id
+    card_id: int
+
+    @property
+    def is_valid(self) -> bool:
+        """
+        Check whether the response is valid.
+        """
+        return self.die_color in self.request.dice_colors \
+            and self.card_id in self.request.card_ids
+
+
+class DeclareRoundEndResponse(ResponseBase):
+    name: Literal['DeclareRoundEndResponse'] = 'DeclareRoundEndResponse'
+    request: DeclareRoundEndRequest
 
 
 Responses = (

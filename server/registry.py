@@ -4,10 +4,9 @@ from .action import Actions, ActionTypes
 from .modifiable_values import (
     ModifiableValueTypes, 
     ModifiableValues,
-    ModifiableValueArguments,
 )
 from .object_base import ObjectBase, ObjectType
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Literal
 from utils import BaseModel
 
 
@@ -187,7 +186,7 @@ class Registry:
                       sort_rule: ObjectSortRule
                       ) -> List[Actions]:
         """
-        Trigger events. It will return a list of actions that will be triggered
+        Trigger event. It will return a list of actions that will be triggered
         by the event. The actions will be sorted by the sort rule.
         """
         ret: List[Actions] = []
@@ -196,15 +195,37 @@ class Registry:
         for obj_id in triggers:
             logging.debug(f'Trigger event {event_arg.type} for '
                           f'{self._registry[obj_id].type}:{obj_id}.')
-            ...
+            ...  # TODO: trigger event
+        return ret
+
+    def trigger_events(self, event_args: List[EventArguments],
+                       sort_rule: ObjectSortRule
+                       ) -> List[Actions]:
+        """
+        Trigger events. It will return a list of actions that will be triggered
+        by the events. The order of actions is the same as the order of events.
+        For one event, the actions will be sorted by the sort rule.
+        """
+        ret: List[Actions] = []
+        for event_arg in event_args:
+            ret.extend(self.trigger_event(event_arg, sort_rule))
         return ret
 
     def modify_value(self, value: ModifiableValues, 
                      sort_rule: ObjectSortRule,
-                     modify_arg: ModifiableValueArguments) -> None:
+                     mode: Literal['test', 'real'],
+                     ) -> None:
         """
         Modify values. It will directly modify the value argument.
-        TODO: move arguments of ModifierValueArguments into ModifierValues.
+        Args:
+            value (ModifiableValues): The value to be modified. It contains 
+                value itself and all necessary information to modify the value.
+            sort_rule (ObjectSortRule): The sort rule used to sort objects.
+            mode (Literal['test', 'real']): If 'test', objects will only modify
+                the value but not updating inner state, which is used to 
+                calculate costs used in requests. If 'real', it will modify 
+                the value and update inner state, which means the request
+                related to the value is executed.
         """
         modifiers = self.value_modifiers[value.type]
         modifiers.sort(key = lambda x: sort_rule.sort_key(x))

@@ -4,11 +4,16 @@ from .consts import DieColor
 from .action import (
     Actions, 
     ActionTypes, 
+    ActionBase,
     DrawCardAction,
     RestoreCardAction,
+    RemoveCardAction,
     ChooseCharactorAction,
     CreateDiceAction,
     RemoveDiceAction,
+    DeclareRoundEndAction,
+    CombatActionAction,
+    SwitchCharactorAction,
 )
 
 
@@ -41,6 +46,15 @@ class RestoreCardEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.RESTORE_CARD] = ActionTypes.RESTORE_CARD
     action: RestoreCardAction
     card_names: List[str]
+
+
+class RemoveCardEventArguments(EventArgumentsBase):
+    """
+    Event arguments for remove card event.
+    """
+    type: Literal[ActionTypes.REMOVE_CARD] = ActionTypes.REMOVE_CARD
+    action: RemoveCardAction
+    card_name: str
 
 
 class ChooseCharactorEventArguments(EventArgumentsBase):
@@ -81,7 +95,57 @@ class RemoveDiceEventArguments(EventArgumentsBase):
     colors_removed: List[DieColor]
 
 
-EventArguments = EventArgumentsBase | DrawCardEventArguments
+class RoundPrepareEventArguments(EventArgumentsBase):
+    """
+    Event arguments for round prepare event. This event is triggered 
+    by the system when a new round starts, so it does not have an action.
+
+    Args:
+        player_go_first (int): The ID of the player who goes first.
+        round (int): The number of the round.
+        dice_colors (List[List[DiceColor]]): The colors of the dice of each
+            player.
+    """
+    type: Literal[ActionTypes.ROUND_PREPARE] = ActionTypes.ROUND_PREPARE
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY, object_id = -1)
+    player_go_first: int
+    round: int
+    dice_colors: List[List[DieColor]]
+
+
+class DeclareRoundEndEventArguments(EventArgumentsBase):
+    """
+    Event arguments for declare round end event. This event is triggered 
+    by the system when a player declares the end of the round, so it does 
+    not have an action.
+    """
+    type: Literal[ActionTypes.DECLARE_ROUND_END] = \
+        ActionTypes.DECLARE_ROUND_END
+    action: DeclareRoundEndAction
+
+
+class CombatActionEventArguments(EventArgumentsBase):
+    """
+    Event arguments for combat action event.
+    """
+    type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
+    action: CombatActionAction
+
+
+class SwitchCharactorEventArguments(EventArgumentsBase):
+    """
+    Event arguments for switch charactor event.
+    """
+    type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
+    action: SwitchCharactorAction
+    last_active_charactor_id: int
+
+
+EventArguments = (
+    EventArgumentsBase | DrawCardEventArguments | RestoreCardEventArguments
+    | ChooseCharactorEventArguments | CreateDiceEventArguments
+    | RemoveDiceEventArguments | RoundPrepareEventArguments
+)
 
 # TODO: combine arguments of events and actions.
 # interactions和event&action的参数独立，event是action超集包含了额外的信息，

@@ -2,8 +2,11 @@ from enum import Enum
 from utils import BaseModel
 from typing import Literal, List
 from .interaction import (
+    Responses,
     ChooseCharactorResponse,
     RerollDiceResponse,
+    DeclareRoundEndResponse,
+    SwitchCharactorResponse,
 )
 from .consts import DieColor
 
@@ -12,11 +15,15 @@ class ActionTypes(Enum):
     EMPTY = 'EMPTY'
     DRAW_CARD = 'DRAW_CARD'
     RESTORE_CARD = 'RESTORE_CARD'
+    REMOVE_CARD = 'REMOVE_CARD'
     CHOOSE_CHARACTOR = 'CHOOSE_CHARACTOR'
     CREATE_DICE = 'CREATE_DICE'
     REMOVE_DICE = 'REMOVE_DICE'
+    DECLARE_ROUND_END = 'DECLARE_ROUND_END'
+    COMBAT_ACTION = 'COMBAT_ACTION'
+    SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
 
-    # system actions
+    # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
 
 
@@ -50,6 +57,17 @@ class RestoreCardAction(ActionBase):
     type: Literal[ActionTypes.RESTORE_CARD] = ActionTypes.RESTORE_CARD
     player_id: int
     card_ids: List[int]
+
+
+class RemoveCardAction(ActionBase):
+    """
+    Action for removing cards.
+    """
+    type: Literal[ActionTypes.REMOVE_CARD] = ActionTypes.REMOVE_CARD
+    player_id: int
+    card_id: int
+    card_position: Literal['HAND', 'DECK']
+    remove_type: Literal['USED', 'BURNED']
 
 
 class ChooseCharactorAction(ActionBase):
@@ -114,6 +132,63 @@ class RemoveDiceAction(ActionBase):
             object_id = -1,
             player_id = response.player_id,
             dice_ids = response.reroll_dice_ids,
+        )
+
+
+class DeclareRoundEndAction(ActionBase):
+    """
+    Action for declaring the end of the round.
+    """
+    type: Literal[ActionTypes.DECLARE_ROUND_END] = \
+        ActionTypes.DECLARE_ROUND_END
+    player_id: int
+
+    @classmethod
+    def from_response(cls, response: DeclareRoundEndResponse):
+        """
+        Generate DeclareRoundEndAction from DeclareRoundEndResponse.
+        """
+        return cls(
+            object_id = -1,
+            player_id = response.player_id,
+        )
+
+
+class CombatActionAction(ActionBase):
+    """
+    Action for combat.
+    """
+    type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
+    player_id: int
+
+    @classmethod
+    def from_response(cls, response: Responses):
+        """
+        Generate CombatActionAction from Responses.
+        """
+        return cls(
+            object_id = -1,
+            player_id = response.player_id,
+        )
+
+
+class SwitchCharactorAction(ActionBase):
+    """
+    Action for switching charactor.
+    """
+    type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
+    player_id: int
+    charactor_id: int
+
+    @classmethod
+    def from_response(cls, response: SwitchCharactorResponse):
+        """
+        Generate SwitchCharactorAction from SwitchCharactorResponse.
+        """
+        return cls(
+            object_id = -1,
+            player_id = response.player_id,
+            charactor_id = response.charactor_id,
         )
 
 

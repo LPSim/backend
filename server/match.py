@@ -11,28 +11,41 @@ from .action import (
     Actions, 
     DrawCardAction,
     RestoreCardAction,
+    RemoveCardAction,
     ChooseCharactorAction,
     CreateDiceAction,
     RemoveDiceAction,
+    DeclareRoundEndAction,
+    CombatActionAction,
+    SwitchCharactorAction,
 )
 from .registry import Registry, ObjectSortRule
 from .interaction import (
-    Requests, Responses, 
+    Requests, Responses, RequestActionType,
     SwitchCardRequest, SwitchCardResponse,
     ChooseCharactorRequest, ChooseCharactorResponse,
     RerollDiceRequest, RerollDiceResponse,
+    SwitchCharactorRequest, SwitchCharactorResponse,
+    ElementalTuningRequest, ElementalTuningResponse,
+    DeclareRoundEndRequest, DeclareRoundEndResponse,
 )
-from .consts import DieColor
+from .consts import DieColor, ELEMENT_TO_DIE_COLOR
 from .die import Die
 from .event import (
+    EventArguments,
     DrawCardEventArguments, 
     RestoreCardEventArguments, 
+    RemoveCardEventArguments,
     ChooseCharactorEventArguments,
     CreateDiceEventArguments,
     RemoveDiceEventArguments,
+    RoundPrepareEventArguments,
+    DeclareRoundEndEventArguments,
+    CombatActionEventArguments,
+    SwitchCharactorEventArguments,
 )
 from .modifiable_values import (
-    RerollValue, RerollValueArguments,
+    RerollValue, DiceCostValue,
 )
 
 
@@ -54,11 +67,13 @@ class MatchState(str, Enum):
         ROUND_START (str): A new round is starting.
         ROUND_ROLL_DICE (str): Waiting for players to re-roll dice.
         ROUND_PREPARING (str): Preparing phase starts.
-        PLAYER_ACTION_START (str): Player is deciding its action.
+        PLAYER_ACTION_START (str): Player action phase start.
+        PLAYER_ACTION_REQUEST (str): Waiting for response from player.
         PLAYER_ACTION_ACT (str): After player has decided its action, the 
             action is being executed. Execution may be interrupted by requests,
             e.g. someone is knocked out, need to re-roll dice.
         ROUND_ENDING (str): Ending phase starts.
+        ROUND_ENDED (str): The round has ended.
         ENDED (str): The match has ended.
     """
     INVALID = 'INVALID'
@@ -74,9 +89,11 @@ class MatchState(str, Enum):
     ROUND_PREPARING = 'ROUND_PREPARING'
 
     PLAYER_ACTION_START = 'PLAYER_ACTION_START'
+    PLAYER_ACTION_REQUEST = 'PLAYER_ACTION_REQUEST'
     PLAYER_ACTION_ACT = 'PLAYER_ACTION_ACT'
 
     ROUND_ENDING = 'ROUND_ENDING'
+    ROUND_ENDED = 'ROUND_ENDED'
 
     ENDED = 'ENDED'
 
@@ -140,7 +157,7 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
-    action_queue: List[List[Actions]] = []
+    action_queues: List[List[Actions]] = []
     requests: List[Requests] = []
 
     # registry, all objects on PlayerTable will be registered. it will update
@@ -266,16 +283,13 @@ class Match(BaseModel):
                 player_table.table_deck.append(card_copy)
             self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
-            event_args = self._action_draw_card(DrawCardAction(
+            event_args = self._act(DrawCardAction(
                 object_id = -1,
                 player_id = pnum, 
                 number = self.match_config.initial_hand_size
             ))
-            triggered_actions: List[Actions] = []
-            for event_arg in event_args:
-                actions = self._registry.trigger_event(
-                    event_arg, self._get_sort_rule())
-                triggered_actions.extend(actions)
+            triggered_actions = self._registry.trigger_events(
+                event_args, self._get_sort_rule())
             if triggered_actions:
                 logging.error('Initial draw card should not trigger actions.')
                 self._set_match_state(MatchState.ERROR)
@@ -301,8 +315,9 @@ class Match(BaseModel):
                 logging.info('There are still requests not responded.')
                 return False
             # check if action is needed
-            if len(self.action_queue) != 0:
+            if len(self.action_queues) != 0:
                 self._next_action()
+                continue
             # all response and action are cleared, start state transition
             if self.match_state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
@@ -319,6 +334,18 @@ class Match(BaseModel):
             elif self.match_state == MatchState.ROUND_PREPARING:
                 self._set_match_state(MatchState.PLAYER_ACTION_START)
                 self._player_action_start()
+            elif self.match_state == MatchState.PLAYER_ACTION_START:
+                self._set_match_state(MatchState.PLAYER_ACTION_REQUEST)
+                self._player_action_request()
+            elif self.match_state == MatchState.PLAYER_ACTION_REQUEST:
+                # request responded and all action clear
+                self._player_action_end()
+            elif self.match_state == MatchState.ROUND_ENDING:
+                self._set_match_state(MatchState.ROUND_ENDED)
+                self._round_ending()
+            elif self.match_state == MatchState.ROUND_ENDED:
+                self._set_match_state(MatchState.ROUND_START)
+                self._round_start()
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
@@ -344,7 +371,7 @@ class Match(BaseModel):
         related to him and respond one of them. Different requests will use
         different respond function to deal with, and remove requests that do
         not need to respond or have responded. If all requests have been
-        removed, it will call `self.step` to continue simulation.
+        removed, call `self.step()` manually to continue simulation. 
 
         Returns:
             bool: True if success, False if error occurs.
@@ -361,31 +388,50 @@ class Match(BaseModel):
         if not self.check_request_exist(response.request):
             logging.error('Request does not exist.')
             return False
-        if self.match_state == MatchState.STARTING_CARD_SWITCH:
-            if isinstance(response, SwitchCardResponse):
-                self._respond_switch_card(response)
-            else:
-                logging.error('Match is waiting for switch card response.')
-        elif self.match_state == MatchState.STARTING_CHOOSE_CHARACTOR:
-            if isinstance(response, ChooseCharactorResponse):
-                self._respond_choose_charactor(response)
-            else:
-                logging.error('Match is waiting for choose charactor '
-                              'response.')
-        elif self.match_state == MatchState.ROUND_ROLL_DICE:
-            if isinstance(response, RerollDiceResponse):
-                self._respond_reroll_dice(response)
-            else:
-                logging.error('Match is waiting for reroll dice response.')
+        # call different respond functions based on the type of response
+        if isinstance(response, SwitchCharactorResponse):
+            self._respond_switch_charactor(response)
+        elif isinstance(response, ElementalTuningResponse):
+            self._respond_elemental_tuning(response)
+        elif isinstance(response, DeclareRoundEndResponse):
+            self._respond_declare_round_end(response)
+        # elif isinstance(response, UseSkillResponse):
+        #     self._respond_use_skill(response)
+        # elif isinstance(response, UseCardResponse):
+        #     self._respond_use_card(response)
+        elif isinstance(response, SwitchCardResponse):
+            self._respond_switch_card(response)
+        elif isinstance(response, ChooseCharactorResponse):
+            self._respond_choose_charactor(response)
+        elif isinstance(response, RerollDiceResponse):
+            self._respond_reroll_dice(response)
         else:
-            raise NotImplementedError(
-                f'Response to match state {self.match_state} not implemented.'
-            )
-
+            logging.error(f'Response type {type(response)} not recognized.')
+            return False
         return True
 
     def _next_action(self):
-        raise NotImplementedError()
+        """
+        Do one action in `self._action_queue`. It will pick the first action in
+        the last action queue, do it, and trigger events. if events have
+        triggered new actions, they will be added as a new action queue.
+        """
+        # pop empty action queue
+        while len(self.action_queues):
+            if len(self.action_queues[-1]) == 0:
+                self.action_queues.pop()
+            else:
+                break
+        # if no action queue remain, return
+        if len(self.action_queues) == 0:
+            return
+        activated_action = self.action_queues[-1].pop(0)
+        logging.info(f'Action activated: {activated_action}')
+        event_args = self._act(activated_action)
+        triggered_actions = self._registry.trigger_events(
+            event_args, self._get_sort_rule())
+        if triggered_actions:
+            self.action_queues.append(triggered_actions)
 
     def _round_start(self):
         """
@@ -393,26 +439,24 @@ class Match(BaseModel):
         and asking players to reroll dice.
 
         # TODO: implement locking dice colors like Jade Chamber.
+        # TODO: send round start event.
         """
         for pnum, player_table in enumerate(self.player_tables):
             for dice in player_table.dice:
                 self._registry.unregister(dice)
             player_table.dice.clear()
         # generate new dice
-        event_args = []
+        event_args: List[EventArguments] = []
         for pnum, player_table in enumerate(self.player_tables):
-            one_event_args = self._action_create_dice(CreateDiceAction(
+            one_event_args = self._act(CreateDiceAction(
                 object_id = -1,
                 player_id = pnum,
                 number = self.match_config.initial_dice_number,
                 random = True
             ))
             event_args += one_event_args
-        triggered_actions: List[Actions] = []
-        for event_arg in event_args:
-            actions = self._registry.trigger_event(
-                event_arg, self._get_sort_rule())
-            triggered_actions.extend(actions)
+        triggered_actions = self._registry.trigger_events(
+            event_args, self._get_sort_rule())
         if len(triggered_actions) != 0:
             logging.error('Create dice should not trigger actions.')
             self._set_match_state(MatchState.ERROR)
@@ -421,11 +465,14 @@ class Match(BaseModel):
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
             reroll_times = self.match_config.initial_dice_reroll_times
-            reroll_value = RerollValue(value = reroll_times)
+            reroll_value = RerollValue(
+                value = reroll_times,
+                player_id = pnum,
+            )
             self._registry.modify_value(
                 reroll_value, 
                 self._get_sort_rule(),
-                RerollValueArguments(player_id = pnum),
+                mode = 'real',
             )
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
@@ -434,23 +481,76 @@ class Match(BaseModel):
         """
         Activate round_prepare event, and add to actions.
         """
+        event_arg = RoundPrepareEventArguments(
+            player_go_first = self.current_player,
+            round = self.round_number,
+            dice_colors = [
+                [dice.color for dice in table.dice]
+                for table in self.player_tables
+            ],
+        )
+        actions = self._registry.trigger_event(event_arg, 
+                                               self._get_sort_rule())
+        logging.info(f'In round prepare, {len(actions)} actions triggered.')
+        self.action_queues.append(actions)
 
     def _player_action_start(self):
         """
-        Start player action. Will generate requests of available actions
+        Start a player's action phase. Will generate action phase start event.  
+        TODO generate event
+        """
+        not_all_declare_end = False
+        for table in self.player_tables:
+            if not table.has_round_ended:
+                not_all_declare_end = True
+                break
+        if not not_all_declare_end:
+            # all declare ended, go to round ending
+            self._set_match_state(MatchState.ROUND_ENDING)
+            return
+
+    def _player_action_request(self):
+        """
+        Will generate requests of available actions
         of the player. There will be the following actions:
         1. Use Skill: Pay the relevant cost and use your active character's 
             Skill(s).
-        Switch Characters: Pay 1 Elemental Die of your choice to switch your 
+        2. Switch Characters: Pay 1 Elemental Die of your choice to switch your 
             active character.
-        Play Card: Pay the relevant cost and play card(s) from your Hand.
-        Elemental Tuning: Discard a card from your Hand and change the 
+        3. Play Card: Pay the relevant cost and play card(s) from your Hand.
+        4. Elemental Tuning: Discard a card from your Hand and change the 
             Elemental Type of 1 of your Elemental Die which Elemental Type
             does not match your active character's Elemental Type, and also
             not Omni.
-        Declare Round End: End your actions for this Round. The first player 
+        5. Declare Round End: End your actions for this Round. The first player 
             to declare the end of their Round will go first during the next 
             Round.
+        """
+        self._request_switch_charactor(self.current_player)
+        self._request_elemental_tuning(self.current_player)
+        self._request_declare_round_end(self.current_player)
+        self._request_use_skill(self.current_player)
+        self._request_use_card(self.current_player)
+
+    def _player_action_end(self):
+        """
+        End a player's action phase. Will check status and go to proper state.
+        """
+        all_declare_end = True
+        for table in self.player_tables:
+            if not table.has_round_ended:
+                all_declare_end = False
+                break
+        if all_declare_end:
+            # all declare ended, go to round ending
+            self._set_match_state(MatchState.ROUND_ENDING)
+        else:
+            # not all declare ended, go to next action
+            self._set_match_state(MatchState.PLAYER_ACTION_START)
+
+    def _round_ending(self):
+        """
+        End a round. Will send round end event, collect actions.
         """
 
     """
@@ -486,6 +586,79 @@ class Match(BaseModel):
             reroll_times = reroll_number
         ))
 
+    def _request_switch_charactor(self, player_id: int):
+        """
+        Generate switch charactor requests.
+        TODO: With Leave It to Me, it can be a quick action.
+        """
+        table = self.player_tables[player_id]
+        dice_cost = DiceCostValue(same_dice_number = 1)
+        self._registry.modify_value(dice_cost, self._get_sort_rule(), 
+                                    mode = 'test')
+        if not dice_cost.is_valid(
+            dice_colors = [die.color for die in table.dice],
+            strict = False,
+        ):
+            return
+        candidate_charactor_ids = [
+            x for x in range(len(table.charactors))
+            if x != table.active_charactor_id 
+            and not table.charactors[x].is_defeated
+        ]
+        if len(candidate_charactor_ids):
+            self.requests.append(SwitchCharactorRequest(
+                player_id = player_id,
+                type = RequestActionType.COMBAT,  # TODO currently only combat
+                active_charactor_id = table.active_charactor_id,
+                candidate_charactor_ids = candidate_charactor_ids,
+                dice_colors = [die.color for die in table.dice],
+                cost = dice_cost,
+            ))
+
+    def _request_elemental_tuning(self, player_id: int):
+        table = self.player_tables[player_id]
+        target_color = ELEMENT_TO_DIE_COLOR[
+            table.charactors[table.active_charactor_id].element
+        ]
+        available_dice_colors = [
+            dice.color for dice in table.dice
+            if dice.color != target_color and dice.color != DieColor.OMNI
+        ]
+        available_card_ids = list(range(len(table.hands)))
+        if len(available_dice_colors) and len(available_card_ids):
+            self.requests.append(ElementalTuningRequest(
+                player_id = player_id,
+                dice_colors = available_dice_colors,
+                card_ids = available_card_ids
+            ))
+
+    def _request_declare_round_end(self, player_id: int):
+        self.requests.append(DeclareRoundEndRequest(
+            player_id = player_id
+        ))
+
+    def _request_use_skill(self, player_id: int):
+        """
+        table = self.player_tables[player_id]
+        if table.charactors[table.active_charactor_id].skill:
+            self.requests.append(UseSkillRequest(
+                player_id = player_id
+            ))
+        """
+        ...
+
+    def _request_use_card(self, player_id: int):
+        """
+        table = self.player_tables[player_id]
+        available_card_ids = list(range(len(table.hands)))
+        if len(available_card_ids):
+            self.requests.append(UseCardRequest(
+                player_id = player_id,
+                card_ids = available_card_ids
+            ))
+        """
+        ...
+
     """
     Response functions. To deal with specific responses.
     """
@@ -500,30 +673,28 @@ class Match(BaseModel):
             card_name_dict[card_name] += 1
         card_hand_ids = []
         card_hand_names = [x.name for x in self.player_tables[
-            response.request.player_id].hands]
+            response.player_id].hands]
         for card_name, count in card_name_dict.items():
             start_idx = -1
             for _ in range(count):
                 next_idx = card_hand_names.index(card_name, start_idx + 1)
                 card_hand_ids.append(next_idx)
                 start_idx = next_idx
-        event_args = self._action_restore_card(RestoreCardAction(
+        event_args: List[EventArguments] = []
+        event_args += self._act(RestoreCardAction(
             object_id = -1,
-            player_id = response.request.player_id,
+            player_id = response.player_id,
             card_ids = card_hand_ids
         ))
-        event_args += self._action_draw_card(
+        event_args += self._act(
             DrawCardAction(
                 object_id = -1,
-                player_id = response.request.player_id,
+                player_id = response.player_id,
                 number = len(response.card_ids)
             )
         )
-        triggered_actions: List[Actions] = []
-        for event_arg in event_args:
-            actions = self._registry.trigger_event(
-                event_arg, self._get_sort_rule())
-            triggered_actions.extend(actions)
+        triggered_actions = self._registry.trigger_events(
+            event_args, self._get_sort_rule())
         if triggered_actions:
             logging.error('Initial switch card should not trigger '
                           'actions.')
@@ -532,30 +703,27 @@ class Match(BaseModel):
         # remove related requests
         self.requests = [
             req for req in self.requests
-            if req.player_id != response.request.player_id
+            if req.player_id != response.player_id
         ]
 
     def _respond_choose_charactor(self, response: ChooseCharactorResponse):
-        event_args = self._action_choose_charactor(
+        event_args = self._act(
             ChooseCharactorAction.from_response(response)
         )
-        triggered_actions: List[Actions] = []
-        for event_arg in event_args:
-            actions = self._registry.trigger_event(
-                event_arg, self._get_sort_rule())
-            triggered_actions.extend(actions)
+        triggered_actions = self._registry.trigger_events(
+            event_args, self._get_sort_rule())
         if len(triggered_actions) > 0:
-            if len(self.action_queue) != 0:
+            if len(self.action_queues) != 0:
                 # already has actions in queue, append new actions
                 # TODO extend or stack?
-                self.action_queue[0].extend(triggered_actions)
+                self.action_queues[0].extend(triggered_actions)
             else:
                 # no actions in queue, append new actions
-                self.action_queue.append(triggered_actions)
+                self.action_queues.append(triggered_actions)
         # remove related requests
         self.requests = [
             req for req in self.requests
-            if req.player_id != response.request.player_id
+            if req.player_id != response.player_id
         ]
 
     def _respond_reroll_dice(self, response: RerollDiceResponse):
@@ -579,7 +747,7 @@ class Match(BaseModel):
             return
         event_args = self._action_create_dice(CreateDiceAction(
             object_id = -1,
-            player_id = response.request.player_id,
+            player_id = response.player_id,
             number = len(response.reroll_dice_ids),
             random = True,
         ))
@@ -588,27 +756,144 @@ class Match(BaseModel):
                 event_arg, self._get_sort_rule())
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
-            if len(self.action_queue) != 0:
+            if len(self.action_queues) != 0:
                 # already has actions in queue, append new actions
                 # TODO extend or stack?
-                self.action_queue[0].extend(triggered_actions)
+                self.action_queues[0].extend(triggered_actions)
             else:
                 # no actions in queue, append new actions
-                self.action_queue.append(triggered_actions)
+                self.action_queues.append(triggered_actions)
         # modify request
         for num, req in enumerate(self.requests):
             if isinstance(req, RerollDiceRequest):
-                if req.player_id == response.request.player_id:
+                if req.player_id == response.player_id:
                     if req.reroll_times > 1:
                         req.reroll_times -= 1
                     else:
                         self.requests.pop(num)
                     break
 
+    def _respond_switch_charactor(self, response: SwitchCharactorResponse):
+        """
+        Deal with switch charactor response. If it is combat action, add
+        combat action to action queue. Remove related requests.
+        """
+        actions: List[Actions] = []
+        cost_ids = response.cost_ids
+        if len(cost_ids):
+            actions.append(RemoveDiceAction(
+                object_id = -1,
+                player_id = response.player_id,
+                dice_ids = cost_ids,
+            ))
+        self._registry.modify_value(
+            value = response.request.cost.original_value,
+            sort_rule = self._get_sort_rule(),
+            mode = 'real'
+        )  # TODO: should use original value. need test.
+        actions.append(SwitchCharactorAction.from_response(response))
+        if response.request.type == RequestActionType.COMBAT:
+            actions.append(CombatActionAction(
+                object_id = -1,
+                player_id = response.player_id,
+            ))
+        self.action_queues.append(actions)
+        self.requests = [x for x in self.requests
+                         if x.player_id != response.player_id]
+
+    def _respond_elemental_tuning(self, response: ElementalTuningResponse):
+        """
+        Deal with elemental tuning response. It is splitted into 3 actions,
+        remove one hand card, remove one die, and add one die.
+        """
+        color = response.die_color
+        table = self.player_tables[response.player_id]
+        die_id = [die.color for die in table.dice].index(color)
+        actions: List[Actions] = []
+        actions.append(RemoveCardAction(
+            object_id = -1,
+            player_id = response.player_id,
+            card_id = response.card_id,
+            card_position = 'HAND',
+            remove_type = 'BURNED'
+        ))
+        actions.append(RemoveDiceAction(
+            object_id = -1,
+            player_id = response.player_id,
+            dice_ids = [die_id]
+        ))
+        actions.append(CreateDiceAction(
+            object_id = -1,
+            player_id = response.player_id,
+            number = 1,
+            color = ELEMENT_TO_DIE_COLOR[
+                table.charactors[table.active_charactor_id].element]
+        ))
+        self.action_queues.append(actions)
+        self.requests = [x for x in self.requests
+                         if x.player_id != response.player_id]
+
+    def _respond_declare_round_end(self, response: DeclareRoundEndResponse):
+        """
+        Deal with declare round end response. It is splitted into 2 actions,
+        declare round end and combat action.
+        """
+        actions: List[Actions] = []
+        actions.append(DeclareRoundEndAction.from_response(response))
+        actions.append(CombatActionAction(
+            object_id = -1,
+            player_id = response.player_id,
+        ))
+        self.action_queues.append(actions)
+        self.requests = [x for x in self.requests
+                         if x.player_id != response.player_id]
+
+    def _respond_use_skill(self, response: Responses):
+        ...
+
+    def _respond_use_card(self, response: Responses):
+        ...
+
     """
-    Action functions. An actions function takes Action as input, do 
-    changes of the game table, and return a list of triggered events.
+    Action Functions
     """
+
+    def _act(self, action: Actions) -> List[EventArguments]:
+        """
+        Act an action. It will call corresponding action function based on
+        the type of the action.
+
+        Action functions take Action as input, do 
+        changes of the game table, and return a list of triggered events.
+        In most case, the list should contain exactly one event argument,
+        however we use list to make it compatible with future changes.
+
+        Returns:
+            A list of triggered event arguments. We wrap the returned event 
+            arguments of action functions in a list to avoid error from linter.
+        """
+        if isinstance(action, ChooseCharactorAction):
+            return list(self._action_choose_charactor(action))
+        elif isinstance(action, CreateDiceAction):
+            return list(self._action_create_dice(action))
+        elif isinstance(action, RemoveDiceAction):
+            return list(self._action_remove_dice(action))
+        elif isinstance(action, RestoreCardAction):
+            return list(self._action_restore_card(action))
+        elif isinstance(action, DrawCardAction):
+            return list(self._action_draw_card(action))
+        elif isinstance(action, RemoveCardAction):
+            return list(self._action_remove_card(action))
+        elif isinstance(action, SwitchCharactorAction):
+            return list(self._action_switch_charactor(action))
+        elif isinstance(action, DeclareRoundEndAction):
+            return list(self._action_declare_round_end(action))
+        elif isinstance(action, CombatActionAction):
+            return list(self._action_combat_action(action))
+        else:
+            logging.error(f'Unknown action {action}.')
+            self._set_match_state(MatchState.ERROR)
+            return []
 
     def _action_draw_card(
             self, 
@@ -648,9 +933,6 @@ class Match(BaseModel):
         card_ids = action.card_ids[:]
         card_ids.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cid].name for cid in card_ids]
-        # all_card_names = [card.name for card in table.hands]
-        # card_id = [all_card_names.index(card_name) for card_name in card_ids]
-        # card_id.sort(reverse = True)  # reverse order to avoid index error
         for cid in card_ids:
             table.table_deck.append(table.hands[cid])
             table.hands = table.hands[:cid] + table.hands[cid + 1:]
@@ -662,6 +944,34 @@ class Match(BaseModel):
         event_arg = RestoreCardEventArguments(
             action = action,
             card_names = card_names
+        )
+        return [event_arg]
+
+    def _action_remove_card(self, action: RemoveCardAction) \
+            -> List[RemoveCardEventArguments]:
+        player_id = action.player_id
+        card_position = action.card_position
+        remove_type = action.remove_type  # used or burned (Keqing, EleTuning)
+        table = self.player_tables[player_id]
+        if card_position == 'HAND':
+            card = table.hands.pop(action.card_id)
+            self._registry.unregister(card)
+        elif card_position == 'DECK':
+            card = table.table_deck.pop(action.card_id)
+            self._registry.unregister(card)
+        else:
+            logging.error(f'Unknown card position {card_position}.')
+            self._set_match_state(MatchState.ERROR)
+            return []
+        logging.info(
+            f'Remove hand card action, player {player_id}, '
+            f'card position {card_position}, '
+            f'card name {card.name}, '
+            f'remove type {remove_type}.'
+        )
+        event_arg = RemoveCardEventArguments(
+            action = action,
+            card_name = card.name
         )
         return [event_arg]
 
@@ -775,4 +1085,57 @@ class Match(BaseModel):
         return [RemoveDiceEventArguments(
             action = action,
             colors_removed = [die.color for die in removed_dice]
+        )]
+
+    def _action_declare_round_end(self, action: DeclareRoundEndAction) \
+            -> List[DeclareRoundEndEventArguments]:
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        logging.info(
+            f'Declare round end action, player {player_id}.'
+        )
+        table.has_round_ended = True
+        return [DeclareRoundEndEventArguments(
+            action = action
+        )]
+
+    def _action_combat_action(self, action: CombatActionAction) \
+            -> List[CombatActionEventArguments]:
+        player_id = action.player_id
+        if self.player_tables[1 - player_id].has_round_ended and \
+                not self.player_tables[player_id].has_round_ended:
+            # the other player has declared round end and current player not, 
+            # do not change current player.
+            pass
+        else:
+            # change current player. If no player has declared round end,
+            # the current player will be changed to the other player.
+            # Otherwise, two players all declared round end, the other player
+            # goes first in the next round.
+            self.current_player = 1 - player_id
+        logging.info(
+            f'player {player_id} did a combat action, current player '
+            f'is {self.current_player}.'
+        )
+        return [CombatActionEventArguments(
+            action = action
+        )]
+
+    def _action_switch_charactor(self, action: SwitchCharactorAction) \
+            -> List[SwitchCharactorEventArguments]:
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        current_active_id = table.active_charactor_id
+        current_active_name = table.charactors[current_active_id].name
+        charactor_id = action.charactor_id
+        charactor_name = table.charactors[charactor_id].name
+        logging.info(
+            f'player {player_id} '
+            f'from charactor {current_active_name}:{current_active_id} '
+            f'switched to charactor {charactor_name}:{charactor_id}.'
+        )
+        table.active_charactor_id = charactor_id
+        return [SwitchCharactorEventArguments(
+            action = action,
+            last_active_charactor_id = current_active_id,
         )]
