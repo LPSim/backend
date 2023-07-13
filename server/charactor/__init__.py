@@ -1,4 +1,5 @@
-from .charactor_base import CharactorBase
+from .mob import Mob
+from .physical_mob import PhysicalMob
 
 
-Charactors = CharactorBase | CharactorBase
+Charactors = Mob | PhysicalMob

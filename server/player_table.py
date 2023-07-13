@@ -3,12 +3,12 @@ from typing import Literal, List
 from resources.consts import CharactorIcons
 from .consts import DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER
 from .deck import Deck
-from .charactor import Charactors
 from .card import Cards
 from .die import Die
 from .summon import Summons
 from .support import Supports
-from .buff import Buffs
+from .charactor import Charactors
+from .status import TeamStatus
 
 
 class PlayerTable(BaseModel):
@@ -26,7 +26,7 @@ class PlayerTable(BaseModel):
         has_round_ended (bool): Whether the player has declared that the
             round has ended.
         dice (List[Dice]): The list of dice on the table.
-        team_buffs (List[Buffs]): The list of buffs applied to the team.
+        team_status (List[Buffs]): The list of status applied to the team.
         charactors (List[Charactors]): The list of characters on the table.
         summons (List[Summons]): The list of summons on the table.
         supports (List[Supports]): The list of supports on the table.
@@ -44,7 +44,7 @@ class PlayerTable(BaseModel):
     active_charactor_id: int = -1
     has_round_ended: bool = False
     dice: List[Die] = []
-    team_buffs: List[Buffs] = []
+    team_status: List[TeamStatus] = []
     charactors: List[Charactors] = []
     summons: List[Summons] = []
     supports: List[Supports] = []
@@ -77,3 +77,12 @@ class PlayerTable(BaseModel):
         """
         order = self.dice_color_order()
         self.dice.sort(key=lambda x: order.index(x.color))
+
+    def dice_colors_to_dice_ids(self):
+        """
+        Returns a dictionary mapping dice colors to dice IDs.
+        """
+        result = {}
+        for i, die in enumerate(self.dice):
+            result[die.color] = i
+        return result

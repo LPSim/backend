@@ -4,14 +4,8 @@ from enum import Enum
 class ElementType(Enum):
     """
     Enum representing the type of an element.
-
-    Attributes:
-        FIRE (str): The element is fire.
-        WATER (str): The element is water.
-        WOOD (str): The element is wood.
-        LIGHT (str): The element is light.
-        DARK (str): The element is dark.
     """
+    NONE = 'NONE'
     CRYO = 'CRYO'
     HYDRO = 'HYDRO'
     PYRO = 'PYRO'
@@ -88,3 +82,125 @@ DIE_COLOR_TO_ELEMENT = {
     DieColor.DENDRO: ElementType.DENDRO,
     DieColor.ANEMO: ElementType.ANEMO,
 }
+
+
+class DamageType(Enum):
+    """
+    Enum representing the type of a damage.
+    """
+    # elemental damage
+    CRYO = 'CRYO'
+    HYDRO = 'HYDRO'
+    PYRO = 'PYRO'
+    ELECTRO = 'ELECTRO'
+    GEO = 'GEO'
+    DENDRO = 'DENDRO'
+    ANEMO = 'ANEMO'
+
+    # other damage
+    PHYSICAL = 'PHYSICAL'
+    PIERCING = 'PIERCING'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
+
+ELEMENT_TO_DAMAGE_TYPE = {
+    ElementType.NONE: DamageType.PHYSICAL,
+    ElementType.CRYO: DamageType.CRYO,
+    ElementType.HYDRO: DamageType.HYDRO,
+    ElementType.PYRO: DamageType.PYRO,
+    ElementType.ELECTRO: DamageType.ELECTRO,
+    ElementType.GEO: DamageType.GEO,
+    ElementType.DENDRO: DamageType.DENDRO,
+    ElementType.ANEMO: DamageType.ANEMO,
+}
+DAMAGE_TYPE_TO_ELEMENT = {
+    DamageType.CRYO: ElementType.CRYO,
+    DamageType.HYDRO: ElementType.HYDRO,
+    DamageType.PYRO: ElementType.PYRO,
+    DamageType.ELECTRO: ElementType.ELECTRO,
+    DamageType.GEO: ElementType.GEO,
+    DamageType.DENDRO: ElementType.DENDRO,
+    DamageType.ANEMO: ElementType.ANEMO,
+    DamageType.PHYSICAL: ElementType.NONE,
+    DamageType.PIERCING: ElementType.NONE,
+}
+
+
+class ObjectType(Enum):
+    """
+    Enum representing the type of an object.
+    """
+    EMPTY = 'EMPTY'
+    CHARACTOR = 'CHARACTOR'
+    DIE = 'DIE'
+    DECK_CARD = 'DECK_CARD'
+    HAND_CARD = 'HAND_CARD'
+    SUMMON = 'SUMMON'
+    SUPPORT = 'SUPPORT'
+    SKILL = 'SKILL'
+    WEAPON = 'WEAPON'
+    ARTIFACT = 'ARTIFACT'
+    TALENT = 'TALENT'
+    CHARACTOR_STATUS = 'CHARACTOR_STATUS'
+    TEAM_STATUS = 'TEAM_STATUS'
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return self.value
+
+
+class FactionType(Enum):
+    """
+    Factions of charactors.
+    """
+
+    MONDSTADT = 'MONDSTADT'
+    LIYUE = 'LIYUE'
+    INAZUMA = 'INAZUMA'
+    SUMERU = 'SUMERU'
+    FONTAINE = 'FONTAINE'
+    NATLAN = 'NATLAN'
+    SNEZHNAYA = 'SNEZHNAYA'
+
+    FATUI = 'FATUI'
+    MONSTER = 'MONSTER'
+
+
+class WeaponType(Enum):
+    """
+    Types of weapons.
+    """
+
+    SWORD = 'SWORD'
+    CLAYMORE = 'CLAYMORE'
+    POLEARM = 'POLEARM'
+    CATALYST = 'CATALYST'
+    BOW = 'BOW'
+    OTHER = 'OTHER'
+
+
+class SkillType(Enum):
+    """
+    Types of skills.
+    """
+
+    NORMAL_ATTACK = 'NORMAL_ATTACK'
+    ELEMENTAL_SKILL = 'ELEMENTAL_SKILL'
+    ELEMENTAL_BURST = 'ELEMENTAL_BURST'
+
+
+class AttackType(Enum):
+    """
+    Types of attacks.
+    """
+
+    NORMAL = 'NORMAL'
+    CHARGED = 'CHARGED'
+    PLUNGING = 'PLUNGING'

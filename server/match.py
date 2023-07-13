@@ -8,7 +8,7 @@ from utils import BaseModel
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    Actions, 
+    ActionBase, 
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -21,7 +21,7 @@ from .action import (
 )
 from .registry import Registry, ObjectSortRule
 from .interaction import (
-    Requests, Responses, RequestActionType,
+    RequestBase, ResponseBase, RequestActionType,
     SwitchCardRequest, SwitchCardResponse,
     ChooseCharactorRequest, ChooseCharactorResponse,
     RerollDiceRequest, RerollDiceResponse,
@@ -32,7 +32,7 @@ from .interaction import (
 from .consts import DieColor, ELEMENT_TO_DIE_COLOR
 from .die import Die
 from .event import (
-    EventArguments,
+    EventArgumentsBase,
     DrawCardEventArguments, 
     RestoreCardEventArguments, 
     RemoveCardEventArguments,
@@ -157,8 +157,9 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
-    action_queues: List[List[Actions]] = []
-    requests: List[Requests] = []
+    action_queues: List[List[ActionBase]] = []
+    requests: List[RequestBase] = []
+    winner: int = -1
 
     # registry, all objects on PlayerTable will be registered. it will update
     # on initialization, object creation and deletion, gives a unique id for 
@@ -310,6 +311,10 @@ class Match(BaseModel):
             bool: True if success, False if error occurs.
         """
         while True:
+            # check if game reaches end condition
+            if self._is_game_end():
+                self._set_match_state(MatchState.ENDED)
+                return True
             # check if it need response
             if len(self.requests) != 0:
                 logging.info('There are still requests not responded.')
@@ -346,6 +351,9 @@ class Match(BaseModel):
             elif self.match_state == MatchState.ROUND_ENDED:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
+            elif self.match_state == MatchState.ENDED:
+                logging.warning('Match has ended.')
+                return True
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
@@ -354,7 +362,7 @@ class Match(BaseModel):
                     logging.info(f'{len(self.requests)} requests generated.')
                 return True
 
-    def check_request_exist(self, request: Requests) -> bool:
+    def check_request_exist(self, request: RequestBase) -> bool:
         """
         Check if the request is valid.
         """
@@ -363,7 +371,7 @@ class Match(BaseModel):
                 return True
         return False
 
-    def respond(self, response: Responses) -> bool:
+    def respond(self, response: ResponseBase) -> bool:
         """
         Deal with the response. After start, the match will simulate 
         until it needs response from player, and `self.requests` will have
@@ -410,6 +418,24 @@ class Match(BaseModel):
             return False
         return True
 
+    def _is_game_end(self) -> bool:
+        """
+        Check if the game reaches end condition. If game is ended, it will
+        set `self.winner` to the winner of the game.
+
+        Returns:
+            bool: True if game reaches end condition, False otherwise.
+        """
+        # hp of all charactors are 0
+        for pnum, table in enumerate(self.player_tables):
+            for charactor in table.charactors:
+                if not charactor.is_defeated:
+                    break
+            else:
+                self.winner = pnum
+                return True
+        return False
+
     def _next_action(self):
         """
         Do one action in `self._action_queue`. It will pick the first action in
@@ -446,7 +472,7 @@ class Match(BaseModel):
                 self._registry.unregister(dice)
             player_table.dice.clear()
         # generate new dice
-        event_args: List[EventArguments] = []
+        event_args: List[EventArgumentsBase] = []
         for pnum, player_table in enumerate(self.player_tables):
             one_event_args = self._act(CreateDiceAction(
                 object_id = -1,
@@ -680,7 +706,7 @@ class Match(BaseModel):
                 next_idx = card_hand_names.index(card_name, start_idx + 1)
                 card_hand_ids.append(next_idx)
                 start_idx = next_idx
-        event_args: List[EventArguments] = []
+        event_args: List[EventArgumentsBase] = []
         event_args += self._act(RestoreCardAction(
             object_id = -1,
             player_id = response.player_id,
@@ -735,7 +761,7 @@ class Match(BaseModel):
         event_args = self._action_remove_dice(RemoveDiceAction.from_response(
             response
         ))
-        triggered_actions: List[Actions] = []
+        triggered_actions: List[ActionBase] = []
         for event_arg in event_args:
             actions = self._registry.trigger_event(
                 event_arg, self._get_sort_rule())
@@ -778,7 +804,7 @@ class Match(BaseModel):
         Deal with switch charactor response. If it is combat action, add
         combat action to action queue. Remove related requests.
         """
-        actions: List[Actions] = []
+        actions: List[ActionBase] = []
         cost_ids = response.cost_ids
         if len(cost_ids):
             actions.append(RemoveDiceAction(
@@ -809,7 +835,7 @@ class Match(BaseModel):
         color = response.die_color
         table = self.player_tables[response.player_id]
         die_id = [die.color for die in table.dice].index(color)
-        actions: List[Actions] = []
+        actions: List[ActionBase] = []
         actions.append(RemoveCardAction(
             object_id = -1,
             player_id = response.player_id,
@@ -838,7 +864,7 @@ class Match(BaseModel):
         Deal with declare round end response. It is splitted into 2 actions,
         declare round end and combat action.
         """
-        actions: List[Actions] = []
+        actions: List[ActionBase] = []
         actions.append(DeclareRoundEndAction.from_response(response))
         actions.append(CombatActionAction(
             object_id = -1,
@@ -848,17 +874,17 @@ class Match(BaseModel):
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
 
-    def _respond_use_skill(self, response: Responses):
+    def _respond_use_skill(self, response: ResponseBase):
         ...
 
-    def _respond_use_card(self, response: Responses):
+    def _respond_use_card(self, response: ResponseBase):
         ...
 
     """
     Action Functions
     """
 
-    def _act(self, action: Actions) -> List[EventArguments]:
+    def _act(self, action: ActionBase) -> List[EventArgumentsBase]:
         """
         Act an action. It will call corresponding action function based on
         the type of the action.

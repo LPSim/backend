@@ -40,9 +40,9 @@ class ObjectSortRule(BaseModel):
         1. objects is `self.current_player_id` or not.
         2. object belongs to charactor or not.
             2.1. active charactor first, otherwise the default order.
-            2.2. for one charactor, order is weapon, artifact, talent, buff.
-            2.3. for buff, order is their index in buff list, i.e. generated
-                time.
+            2.2. for one charactor, order is weapon, artifact, talent, status.
+            2.3. for status, order is their index in status list, i.e. 
+                generated time.
         3. for other objects, order is: summon, support, hand, dice, deck.
             3.1. all other objects in same region are sorted by their index in
                 the list.
@@ -71,7 +71,7 @@ class ObjectSortRule(BaseModel):
         # first for rule 2, second for rule 2.1, third for rule 2.2 and 2.3.
         charactor_object_order = [
             ObjectType.WEAPON, ObjectType.ARTIFACT, ObjectType.TALENT,
-            ObjectType.CHARACTOR_BUFF
+            ObjectType.CHARACTOR_STATUS
         ]
         if obj.type in charactor_object_order:
             key.append(0)
@@ -87,8 +87,8 @@ class ObjectSortRule(BaseModel):
                 key.append(char_id)
 
             # Rule 2.2: for one charactor, order is weapon, artifact, talent,
-            # buff. if is buff, order is their index in buff list.
-            if obj.type != ObjectType.CHARACTOR_BUFF:
+            # status. if is status, order is their index in status list.
+            if obj.type != ObjectType.CHARACTOR_STATUS:
                 key.append(charactor_object_order.index(obj.type))
             else:
                 key.append(3 + obj.index)

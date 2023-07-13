@@ -8,7 +8,7 @@ from server.action import ActionBase, DrawCardAction
 
 
 class Strategize(CardBase):
-    name: Literal['Strategize'] = 'Strategize'
+    name: Literal['Strategize']
 
     def act(self) -> list[ActionBase]:
         """

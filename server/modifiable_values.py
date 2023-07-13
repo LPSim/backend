@@ -10,8 +10,14 @@ class ModifiableValueTypes(Enum):
     value that can be modified by other objects before being used.
     """
     REROLL = 'REROLL'
-    DAMAGE = 'DAMAGE'
     DICECOST = 'DICECOST'
+
+    # damage calculation is split into 3 parts: increase, multiply and 
+    # decrease. damage will be first increased, then multiplied, 
+    # then decreased.
+    DAMAGE_INCREASE = 'DAMAGE_INCREASE'
+    DAMAGE_MULTIPLY = 'DAMAGE_MULTIPLY'
+    DAMAGE_DECREASE = 'DAMAGE_DECREASE'
 
 
 class ModifiableValueBase(BaseModel):

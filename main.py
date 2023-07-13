@@ -1,4 +1,5 @@
 import logging
+from typing import Literal
 from server.match import Match
 from utils import BaseModel
 from server.deck import Deck
@@ -9,7 +10,7 @@ class Main(BaseModel):
     """
 
     version: str = '1.0.0'
-    name: str = 'GITCG'
+    name: Literal['GITCG'] = 'GITCG'
     match: Match = Match()
 
 
@@ -20,12 +21,18 @@ if __name__ == '__main__':
         'name': 'Deck',
         'charactors': [
             {
-                'name': 'CharactorBase',
+                'name': 'DendroMob',
                 'element': 'DENDRO',
-                'hp': 10,
-                'max_hp': 10,
-            }
-        ] * 3,
+            },
+            {
+                'name': 'HydroMob',
+                'element': 'HYDRO',
+            },
+            {
+                'name': 'PhysicalMob',
+                'element': 'PYRO',
+            },
+        ],
         'cards': [
             {
                 'name': 'Strategize',
