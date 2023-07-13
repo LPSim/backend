@@ -167,10 +167,11 @@ class RerollDiceResponse(ResponseBase):
         """
         if len(self.reroll_dice_ids) != len(set(self.reroll_dice_ids)):
             return False
-        if max(self.reroll_dice_ids) >= len(self.request.colors):
-            return False
-        if min(self.reroll_dice_ids) < 0:
-            return False
+        if len(self.reroll_dice_ids) > 0:
+            if max(self.reroll_dice_ids) >= len(self.request.colors):
+                return False
+            if min(self.reroll_dice_ids) < 0:
+                return False
         return True
 
 
@@ -211,3 +212,16 @@ class ElementalTuningResponse(ResponseBase):
 class DeclareRoundEndResponse(ResponseBase):
     name: Literal['DeclareRoundEndResponse'] = 'DeclareRoundEndResponse'
     request: DeclareRoundEndRequest
+
+
+Requests = (
+    SwitchCardRequest | ChooseCharactorRequest | RerollDiceRequest
+    | SwitchCharactorRequest | ElementalTuningRequest
+    | DeclareRoundEndRequest
+)
+
+Responses = (
+    SwitchCardResponse | ChooseCharactorResponse | RerollDiceResponse
+    | SwitchCharactorResponse | ElementalTuningResponse
+    | DeclareRoundEndResponse
+)

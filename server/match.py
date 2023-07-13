@@ -21,7 +21,7 @@ from .action import (
 )
 from .registry import Registry, ObjectSortRule
 from .interaction import (
-    RequestBase, ResponseBase, RequestActionType,
+    Requests, Responses, RequestActionType,
     SwitchCardRequest, SwitchCardResponse,
     ChooseCharactorRequest, ChooseCharactorResponse,
     RerollDiceRequest, RerollDiceResponse,
@@ -158,7 +158,7 @@ class Match(BaseModel):
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
     action_queues: List[List[ActionBase]] = []
-    requests: List[RequestBase] = []
+    requests: List[Requests] = []
     winner: int = -1
 
     # registry, all objects on PlayerTable will be registered. it will update
@@ -267,6 +267,7 @@ class Match(BaseModel):
             self.current_player = int(self._random() > 0.5)
         else:
             self.current_player = 0
+        logging.info(f'Player {self.current_player} is the first player')
 
         # copy and randomize based on deck
         for pnum, player_table in enumerate(self.player_tables):
@@ -362,7 +363,7 @@ class Match(BaseModel):
                     logging.info(f'{len(self.requests)} requests generated.')
                 return True
 
-    def check_request_exist(self, request: RequestBase) -> bool:
+    def check_request_exist(self, request: Requests) -> bool:
         """
         Check if the request is valid.
         """
@@ -371,7 +372,7 @@ class Match(BaseModel):
                 return True
         return False
 
-    def respond(self, response: ResponseBase) -> bool:
+    def respond(self, response: Responses) -> bool:
         """
         Deal with the response. After start, the match will simulate 
         until it needs response from player, and `self.requests` will have
@@ -467,6 +468,7 @@ class Match(BaseModel):
         # TODO: implement locking dice colors like Jade Chamber.
         # TODO: send round start event.
         """
+        self.round_number += 1
         for pnum, player_table in enumerate(self.player_tables):
             for dice in player_table.dice:
                 self._registry.unregister(dice)
@@ -874,10 +876,10 @@ class Match(BaseModel):
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
 
-    def _respond_use_skill(self, response: ResponseBase):
+    def _respond_use_skill(self, response: Responses):
         ...
 
-    def _respond_use_card(self, response: ResponseBase):
+    def _respond_use_card(self, response: Responses):
         ...
 
     """
