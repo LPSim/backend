@@ -1,5 +1,5 @@
 from server.object_base import ObjectBase, ObjectType
-from server.action import Actions
+from server.action import ActionBase
 from typing import Literal, List
 
 
@@ -11,7 +11,7 @@ class CardBase(ObjectBase):
     type: Literal[ObjectType.DECK_CARD, ObjectType.HAND_CARD] = \
         ObjectType.DECK_CARD
 
-    def act(self) -> List[Actions]:
+    def act(self) -> List[ActionBase]:
         """
         Act the card. It will return a list of actions.
         """

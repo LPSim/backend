@@ -2,7 +2,7 @@ from enum import Enum
 from utils import BaseModel
 from typing import Literal, List
 from .interaction import (
-    Responses,
+    ResponseBase,
     ChooseCharactorResponse,
     RerollDiceResponse,
     DeclareRoundEndResponse,
@@ -162,7 +162,7 @@ class CombatActionAction(ActionBase):
     player_id: int
 
     @classmethod
-    def from_response(cls, response: Responses):
+    def from_response(cls, response: ResponseBase):
         """
         Generate CombatActionAction from Responses.
         """
@@ -190,6 +190,3 @@ class SwitchCharactorAction(ActionBase):
             player_id = response.player_id,
             charactor_id = response.charactor_id,
         )
-
-
-Actions = ActionBase | DrawCardAction | RestoreCardAction

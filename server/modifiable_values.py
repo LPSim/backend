@@ -90,6 +90,3 @@ class DiceCostValue(ModifiableValueBase):
                 if same_num + omni_num < self.same_dice_number:
                     return False  # same dice not enough
         return True
-
-
-ModifiableValues = ModifiableValueBase | RerollValue | DiceCostValue

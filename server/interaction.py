@@ -211,15 +211,3 @@ class ElementalTuningResponse(ResponseBase):
 class DeclareRoundEndResponse(ResponseBase):
     name: Literal['DeclareRoundEndResponse'] = 'DeclareRoundEndResponse'
     request: DeclareRoundEndRequest
-
-
-Responses = (
-    ResponseBase | SwitchCardResponse | ChooseCharactorResponse
-    | RerollDiceResponse
-)
-
-
-Requests = (
-    RequestBase | SwitchCardRequest | ChooseCharactorRequest
-    | RerollDiceRequest
-)

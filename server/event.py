@@ -2,7 +2,6 @@ from utils import BaseModel
 from typing import Literal, List
 from .consts import DieColor
 from .action import (
-    Actions, 
     ActionTypes, 
     ActionBase,
     DrawCardAction,
@@ -28,7 +27,7 @@ class EventArgumentsBase(BaseModel):
     3.7), the information can be added to the event arguments.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
-    action: Actions
+    action: ActionBase
 
 
 class DrawCardEventArguments(EventArgumentsBase):
@@ -140,12 +139,6 @@ class SwitchCharactorEventArguments(EventArgumentsBase):
     action: SwitchCharactorAction
     last_active_charactor_id: int
 
-
-EventArguments = (
-    EventArgumentsBase | DrawCardEventArguments | RestoreCardEventArguments
-    | ChooseCharactorEventArguments | CreateDiceEventArguments
-    | RemoveDiceEventArguments | RoundPrepareEventArguments
-)
 
 # TODO: combine arguments of events and actions.
 # interactions和event&action的参数独立，event是action超集包含了额外的信息，

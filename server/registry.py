@@ -1,9 +1,9 @@
 import logging
-from .event import EventArguments
-from .action import Actions, ActionTypes
+from .event import EventArgumentsBase
+from .action import ActionBase, ActionTypes
 from .modifiable_values import (
     ModifiableValueTypes, 
-    ModifiableValues,
+    ModifiableValueBase,
 )
 from .object_base import ObjectBase, ObjectType
 from typing import Dict, Any, List, Literal
@@ -182,14 +182,14 @@ class Registry:
             self.event_triggers[i].remove(obj_id)
         self._registry.pop(obj_id)
 
-    def trigger_event(self, event_arg: EventArguments, 
+    def trigger_event(self, event_arg: EventArgumentsBase, 
                       sort_rule: ObjectSortRule
-                      ) -> List[Actions]:
+                      ) -> List[ActionBase]:
         """
         Trigger event. It will return a list of actions that will be triggered
         by the event. The actions will be sorted by the sort rule.
         """
-        ret: List[Actions] = []
+        ret: List[ActionBase] = []
         triggers = self.event_triggers[event_arg.type]
         triggers.sort(key = lambda x: sort_rule.sort_key(x))
         for obj_id in triggers:
@@ -198,20 +198,20 @@ class Registry:
             ...  # TODO: trigger event
         return ret
 
-    def trigger_events(self, event_args: List[EventArguments],
+    def trigger_events(self, event_args: List[EventArgumentsBase],
                        sort_rule: ObjectSortRule
-                       ) -> List[Actions]:
+                       ) -> List[ActionBase]:
         """
         Trigger events. It will return a list of actions that will be triggered
         by the events. The order of actions is the same as the order of events.
         For one event, the actions will be sorted by the sort rule.
         """
-        ret: List[Actions] = []
+        ret: List[ActionBase] = []
         for event_arg in event_args:
             ret.extend(self.trigger_event(event_arg, sort_rule))
         return ret
 
-    def modify_value(self, value: ModifiableValues, 
+    def modify_value(self, value: ModifiableValueBase, 
                      sort_rule: ObjectSortRule,
                      mode: Literal['test', 'real'],
                      ) -> None:
