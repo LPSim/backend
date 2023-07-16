@@ -1,4 +1,4 @@
-from .SummonBase import SummonBase
+from .summon_base import SummonBase
 
 
 Summons = SummonBase | SummonBase

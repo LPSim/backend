@@ -2,6 +2,7 @@ from utils import BaseModel
 from typing import Literal, List
 from resources.consts import CharactorIcons
 from .consts import DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER
+from .object_base import ObjectBase
 from .deck import Deck
 from .card import Cards
 from .die import Die
@@ -85,4 +86,36 @@ class PlayerTable(BaseModel):
         result = {}
         for i, die in enumerate(self.dice):
             result[die.color] = i
+        return result
+
+    def get_object_lists(self) -> List[ObjectBase]:
+        """
+        Get all objects in the match by `self.table.get_object_lists`. 
+        The order of objects should follow the game rule. The rules are:
+        1. objects of `self.current_player` goes first
+        2. objects belongs to charactor goes first
+            2.1. active charactor first, otherwise the default order.
+            2.2. for one charactor, order is weapon, artifact, talent, status.
+            2.3. for status, order is their index in status list, i.e. 
+                generated time.
+        3. for other objects, order is: summon, support, hand, dice, deck.
+            3.1. all other objects in same region are sorted by their index in
+                the list.
+        """
+        result: List[ObjectBase] = []
+        if self.active_charactor_id != -1:
+            result += self.charactors[
+                self.active_charactor_id].get_object_lists()
+        for i in range(len(self.charactors)):
+            if i != self.active_charactor_id:
+                result += self.charactors[i].get_object_lists()
+        result += self.summons
+        result += self.supports
+        result += self.hands
+
+        # disable them because currently no dice and deck cards will trigger
+        # events or modify values.
+        # result += self.dice
+        # result += self.table_deck
+
         return result

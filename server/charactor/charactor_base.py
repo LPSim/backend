@@ -42,3 +42,27 @@ class CharactorBase(ObjectBase):
     @property
     def is_defeated(self):
         return self.hp == 0
+
+    def get_object_lists(self) -> List[ObjectBase]:
+        """
+        Get all objects in the match by `self.table.get_object_lists`. 
+        The order of objects should follow the game rule. The rules are:
+        1. objects of `self.current_player` goes first
+        2. objects belongs to charactor goes first
+            2.1. active charactor first, otherwise the default order.
+            2.2. for one charactor, order is weapon, artifact, talent, status.
+            2.3. for status, order is their index in status list, i.e. 
+                generated time.
+        3. for other objects, order is: summon, support, hand, dice, deck.
+            3.1. all other objects in same region are sorted by their index in
+                the list.
+        """
+        result: List[ObjectBase] = [self]
+        if self.weapon is not None:
+            result.append(self.weapon)
+        if self.artifact is not None:
+            result.append(self.artifact)
+        if self.talent is not None:
+            result.append(self.talent)
+        result += self.status
+        return result

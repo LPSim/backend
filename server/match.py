@@ -19,7 +19,6 @@ from .action import (
     CombatActionAction,
     SwitchCharactorAction,
 )
-from .registry import Registry, ObjectSortRule
 from .interaction import (
     Requests, Responses, RequestActionType,
     SwitchCardRequest, SwitchCardResponse,
@@ -44,7 +43,9 @@ from .event import (
     CombatActionEventArguments,
     SwitchCharactorEventArguments,
 )
+from .object_base import ObjectBase
 from .modifiable_values import (
+    ModifiableValueBase,
     RerollValue, DiceCostValue,
 )
 
@@ -161,11 +162,6 @@ class Match(BaseModel):
     requests: List[Requests] = []
     winner: int = -1
 
-    # registry, all objects on PlayerTable will be registered. it will update
-    # on initialization, object creation and deletion, gives a unique id for 
-    # the object, and collect event triggers of object.
-    _registry: Registry = Registry()
-
     def __init__(self):
         super().__init__()
         if self.random_state:
@@ -212,19 +208,6 @@ class Match(BaseModel):
         logging.info(f'Match state change from {self.match_state} to '
                      f'{new_state}.')
         self.match_state = new_state
-
-    def _get_sort_rule(self) -> ObjectSortRule:
-        """
-        Return the sort rule of the match.
-        """
-        return ObjectSortRule(
-            current_player_id = self.current_player,
-            max_charactor_number = self.match_config.charactor_number,
-            active_charactor_ids = [
-                0 if table.active_charactor_id == -1 
-                else table.active_charactor_id for table in self.player_tables
-            ],
-        )
 
     def start(self) -> bool:
         """
@@ -275,13 +258,11 @@ class Match(BaseModel):
             for charactor in player_table.player_deck_information.charactors:
                 charactor_copy = charactor.copy()
                 charactor_copy.player_id = pnum
-                self._registry.register(charactor_copy)
                 player_table.charactors.append(charactor_copy)
             # copy cards
             for card in player_table.player_deck_information.cards:
                 card_copy = card.copy()
                 card_copy.player_id = pnum
-                self._registry.register(card_copy)
                 player_table.table_deck.append(card_copy)
             self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
@@ -290,8 +271,7 @@ class Match(BaseModel):
                 player_id = pnum, 
                 number = self.match_config.initial_hand_size
             ))
-            triggered_actions = self._registry.trigger_events(
-                event_args, self._get_sort_rule())
+            triggered_actions = self._trigger_events(event_args)
             if triggered_actions:
                 logging.error('Initial draw card should not trigger actions.')
                 self._set_match_state(MatchState.ERROR)
@@ -455,8 +435,7 @@ class Match(BaseModel):
         activated_action = self.action_queues[-1].pop(0)
         logging.info(f'Action activated: {activated_action}')
         event_args = self._act(activated_action)
-        triggered_actions = self._registry.trigger_events(
-            event_args, self._get_sort_rule())
+        triggered_actions = self._trigger_events(event_args)
         if triggered_actions:
             self.action_queues.append(triggered_actions)
 
@@ -470,8 +449,6 @@ class Match(BaseModel):
         """
         self.round_number += 1
         for pnum, player_table in enumerate(self.player_tables):
-            for dice in player_table.dice:
-                self._registry.unregister(dice)
             player_table.dice.clear()
         # generate new dice
         event_args: List[EventArgumentsBase] = []
@@ -483,8 +460,7 @@ class Match(BaseModel):
                 random = True
             ))
             event_args += one_event_args
-        triggered_actions = self._registry.trigger_events(
-            event_args, self._get_sort_rule())
+        triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) != 0:
             logging.error('Create dice should not trigger actions.')
             self._set_match_state(MatchState.ERROR)
@@ -497,11 +473,7 @@ class Match(BaseModel):
                 value = reroll_times,
                 player_id = pnum,
             )
-            self._registry.modify_value(
-                reroll_value, 
-                self._get_sort_rule(),
-                mode = 'real',
-            )
+            self._modify_value(reroll_value, mode = 'real')
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
 
@@ -517,8 +489,7 @@ class Match(BaseModel):
                 for table in self.player_tables
             ],
         )
-        actions = self._registry.trigger_event(event_arg, 
-                                               self._get_sort_rule())
+        actions = self._trigger_event(event_arg)
         logging.info(f'In round prepare, {len(actions)} actions triggered.')
         self.action_queues.append(actions)
 
@@ -581,6 +552,76 @@ class Match(BaseModel):
         End a round. Will send round end event, collect actions.
         """
 
+    def get_object_lists(self) -> List[ObjectBase]:
+        """
+        Get all objects in the match by `self.table.get_object_lists`. 
+        The order of objects should follow the game rule. The rules are:
+        1. objects of `self.current_player` goes first
+        2. objects belongs to charactor goes first
+            2.1. active charactor first, otherwise the default order.
+            2.2. for one charactor, order is weapon, artifact, talent, status.
+            2.3. for status, order is their index in status list, i.e. 
+                generated time.
+        3. for other objects, order is: summon, support, hand, dice, deck.
+            3.1. all other objects in same region are sorted by their index in
+                the list.
+        """
+        return (
+            self.player_tables[self.current_player].get_object_lists()
+            + self.player_tables[1 - self.current_player].get_object_lists()
+        )
+
+    def _trigger_event(self, event_arg: EventArgumentsBase,
+                       ) -> List[ActionBase]:
+        """
+        Trigger event. It will return a list of actions that will be triggered
+        by the event. The actions will be sorted by the sort rule.
+        """
+        ret: List[ActionBase] = []
+        object_list = self.get_object_lists()
+        for obj in object_list:
+            name = obj.__class__.__name__
+            if hasattr(obj, 'name'):
+                name = obj.name  # type: ignore
+            logging.debug(f'Trigger event {event_arg.type} for {name}.')
+            ...  # TODO: trigger event
+        return ret
+
+    def _trigger_events(self, event_args: List[EventArgumentsBase],
+                        ) -> List[ActionBase]:
+        """
+        Trigger events. It will return a list of actions that will be triggered
+        by the events. The order of actions is the same as the order of events.
+        For one event, the actions will be sorted by the sort rule.
+        """
+        ret: List[ActionBase] = []
+        for event_arg in event_args:
+            ret.extend(self._trigger_event(event_arg))
+        return ret
+
+    def _modify_value(self, value: ModifiableValueBase, 
+                      mode: Literal['test', 'real'],
+                      ) -> None:
+        """
+        Modify values. It will directly modify the value argument.
+        Args:
+            value (ModifiableValues): The value to be modified. It contains 
+                value itself and all necessary information to modify the value.
+            sort_rule (ObjectSortRule): The sort rule used to sort objects.
+            mode (Literal['test', 'real']): If 'test', objects will only modify
+                the value but not updating inner state, which is used to 
+                calculate costs used in requests. If 'real', it will modify 
+                the value and update inner state, which means the request
+                related to the value is executed.
+        """
+        object_list = self.get_object_lists()
+        for obj in object_list:
+            name = obj.__class__.__name__
+            if hasattr(obj, 'name'):
+                name = obj.name  # type: ignore
+            logging.debug(f'Modify value {value.type} for {name}.')
+            ...
+
     """
     Request functions. To generate specific requests.
     """
@@ -621,8 +662,7 @@ class Match(BaseModel):
         """
         table = self.player_tables[player_id]
         dice_cost = DiceCostValue(same_dice_number = 1)
-        self._registry.modify_value(dice_cost, self._get_sort_rule(), 
-                                    mode = 'test')
+        self._modify_value(dice_cost, mode = 'test')
         if not dice_cost.is_valid(
             dice_colors = [die.color for die in table.dice],
             strict = False,
@@ -721,8 +761,7 @@ class Match(BaseModel):
                 number = len(response.card_ids)
             )
         )
-        triggered_actions = self._registry.trigger_events(
-            event_args, self._get_sort_rule())
+        triggered_actions = self._trigger_events(event_args)
         if triggered_actions:
             logging.error('Initial switch card should not trigger '
                           'actions.')
@@ -738,8 +777,7 @@ class Match(BaseModel):
         event_args = self._act(
             ChooseCharactorAction.from_response(response)
         )
-        triggered_actions = self._registry.trigger_events(
-            event_args, self._get_sort_rule())
+        triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) > 0:
             if len(self.action_queues) != 0:
                 # already has actions in queue, append new actions
@@ -765,8 +803,7 @@ class Match(BaseModel):
         ))
         triggered_actions: List[ActionBase] = []
         for event_arg in event_args:
-            actions = self._registry.trigger_event(
-                event_arg, self._get_sort_rule())
+            actions = self._trigger_event(event_arg)
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
             logging.error('Removing dice in Reroll Dice should not trigger '
@@ -780,8 +817,7 @@ class Match(BaseModel):
             random = True,
         ))
         for event_arg in event_args:
-            actions = self._registry.trigger_event(
-                event_arg, self._get_sort_rule())
+            actions = self._trigger_event(event_arg)
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
             if len(self.action_queues) != 0:
@@ -814,9 +850,8 @@ class Match(BaseModel):
                 player_id = response.player_id,
                 dice_ids = cost_ids,
             ))
-        self._registry.modify_value(
+        self._modify_value(
             value = response.request.cost.original_value,
-            sort_rule = self._get_sort_rule(),
             mode = 'real'
         )  # TODO: should use original value. need test.
         actions.append(SwitchCharactorAction.from_response(response))
@@ -983,10 +1018,8 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         if card_position == 'HAND':
             card = table.hands.pop(action.card_id)
-            self._registry.unregister(card)
         elif card_position == 'DECK':
             card = table.table_deck.pop(action.card_id)
-            self._registry.unregister(card)
         else:
             logging.error(f'Unknown card position {card_position}.')
             self._set_match_state(MatchState.ERROR)
@@ -1072,7 +1105,6 @@ class Match(BaseModel):
                                - len(table.dice))
         for die in dice[:max_obtainable_dice]:
             table.dice.append(die)
-            self._registry.register(die)
         # sort dice by color
         table.sort_dice()
         logging.info(
@@ -1100,8 +1132,6 @@ class Match(BaseModel):
         dice_ids.sort(reverse = True)  # reverse order to avoid index error
         for idx in dice_ids:
             removed_dice.append(table.dice.pop(idx))
-        for die in removed_dice:
-            self._registry.unregister(die)
         # sort dice by color
         table.sort_dice()
         logging.info(
