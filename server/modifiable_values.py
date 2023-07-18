@@ -4,7 +4,7 @@ from utils import BaseModel
 from .consts import DieColor
 
 
-class ModifiableValueTypes(Enum):
+class ModifiableValueTypes(str, Enum):
     """
     Enum representing the type of a modifiable value. A modifiable value is a
     value that can be modified by other objects before being used.

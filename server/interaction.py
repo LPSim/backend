@@ -5,7 +5,7 @@ from .consts import DieColor
 from .modifiable_values import DiceCostValue
 
 
-class RequestActionType(Enum):
+class RequestActionType(str, Enum):
     """
     Enum representing the action type of a request.
 

@@ -11,7 +11,7 @@ from .interaction import (
 from .consts import DieColor
 
 
-class ActionTypes(Enum):
+class ActionTypes(str, Enum):
     EMPTY = 'EMPTY'
     DRAW_CARD = 'DRAW_CARD'
     RESTORE_CARD = 'RESTORE_CARD'

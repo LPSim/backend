@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class CharactorIcons(Enum):
+class CharactorIcons(str, Enum):
     NAHIDA = 'nahida'
     QIQI = 'qiqi'
     KLEE = 'klee'

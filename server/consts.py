@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ElementType(Enum):
+class ElementType(str, Enum):
     """
     Enum representing the type of an element.
     """
@@ -32,7 +32,7 @@ ELEMENT_DEFAULT_ORDER = [
 ]
 
 
-class DieColor(Enum):
+class DieColor(str, Enum):
     """
     Enum representing the color of a die. It can also be called as elemental
     type, elemental attributes. Besides existing element types, there are
@@ -84,7 +84,7 @@ DIE_COLOR_TO_ELEMENT = {
 }
 
 
-class DamageType(Enum):
+class DamageType(str, Enum):
     """
     Enum representing the type of a damage.
     """
@@ -131,7 +131,7 @@ DAMAGE_TYPE_TO_ELEMENT = {
 }
 
 
-class ObjectType(Enum):
+class ObjectType(str, Enum):
     """
     Enum representing the type of an object.
     """
@@ -156,7 +156,7 @@ class ObjectType(Enum):
         return self.value
 
 
-class FactionType(Enum):
+class FactionType(str, Enum):
     """
     Factions of charactors.
     """
@@ -173,7 +173,7 @@ class FactionType(Enum):
     MONSTER = 'MONSTER'
 
 
-class WeaponType(Enum):
+class WeaponType(str, Enum):
     """
     Types of weapons.
     """
@@ -186,7 +186,7 @@ class WeaponType(Enum):
     OTHER = 'OTHER'
 
 
-class SkillType(Enum):
+class SkillType(str, Enum):
     """
     Types of skills.
     """
@@ -196,7 +196,7 @@ class SkillType(Enum):
     ELEMENTAL_BURST = 'ELEMENTAL_BURST'
 
 
-class AttackType(Enum):
+class AttackType(str, Enum):
     """
     Types of attacks.
     """
