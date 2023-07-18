@@ -162,12 +162,12 @@ class Match(BaseModel):
     requests: List[Requests] = []
     winner: int = -1
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
         if self.random_state:
             random_state = self.random_state[:]
             random_state[1] = np.array(random_state[1], dtype = 'uint32')
-            self._random_state = np.random.RandomState(self.random_state)
+            self._random_state.set_state(random_state)  # type: ignore
 
     def set_deck(self, decks: List[Deck]):
         """
