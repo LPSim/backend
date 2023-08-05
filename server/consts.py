@@ -172,6 +172,12 @@ class FactionType(str, Enum):
     FATUI = 'FATUI'
     MONSTER = 'MONSTER'
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
 
 class WeaponType(str, Enum):
     """
@@ -195,6 +201,12 @@ class SkillType(str, Enum):
     ELEMENTAL_SKILL = 'ELEMENTAL_SKILL'
     ELEMENTAL_BURST = 'ELEMENTAL_BURST'
 
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
 
 class AttackType(str, Enum):
     """
@@ -204,3 +216,63 @@ class AttackType(str, Enum):
     NORMAL = 'NORMAL'
     CHARGED = 'CHARGED'
     PLUNGING = 'PLUNGING'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
+
+class DamageSourceType(str, Enum):
+    """
+    Types of damage sources. Current player means the player doing action.
+    """
+
+    CURRENT_PLAYER_CHARACTOR = 'CURRENT_PLAYER_CHARACTOR'
+    CURRENT_PLAYER_SUMMON = 'CURRENT_PLAYER_SUMMON'
+    CURRENT_PLAYER_SUPPORT = 'CURRENT_PLAYER_SUPPORT'
+    CURRENT_PLAYER_CHARACTOR_STATUS = 'CURRENT_PLAYER_CHARACTOR_STATUS'
+    CURRENT_PLAYER_TEAM_STATUS = 'CURRENT_PLAYER_TEAM_STATUS'
+    CURRENT_PLAYER_WEAPON = 'CURRENT_PLAYER_WEAPON'
+    CURRENT_PLAYER_ARTIFACT = 'CURRENT_PLAYER_ARTIFACT'
+    CURRENT_PLAYER_TALENT = 'CURRENT_PLAYER_TALENT'
+    ENEMY_PLAYER_CHARACTOR = 'ENEMY_PLAYER_CHARACTOR'
+    ENEMY_PLAYER_SUMMON = 'ENEMY_PLAYER_SUMMON'
+    ENEMY_PLAYER_SUPPORT = 'ENEMY_PLAYER_SUPPORT'
+    ENEMY_PLAYER_CHARACTOR_STATUS = 'ENEMY_PLAYER_CHARACTOR_STATUS'
+    ENEMY_PLAYER_TEAM_STATUS = 'ENEMY_PLAYER_TEAM_STATUS'
+    ENEMY_PLAYER_WEAPON = 'ENEMY_PLAYER_WEAPON'
+    ENEMY_PLAYER_ARTIFACT = 'ENEMY_PLAYER_ARTIFACT'
+    ENEMY_PLAYER_TALENT = 'ENEMY_PLAYER_TALENT'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
+
+
+class ElementalReactionType(str, Enum):
+    """
+    Types of elemental reactions.
+    """
+
+    NONE = 'NONE'
+    MELT = 'MELT'
+    VAPORIZE = 'VAPORIZE'
+    OVERLOADED = 'OVERLOADED'
+    SUPERCONDUCT = 'SUPERCONDUCT'
+    ELECTROCHARGED = 'ELECTROCHARGED'
+    FROZEN = 'FROZEN'
+    SWIRL = 'SWIRL'
+    CRYSTALLIZE = 'CRYSTALLIZE'
+    BURNING = 'BURNING'
+    BLOOM = 'BLOOM'
+    QUICKEN = 'QUICKEN'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value

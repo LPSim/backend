@@ -28,6 +28,7 @@ class Mob(CharactorBase):
         'DendroMob',
         'AnemoMob',
     ]
+    version = '1.0.0'
     element: ElementType
     hp: int = 10
     max_hp: int = 10
@@ -73,6 +74,7 @@ class Mob(CharactorBase):
             name = f'{element_name} Elemental Burst',
             damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
             cost = ElementalBurstBase.get_cost(self.element, 3),
-            damage = 5
+            damage = 5,
+            charge = 2
         )
         self.skills = [normal_attack, elemental_skill, elemental_burst]

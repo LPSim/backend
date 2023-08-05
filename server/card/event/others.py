@@ -14,4 +14,4 @@ class Strategize(CardBase):
         """
         Act the card. Draw two cards.
         """
-        return [DrawCardAction(object_id = -1, player_id = -1, number = 2)]
+        return [DrawCardAction(player_id = -1, number = 2)]

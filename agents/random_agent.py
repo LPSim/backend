@@ -9,7 +9,9 @@ from server.interaction import (
     DeclareRoundEndResponse,
     ElementalTuningRequest, ElementalTuningResponse,
     SwitchCharactorRequest, SwitchCharactorResponse,
+    UseSkillRequest, UseSkillResponse,
 )
+from server.consts import DieColor
 
 
 class RandomAgent(AgentBase):
@@ -56,6 +58,10 @@ class RandomAgent(AgentBase):
             return self.resp_elemental_tuning(req)
         elif req.name == 'SwitchCharactorRequest':
             return self.resp_switch_charactor(req)
+        elif req.name == 'UseSkillRequest':
+            return self.resp_use_skill(req)
+        else:
+            raise ValueError(f'Unknown request name: {req.name}')
 
     def resp_switch_card(self, req: SwitchCardRequest) -> SwitchCardResponse:
         """
@@ -100,9 +106,7 @@ class RandomAgent(AgentBase):
         """
         return ElementalTuningResponse(
             request = req, 
-            die_color = req.dice_colors[
-                int(self.random() * len(req.dice_colors))
-            ],
+            cost_id = int(self.random() * len(req.dice_colors)),
             card_id = req.card_ids[
                 int(self.random() * len(req.card_ids))
             ]
@@ -119,4 +123,36 @@ class RandomAgent(AgentBase):
             charactor_id = req.candidate_charactor_ids[
                 int(self.random() * len(req.candidate_charactor_ids))
             ],
+        )
+
+    def resp_use_skill(
+            self, req: UseSkillRequest) -> UseSkillResponse:
+        """
+        Randomly choose dice to use skill.
+        """
+        cost = req.cost
+        ele_dice_ids = [num for num, color in enumerate(req.dice_colors)
+                        if color == cost.elemental_dice_color
+                        or color == DieColor.OMNI]
+        other_dice_ids = [x for x in range(len(req.dice_colors))
+                          if x not in ele_dice_ids]
+        selected = []
+        for _ in range(cost.elemental_dice_number):
+            if len(ele_dice_ids) > 0:
+                idx = int(self.random() * len(ele_dice_ids))
+                selected.append(ele_dice_ids.pop(idx))
+            else:
+                raise ValueError('Not enough elemental dice')
+        other_dice_ids += ele_dice_ids
+        for _ in range(cost.any_dice_number):
+            if len(other_dice_ids) > 0:
+                idx = int(self.random() * len(other_dice_ids))
+                selected.append(other_dice_ids.pop(idx))
+            else:
+                raise ValueError('Not enough dice')
+        selected.sort()
+
+        return UseSkillResponse(
+            request = req, 
+            cost_ids = selected
         )

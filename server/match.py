@@ -1,14 +1,14 @@
 import logging
 
 import numpy as np
-from typing import Literal, List
+from typing import Literal, List, Any
 from enum import Enum
 
 from utils import BaseModel
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    ActionBase, 
+    ActionBase, Actions,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -18,6 +18,9 @@ from .action import (
     DeclareRoundEndAction,
     CombatActionAction,
     SwitchCharactorAction,
+    MakeDamageAction,
+    ChargeAction,
+    SkillEndAction,
 )
 from .interaction import (
     Requests, Responses, RequestActionType,
@@ -27,8 +30,13 @@ from .interaction import (
     SwitchCharactorRequest, SwitchCharactorResponse,
     ElementalTuningRequest, ElementalTuningResponse,
     DeclareRoundEndRequest, DeclareRoundEndResponse,
+    UseSkillRequest, UseSkillResponse,
 )
-from .consts import DieColor, ELEMENT_TO_DIE_COLOR
+from .consts import (
+    DieColor, ELEMENT_TO_DIE_COLOR,
+    DAMAGE_TYPE_TO_ELEMENT,
+    ElementalReactionType,
+)
 from .die import Die
 from .event import (
     EventArgumentsBase,
@@ -42,11 +50,22 @@ from .event import (
     DeclareRoundEndEventArguments,
     CombatActionEventArguments,
     SwitchCharactorEventArguments,
+    ChargeEventArguments,
+    SkillEndEventArguments,
+    ReceiveDamageEventArguments,
+    MakeDamageEventArguments,
+    AfterMakeDamageEventArguments,
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
     ModifiableValueBase,
     RerollValue, DiceCostValue,
+    DamageMultiplyValue, DamageDecreaseValue,
+)
+from .struct import SkillActionArguments
+from .elemental_reaction import (
+    check_elemental_reaction,
+    apply_elemental_reaction,
 )
 
 
@@ -150,7 +169,7 @@ class Match(BaseModel):
     match_config: MatchConfig = MatchConfig()
 
     # random state
-    random_state: List = []
+    random_state: List[Any] = []
     _random_state: np.random.RandomState = np.random.RandomState()
 
     # match information
@@ -158,7 +177,7 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
-    action_queues: List[List[ActionBase]] = []
+    action_queues: List[List[Actions]] = []
     requests: List[Requests] = []
     winner: int = -1
 
@@ -267,7 +286,6 @@ class Match(BaseModel):
             self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
             event_args = self._act(DrawCardAction(
-                object_id = -1,
                 player_id = pnum, 
                 number = self.match_config.initial_hand_size
             ))
@@ -340,7 +358,10 @@ class Match(BaseModel):
                     f'Match state {self.match_state} not implemented.')
             if len(self.requests) or not run_continuously:
                 if len(self.requests):
-                    logging.info(f'{len(self.requests)} requests generated.')
+                    logging.info(
+                        f'{len(self.requests)} requests generated, '
+                        f'{", ".join([req.name for req in self.requests])}'
+                    )
                 return True
 
     def check_request_exist(self, request: Requests) -> bool:
@@ -384,8 +405,8 @@ class Match(BaseModel):
             self._respond_elemental_tuning(response)
         elif isinstance(response, DeclareRoundEndResponse):
             self._respond_declare_round_end(response)
-        # elif isinstance(response, UseSkillResponse):
-        #     self._respond_use_skill(response)
+        elif isinstance(response, UseSkillResponse):
+            self._respond_use_skill(response)
         # elif isinstance(response, UseCardResponse):
         #     self._respond_use_card(response)
         elif isinstance(response, SwitchCardResponse):
@@ -410,7 +431,7 @@ class Match(BaseModel):
         # hp of all charactors are 0
         for pnum, table in enumerate(self.player_tables):
             for charactor in table.charactors:
-                if not charactor.is_defeated:
+                if charactor.is_alive:
                     break
             else:
                 self.winner = pnum
@@ -448,13 +469,14 @@ class Match(BaseModel):
         # TODO: send round start event.
         """
         self.round_number += 1
+        for table in self.player_tables:
+            table.has_round_ended = False
         for pnum, player_table in enumerate(self.player_tables):
             player_table.dice.clear()
         # generate new dice
         event_args: List[EventArgumentsBase] = []
         for pnum, player_table in enumerate(self.player_tables):
             one_event_args = self._act(CreateDiceAction(
-                object_id = -1,
                 player_id = pnum,
                 number = self.match_config.initial_dice_number,
                 random = True
@@ -603,7 +625,7 @@ class Match(BaseModel):
                       mode: Literal['test', 'real'],
                       ) -> None:
         """
-        Modify values. It will directly modify the value argument.
+        Modify values. It will modify the value argument in-place.
         Args:
             value (ModifiableValues): The value to be modified. It contains 
                 value itself and all necessary information to modify the value.
@@ -706,14 +728,25 @@ class Match(BaseModel):
         ))
 
     def _request_use_skill(self, player_id: int):
-        """
         table = self.player_tables[player_id]
-        if table.charactors[table.active_charactor_id].skill:
-            self.requests.append(UseSkillRequest(
-                player_id = player_id
-            ))
-        """
-        ...
+        front_charactor = table.charactors[table.active_charactor_id]
+        for sid, skill in enumerate(front_charactor.skills):
+            if skill.is_valid(front_charactor.hp, front_charactor.charge):
+                cost = skill.cost.copy()
+                self._modify_value(cost, mode = 'test')
+                dice_colors = [die.color for die in table.dice]
+                if cost.is_valid(dice_colors = dice_colors, strict = False):
+                    self.requests.append(UseSkillRequest(
+                        player_id = player_id,
+                        # TODO currently only combat
+                        type = RequestActionType.COMBAT,
+                        charactor_id = table.active_charactor_id,
+                        skill_id = sid,
+                        dice_colors = dice_colors,
+                        cost = cost
+                    ))
+                else:
+                    ...
 
     def _request_use_card(self, player_id: int):
         """
@@ -750,13 +783,11 @@ class Match(BaseModel):
                 start_idx = next_idx
         event_args: List[EventArgumentsBase] = []
         event_args += self._act(RestoreCardAction(
-            object_id = -1,
             player_id = response.player_id,
             card_ids = card_hand_ids
         ))
         event_args += self._act(
             DrawCardAction(
-                object_id = -1,
                 player_id = response.player_id,
                 number = len(response.card_ids)
             )
@@ -811,7 +842,6 @@ class Match(BaseModel):
             self._set_match_state(MatchState.ERROR)
             return
         event_args = self._action_create_dice(CreateDiceAction(
-            object_id = -1,
             player_id = response.player_id,
             number = len(response.reroll_dice_ids),
             random = True,
@@ -846,7 +876,6 @@ class Match(BaseModel):
         cost_ids = response.cost_ids
         if len(cost_ids):
             actions.append(RemoveDiceAction(
-                object_id = -1,
                 player_id = response.player_id,
                 dice_ids = cost_ids,
             ))
@@ -857,7 +886,6 @@ class Match(BaseModel):
         actions.append(SwitchCharactorAction.from_response(response))
         if response.request.type == RequestActionType.COMBAT:
             actions.append(CombatActionAction(
-                object_id = -1,
                 player_id = response.player_id,
             ))
         self.action_queues.append(actions)
@@ -869,24 +897,20 @@ class Match(BaseModel):
         Deal with elemental tuning response. It is splitted into 3 actions,
         remove one hand card, remove one die, and add one die.
         """
-        color = response.die_color
+        die_id = response.cost_id
         table = self.player_tables[response.player_id]
-        die_id = [die.color for die in table.dice].index(color)
         actions: List[ActionBase] = []
         actions.append(RemoveCardAction(
-            object_id = -1,
             player_id = response.player_id,
             card_id = response.card_id,
             card_position = 'HAND',
             remove_type = 'BURNED'
         ))
         actions.append(RemoveDiceAction(
-            object_id = -1,
             player_id = response.player_id,
             dice_ids = [die_id]
         ))
         actions.append(CreateDiceAction(
-            object_id = -1,
             player_id = response.player_id,
             number = 1,
             color = ELEMENT_TO_DIE_COLOR[
@@ -904,15 +928,49 @@ class Match(BaseModel):
         actions: List[ActionBase] = []
         actions.append(DeclareRoundEndAction.from_response(response))
         actions.append(CombatActionAction(
-            object_id = -1,
             player_id = response.player_id,
         ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
 
-    def _respond_use_skill(self, response: Responses):
-        ...
+    def _respond_use_skill(self, response: UseSkillResponse):
+        request = response.request
+        self._modify_value(
+            value = request.cost.original_value,
+            mode = 'real'
+        )  # TODO: should use original value. need test.
+        skill = self.player_tables[response.player_id].charactors[
+            request.charactor_id].skills[request.skill_id]
+        skill_action_args = SkillActionArguments(
+            player_id = response.player_id,
+            our_active_charactor_id = self.player_tables[
+                response.player_id].active_charactor_id,
+            enemy_active_charactor_id = self.player_tables[
+                1 - response.player_id].active_charactor_id,
+            our_charactors = [
+                i for i, c in enumerate(self.player_tables[
+                    response.player_id].charactors)
+                if c.is_alive
+            ],
+            enemy_charactors = [
+                i for i, c in enumerate(self.player_tables[
+                    1 - response.player_id].charactors)
+                if c.is_alive
+            ],
+        )
+        actions = skill.get_actions(skill_action_args)  # TODO: add information
+        actions.append(SkillEndAction(
+            player_id = response.player_id,
+            charactor_id = request.charactor_id,
+        ))
+        if request.type == RequestActionType.COMBAT:
+            actions.append(CombatActionAction(
+                player_id = response.player_id,
+            ))
+        self.action_queues.append(actions)
+        self.requests = [x for x in self.requests
+                         if x.player_id != response.player_id]
 
     def _respond_use_card(self, response: Responses):
         ...
@@ -953,6 +1011,12 @@ class Match(BaseModel):
             return list(self._action_declare_round_end(action))
         elif isinstance(action, CombatActionAction):
             return list(self._action_combat_action(action))
+        elif isinstance(action, MakeDamageAction):
+            return list(self._action_make_damage(action))
+        elif isinstance(action, ChargeAction):
+            return list(self._action_charge(action))
+        elif isinstance(action, SkillEndAction):
+            return list(self._action_skill_end(action))
         else:
             logging.error(f'Unknown action {action}.')
             self._set_match_state(MatchState.ERROR)
@@ -1196,4 +1260,141 @@ class Match(BaseModel):
         return [SwitchCharactorEventArguments(
             action = action,
             last_active_charactor_id = current_active_id,
+        )]
+
+    def _action_make_damage(self, action: MakeDamageAction) \
+            -> List[ReceiveDamageEventArguments | MakeDamageEventArguments 
+                    | AfterMakeDamageEventArguments 
+                    | SwitchCharactorEventArguments]:
+        """
+        Make damage action. It will return two types of events:
+        1. MakeDamageEventArguments: All damage information dealt by this 
+            action.
+        2. SwitchCharactorEventArguments: If this damage action contains
+            charactor change, i.e. overloaded, Skills of Anemo charactors, etc.
+            A SwitchCharactorEventArguments will be generated.
+            NOTE: only charactor switch of charactor received this damage will
+            trigger this event, charactor switch of attacker (Kazuha, Kenki, 
+            When the Crane Returned) should be another SwtichCharactorAction.
+        """
+        damage_lists = action.damage_value_list
+        target_id = action.target_id
+        next_charactor: int = action.change_charactor
+        events: List[ReceiveDamageEventArguments | MakeDamageEventArguments 
+                     | AfterMakeDamageEventArguments
+                     | SwitchCharactorEventArguments] = []
+        infos: List[ReceiveDamageEventArguments] = []
+        while len(damage_lists) > 0:
+            damage = damage_lists.pop(0)
+            damage_original = damage.copy()
+            table = self.player_tables[damage.target_player_id]
+            charactor = table.charactors[damage.target_charactor_id]
+            damage_element_type = DAMAGE_TYPE_TO_ELEMENT[damage.damage_type]
+            target_element_application = charactor.element_application
+            [elemental_reaction, reacted_elements, applied_elements] = \
+                check_elemental_reaction(
+                    damage_element_type, 
+                    target_element_application
+            )
+            if (elemental_reaction is ElementalReactionType.OVERLOADED
+                    and damage.target_charactor_id 
+                    == table.active_charactor_id):
+                # overloaded to next charactor
+                if damage.target_player_id != target_id:
+                    self._set_match_state(MatchState.ERROR)
+                    raise ValueError(
+                        'Overloaded damage target player '
+                        f'{damage.target_player_id} '
+                        f'does not match action target player {target_id}.'
+                    )
+                nci = table.next_charactor_id()
+                if nci is not None:
+                    next_charactor = nci
+            # apply elemental reaction, update damage and append new damages
+            damages_after_elemental_reaction = \
+                apply_elemental_reaction(
+                    table.charactors,
+                    damage, 
+                    elemental_reaction, 
+                    reacted_elements,
+                )
+            damage = damages_after_elemental_reaction.pop(0)
+            damage_lists += damages_after_elemental_reaction
+            # apply 3-step damage modification
+            self._modify_value(damage, 'real')
+            damage = DamageMultiplyValue.from_increase_value(damage)
+            self._modify_value(damage, 'real')
+            damage = DamageDecreaseValue.from_multiply_value(damage)
+            self._modify_value(damage, 'real')
+            # apply final damage and applied elements
+            hp_before = charactor.hp
+            charactor.hp -= damage.damage
+            if charactor.hp < 0:
+                charactor.hp = 0
+            charactor.element_application = applied_elements
+            infos.append(ReceiveDamageEventArguments(
+                action = action,
+                original_damage = damage_original,
+                final_damage = damage,
+                hp_before = hp_before,
+                hp_after = charactor.hp,
+                elemental_reaction = elemental_reaction,
+                reacted_elements = reacted_elements,
+            ))
+        make_damage_event = MakeDamageEventArguments(
+            action = action,
+            damages = infos,
+        )
+        events.append(make_damage_event)
+        events += infos
+        events.append(AfterMakeDamageEventArguments.
+                      from_make_damage_event_arguments(make_damage_event))
+        if next_charactor != self.player_tables[target_id].active_charactor_id:
+            # charactor switch
+            sw_action = SwitchCharactorAction(
+                player_id = target_id,
+                charactor_id = next_charactor,
+            )
+            sw_events = self._action_switch_charactor(sw_action)
+            events += sw_events
+        # TODO side-effect of elemental reaction
+        # TODO when active charactor is defeated, trigger event
+        return events
+
+    def _action_charge(self, action: ChargeAction) \
+            -> List[ChargeEventArguments]:
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        charactor = table.charactors[table.active_charactor_id]
+        logging.info(
+            f'player {player_id} '
+            f'charactor {charactor.name}:{table.active_charactor_id} '
+            f'charged {action.charge}.'
+        )
+        old_charge = charactor.charge
+        charactor.charge += action.charge
+        if charactor.charge > charactor.max_charge:
+            charactor.charge = charactor.max_charge
+        return [ChargeEventArguments(
+            action = action,
+            charge_before = old_charge,
+            charge_after = charactor.charge,
+        )]
+
+    """
+    Action funtions that only used to trigger specific event
+    """
+
+    def _action_skill_end(self, action: SkillEndAction) \
+            -> List[SkillEndEventArguments]:
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        charactor = table.charactors[table.active_charactor_id]
+        logging.info(
+            f'player {player_id} '
+            f'charactor {charactor.name}:{table.active_charactor_id} '
+            f'skill ended.'
+        )
+        return [SkillEndEventArguments(
+            action = action,
         )]

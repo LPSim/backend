@@ -1,6 +1,6 @@
 from utils import BaseModel
 from typing import Literal, List
-from .consts import DieColor
+from .consts import DieColor, ElementalReactionType, ElementType
 from .action import (
     ActionTypes, 
     ActionBase,
@@ -13,7 +13,10 @@ from .action import (
     DeclareRoundEndAction,
     CombatActionAction,
     SwitchCharactorAction,
+    MakeDamageAction,
+    ChargeAction,
 )
+from .modifiable_values import DamageValue, FinalDamageValue
 
 
 class EventArgumentsBase(BaseModel):
@@ -106,7 +109,7 @@ class RoundPrepareEventArguments(EventArgumentsBase):
             player.
     """
     type: Literal[ActionTypes.ROUND_PREPARE] = ActionTypes.ROUND_PREPARE
-    action: ActionBase = ActionBase(type = ActionTypes.EMPTY, object_id = -1)
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
     player_go_first: int
     round: int
     dice_colors: List[List[DieColor]]
@@ -138,6 +141,72 @@ class SwitchCharactorEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
     action: SwitchCharactorAction
     last_active_charactor_id: int
+
+
+class ReceiveDamageEventArguments(EventArgumentsBase):
+    """
+    Event arguments for receive damage event. Some objects may trigger events
+    before charactor defeated settlement start when received special 
+    damages, e.g. Seed of Skandha, Tenacity of the Millelith, Cryo Cicins.
+    """
+    type: Literal[ActionTypes.RECEIVE_DAMAGE] = ActionTypes.RECEIVE_DAMAGE
+    action: MakeDamageAction
+    original_damage: DamageValue
+    final_damage: FinalDamageValue
+    hp_before: int
+    hp_after: int
+    elemental_reaction: ElementalReactionType
+    reacted_elements: List[ElementType]
+
+
+class MakeDamageEventArguments(EventArgumentsBase):
+    """
+    Event arguments for make damage event. Some objects may trigger events
+    before charactor defeated settlement start, e.g. reburn.
+    """
+
+    type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
+    action: MakeDamageAction
+    damages: List[ReceiveDamageEventArguments]
+
+
+class AfterMakeDamageEventArguments(MakeDamageEventArguments):
+    """
+    Event arguments for make damage event, contains character defeated
+    settlements.
+    """
+
+    type: Literal[ActionTypes.AFTER_MAKE_DAMAGE] = \
+        ActionTypes.AFTER_MAKE_DAMAGE
+    action: MakeDamageAction
+    damages: List[ReceiveDamageEventArguments]
+
+    @staticmethod
+    def from_make_damage_event_arguments(
+        event_arguments: MakeDamageEventArguments
+    ) -> 'AfterMakeDamageEventArguments':
+        return AfterMakeDamageEventArguments(
+            action = event_arguments.action,
+            damages = event_arguments.damages,
+        )
+
+
+class ChargeEventArguments(EventArgumentsBase):
+    """
+    Event arguments for charge event.
+    """
+    type: Literal[ActionTypes.CHARGE] = ActionTypes.CHARGE
+    action: ChargeAction
+    charge_before: int
+    charge_after: int
+
+
+class SkillEndEventArguments(EventArgumentsBase):
+    """
+    Event arguments for skill end event.
+    """
+    type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
 
 
 # TODO: combine arguments of events and actions.

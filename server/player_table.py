@@ -119,3 +119,40 @@ class PlayerTable(BaseModel):
         # result += self.table_deck
 
         return result
+
+    def next_charactor_id(self, current_id: int | None = None) -> int | None:
+        """
+        Returns the next charactor ID. If `current_id` is not provided, the
+        active charactor ID will be used.
+
+        Returns:
+            int: the next charactor ID. If there is no next charactor, returns
+                None.
+        """
+        if current_id is None:
+            current_id = self.active_charactor_id
+        cnum = len(self.charactors)
+        for i in range(1, cnum):
+            target = (current_id + i) % cnum
+            if self.charactors[target].is_alive:
+                return target
+        return None
+
+    def previous_charactor_id(
+            self, current_id: int | None = None) -> int | None:
+        """
+        Returns the previous charactor ID. If `current_id` is not provided, the
+        active charactor ID will be used.
+
+        Returns:
+            int: the previous charactor ID. If there is no previous charactor,
+                returns None.
+        """
+        if current_id is None:
+            current_id = self.active_charactor_id
+        cnum = len(self.charactors)
+        for i in range(1, cnum):
+            target = (cnum + current_id - i) % cnum
+            if self.charactors[target].is_alive:
+                return target
+        return None

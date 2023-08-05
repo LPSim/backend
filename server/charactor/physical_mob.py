@@ -17,6 +17,7 @@ class PhysicalMob(CharactorBase):
     Their elemeny type is only used to decide dice color when using skills.
     """
     name: Literal['PhysicalMob']
+    version = '1.0.0'
     element: ElementType
     hp: int = 10
     max_hp: int = 10
@@ -46,6 +47,7 @@ class PhysicalMob(CharactorBase):
             name = 'Physical Burst',
             damage_type = DamageType.PHYSICAL,
             cost = ElementalBurstBase.get_cost(self.element, 3),
-            damage = 5
+            damage = 5,
+            charge = 2
         )
         self.skills = [normal_attack, elemental_skill, elemental_burst]

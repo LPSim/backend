@@ -97,6 +97,18 @@ class DeclareRoundEndRequest(RequestBase):
     type: Literal[RequestActionType.COMBAT] = RequestActionType.COMBAT
 
 
+class UseSkillRequest(RequestBase):
+    """
+    Request for use skill.
+    """
+    name: Literal['UseSkillRequest'] = 'UseSkillRequest'
+    type: Literal[RequestActionType.COMBAT, RequestActionType.QUICK]
+    charactor_id: int
+    skill_id: int
+    dice_colors: List[DieColor]
+    cost: DiceCostValue
+
+
 class ResponseBase(BaseModel):
     """
     Base class of response.
@@ -197,7 +209,7 @@ class SwitchCharactorResponse(ResponseBase):
 class ElementalTuningResponse(ResponseBase):
     name: Literal['ElementalTuningResponse'] = 'ElementalTuningResponse'
     request: ElementalTuningRequest
-    die_color: DieColor  # TODO: use die id
+    cost_id: int
     card_id: int
 
     @property
@@ -205,8 +217,10 @@ class ElementalTuningResponse(ResponseBase):
         """
         Check whether the response is valid.
         """
-        return self.die_color in self.request.dice_colors \
+        return (
+            self.cost_id >= 0 and self.cost_id < len(self.request.dice_colors)
             and self.card_id in self.request.card_ids
+        )
 
 
 class DeclareRoundEndResponse(ResponseBase):
@@ -214,14 +228,29 @@ class DeclareRoundEndResponse(ResponseBase):
     request: DeclareRoundEndRequest
 
 
+class UseSkillResponse(ResponseBase):
+    name: Literal['UseSkillResponse'] = 'UseSkillResponse'
+    request: UseSkillRequest
+    cost_ids: List[int]
+
+    @property
+    def is_valid(self) -> bool:
+        """
+        Check whether the response is valid.
+        """
+        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
+        self.request.cost.is_valid(cost_colors)
+        return True
+
+
 Requests = (
     SwitchCardRequest | ChooseCharactorRequest | RerollDiceRequest
     | SwitchCharactorRequest | ElementalTuningRequest
-    | DeclareRoundEndRequest
+    | DeclareRoundEndRequest | UseSkillRequest
 )
 
 Responses = (
     SwitchCardResponse | ChooseCharactorResponse | RerollDiceResponse
     | SwitchCharactorResponse | ElementalTuningResponse
-    | DeclareRoundEndResponse
+    | DeclareRoundEndResponse | UseSkillResponse
 )

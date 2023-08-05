@@ -21,6 +21,7 @@ class CharactorBase(ObjectBase):
     Base class of charactors.
     """
     name: str
+    version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     element: ElementType
     hp: int
@@ -38,10 +39,15 @@ class CharactorBase(ObjectBase):
     artifact: ArtifactBase | None = None
     talent: TalentBase | None = None
     status: List[CharactorStatus] = []
+    element_application: List[ElementType] = []
 
     @property
     def is_defeated(self):
         return self.hp == 0
+
+    @property
+    def is_alive(self):
+        return self.hp > 0
 
     def get_object_lists(self) -> List[ObjectBase]:
         """

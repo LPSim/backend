@@ -1,7 +1,10 @@
 from enum import Enum
 from typing import List, Any
 from utils import BaseModel
-from .consts import DieColor
+from .consts import (
+    DieColor, DamageType, DamageSourceType,
+    ElementalReactionType, ElementType
+)
 
 
 class ModifiableValueTypes(str, Enum):
@@ -96,3 +99,58 @@ class DiceCostValue(ModifiableValueBase):
                 if same_num + omni_num < self.same_dice_number:
                     return False  # same dice not enough
         return True
+
+
+class DamageIncreaseValue(ModifiableValueBase):
+    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
+
+    damage_source_type: DamageSourceType
+    target_player_id: int
+    target_charactor_id: int
+    damage: int
+    damage_type: DamageType
+    charge_cost: int
+    element_reaction: ElementalReactionType = ElementalReactionType.NONE
+    reacted_elements: List[ElementType] = []
+
+
+class DamageMultiplyValue(DamageIncreaseValue):
+    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_MULTIPLY
+
+    @staticmethod
+    def from_increase_value(
+        increase_value: DamageIncreaseValue
+    ) -> 'DamageMultiplyValue':
+        return DamageMultiplyValue(
+            damage_source_type = increase_value.damage_source_type,
+            target_player_id = increase_value.target_player_id,
+            target_charactor_id = increase_value.target_charactor_id,
+            damage = increase_value.damage,
+            damage_type = increase_value.damage_type,
+            charge_cost = increase_value.charge_cost,
+            element_reaction = increase_value.element_reaction,
+            reacted_elements = increase_value.reacted_elements,
+        )
+
+
+class DamageDecreaseValue(DamageIncreaseValue):
+    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_DECREASE
+
+    @staticmethod
+    def from_multiply_value(
+        multiply_value: DamageMultiplyValue
+    ) -> 'DamageDecreaseValue':
+        return DamageDecreaseValue(
+            damage_source_type = multiply_value.damage_source_type,
+            target_player_id = multiply_value.target_player_id,
+            target_charactor_id = multiply_value.target_charactor_id,
+            damage = multiply_value.damage,
+            damage_type = multiply_value.damage_type,
+            charge_cost = multiply_value.charge_cost,
+            element_reaction = multiply_value.element_reaction,
+            reacted_elements = multiply_value.reacted_elements,
+        )
+
+
+DamageValue = DamageIncreaseValue  # alias
+FinalDamageValue = DamageDecreaseValue  # alias

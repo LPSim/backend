@@ -9,6 +9,7 @@ from .interaction import (
     SwitchCharactorResponse,
 )
 from .consts import DieColor
+from .modifiable_values import DamageValue
 
 
 class ActionTypes(str, Enum):
@@ -22,9 +23,16 @@ class ActionTypes(str, Enum):
     DECLARE_ROUND_END = 'DECLARE_ROUND_END'
     COMBAT_ACTION = 'COMBAT_ACTION'
     SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
+    CHARGE = 'CHARGE'
+    SKILL_END = 'SKILL_END'
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
+
+    # make damage related events
+    RECEIVE_DAMAGE = 'RECEIVE_DAMAGE'
+    MAKE_DAMAGE = 'MAKE_DAMAGE'
+    AFTER_MAKE_DAMAGE = 'AFTER_MAKE_DAMAGE'
 
 
 class ActionBase(BaseModel):
@@ -34,11 +42,8 @@ class ActionBase(BaseModel):
 
     Attributes:
         action_type (Literal[ActionTypes]): The type of the action.
-        object_id (int): The ID of the object associated with the action.
-            -1 means action from the system or from response.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
-    object_id: int
 
 
 class DrawCardAction(ActionBase):
@@ -84,7 +89,6 @@ class ChooseCharactorAction(ActionBase):
         Generate ChooseCharactorAction from ChooseCharactorResponse.
         """
         return cls(
-            object_id = -1,
             player_id = response.player_id,
             charactor_id = response.charactor_id,
         )
@@ -129,7 +133,6 @@ class RemoveDiceAction(ActionBase):
         TODO: from other responses, i.e. use skill response.
         """
         return cls(
-            object_id = -1,
             player_id = response.player_id,
             dice_ids = response.reroll_dice_ids,
         )
@@ -149,7 +152,6 @@ class DeclareRoundEndAction(ActionBase):
         Generate DeclareRoundEndAction from DeclareRoundEndResponse.
         """
         return cls(
-            object_id = -1,
             player_id = response.player_id,
         )
 
@@ -167,7 +169,6 @@ class CombatActionAction(ActionBase):
         Generate CombatActionAction from Responses.
         """
         return cls(
-            object_id = -1,
             player_id = response.player_id,
         )
 
@@ -186,7 +187,52 @@ class SwitchCharactorAction(ActionBase):
         Generate SwitchCharactorAction from SwitchCharactorResponse.
         """
         return cls(
-            object_id = -1,
             player_id = response.player_id,
             charactor_id = response.charactor_id,
         )
+
+
+class MakeDamageAction(ActionBase):
+    """
+    Action for making damage. Heal treats as negative damage. Elemental 
+    applies to the charactor (e.g. Kokomi) treats as zero damage.
+
+    Args:
+        player_id (int): The ID of the player to make damage from.
+        damage_value_list (List[DamageValue]): The damage values to make.
+        target_id (int): The ID of the player to make damage to.
+        change_charactor (int): Change to charactor ID, if not change, ID
+            should same as current active charactor ID.
+    """
+    type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
+    player_id: int
+    damage_value_list: List[DamageValue]
+    target_id: int
+    change_charactor: int
+
+
+class ChargeAction(ActionBase):
+    """
+    Action for charging.
+    """
+    type: Literal[ActionTypes.CHARGE] = ActionTypes.CHARGE
+    player_id: int
+    charactor_id: int
+    charge: int
+
+
+class SkillEndAction(ActionBase):
+    """
+    Action for ending skill.
+    """
+    type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
+    player_id: int
+    charactor_id: int
+
+
+Actions = (
+    ActionBase | DrawCardAction | RestoreCardAction | RemoveCardAction 
+    | ChooseCharactorAction | CreateDiceAction | RemoveDiceAction
+    | DeclareRoundEndAction | CombatActionAction | SwitchCharactorAction
+    | MakeDamageAction | ChargeAction | SkillEndAction
+)
