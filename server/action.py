@@ -25,6 +25,7 @@ class ActionTypes(str, Enum):
     SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
     CHARGE = 'CHARGE'
     SKILL_END = 'SKILL_END'
+    CHARACTOR_DEFEATED = 'CHARACTOR_DEFEATED'
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
@@ -33,6 +34,9 @@ class ActionTypes(str, Enum):
     RECEIVE_DAMAGE = 'RECEIVE_DAMAGE'
     MAKE_DAMAGE = 'MAKE_DAMAGE'
     AFTER_MAKE_DAMAGE = 'AFTER_MAKE_DAMAGE'
+
+    # generate request actions
+    GENERATE_CHOOSE_CHARACTOR = 'GENERATE_CHOOSE_CHARACTOR'
 
 
 class ActionBase(BaseModel):
@@ -230,9 +234,29 @@ class SkillEndAction(ActionBase):
     charactor_id: int
 
 
+class CharactorDefeatedAction(ActionBase):
+    """
+    Action for charactor defeated.
+    """
+    type: Literal[ActionTypes.CHARACTOR_DEFEATED] = \
+        ActionTypes.CHARACTOR_DEFEATED
+    player_id: int
+    charactor_id: int
+
+
+class GenerateChooseCharactorRequestAction(ActionBase):
+    """
+    Action for generating choose charactor action.
+    """
+    type: Literal[ActionTypes.GENERATE_CHOOSE_CHARACTOR] = \
+        ActionTypes.GENERATE_CHOOSE_CHARACTOR
+    player_id: int
+
+
 Actions = (
     ActionBase | DrawCardAction | RestoreCardAction | RemoveCardAction 
     | ChooseCharactorAction | CreateDiceAction | RemoveDiceAction
     | DeclareRoundEndAction | CombatActionAction | SwitchCharactorAction
-    | MakeDamageAction | ChargeAction | SkillEndAction
+    | MakeDamageAction | ChargeAction | SkillEndAction 
+    | CharactorDefeatedAction | GenerateChooseCharactorRequestAction
 )

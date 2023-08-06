@@ -21,6 +21,8 @@ from .action import (
     MakeDamageAction,
     ChargeAction,
     SkillEndAction,
+    CharactorDefeatedAction,
+    GenerateChooseCharactorRequestAction,
 )
 from .interaction import (
     Requests, Responses, RequestActionType,
@@ -55,6 +57,7 @@ from .event import (
     ReceiveDamageEventArguments,
     MakeDamageEventArguments,
     AfterMakeDamageEventArguments,
+    CharactorDefeatedEventArguments,
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
@@ -171,6 +174,37 @@ class Match(BaseModel):
     # random state
     random_state: List[Any] = []
     _random_state: np.random.RandomState = np.random.RandomState()
+
+    # system_event_handler
+    class SystemEventHandler(ObjectBase):
+
+        def event_handler_AFTER_MAKE_DAMAGE(
+                self, event: AfterMakeDamageEventArguments) -> List[Actions]:
+            """
+            After damage made, check whether anyone has defeated.
+            """
+            actions: List[Actions] = []
+            for pnum, [hps, lives] in enumerate(zip(event.charactor_hps, 
+                                                    event.charactor_alive)):
+                for cnum, [hp, alive] in enumerate(zip(hps, lives)):
+                    if hp == 0 and alive:
+                        actions.append(CharactorDefeatedAction(
+                            player_id = pnum,
+                            charactor_id = cnum,
+                        ))
+            return actions
+
+        def event_handler_CHARACTOR_DEFEATED(
+                self, event: CharactorDefeatedEventArguments) -> List[Actions]:
+            """
+            After charactor defeated, check whether need to switch charactor.
+            """
+            if event.need_switch:
+                return [GenerateChooseCharactorRequestAction(
+                    player_id = event.action.player_id,
+                )]
+            return []
+    system_event_handler: SystemEventHandler = SystemEventHandler()
 
     # match information
     round_number: int = 0
@@ -311,24 +345,24 @@ class Match(BaseModel):
         """
         while True:
             # check if game reaches end condition
-            if self._is_game_end():
+            if self.is_game_end():
                 self._set_match_state(MatchState.ENDED)
                 return True
             # check if it need response
-            if len(self.requests) != 0:
+            elif len(self.requests) != 0:
                 logging.info('There are still requests not responded.')
                 return False
             # check if action is needed
-            if len(self.action_queues) != 0:
+            elif len(self.action_queues) != 0:
                 self._next_action()
-                continue
             # all response and action are cleared, start state transition
-            if self.match_state == MatchState.STARTING:
+            elif self.match_state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
                 self._request_switch_card()
             elif self.match_state == MatchState.STARTING_CARD_SWITCH:
                 self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
-                self._request_choose_charactor()
+                for player_id in range(len(self.player_tables)):
+                    self._request_choose_charactor(player_id)
             elif self.match_state == MatchState.STARTING_CHOOSE_CHARACTOR:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
@@ -420,7 +454,7 @@ class Match(BaseModel):
             return False
         return True
 
-    def _is_game_end(self) -> bool:
+    def is_game_end(self) -> bool:
         """
         Check if the game reaches end condition. If game is ended, it will
         set `self.winner` to the winner of the game.
@@ -428,13 +462,15 @@ class Match(BaseModel):
         Returns:
             bool: True if game reaches end condition, False otherwise.
         """
-        # hp of all charactors are 0
+        # all charactors are defeated
+        # TODO: for monsters, need different conditions
         for pnum, table in enumerate(self.player_tables):
             for charactor in table.charactors:
                 if charactor.is_alive:
                     break
             else:
-                self.winner = pnum
+                assert len(self.player_tables) == 2
+                self.winner = 1 - pnum
                 return True
         return False
 
@@ -587,36 +623,43 @@ class Match(BaseModel):
         3. for other objects, order is: summon, support, hand, dice, deck.
             3.1. all other objects in same region are sorted by their index in
                 the list.
+        4. system event handler
         """
         return (
             self.player_tables[self.current_player].get_object_lists()
             + self.player_tables[1 - self.current_player].get_object_lists()
+            + [self.system_event_handler]
         )
 
     def _trigger_event(self, event_arg: EventArgumentsBase,
-                       ) -> List[ActionBase]:
+                       ) -> List[Actions]:
         """
         Trigger event. It will return a list of actions that will be triggered
         by the event. The actions will be sorted by the sort rule.
         """
-        ret: List[ActionBase] = []
+        ret: List[Actions] = []
         object_list = self.get_object_lists()
         for obj in object_list:
             name = obj.__class__.__name__
+            # TODO with pydantic, cannot overload function on None
             if hasattr(obj, 'name'):
                 name = obj.name  # type: ignore
-            logging.debug(f'Trigger event {event_arg.type} for {name}.')
-            ...  # TODO: trigger event
+            handler_name = f'event_handler_{event_arg.type}'
+            func = getattr(obj, handler_name, None)
+            if func is not None:
+                logging.info(f'Trigger event {event_arg.type} for {name}.')
+                actions = func(event_arg)
+                ret += actions
         return ret
 
     def _trigger_events(self, event_args: List[EventArgumentsBase],
-                        ) -> List[ActionBase]:
+                        ) -> List[Actions]:
         """
         Trigger events. It will return a list of actions that will be triggered
         by the events. The order of actions is the same as the order of events.
         For one event, the actions will be sorted by the sort rule.
         """
-        ret: List[ActionBase] = []
+        ret: List[Actions] = []
         for event_arg in event_args:
             ret.extend(self._trigger_event(event_arg))
         return ret
@@ -658,16 +701,19 @@ class Match(BaseModel):
                 card_names = [card.name for card in player_table.hands]
             ))
 
-    def _request_choose_charactor(self):
+    def _request_choose_charactor(self, player_id: int):
         """
         Generate switch card requests.
         """
-        for pnum, player_table in enumerate(self.player_tables):
-            self.requests.append(ChooseCharactorRequest(
-                player_id = pnum,
-                available_charactor_ids = list(range(len(
-                    player_table.charactors)))
-            ))
+        table = self.player_tables[player_id]
+        available: List[int] = []
+        for cnum, charactor in enumerate(table.charactors):
+            if charactor.is_alive:
+                available.append(cnum)
+        self.requests.append(ChooseCharactorRequest(
+            player_id = player_id,
+            available_charactor_ids = available
+        ))
 
     def _request_reroll_dice(self, player_id: int, reroll_number: int):
         player_table = self.player_tables[player_id]
@@ -693,7 +739,7 @@ class Match(BaseModel):
         candidate_charactor_ids = [
             x for x in range(len(table.charactors))
             if x != table.active_charactor_id 
-            and not table.charactors[x].is_defeated
+            and table.charactors[x].is_alive
         ]
         if len(candidate_charactor_ids):
             self.requests.append(SwitchCharactorRequest(
@@ -1017,6 +1063,10 @@ class Match(BaseModel):
             return list(self._action_charge(action))
         elif isinstance(action, SkillEndAction):
             return list(self._action_skill_end(action))
+        elif isinstance(action, CharactorDefeatedAction):
+            return list(self._action_charactor_defeated(action))
+        elif isinstance(action, GenerateChooseCharactorRequestAction):
+            return list(self._action_generate_choose_charactor_request(action))
         else:
             logging.error(f'Unknown action {action}.')
             self._set_match_state(MatchState.ERROR)
@@ -1103,7 +1153,9 @@ class Match(BaseModel):
     def _action_choose_charactor(self, action: ChooseCharactorAction) \
             -> List[ChooseCharactorEventArguments]:
         """
-        Choose a charactor.
+        This action triggers by game start and by active charactor is defeated.
+        Be care of differences between choose_charactor when implementing 
+        event triggers.
         """
         player_id = action.player_id
         charactor_id = action.charactor_id
@@ -1245,6 +1297,11 @@ class Match(BaseModel):
 
     def _action_switch_charactor(self, action: SwitchCharactorAction) \
             -> List[SwitchCharactorEventArguments]:
+        """
+        This action triggers by player manually declare charactor switch
+        or by using skills or by overloaded. Be care of differences between
+        choose_charactor when implementing event triggers.
+        """
         player_id = action.player_id
         table = self.player_tables[player_id]
         current_active_id = table.active_charactor_id
@@ -1344,6 +1401,10 @@ class Match(BaseModel):
         make_damage_event = MakeDamageEventArguments(
             action = action,
             damages = infos,
+            charactor_hps = [[c.hp for c in table.charactors] 
+                             for table in self.player_tables],
+            charactor_alive = [[c.is_alive for c in table.charactors] 
+                               for table in self.player_tables],
         )
         events.append(make_damage_event)
         events += infos
@@ -1381,6 +1442,33 @@ class Match(BaseModel):
             charge_after = charactor.charge,
         )]
 
+    def _action_charactor_defeated(self, action: CharactorDefeatedAction) \
+            -> List[CharactorDefeatedEventArguments]:
+        player_id = action.player_id
+        charactor_id = action.charactor_id
+        table = self.player_tables[player_id]
+        charactor = table.charactors[charactor_id]
+        logging.info(
+            f'player {player_id} '
+            f'charactor {charactor.name}:{charactor_id} '
+            f'defeated.'
+        )
+        charactor.weapon = None
+        charactor.artifact = None
+        charactor.talent = None
+        charactor.status = []
+        charactor.element_application = []
+        charactor.is_alive = False
+        # TODO: for monsters, may disappear and generate new from candidate
+        need_switch = False
+        if table.active_charactor_id == charactor_id:
+            table.active_charactor_id = -1  # reset active charactor
+            need_switch = True
+        return [CharactorDefeatedEventArguments(
+            action = action,
+            need_switch = need_switch,
+        )]
+
     """
     Action funtions that only used to trigger specific event
     """
@@ -1398,3 +1486,15 @@ class Match(BaseModel):
         return [SkillEndEventArguments(
             action = action,
         )]
+
+    """
+    Action functions that generate requests. Should not trigger event, i.e.
+    return empty list.
+    """
+
+    def _action_generate_choose_charactor_request(
+        self, action: GenerateChooseCharactorRequestAction
+    ) -> List[EventArgumentsBase]:
+        # TODO switch, not choose
+        self._request_choose_charactor(action.player_id)
+        return []

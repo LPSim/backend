@@ -40,14 +40,11 @@ class CharactorBase(ObjectBase):
     talent: TalentBase | None = None
     status: List[CharactorStatus] = []
     element_application: List[ElementType] = []
+    is_alive: bool = True
 
     @property
     def is_defeated(self):
-        return self.hp == 0
-
-    @property
-    def is_alive(self):
-        return self.hp > 0
+        return not self.is_alive
 
     def get_object_lists(self) -> List[ObjectBase]:
         """

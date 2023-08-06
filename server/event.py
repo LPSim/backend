@@ -15,6 +15,7 @@ from .action import (
     SwitchCharactorAction,
     MakeDamageAction,
     ChargeAction,
+    CharactorDefeatedAction,
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -168,6 +169,8 @@ class MakeDamageEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     action: MakeDamageAction
     damages: List[ReceiveDamageEventArguments]
+    charactor_hps: List[List[int]]
+    charactor_alive: List[List[bool]]
 
 
 class AfterMakeDamageEventArguments(MakeDamageEventArguments):
@@ -188,6 +191,8 @@ class AfterMakeDamageEventArguments(MakeDamageEventArguments):
         return AfterMakeDamageEventArguments(
             action = event_arguments.action,
             damages = event_arguments.damages,
+            charactor_hps = event_arguments.charactor_hps,
+            charactor_alive = event_arguments.charactor_alive
         )
 
 
@@ -207,6 +212,16 @@ class SkillEndEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
+
+
+class CharactorDefeatedEventArguments(EventArgumentsBase):
+    """
+    Event arguments for charactor defeated event.
+    """
+    type: Literal[ActionTypes.CHARACTOR_DEFEATED] = \
+        ActionTypes.CHARACTOR_DEFEATED
+    action: CharactorDefeatedAction
+    need_switch: bool
 
 
 # TODO: combine arguments of events and actions.
