@@ -28,7 +28,17 @@ class ObjectBase(BaseModel):
     type: ObjectType = ObjectType.EMPTY
     player_id: int = -1
     index: int = 0
-    event_triggers: List[ActionTypes] = []
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        # check event handler name valid
+        for k in dir(self):
+            if k[:14] == 'event_handler_':
+                k = k[14:]
+                try:
+                    k = ActionTypes(k)
+                except ValueError:
+                    raise ValueError(f'Invalid event handler name: {k}')
 
 
 class SkillBase(ObjectBase):

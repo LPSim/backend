@@ -70,6 +70,7 @@ from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
 )
+from .event_handler import SystemEventHandler
 
 
 class MatchState(str, Enum):
@@ -175,36 +176,8 @@ class Match(BaseModel):
     random_state: List[Any] = []
     _random_state: np.random.RandomState = np.random.RandomState()
 
-    # system_event_handler
-    class SystemEventHandler(ObjectBase):
-
-        def event_handler_AFTER_MAKE_DAMAGE(
-                self, event: AfterMakeDamageEventArguments) -> List[Actions]:
-            """
-            After damage made, check whether anyone has defeated.
-            """
-            actions: List[Actions] = []
-            for pnum, [hps, lives] in enumerate(zip(event.charactor_hps, 
-                                                    event.charactor_alive)):
-                for cnum, [hp, alive] in enumerate(zip(hps, lives)):
-                    if hp == 0 and alive:
-                        actions.append(CharactorDefeatedAction(
-                            player_id = pnum,
-                            charactor_id = cnum,
-                        ))
-            return actions
-
-        def event_handler_CHARACTOR_DEFEATED(
-                self, event: CharactorDefeatedEventArguments) -> List[Actions]:
-            """
-            After charactor defeated, check whether need to switch charactor.
-            """
-            if event.need_switch:
-                return [GenerateChooseCharactorRequestAction(
-                    player_id = event.action.player_id,
-                )]
-            return []
-    system_event_handler: SystemEventHandler = SystemEventHandler()
+    # event handlers to implement special rules. TODO add special handler
+    event_handlers: List[ObjectBase] = [SystemEventHandler()]
 
     # match information
     round_number: int = 0
@@ -628,7 +601,7 @@ class Match(BaseModel):
         return (
             self.player_tables[self.current_player].get_object_lists()
             + self.player_tables[1 - self.current_player].get_object_lists()
-            + [self.system_event_handler]
+            + self.event_handlers
         )
 
     def _trigger_event(self, event_arg: EventArgumentsBase,
