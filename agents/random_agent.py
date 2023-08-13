@@ -106,7 +106,9 @@ class RandomAgent(AgentBase):
         """
         return ElementalTuningResponse(
             request = req, 
-            cost_id = int(self.random() * len(req.dice_colors)),
+            cost_id = req.dice_ids[
+                int(self.random() * len(req.dice_ids))
+            ],
             card_id = req.card_ids[
                 int(self.random() * len(req.card_ids))
             ]

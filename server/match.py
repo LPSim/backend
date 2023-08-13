@@ -58,6 +58,7 @@ from .event import (
     MakeDamageEventArguments,
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
+    RoundEndEventArguments,
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
@@ -169,6 +170,8 @@ class Match(BaseModel):
     """
 
     name: Literal['Match'] = 'Match'
+
+    version: Literal['0.0.1'] = '0.0.1'
 
     match_config: MatchConfig = MatchConfig()
 
@@ -513,6 +516,7 @@ class Match(BaseModel):
         Activate round_prepare event, and add to actions.
         """
         event_arg = RoundPrepareEventArguments(
+            match = self,
             player_go_first = self.current_player,
             round = self.round_number,
             dice_colors = [
@@ -582,6 +586,17 @@ class Match(BaseModel):
         """
         End a round. Will send round end event, collect actions.
         """
+        # TODO trigger event
+        event = RoundEndEventArguments(
+            match = self,
+            player_go_first = self.current_player,
+            round = self.round_number,
+            initial_card_draw = self.match_config.initial_card_draw
+        )
+
+        actions = self._trigger_event(event)
+        logging.info(f'In round ending, {len(actions)} actions triggered.')
+        self.action_queues.append(actions)
 
     def get_object_lists(self) -> List[ObjectBase]:
         """
@@ -725,19 +740,21 @@ class Match(BaseModel):
             ))
 
     def _request_elemental_tuning(self, player_id: int):
+        # TODO cannot burn omni and same die
         table = self.player_tables[player_id]
         target_color = ELEMENT_TO_DIE_COLOR[
             table.charactors[table.active_charactor_id].element
         ]
-        available_dice_colors = [
-            dice.color for dice in table.dice
+        available_dice_ids = [
+            did for did, dice in enumerate(table.dice)
             if dice.color != target_color and dice.color != DieColor.OMNI
         ]
         available_card_ids = list(range(len(table.hands)))
-        if len(available_dice_colors) and len(available_card_ids):
+        if len(available_dice_ids) and len(available_card_ids):
             self.requests.append(ElementalTuningRequest(
                 player_id = player_id,
-                dice_colors = available_dice_colors,
+                dice_colors = [dice.color for dice in table.dice],
+                dice_ids = available_dice_ids,
                 card_ids = available_card_ids
             ))
 
@@ -916,6 +933,7 @@ class Match(BaseModel):
         Deal with elemental tuning response. It is splitted into 3 actions,
         remove one hand card, remove one die, and add one die.
         """
+        # TODO tuned wrong color (active pyro, tuned dendro)
         die_id = response.cost_id
         table = self.player_tables[response.player_id]
         actions: List[ActionBase] = []
@@ -978,7 +996,11 @@ class Match(BaseModel):
                 if c.is_alive
             ],
         )
-        actions = skill.get_actions(skill_action_args)  # TODO: add information
+        actions: List[Actions] = [RemoveDiceAction(
+            player_id = response.player_id,
+            dice_ids = response.cost_ids,
+        )]
+        actions += skill.get_actions(skill_action_args)  # TODO: add information
         actions.append(SkillEndAction(
             player_id = response.player_id,
             charactor_id = request.charactor_id,
@@ -1068,7 +1090,10 @@ class Match(BaseModel):
             f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
         )
         event_arg = DrawCardEventArguments(
+            match = self,
             action = action,
+            hand_size = len(table.hands),
+            max_hand_size = self.match_config.max_hand_size,
         )
         return [event_arg]
 
@@ -1092,6 +1117,7 @@ class Match(BaseModel):
             f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
         )
         event_arg = RestoreCardEventArguments(
+            match = self,
             action = action,
             card_names = card_names
         )
@@ -1118,6 +1144,7 @@ class Match(BaseModel):
             f'remove type {remove_type}.'
         )
         event_arg = RemoveCardEventArguments(
+            match = self,
             action = action,
             card_name = card.name
         )
@@ -1141,6 +1168,7 @@ class Match(BaseModel):
         original_charactor_id = table.active_charactor_id
         table.active_charactor_id = charactor_id
         event_arg = ChooseCharactorEventArguments(
+            match = self,
             action = action,
             original_charactor_id = original_charactor_id
         )
@@ -1205,6 +1233,7 @@ class Match(BaseModel):
             f'current dice on table {table.dice}'
         )
         return [CreateDiceEventArguments(
+            match = self,
             action = action,
             colors_generated = [die.color for die 
                                 in dice[:max_obtainable_dice]],
@@ -1230,6 +1259,7 @@ class Match(BaseModel):
             f'current dice on table {table.dice}'
         )
         return [RemoveDiceEventArguments(
+            match = self,
             action = action,
             colors_removed = [die.color for die in removed_dice]
         )]
@@ -1243,6 +1273,7 @@ class Match(BaseModel):
         )
         table.has_round_ended = True
         return [DeclareRoundEndEventArguments(
+            match = self,
             action = action
         )]
 
@@ -1265,6 +1296,7 @@ class Match(BaseModel):
             f'is {self.current_player}.'
         )
         return [CombatActionEventArguments(
+            match = self,
             action = action
         )]
 
@@ -1288,6 +1320,7 @@ class Match(BaseModel):
         )
         table.active_charactor_id = charactor_id
         return [SwitchCharactorEventArguments(
+            match = self,
             action = action,
             last_active_charactor_id = current_active_id,
         )]
@@ -1363,6 +1396,7 @@ class Match(BaseModel):
                 charactor.hp = 0
             charactor.element_application = applied_elements
             infos.append(ReceiveDamageEventArguments(
+                match = self,
                 action = action,
                 original_damage = damage_original,
                 final_damage = damage,
@@ -1372,6 +1406,7 @@ class Match(BaseModel):
                 reacted_elements = reacted_elements,
             ))
         make_damage_event = MakeDamageEventArguments(
+            match = self,
             action = action,
             damages = infos,
             charactor_hps = [[c.hp for c in table.charactors] 
@@ -1410,6 +1445,7 @@ class Match(BaseModel):
         if charactor.charge > charactor.max_charge:
             charactor.charge = charactor.max_charge
         return [ChargeEventArguments(
+            match = self,
             action = action,
             charge_before = old_charge,
             charge_after = charactor.charge,
@@ -1438,6 +1474,7 @@ class Match(BaseModel):
             table.active_charactor_id = -1  # reset active charactor
             need_switch = True
         return [CharactorDefeatedEventArguments(
+            match = self,
             action = action,
             need_switch = need_switch,
         )]
@@ -1457,6 +1494,7 @@ class Match(BaseModel):
             f'skill ended.'
         )
         return [SkillEndEventArguments(
+            match = self,
             action = action,
         )]
 

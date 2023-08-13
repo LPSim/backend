@@ -29,6 +29,7 @@ class ActionTypes(str, Enum):
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
+    ROUND_END = 'ROUND_END'
 
     # make damage related events
     RECEIVE_DAMAGE = 'RECEIVE_DAMAGE'

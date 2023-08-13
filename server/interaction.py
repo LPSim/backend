@@ -86,6 +86,7 @@ class ElementalTuningRequest(RequestBase):
     name: Literal['ElementalTuningRequest'] = 'ElementalTuningRequest'
     type: Literal[RequestActionType.QUICK] = RequestActionType.QUICK
     dice_colors: List[DieColor]
+    dice_ids: List[int]
     card_ids: List[int]
 
 
@@ -218,7 +219,7 @@ class ElementalTuningResponse(ResponseBase):
         Check whether the response is valid.
         """
         return (
-            self.cost_id >= 0 and self.cost_id < len(self.request.dice_colors)
+            self.cost_id in self.request.dice_ids
             and self.card_id in self.request.card_ids
         )
 

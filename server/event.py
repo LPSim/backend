@@ -1,5 +1,5 @@
 from utils import BaseModel
-from typing import Literal, List
+from typing import Literal, List, Any
 from .consts import DieColor, ElementalReactionType, ElementType
 from .action import (
     ActionTypes, 
@@ -29,9 +29,15 @@ class EventArgumentsBase(BaseModel):
     If new cards need more information about the event (e.g. Chinju Forest
     need to know which player goes first, which is not needed before version
     3.7), the information can be added to the event arguments.
+
+    self.match is passed to dig information for handlers,
+    but it is not recommended to dig information from self.match directly,
+    better to add a new attribute for a event when some information is used.
+    Only use it when adding some information is very difficult.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
     action: ActionBase
+    match: Any
 
 
 class DrawCardEventArguments(EventArgumentsBase):
@@ -40,6 +46,8 @@ class DrawCardEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.DRAW_CARD] = ActionTypes.DRAW_CARD
     action: DrawCardAction
+    hand_size: int
+    max_hand_size: int
 
 
 class RestoreCardEventArguments(EventArgumentsBase):
@@ -189,6 +197,7 @@ class AfterMakeDamageEventArguments(MakeDamageEventArguments):
         event_arguments: MakeDamageEventArguments
     ) -> 'AfterMakeDamageEventArguments':
         return AfterMakeDamageEventArguments(
+            match = event_arguments.match,
             action = event_arguments.action,
             damages = event_arguments.damages,
             charactor_hps = event_arguments.charactor_hps,
@@ -223,6 +232,21 @@ class CharactorDefeatedEventArguments(EventArgumentsBase):
     action: CharactorDefeatedAction
     need_switch: bool
 
+
+class RoundEndEventArguments(EventArgumentsBase):
+    """
+    Event arguments for round end event. This event is triggered 
+    by the system when a round ends, so it does not have an action.
+
+    Args:
+        player_go_first (int): The ID of the player who goes first.
+        round (int): The number of the round.
+    """
+    type: Literal[ActionTypes.ROUND_END] = ActionTypes.ROUND_END
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
+    player_go_first: int
+    round: int
+    initial_card_draw: int
 
 # TODO: combine arguments of events and actions.
 # interactions和event&action的参数独立，event是action超集包含了额外的信息，
