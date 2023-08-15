@@ -8,7 +8,7 @@ be defined in their own files.
 from utils import BaseModel
 from typing import List, Literal
 from .action import (
-    ActionTypes, Actions, MakeDamageAction, ChargeAction
+    ActionBase, ActionTypes, Actions, MakeDamageAction, ChargeAction
 )
 from .consts import (
     ObjectType, WeaponType, ElementType, DamageType, SkillType,
@@ -20,14 +20,32 @@ from .struct import SkillActionArguments
 from .modifiable_values import DamageValue
 
 
+class ObjectPosition(BaseModel):
+    """
+    Position of an object in the game table, which will be set at initializing
+    or updated when its position changes. Current change event: card go from
+    deck to hand, from hand to deck, from hand to charactor, from charactor to
+    hand, from hand to support, from support to support.
+    Note the index of the object is not included (n-th summon from player 1's
+    sommon lists) as it will change when some action triggered, for example
+    RemoveSummonAction. For these actions, we will use the id of the object
+    to identify. Position is used for objects to decide whether to respond
+    events.
+    """
+    player_id: int
+    charactor_id: int
+    area: Literal['DECK', 'HAND', 'SUMMON', 'SUPPORT', 'DICE', 'CHARACTOR',
+                  'TEAM_STATUS', 'CHARACTOR_STATUS', 'SYSTEM', 'INVALID']
+
+
 class ObjectBase(BaseModel):
     """
     Base class of objects in the game table. All objects in the game table 
     should inherit from this class.
     """
     type: ObjectType = ObjectType.EMPTY
-    player_id: int = -1
     index: int = 0
+    position: ObjectPosition
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -50,6 +68,11 @@ class SkillBase(ObjectBase):
     damage_type: DamageType
     damage: int
     cost: DiceCostValue
+    position: ObjectPosition = ObjectPosition(
+        player_id = -1,
+        charactor_id = -1,
+        area = 'INVALID',
+    )
 
     def is_valid(self, hp: int, charge: int) -> bool:
         """
@@ -174,7 +197,28 @@ class ElementalBurstBase(SkillBase):
         return actions
 
 
-class WeaponBase(ObjectBase):
+class CardBase(ObjectBase):
+    """
+    Base class of all real cards. 
+    """
+    name: str
+    type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
+                  ObjectType.TALENT, ObjectType.SUMMON,
+                  ObjectType.SUPPORT] = ObjectType.CARD
+    position: ObjectPosition = ObjectPosition(
+        player_id = -1,
+        charactor_id = -1,
+        area = 'INVALID',
+    )
+
+    def get_actions(self) -> List[ActionBase]:
+        """
+        Act the card. It will return a list of actions.
+        """
+        raise NotImplementedError()
+
+
+class WeaponBase(CardBase):
     """
     Base class of weapons.
     """
@@ -183,7 +227,7 @@ class WeaponBase(ObjectBase):
     weapon_type: WeaponType
 
 
-class ArtifactBase(ObjectBase):
+class ArtifactBase(CardBase):
     """
     Base class of artifacts.
     """
@@ -191,7 +235,7 @@ class ArtifactBase(ObjectBase):
     type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
 
 
-class TalentBase(ObjectBase):
+class TalentBase(CardBase):
     """
     Base class of talents.
     """

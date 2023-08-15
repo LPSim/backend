@@ -1,5 +1,5 @@
-from ..object_base import ObjectBase
+from ..object_base import CardBase
 
 
-class SummonBase(ObjectBase):
+class SummonBase(CardBase):
     pass

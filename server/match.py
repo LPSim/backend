@@ -60,7 +60,7 @@ from .event import (
     CharactorDefeatedEventArguments,
     RoundEndEventArguments,
 )
-from .object_base import ObjectBase
+from .object_base import ObjectBase, ObjectPosition, CardBase
 from .modifiable_values import (
     ModifiableValueBase,
     RerollValue, DiceCostValue,
@@ -284,14 +284,18 @@ class Match(BaseModel):
         # copy and randomize based on deck
         for pnum, player_table in enumerate(self.player_tables):
             # copy charactors
-            for charactor in player_table.player_deck_information.charactors:
+            for cnum, charactor in enumerate(
+                    player_table.player_deck_information.charactors):
                 charactor_copy = charactor.copy()
-                charactor_copy.player_id = pnum
+                charactor_copy.position.player_id = pnum
+                charactor_copy.position.charactor_id = cnum
+                charactor_copy.position.area = 'CHARACTOR'
                 player_table.charactors.append(charactor_copy)
             # copy cards
             for card in player_table.player_deck_information.cards:
                 card_copy = card.copy()
-                card_copy.player_id = pnum
+                card_copy.position.player_id = pnum
+                card_copy.position.area = 'DECK'
                 player_table.table_deck.append(card_copy)
             self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
@@ -1082,8 +1086,11 @@ class Match(BaseModel):
         if len(table.table_deck) < number:
             number = len(table.table_deck)
         names = [x.name for x in table.table_deck[:number]]
-        table.hands.extend(table.table_deck[:number])
+        draw_cards = table.table_deck[:number]
         table.table_deck = table.table_deck[number:]
+        for card in draw_cards:
+            card.position.area = 'HAND'
+        table.hands.extend(draw_cards)
         logging.info(
             f'Draw card action, player {player_id}, number {number}, '
             f'cards {names}, '
@@ -1108,9 +1115,13 @@ class Match(BaseModel):
         card_ids = action.card_ids[:]
         card_ids.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cid].name for cid in card_ids]
+        restore_cards: List[CardBase] = []
         for cid in card_ids:
-            table.table_deck.append(table.hands[cid])
+            restore_cards.append(table.hands[cid])
             table.hands = table.hands[:cid] + table.hands[cid + 1:]
+        for card in restore_cards:
+            card.position.area = 'DECK'
+        table.table_deck.extend(restore_cards)
         logging.info(
             f'Restore card action, player {player_id}, number {len(card_ids)},'
             f' cards: {card_names}, '
@@ -1195,12 +1206,18 @@ class Match(BaseModel):
             DieColor.GEO, DieColor.DENDRO, DieColor.ANEMO
         ]
         # generate dice based on color
+        dice_position = ObjectPosition(
+            player_id = player_id,
+            charactor_id = -1,
+            area = 'DICE'
+        )
         if is_random:
             candidates.append(DieColor.OMNI)  # random, can be omni
             for _ in range(number):
                 selected_color = candidates[int(self._random() 
                                                 * len(candidates))]
-                dice.append(Die(color = selected_color))
+                dice.append(Die(color = selected_color, 
+                                position = dice_position.copy()))
         elif is_different:
             if number > len(candidates):
                 logging.error('Not enough dice colors.')
@@ -1209,14 +1226,16 @@ class Match(BaseModel):
             self._random_shuffle(candidates)
             candidates = candidates[:number]
             for selected_color in candidates:
-                dice.append(Die(color = selected_color))
+                dice.append(Die(color = selected_color,
+                                position = dice_position.copy()))
         else:
             if color is None:
                 logging.error('Dice color should be specified.')
                 self._set_match_state(MatchState.ERROR)
                 return []
             for _ in range(number):
-                dice.append(Die(color = color))
+                dice.append(Die(color = color,
+                                position = dice_position.copy()))
         # if there are more dice than the maximum, discard the rest
         max_obtainable_dice = (self.match_config.max_dice_number 
                                - len(table.dice))

@@ -2,7 +2,7 @@
 Event handlers to implement system controls and special rules 
 """
 from typing import List
-from .object_base import ObjectBase
+from .object_base import ObjectBase, ObjectPosition
 from .event import (
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
@@ -18,7 +18,19 @@ from .action import (
 )
 
 
-class SystemEventHandler(ObjectBase):
+class SystemEventHandlerBase(ObjectBase):
+    """
+    Base class of system event handlers. Its position should be SYSTEM.
+    """
+
+    position: ObjectPosition = ObjectPosition(
+        player_id = -1,
+        charactor_id = -1,
+        area = 'SYSTEM'
+    )
+
+
+class SystemEventHandler(SystemEventHandlerBase):
 
     def event_handler_DRAW_CARD(
             self, event: DrawCardEventArguments) -> List[Actions]:

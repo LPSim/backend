@@ -1,6 +1,5 @@
-from ..object_base import ObjectBase
+from ..object_base import CardBase
 
 
-class SupportBase(ObjectBase):
+class SupportBase(CardBase):
     pass
-

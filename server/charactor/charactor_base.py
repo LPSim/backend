@@ -11,7 +11,7 @@ from ..consts import (
     ObjectType, WeaponType, ElementType, FactionType
 )
 from ..object_base import (
-    ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
+    ObjectPosition, ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
 )
 from ..status import CharactorStatus
 
@@ -23,6 +23,12 @@ class CharactorBase(ObjectBase):
     name: str
     version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
+    position: ObjectPosition = ObjectPosition(
+        player_id = -1,
+        charactor_id = -1,
+        area = 'INVALID'
+    )
+
     element: ElementType
     hp: int
     max_hp: int
