@@ -84,7 +84,7 @@ DIE_COLOR_TO_ELEMENT = {
 }
 
 
-class DamageType(str, Enum):
+class DamageElementalType(str, Enum):
     """
     Enum representing the type of a damage.
     """
@@ -109,26 +109,41 @@ class DamageType(str, Enum):
 
 
 ELEMENT_TO_DAMAGE_TYPE = {
-    ElementType.NONE: DamageType.PHYSICAL,
-    ElementType.CRYO: DamageType.CRYO,
-    ElementType.HYDRO: DamageType.HYDRO,
-    ElementType.PYRO: DamageType.PYRO,
-    ElementType.ELECTRO: DamageType.ELECTRO,
-    ElementType.GEO: DamageType.GEO,
-    ElementType.DENDRO: DamageType.DENDRO,
-    ElementType.ANEMO: DamageType.ANEMO,
+    ElementType.NONE: DamageElementalType.PHYSICAL,
+    ElementType.CRYO: DamageElementalType.CRYO,
+    ElementType.HYDRO: DamageElementalType.HYDRO,
+    ElementType.PYRO: DamageElementalType.PYRO,
+    ElementType.ELECTRO: DamageElementalType.ELECTRO,
+    ElementType.GEO: DamageElementalType.GEO,
+    ElementType.DENDRO: DamageElementalType.DENDRO,
+    ElementType.ANEMO: DamageElementalType.ANEMO,
 }
 DAMAGE_TYPE_TO_ELEMENT = {
-    DamageType.CRYO: ElementType.CRYO,
-    DamageType.HYDRO: ElementType.HYDRO,
-    DamageType.PYRO: ElementType.PYRO,
-    DamageType.ELECTRO: ElementType.ELECTRO,
-    DamageType.GEO: ElementType.GEO,
-    DamageType.DENDRO: ElementType.DENDRO,
-    DamageType.ANEMO: ElementType.ANEMO,
-    DamageType.PHYSICAL: ElementType.NONE,
-    DamageType.PIERCING: ElementType.NONE,
+    DamageElementalType.CRYO: ElementType.CRYO,
+    DamageElementalType.HYDRO: ElementType.HYDRO,
+    DamageElementalType.PYRO: ElementType.PYRO,
+    DamageElementalType.ELECTRO: ElementType.ELECTRO,
+    DamageElementalType.GEO: ElementType.GEO,
+    DamageElementalType.DENDRO: ElementType.DENDRO,
+    DamageElementalType.ANEMO: ElementType.ANEMO,
+    DamageElementalType.PHYSICAL: ElementType.NONE,
+    DamageElementalType.PIERCING: ElementType.NONE,
 }
+
+
+class DamageType(str, Enum):
+    """
+    Enum representing the type of a damage.
+    """
+    DAMAGE = 'DAMAGE'
+    HEAL = 'HEAL'
+    ELEMENT_APPLICATION = 'ELEMENT_APPLICATION'
+
+    def __str__(self):
+        return self.value
+    
+    def __repr__(self):
+        return self.value
 
 
 class ObjectType(str, Enum):
@@ -147,6 +162,28 @@ class ObjectType(str, Enum):
     TALENT = 'TALENT'
     CHARACTOR_STATUS = 'CHARACTOR_STATUS'
     TEAM_STATUS = 'TEAM_STATUS'
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __repr__(self) -> str:
+        return self.value
+
+
+class ObjectPositionType(str, Enum):
+    """
+    Enum representing the position of an object.
+    """
+    DECK = 'DECK'
+    HAND = 'HAND'
+    SUMMON = 'SUMMON'
+    SUPPORT = 'SUPPORT'
+    DICE = 'DICE'
+    CHARACTOR = 'CHARACTOR'
+    CHARACTOR_STATUS = 'CHARACTOR_STATUS'
+    TEAM_STATUS = 'TEAM_STATUS'
+    SYSTEM = 'SYSTEM'
+    INVALID = 'INVALID'
 
     def __str__(self) -> str:
         return self.value
@@ -189,6 +226,12 @@ class WeaponType(str, Enum):
     CATALYST = 'CATALYST'
     BOW = 'BOW'
     OTHER = 'OTHER'
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value
 
 
 class SkillType(str, Enum):

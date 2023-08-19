@@ -1,10 +1,10 @@
 import logging
 
 import numpy as np
-from typing import Literal, List, Any
+from typing import Literal, List, Any, Dict
 from enum import Enum
 
-from utils import BaseModel
+from utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
@@ -21,6 +21,9 @@ from .action import (
     MakeDamageAction,
     ChargeAction,
     SkillEndAction,
+    CreateObjectAction,
+    RemoveObjectAction,
+    ChangeObjectUsageAction,
     CharactorDefeatedAction,
     GenerateChooseCharactorRequestAction,
 )
@@ -38,6 +41,7 @@ from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR,
     DAMAGE_TYPE_TO_ELEMENT,
     ElementalReactionType,
+    ObjectPositionType,
 )
 from .die import Die
 from .event import (
@@ -59,19 +63,23 @@ from .event import (
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
     RoundEndEventArguments,
+    CreateObjectEventArguments,
+    RemoveObjectEventArguments,
+    ChangeObjectUsageEventArguments,
 )
-from .object_base import ObjectBase, ObjectPosition, CardBase
+from .object_base import ObjectBase, CardBase
 from .modifiable_values import (
     ModifiableValueBase,
-    RerollValue, DiceCostValue,
+    InitialDiceColorValue, RerollValue, DiceCostValue,
     DamageMultiplyValue, DamageDecreaseValue,
 )
-from .struct import SkillActionArguments
+from .struct import SkillActionArguments, ObjectPosition
 from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
 )
-from .event_handler import SystemEventHandler
+from .event_handler import SystemEventHandler, OmnipotentGuideEventHandler
+from .status import TeamStatus
 
 
 class MatchState(str, Enum):
@@ -180,7 +188,10 @@ class Match(BaseModel):
     _random_state: np.random.RandomState = np.random.RandomState()
 
     # event handlers to implement special rules. TODO add special handler
-    event_handlers: List[ObjectBase] = [SystemEventHandler()]
+    event_handlers: List[ObjectBase] = [
+        SystemEventHandler(),
+        # OmnipotentGuideEventHandler(),
+    ]
 
     # match information
     round_number: int = 0
@@ -289,13 +300,13 @@ class Match(BaseModel):
                 charactor_copy = charactor.copy()
                 charactor_copy.position.player_id = pnum
                 charactor_copy.position.charactor_id = cnum
-                charactor_copy.position.area = 'CHARACTOR'
+                charactor_copy.position.area = ObjectPositionType.CHARACTOR
                 player_table.charactors.append(charactor_copy)
             # copy cards
             for card in player_table.player_deck_information.cards:
                 card_copy = card.copy()
                 card_copy.position.player_id = pnum
-                card_copy.position.area = 'DECK'
+                card_copy.position.area = ObjectPositionType.DECK
                 player_table.table_deck.append(card_copy)
             self._random_shuffle(player_table.table_deck)
             # add draw initial cards action
@@ -492,12 +503,30 @@ class Match(BaseModel):
         # generate new dice
         event_args: List[EventArgumentsBase] = []
         for pnum, player_table in enumerate(self.player_tables):
-            one_event_args = self._act(CreateDiceAction(
+            initial_color_value = InitialDiceColorValue(player_id = pnum)
+            self._modify_value(initial_color_value, 'REAL')
+            initial_color_value.dice_colors = initial_color_value.dice_colors[
+                :self.match_config.initial_dice_number
+            ]
+            random_number = (
+                self.match_config.initial_dice_number 
+                - len(initial_color_value.dice_colors)
+            )
+            color_dict: Dict[DieColor, int] = {}
+            for color in initial_color_value.dice_colors:
+                color_dict[color] = color_dict.get(color, 0) + 1
+            for color, num in color_dict.items():
+                if num > 1:
+                    event_args += self._act(CreateDiceAction(
+                        player_id = pnum,
+                        number = num,
+                        color = color
+                    ))
+            event_args += self._act(CreateDiceAction(
                 player_id = pnum,
-                number = self.match_config.initial_dice_number,
+                number = random_number,
                 random = True
             ))
-            event_args += one_event_args
         triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) != 0:
             logging.error('Create dice should not trigger actions.')
@@ -511,7 +540,7 @@ class Match(BaseModel):
                 value = reroll_times,
                 player_id = pnum,
             )
-            self._modify_value(reroll_value, mode = 'real')
+            self._modify_value(reroll_value, mode = 'REAL')
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
 
@@ -633,7 +662,6 @@ class Match(BaseModel):
         object_list = self.get_object_lists()
         for obj in object_list:
             name = obj.__class__.__name__
-            # TODO with pydantic, cannot overload function on None
             if hasattr(obj, 'name'):
                 name = obj.name  # type: ignore
             handler_name = f'event_handler_{event_arg.type}'
@@ -657,7 +685,7 @@ class Match(BaseModel):
         return ret
 
     def _modify_value(self, value: ModifiableValueBase, 
-                      mode: Literal['test', 'real'],
+                      mode: Literal['TEST', 'REAL'],
                       ) -> None:
         """
         Modify values. It will modify the value argument in-place.
@@ -670,14 +698,18 @@ class Match(BaseModel):
                 calculate costs used in requests. If 'real', it will modify 
                 the value and update inner state, which means the request
                 related to the value is executed.
+        TODO: test will appear errors. Shenhe E status one time left + swirl
         """
         object_list = self.get_object_lists()
         for obj in object_list:
             name = obj.__class__.__name__
             if hasattr(obj, 'name'):
                 name = obj.name  # type: ignore
-            logging.debug(f'Modify value {value.type} for {name}.')
-            ...
+            modifier_name = f'value_modifier_{value.type}'
+            func = getattr(obj, modifier_name, None)
+            if func is not None:
+                logging.debug(f'Modify value {value.type} for {name}.')
+                value = func(value, mode)
 
     """
     Request functions. To generate specific requests.
@@ -708,6 +740,8 @@ class Match(BaseModel):
         ))
 
     def _request_reroll_dice(self, player_id: int, reroll_number: int):
+        if reroll_number <= 0:
+            return
         player_table = self.player_tables[player_id]
         self.requests.append(RerollDiceRequest(
             player_id = player_id,
@@ -722,7 +756,7 @@ class Match(BaseModel):
         """
         table = self.player_tables[player_id]
         dice_cost = DiceCostValue(same_dice_number = 1)
-        self._modify_value(dice_cost, mode = 'test')
+        self._modify_value(dice_cost, mode = 'TEST')
         if not dice_cost.is_valid(
             dice_colors = [die.color for die in table.dice],
             strict = False,
@@ -773,7 +807,7 @@ class Match(BaseModel):
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(front_charactor.hp, front_charactor.charge):
                 cost = skill.cost.copy()
-                self._modify_value(cost, mode = 'test')
+                self._modify_value(cost, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
                 if cost.is_valid(dice_colors = dice_colors, strict = False):
                     self.requests.append(UseSkillRequest(
@@ -921,7 +955,7 @@ class Match(BaseModel):
             ))
         self._modify_value(
             value = response.request.cost.original_value,
-            mode = 'real'
+            mode = 'REAL'
         )  # TODO: should use original value. need test.
         actions.append(SwitchCharactorAction.from_response(response))
         if response.request.type == RequestActionType.COMBAT:
@@ -979,7 +1013,7 @@ class Match(BaseModel):
         request = response.request
         self._modify_value(
             value = request.cost.original_value,
-            mode = 'real'
+            mode = 'REAL'
         )  # TODO: should use original value. need test.
         skill = self.player_tables[response.player_id].charactors[
             request.charactor_id].skills[request.skill_id]
@@ -1004,7 +1038,7 @@ class Match(BaseModel):
             player_id = response.player_id,
             dice_ids = response.cost_ids,
         )]
-        actions += skill.get_actions(skill_action_args)  # TODO: add information
+        actions += skill.get_actions(skill_action_args)  # TODO add information
         actions.append(SkillEndAction(
             player_id = response.player_id,
             charactor_id = request.charactor_id,
@@ -1064,6 +1098,12 @@ class Match(BaseModel):
             return list(self._action_skill_end(action))
         elif isinstance(action, CharactorDefeatedAction):
             return list(self._action_charactor_defeated(action))
+        elif isinstance(action, CreateObjectAction):
+            return list(self._action_create_object(action))
+        elif isinstance(action, RemoveObjectAction):
+            return list(self._action_remove_object(action))
+        elif isinstance(action, ChangeObjectUsageAction):
+            return list(self._action_change_object_usage(action))
         elif isinstance(action, GenerateChooseCharactorRequestAction):
             return list(self._action_generate_choose_charactor_request(action))
         else:
@@ -1089,7 +1129,7 @@ class Match(BaseModel):
         draw_cards = table.table_deck[:number]
         table.table_deck = table.table_deck[number:]
         for card in draw_cards:
-            card.position.area = 'HAND'
+            card.position.area = ObjectPositionType.HAND
         table.hands.extend(draw_cards)
         logging.info(
             f'Draw card action, player {player_id}, number {number}, '
@@ -1120,7 +1160,7 @@ class Match(BaseModel):
             restore_cards.append(table.hands[cid])
             table.hands = table.hands[:cid] + table.hands[cid + 1:]
         for card in restore_cards:
-            card.position.area = 'DECK'
+            card.position.area = ObjectPositionType.DECK
         table.table_deck.extend(restore_cards)
         logging.info(
             f'Restore card action, player {player_id}, number {len(card_ids)},'
@@ -1209,7 +1249,7 @@ class Match(BaseModel):
         dice_position = ObjectPosition(
             player_id = player_id,
             charactor_id = -1,
-            area = 'DICE'
+            area = ObjectPositionType.DICE
         )
         if is_random:
             candidates.append(DieColor.OMNI)  # random, can be omni
@@ -1358,6 +1398,8 @@ class Match(BaseModel):
             NOTE: only charactor switch of charactor received this damage will
             trigger this event, charactor switch of attacker (Kazuha, Kenki, 
             When the Crane Returned) should be another SwtichCharactorAction.
+        NOTE: side effects by elemental reaction is handled by system event
+        handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list
         target_id = action.target_id
@@ -1371,7 +1413,8 @@ class Match(BaseModel):
             damage_original = damage.copy()
             table = self.player_tables[damage.target_player_id]
             charactor = table.charactors[damage.target_charactor_id]
-            damage_element_type = DAMAGE_TYPE_TO_ELEMENT[damage.damage_type]
+            damage_element_type = DAMAGE_TYPE_TO_ELEMENT[
+                damage.damage_elemental_type]
             target_element_application = charactor.element_application
             [elemental_reaction, reacted_elements, applied_elements] = \
                 check_elemental_reaction(
@@ -1403,11 +1446,11 @@ class Match(BaseModel):
             damage = damages_after_elemental_reaction.pop(0)
             damage_lists += damages_after_elemental_reaction
             # apply 3-step damage modification
-            self._modify_value(damage, 'real')
+            self._modify_value(damage, 'REAL')
             damage = DamageMultiplyValue.from_increase_value(damage)
-            self._modify_value(damage, 'real')
+            self._modify_value(damage, 'REAL')
             damage = DamageDecreaseValue.from_multiply_value(damage)
-            self._modify_value(damage, 'real')
+            self._modify_value(damage, 'REAL')
             # apply final damage and applied elements
             hp_before = charactor.hp
             charactor.hp -= damage.damage
@@ -1497,6 +1540,135 @@ class Match(BaseModel):
             action = action,
             need_switch = need_switch,
         )]
+
+    def _action_create_object(self, action: CreateObjectAction) \
+            -> List[CreateObjectEventArguments]:
+        """
+        Action for creating objects, e.g. status, summons, supports.
+        Note some objects are not created but moved, e.g. equipments and 
+        supports, for these objects, do not use this action.
+        """
+        player_id = action.object_position.player_id
+        table = self.player_tables[player_id]
+        # charactor_id = action.object_position.charactor_id
+        if action.object_position.area == ObjectPositionType.TEAM_STATUS:
+            args = action.object_arguments.copy()
+            args['name'] = action.object_name
+            args['position'] = action.object_position
+            team_status_object: TeamStatus = get_instance_from_type_unions(
+                TeamStatus, args
+            )
+            for csnum, current_status in enumerate(table.team_status):
+                if current_status.name == team_status_object.name:
+                    # have same status, only update status usage
+                    current_status.renew(team_status_object)
+                    logging.info(
+                        f'player {player_id} '
+                        f'renew team status {action.object_name}.'
+                    )
+                    return [CreateObjectEventArguments(
+                        match = self,
+                        action = action,
+                        create_result = 'RENEW',
+                        create_idx = csnum,
+                    )]
+            logging.info(
+                f'player {player_id} '
+                f'created new team status {action.object_name}.'
+            )
+            table.team_status.append(team_status_object)
+            return [CreateObjectEventArguments(
+                match = self,
+                action = action,
+                create_result = 'NEW',
+                create_idx = len(table.team_status) - 1,
+            )]
+        else:
+            raise NotImplementedError(
+                f'Create object action for area {action.object_position.area} '
+                'is not implemented.'
+            )
+
+    def _action_remove_object(self, action: RemoveObjectAction) \
+            -> List[RemoveObjectEventArguments]:
+        """
+        Action for removing objects, e.g. status, summons, supports.
+        It supports removing equipments and supports.
+        TODO: is it possible to remove charactors for PVE with this action?
+        """
+        player_id = action.object_position.player_id
+        table = self.player_tables[player_id]
+        # charactor_id = action.object_position.charactor_id
+        if action.object_position.area == ObjectPositionType.TEAM_STATUS:
+            for csnum, current_status in enumerate(table.team_status):
+                if id(current_status) == action.object_id:
+                    # have same status, only update status usage
+                    table.team_status.pop(csnum)
+                    logging.info(
+                        f'player {player_id} '
+                        f'removed team status {current_status.name}.'
+                    )
+                    return [RemoveObjectEventArguments(
+                        match = self,
+                        action = action,
+                        object_name = current_status.name,
+                    )]
+            logging.error(
+                f'player {player_id} '
+                f'tried to remove non-exist team status with id '
+                f'{action.object_id}.'
+            )
+            self._set_match_state(MatchState.ERROR)
+            return []
+        else:
+            raise NotImplementedError(
+                f'Remove object action for area {action.object_position.area} '
+                'is not implemented.'
+            )
+
+    def _action_change_object_usage(self, action: ChangeObjectUsageAction) \
+            -> List[ChangeObjectUsageEventArguments]:
+        """
+        Action for changing object usage, e.g. status, summons, supports.
+        """
+        player_id = action.object_position.player_id
+        table = self.player_tables[player_id]
+        # charactor_id = action.object_position.charactor_id
+        if action.object_position.area == ObjectPositionType.TEAM_STATUS:
+            for csnum, current_status in enumerate(table.team_status):
+                if id(current_status) == action.object_id:
+                    # have same status, only update status usage
+                    old_usage = current_status.usage
+                    new_usage = action.change_usage
+                    if action.change_type == 'DELTA':
+                        new_usage += old_usage
+                    new_usage = min(max(new_usage, action.min_usage),
+                                    action.max_usage)
+                    current_status.usage = new_usage
+                    logging.info(
+                        f'player {player_id} '
+                        f'changed team status {current_status.name} '
+                        f'usage to {new_usage}.'
+                    )
+                    return [ChangeObjectUsageEventArguments(
+                        match = self,
+                        action = action,
+                        object_name = current_status.name,
+                        usage_before = old_usage,
+                        usage_after = new_usage,
+                    )]
+            logging.error(
+                f'player {player_id} '
+                f'tried to change non-exist team status with id '
+                f'{action.object_id}.'
+            )
+            self._set_match_state(MatchState.ERROR)
+            return []
+        else:
+            raise NotImplementedError(
+                f'Change object usage action for area '
+                f'{action.object_position.area} is not implemented.'
+            )
 
     """
     Action funtions that only used to trigger specific event

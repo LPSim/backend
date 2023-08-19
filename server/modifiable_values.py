@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List, Any
 from utils import BaseModel
 from .consts import (
-    DieColor, DamageType, DamageSourceType,
+    DieColor, DamageType, DamageElementalType, DamageSourceType,
     ElementalReactionType, ElementType
 )
 
@@ -12,8 +12,9 @@ class ModifiableValueTypes(str, Enum):
     Enum representing the type of a modifiable value. A modifiable value is a
     value that can be modified by other objects before being used.
     """
+    INITIAL_DICE_COLOR = 'INITIAL_DICE_COLOR'
     REROLL = 'REROLL'
-    DICECOST = 'DICECOST'
+    DICE_COST = 'DICE_COST'
 
     # damage calculation is split into 3 parts: increase, multiply and 
     # decrease. damage will be first increased, then multiplied, 
@@ -39,6 +40,12 @@ class ModifiableValueBase(BaseModel):
         self.original_value = self.copy()
 
 
+class InitialDiceColorValue(ModifiableValueBase):
+    type: ModifiableValueTypes = ModifiableValueTypes.INITIAL_DICE_COLOR
+    player_id: int
+    dice_colors: List[DieColor] = []
+
+
 class RerollValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.REROLL
     value: int
@@ -46,7 +53,7 @@ class RerollValue(ModifiableValueBase):
 
 
 class DiceCostValue(ModifiableValueBase):
-    type: ModifiableValueTypes = ModifiableValueTypes.DICECOST
+    type: ModifiableValueTypes = ModifiableValueTypes.DICE_COST
     elemental_dice_number: int = 0
     elemental_dice_color: DieColor | None = None
     same_dice_number: int = 0
@@ -104,11 +111,12 @@ class DiceCostValue(ModifiableValueBase):
 class DamageIncreaseValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
 
+    damage_type: DamageType
     damage_source_type: DamageSourceType
     target_player_id: int
     target_charactor_id: int
     damage: int
-    damage_type: DamageType
+    damage_elemental_type: DamageElementalType
     charge_cost: int
     element_reaction: ElementalReactionType = ElementalReactionType.NONE
     reacted_elements: List[ElementType] = []
@@ -122,11 +130,12 @@ class DamageMultiplyValue(DamageIncreaseValue):
         increase_value: DamageIncreaseValue
     ) -> 'DamageMultiplyValue':
         return DamageMultiplyValue(
+            damage_type = increase_value.damage_type,
             damage_source_type = increase_value.damage_source_type,
             target_player_id = increase_value.target_player_id,
             target_charactor_id = increase_value.target_charactor_id,
             damage = increase_value.damage,
-            damage_type = increase_value.damage_type,
+            damage_elemental_type = increase_value.damage_elemental_type,
             charge_cost = increase_value.charge_cost,
             element_reaction = increase_value.element_reaction,
             reacted_elements = increase_value.reacted_elements,
@@ -141,11 +150,12 @@ class DamageDecreaseValue(DamageIncreaseValue):
         multiply_value: DamageMultiplyValue
     ) -> 'DamageDecreaseValue':
         return DamageDecreaseValue(
+            damage_type = multiply_value.damage_type,
             damage_source_type = multiply_value.damage_source_type,
             target_player_id = multiply_value.target_player_id,
             target_charactor_id = multiply_value.target_charactor_id,
             damage = multiply_value.damage,
-            damage_type = multiply_value.damage_type,
+            damage_elemental_type = multiply_value.damage_elemental_type,
             charge_cost = multiply_value.charge_cost,
             element_reaction = multiply_value.element_reaction,
             reacted_elements = multiply_value.reacted_elements,

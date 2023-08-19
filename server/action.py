@@ -10,6 +10,7 @@ from .interaction import (
 )
 from .consts import DieColor
 from .modifiable_values import DamageValue
+from .struct import ObjectPosition
 
 
 class ActionTypes(str, Enum):
@@ -26,6 +27,10 @@ class ActionTypes(str, Enum):
     CHARGE = 'CHARGE'
     SKILL_END = 'SKILL_END'
     CHARACTOR_DEFEATED = 'CHARACTOR_DEFEATED'
+    CREATE_OBJECT = 'CREATE_OBJECT'
+    REMOVE_OBJECT = 'REMOVE_OBJECT'
+    OBJECT_REMOVED = 'OBJECT_REMOVED'
+    CHANGE_OBJECT_USAGE = 'CHANGE_OBJECT_USAGE'
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
@@ -243,6 +248,49 @@ class CharactorDefeatedAction(ActionBase):
         ActionTypes.CHARACTOR_DEFEATED
     player_id: int
     charactor_id: int
+
+
+class CreateObjectAction(ActionBase):
+    """
+    Action for creating objects, e.g. status, summons, supports.
+    Note some objects are not created but moved, e.g. equipments and supports,
+    for these objects, do not use this action.
+    """
+    type: Literal[ActionTypes.CREATE_OBJECT] = \
+        ActionTypes.CREATE_OBJECT
+    object_position: ObjectPosition
+    object_name: str
+    object_arguments: dict
+
+
+class RemoveObjectAction(ActionBase):
+    """
+    Action for removing objects. TODO: removing cards and dice should be
+    part of this action, use this instead?
+
+    Args:
+        object_position (ObjectPosition): The position of the object to remove.
+        object_id (int): The ID of the object to remove.
+    """
+    type: Literal[ActionTypes.REMOVE_OBJECT] = \
+        ActionTypes.REMOVE_OBJECT
+    object_position: ObjectPosition
+    object_id: int
+
+
+class ChangeObjectUsageAction(ActionBase):
+    """
+    Action for changing object usage.
+    """
+    # TODO: not tested
+    type: Literal[ActionTypes.CHANGE_OBJECT_USAGE] = \
+        ActionTypes.CHANGE_OBJECT_USAGE
+    object_position: ObjectPosition
+    object_id: int
+    change_type: Literal['DELTA', 'SET']
+    change_usage: int
+    min_usage: int = 0
+    max_usage: int = 999
 
 
 class GenerateChooseCharactorRequestAction(ActionBase):

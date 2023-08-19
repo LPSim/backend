@@ -4,7 +4,7 @@ from ..object_base import (
     ElementalSkillBase, ElementalBurstBase
 )
 from ..consts import (
-    ElementType, FactionType, WeaponType, DamageType,
+    ElementType, FactionType, WeaponType, DamageElementalType,
 )
 from .charactor_base import CharactorBase
 
@@ -35,17 +35,17 @@ class PhysicalMob(CharactorBase):
         element_name = element_name[0].upper() + element_name[1:]
         normal_attack = PhysicalNormalAttackBase(
             name = 'Physical Normal Attack',
-            damage_type = DamageType.PHYSICAL,
+            damage_type = DamageElementalType.PHYSICAL,
             cost = PhysicalNormalAttackBase.get_cost(self.element),
         )
         elemental_skill = ElementalSkillBase(
             name = 'Physical Skill',
-            damage_type = DamageType.PHYSICAL,
+            damage_type = DamageElementalType.PHYSICAL,
             cost = ElementalSkillBase.get_cost(self.element),
         )
         elemental_burst = ElementalBurstBase(
             name = 'Physical Burst',
-            damage_type = DamageType.PHYSICAL,
+            damage_type = DamageElementalType.PHYSICAL,
             cost = ElementalBurstBase.get_cost(self.element, 3),
             damage = 5,
             charge = 2

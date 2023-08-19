@@ -16,6 +16,9 @@ from .action import (
     MakeDamageAction,
     ChargeAction,
     CharactorDefeatedAction,
+    CreateObjectAction,
+    RemoveObjectAction,
+    ChangeObjectUsageAction,
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -231,6 +234,37 @@ class CharactorDefeatedEventArguments(EventArgumentsBase):
         ActionTypes.CHARACTOR_DEFEATED
     action: CharactorDefeatedAction
     need_switch: bool
+
+
+class CreateObjectEventArguments(EventArgumentsBase):
+    """
+    Event arguments for create object event.
+    """
+    type: Literal[ActionTypes.CREATE_OBJECT] = ActionTypes.CREATE_OBJECT
+    action: CreateObjectAction
+    create_result: Literal['NEW', 'RENEW']
+    create_idx: int
+
+
+class RemoveObjectEventArguments(EventArgumentsBase):
+    """
+    Event arguments for remove object event.
+    """
+    type: Literal[ActionTypes.REMOVE_OBJECT] = ActionTypes.REMOVE_OBJECT
+    action: RemoveObjectAction
+    object_name: str
+
+
+class ChangeObjectUsageEventArguments(EventArgumentsBase):
+    """
+    Event arguments for change object usage event.
+    """
+    type: Literal[ActionTypes.CHANGE_OBJECT_USAGE] = \
+        ActionTypes.CHANGE_OBJECT_USAGE
+    action: ChangeObjectUsageAction
+    object_name: str
+    usage_before: int
+    usage_after: int
 
 
 class RoundEndEventArguments(EventArgumentsBase):

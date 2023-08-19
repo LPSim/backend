@@ -109,6 +109,7 @@ class PlayerTable(BaseModel):
         for i in range(len(self.charactors)):
             if i != self.active_charactor_id:
                 result += self.charactors[i].get_object_lists()
+        result += self.team_status
         result += self.summons
         result += self.supports
         result += self.hands

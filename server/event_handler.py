@@ -1,9 +1,12 @@
 """
 Event handlers to implement system controls and special rules 
 """
-from typing import List
-from .object_base import ObjectBase, ObjectPosition
+from typing import List, Literal
+from .object_base import ObjectBase
+from .struct import ObjectPosition
+from .consts import ObjectPositionType, DieColor
 from .event import (
+    ReceiveDamageEventArguments,
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
     RoundEndEventArguments,
@@ -16,6 +19,8 @@ from .action import (
     DrawCardAction,
     RemoveCardAction
 )
+from .modifiable_values import InitialDiceColorValue, RerollValue
+from .elemental_reaction import elemental_reaction_side_effect
 
 
 class SystemEventHandlerBase(ObjectBase):
@@ -26,7 +31,7 @@ class SystemEventHandlerBase(ObjectBase):
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
-        area = 'SYSTEM'
+        area = ObjectPositionType.SYSTEM
     )
 
 
@@ -52,6 +57,21 @@ class SystemEventHandler(SystemEventHandlerBase):
                     remove_type = 'BURNED'
                 ))
         return actions
+
+    def event_handler_RECEIVE_DAMAGE(
+            self, event: ReceiveDamageEventArguments) -> List[Actions]:
+        """
+        After receive damage, generate side effects of elemental reaction.
+        """
+        if str(event.elemental_reaction) != 'NONE':
+            ...
+        reaction = event.elemental_reaction
+        player_id = event.final_damage.target_player_id
+        charactor_id = event.final_damage.target_charactor_id
+        act = elemental_reaction_side_effect(reaction, player_id, charactor_id)
+        if act is not None:
+            return [act]
+        return []
 
     def event_handler_AFTER_MAKE_DAMAGE(
             self, event: AfterMakeDamageEventArguments) -> List[Actions]:
@@ -97,3 +117,24 @@ class SystemEventHandler(SystemEventHandlerBase):
             number = initial_card_draw
         ))
         return actions
+
+
+class OmnipotentGuideEventHandler(SystemEventHandlerBase):
+
+    def value_modifier_INITIAL_DICE_COLOR(
+            self, value: InitialDiceColorValue, 
+            mode: Literal['REAL', 'TEST']) -> InitialDiceColorValue:
+        """
+        remove current dice color and add 100 omni dice color
+        """
+        value.dice_colors = [DieColor.OMNI] * 100
+        return value
+
+    def value_modifier_REROLL(
+            self, value: RerollValue, 
+            mode: Literal['REAL', 'TEST']) -> RerollValue:
+        """
+        reroll set to 0
+        """
+        value.value = 0
+        return value

@@ -11,8 +11,9 @@ from ..consts import (
     ObjectType, WeaponType, ElementType, FactionType
 )
 from ..object_base import (
-    ObjectPosition, ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
+    ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
 )
+from ..struct import ObjectPosition
 from ..status import CharactorStatus
 
 

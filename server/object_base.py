@@ -11,31 +11,11 @@ from .action import (
     ActionBase, ActionTypes, Actions, MakeDamageAction, ChargeAction
 )
 from .consts import (
-    ObjectType, WeaponType, ElementType, DamageType, SkillType,
-    DamageSourceType,
-    ELEMENT_TO_DIE_COLOR,
+    ObjectType, WeaponType, ElementType, DamageElementalType, SkillType,
+    DamageType, DamageSourceType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
 )
-from .modifiable_values import DiceCostValue
-from .struct import SkillActionArguments
-from .modifiable_values import DamageValue
-
-
-class ObjectPosition(BaseModel):
-    """
-    Position of an object in the game table, which will be set at initializing
-    or updated when its position changes. Current change event: card go from
-    deck to hand, from hand to deck, from hand to charactor, from charactor to
-    hand, from hand to support, from support to support.
-    Note the index of the object is not included (n-th summon from player 1's
-    sommon lists) as it will change when some action triggered, for example
-    RemoveSummonAction. For these actions, we will use the id of the object
-    to identify. Position is used for objects to decide whether to respond
-    events.
-    """
-    player_id: int
-    charactor_id: int
-    area: Literal['DECK', 'HAND', 'SUMMON', 'SUPPORT', 'DICE', 'CHARACTOR',
-                  'TEAM_STATUS', 'CHARACTOR_STATUS', 'SYSTEM', 'INVALID']
+from .modifiable_values import ModifiableValueTypes, DiceCostValue, DamageValue
+from .struct import SkillActionArguments, ObjectPosition
 
 
 class ObjectBase(BaseModel):
@@ -57,6 +37,12 @@ class ObjectBase(BaseModel):
                     k = ActionTypes(k)
                 except ValueError:
                     raise ValueError(f'Invalid event handler name: {k}')
+            if k[:15] == 'value_modifier_':
+                k = k[15:]
+                try:
+                    k = ModifiableValueTypes(k)
+                except ValueError:
+                    raise ValueError(f'Invalid value modifier name: {k}')
 
 
 class SkillBase(ObjectBase):
@@ -65,13 +51,13 @@ class SkillBase(ObjectBase):
     """
     name: str
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
-    damage_type: DamageType
+    damage_type: DamageElementalType
     damage: int
     cost: DiceCostValue
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
-        area = 'INVALID',
+        area = ObjectPositionType.INVALID
     )
 
     def is_valid(self, hp: int, charge: int) -> bool:
@@ -90,6 +76,11 @@ class SkillBase(ObjectBase):
         3. SkillEndAction to declare skill end, and trigger the event.
         """
         return [
+            ChargeAction(
+                player_id = args.player_id,
+                charactor_id = args.our_active_charactor_id,
+                charge = 1,
+            ),
             MakeDamageAction(
                 player_id = args.player_id,
                 target_id = 1 - args.player_id,
@@ -98,18 +89,14 @@ class SkillBase(ObjectBase):
                         target_player_id = 1 - args.player_id,
                         target_charactor_id = args.enemy_active_charactor_id,
                         damage = self.damage,
-                        damage_type = self.damage_type,
+                        damage_type = DamageType.DAMAGE,
+                        damage_elemental_type = self.damage_type,
                         damage_source_type = 
                         DamageSourceType.CURRENT_PLAYER_CHARACTOR,
                         charge_cost = 0,
                     )
                 ],
                 change_charactor = args.enemy_active_charactor_id,
-            ),
-            ChargeAction(
-                player_id = args.player_id,
-                charactor_id = args.our_active_charactor_id,
-                charge = 1,
             ),
         ]
 
@@ -119,7 +106,7 @@ class PhysicalNormalAttackBase(SkillBase):
     Base class of physical normal attacks.
     """
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
-    damage_type: DamageType = DamageType.PHYSICAL
+    damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
 
     @staticmethod
@@ -136,7 +123,7 @@ class ElementalNormalAttackBase(SkillBase):
     Base class of elemental normal attacks.
     """
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
-    damage_type: DamageType
+    damage_type: DamageElementalType
     damage: int = 1
 
     @staticmethod
@@ -153,7 +140,7 @@ class ElementalSkillBase(SkillBase):
     Base class of elemental skills.
     """
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
-    damage_type: DamageType
+    damage_type: DamageElementalType
     damage: int = 3
 
     @staticmethod
@@ -169,7 +156,7 @@ class ElementalBurstBase(SkillBase):
     Base class of elemental bursts.
     """
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
-    damage_type: DamageType
+    damage_type: DamageElementalType
     charge: int
 
     @staticmethod
@@ -208,7 +195,7 @@ class CardBase(ObjectBase):
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
-        area = 'INVALID',
+        area = ObjectPositionType.INVALID
     )
 
     def get_actions(self) -> List[ActionBase]:
@@ -248,6 +235,10 @@ class StatusBase(ObjectBase):
     Base class of status.
     """
     name: str
+    version: str
+    show_usage: bool = True
+    usage: int
+    max_usage: int
     type: Literal[ObjectType.CHARACTOR_STATUS, ObjectType.TEAM_STATUS]
 
 
@@ -260,6 +251,13 @@ class CharactorStatusBase(StatusBase):
 
 class TeamStatusBase(StatusBase):
     """
-    Base class of team status.
+    Base class of team status. If show_usage is true, usage will be shown 
+    beside its icon.
     """
     type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
+
+    def renew(self, new_status: 'TeamStatusBase') -> None:
+        """
+        Renew the status. It will copy the usage from the new status.
+        """
+        self.usage = new_status.usage

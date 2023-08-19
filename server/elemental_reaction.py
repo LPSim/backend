@@ -1,10 +1,12 @@
 from typing import List, Tuple
 from .charactor import Charactors
 from .consts import (
-    ElementType, ElementalReactionType, DamageType,
-    ELEMENT_TO_DAMAGE_TYPE
+    ElementType, ElementalReactionType, DamageElementalType,
+    DamageType, ELEMENT_TO_DAMAGE_TYPE, ObjectPositionType,
 )
 from .modifiable_values import DamageValue
+from .action import Actions, CreateObjectAction
+from .struct import ObjectPosition
 
 
 def check_elemental_reaction(
@@ -264,7 +266,7 @@ def apply_elemental_reaction(
     res: List[DamageValue] = [damage]
     if reaction == ElementalReactionType.NONE:
         return res
-    if damage.damage <= 0:
+    if damage.damage_type != DamageType.DAMAGE:
         # heal or no-damage element application, no need to change damage
         return res
     if reaction in [ElementalReactionType.MELT,
@@ -278,15 +280,17 @@ def apply_elemental_reaction(
         if element_type == ElementType.ANEMO:
             element_type = reacted_elements[1]
         attack_target = damage.target_charactor_id
-        for cnum, c in enumerate(target_charactors):
-            if cnum == attack_target:
-                continue
+        for cnum in range(1, len(target_charactors)):
+            cnum = (cnum + attack_target) % len(target_charactors)
+            c = target_charactors[cnum]
             if c.is_alive:
                 res.append(DamageValue(
                     target_player_id = damage.target_player_id,
                     target_charactor_id = cnum,
                     damage = 1,
-                    damage_type = ELEMENT_TO_DAMAGE_TYPE[element_type],
+                    damage_type = DamageType.DAMAGE,
+                    damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[
+                        element_type],
                     charge_cost = 0,
                     damage_source_type = damage.damage_source_type
                 ))
@@ -296,7 +300,7 @@ def apply_elemental_reaction(
         if reaction in [ElementalReactionType.ELECTROCHARGED,
                         ElementalReactionType.SUPERCONDUCT]:
             # 1 piercing dmg for other charactors
-            damage_type = DamageType.PIERCING
+            damage_type = DamageElementalType.PIERCING
             attack_target = damage.target_charactor_id
             for cnum, c in enumerate(target_charactors):
                 if cnum == attack_target:
@@ -306,8 +310,46 @@ def apply_elemental_reaction(
                         target_player_id = damage.target_player_id,
                         target_charactor_id = cnum,
                         damage = 1,
-                        damage_type = damage_type,
+                        damage_type = DamageType.DAMAGE,
+                        damage_elemental_type = damage_type,
                         charge_cost = 0,
                         damage_source_type = damage.damage_source_type
                     ))
     return res
+
+
+def elemental_reaction_side_effect(
+        reaction: ElementalReactionType, player_id: int,
+        charator_id: int) -> Actions | None:
+    """
+    Apply side effect of elemental reaction. 
+    """
+    if reaction == ElementalReactionType.FROZEN:
+        raise NotImplementedError
+    elif reaction == ElementalReactionType.CRYSTALLIZE:
+        raise NotImplementedError
+    elif reaction == ElementalReactionType.BURNING:
+        raise NotImplementedError
+    elif reaction == ElementalReactionType.BLOOM:
+        position = ObjectPosition(
+            player_id = 1 - player_id,
+            charactor_id = -1,
+            area = ObjectPositionType.TEAM_STATUS
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'DendroCore',
+            object_arguments = {}
+        )
+    elif reaction == ElementalReactionType.QUICKEN:
+        position = ObjectPosition(
+            player_id = 1 - player_id,
+            charactor_id = -1,
+            area = ObjectPositionType.TEAM_STATUS
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'CatalyzingField',
+            object_arguments = {}
+        )
+    return None
