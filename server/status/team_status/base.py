@@ -1,7 +1,16 @@
 from typing import List, Literal
-from ...object_base import TeamStatusBase
+from ..base import StatusBase
+from ...consts import ObjectType
 from ...action import RemoveObjectAction, Actions
 from ...event import RoundEndEventArguments
+
+
+class TeamStatusBase(StatusBase):
+    """
+    Base class of team status. If show_usage is true, usage will be shown 
+    beside its icon.
+    """
+    type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
 
 
 class UsageTeamStatus(TeamStatusBase):

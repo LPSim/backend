@@ -228,36 +228,3 @@ class TalentBase(CardBase):
     """
     name: str
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
-
-
-class StatusBase(ObjectBase):
-    """
-    Base class of status.
-    """
-    name: str
-    version: str
-    show_usage: bool = True
-    usage: int
-    max_usage: int
-    type: Literal[ObjectType.CHARACTOR_STATUS, ObjectType.TEAM_STATUS]
-
-
-class CharactorStatusBase(StatusBase):
-    """
-    Base class of charactor status.
-    """
-    type: Literal[ObjectType.CHARACTOR_STATUS] = ObjectType.CHARACTOR_STATUS
-
-
-class TeamStatusBase(StatusBase):
-    """
-    Base class of team status. If show_usage is true, usage will be shown 
-    beside its icon.
-    """
-    type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
-
-    def renew(self, new_status: 'TeamStatusBase') -> None:
-        """
-        Renew the status. It will copy the usage from the new status.
-        """
-        self.usage = new_status.usage
