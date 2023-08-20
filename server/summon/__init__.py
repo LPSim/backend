@@ -1,4 +1,5 @@
-from .summon_base import SummonBase
+from .base import SummonBase, AttackerSummonBase
+from .system import BurningFlame
 
 
-Summons = SummonBase | SummonBase
+Summons = SummonBase | AttackerSummonBase | BurningFlame

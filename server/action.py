@@ -211,14 +211,20 @@ class MakeDamageAction(ActionBase):
         player_id (int): The ID of the player to make damage from.
         damage_value_list (List[DamageValue]): The damage values to make.
         target_id (int): The ID of the player to make damage to.
-        change_charactor (int): Change to charactor ID, if not change, ID
-            should same as current active charactor ID.
+        charactor_change_rule (Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE']):
+            The rule of charactor change. 
+        charactor_change_id (int): The charactor id of the charactor who will
+            be changed to. Only used when charactor_change_rule is 'ABSOLUTE'.
+            If it is defeated, select by default order.
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     player_id: int
     damage_value_list: List[DamageValue]
     target_id: int
-    change_charactor: int
+
+    # charactor change
+    charactor_change_rule: Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE'] = 'NONE'
+    charactor_change_id: int = -1
 
 
 class ChargeAction(ActionBase):
@@ -275,7 +281,7 @@ class RemoveObjectAction(ActionBase):
     type: Literal[ActionTypes.REMOVE_OBJECT] = \
         ActionTypes.REMOVE_OBJECT
     object_position: ObjectPosition
-    object_id: int
+    object_id: int  # TODO using id will cause problem when S/L
 
 
 class ChangeObjectUsageAction(ActionBase):

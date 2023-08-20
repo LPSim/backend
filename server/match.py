@@ -71,15 +71,16 @@ from .object_base import ObjectBase, CardBase
 from .modifiable_values import (
     ModifiableValueBase,
     InitialDiceColorValue, RerollValue, DiceCostValue,
-    DamageMultiplyValue, DamageDecreaseValue,
+    DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
 from .struct import SkillActionArguments, ObjectPosition
 from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
 )
-from .event_handler import SystemEventHandler, OmnipotentGuideEventHandler
+from .event_handler import SystemEventHandler
 from .status import TeamStatus
+from .summon import Summons
 
 
 class MatchState(str, Enum):
@@ -1403,13 +1404,40 @@ class Match(BaseModel):
         """
         damage_lists = action.damage_value_list
         target_id = action.target_id
-        next_charactor: int = action.change_charactor
+        next_charactor: int = self.player_tables[target_id].active_charactor_id
+        if action.charactor_change_rule == 'PREV':
+            nci = self.player_tables[target_id].previous_charactor_id()
+            if nci is not None:
+                next_charactor = nci
+        elif action.charactor_change_rule == 'NEXT':
+            nci = self.player_tables[target_id].next_charactor_id()
+            if nci is not None:
+                next_charactor = nci
+        elif action.charactor_change_rule == 'ABSOLUTE':
+            next_charactor = action.charactor_change_id
+            if self.player_tables[target_id].charactors[
+                    next_charactor].is_defeated:
+                for cnum, c in enumerate(
+                        self.player_tables[target_id].charactors):
+                    if not c.is_defeated:
+                        next_charactor = cnum
+                        break
         events: List[ReceiveDamageEventArguments | MakeDamageEventArguments 
                      | AfterMakeDamageEventArguments
                      | SwitchCharactorEventArguments] = []
         infos: List[ReceiveDamageEventArguments] = []
-        while len(damage_lists) > 0:
-            damage = damage_lists.pop(0)
+        damage_increase_value_lists: List[DamageIncreaseValue] = []
+        for damage in damage_lists:
+            damages = DamageIncreaseValue.from_damage_value(
+                damage_value = damage,
+                is_charactors_defeated = [[c.is_defeated for c in t.charactors] 
+                                          for t in self.player_tables],
+                active_charactors_id = [t.active_charactor_id
+                                        for t in self.player_tables],
+            )
+            damage_increase_value_lists += damages
+        while len(damage_increase_value_lists) > 0:
+            damage = damage_increase_value_lists.pop(0)
             damage_original = damage.copy()
             table = self.player_tables[damage.target_player_id]
             charactor = table.charactors[damage.target_charactor_id]
@@ -1552,42 +1580,49 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         # charactor_id = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
-            args = action.object_arguments.copy()
-            args['name'] = action.object_name
-            args['position'] = action.object_position
-            team_status_object: TeamStatus = get_instance_from_type_unions(
-                TeamStatus, args
-            )
-            for csnum, current_status in enumerate(table.team_status):
-                if current_status.name == team_status_object.name:
-                    # have same status, only update status usage
-                    current_status.renew(team_status_object)
-                    logging.info(
-                        f'player {player_id} '
-                        f'renew team status {action.object_name}.'
-                    )
-                    return [CreateObjectEventArguments(
-                        match = self,
-                        action = action,
-                        create_result = 'RENEW',
-                        create_idx = csnum,
-                    )]
-            logging.info(
-                f'player {player_id} '
-                f'created new team status {action.object_name}.'
-            )
-            table.team_status.append(team_status_object)
-            return [CreateObjectEventArguments(
-                match = self,
-                action = action,
-                create_result = 'NEW',
-                create_idx = len(table.team_status) - 1,
-            )]
+            target_classes = TeamStatus
+            target_list = table.team_status
+            target_name = 'team status'
+        elif action.object_position.area == ObjectPositionType.SUMMON:
+            target_classes = Summons
+            target_list = table.summons
+            target_name = 'summon'
         else:
             raise NotImplementedError(
                 f'Create object action for area {action.object_position.area} '
                 'is not implemented.'
             )
+        args = action.object_arguments.copy()
+        args['name'] = action.object_name
+        args['position'] = action.object_position
+        target_object = get_instance_from_type_unions(
+            target_classes, args
+        )
+        for csnum, current_object in enumerate(target_list):
+            if current_object.name == target_object.name:
+                # have same status, only update status usage
+                current_object.renew(target_object)  # type: ignore
+                logging.info(
+                    f'player {player_id} '
+                    f'renew {target_name} {action.object_name}.'
+                )
+                return [CreateObjectEventArguments(
+                    match = self,
+                    action = action,
+                    create_result = 'RENEW',
+                    create_idx = csnum,
+                )]
+        logging.info(
+            f'player {player_id} '
+            f'created new {target_name} {action.object_name}.'
+        )
+        target_list.append(target_object)  # type: ignore
+        return [CreateObjectEventArguments(
+            match = self,
+            action = action,
+            create_result = 'NEW',
+            create_idx = len(target_list) - 1,
+        )]
 
     def _action_remove_object(self, action: RemoveObjectAction) \
             -> List[RemoveObjectEventArguments]:
@@ -1600,31 +1635,36 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         # charactor_id = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
-            for csnum, current_status in enumerate(table.team_status):
-                if id(current_status) == action.object_id:
-                    # have same status, only update status usage
-                    table.team_status.pop(csnum)
-                    logging.info(
-                        f'player {player_id} '
-                        f'removed team status {current_status.name}.'
-                    )
-                    return [RemoveObjectEventArguments(
-                        match = self,
-                        action = action,
-                        object_name = current_status.name,
-                    )]
-            logging.error(
-                f'player {player_id} '
-                f'tried to remove non-exist team status with id '
-                f'{action.object_id}.'
-            )
-            self._set_match_state(MatchState.ERROR)
-            return []
+            target_list = table.team_status
+            target_name = 'team status'
+        elif action.object_position.area == ObjectPositionType.SUMMON:
+            target_list = table.summons
+            target_name = 'summon'
         else:
             raise NotImplementedError(
                 f'Remove object action for area {action.object_position.area} '
                 'is not implemented.'
             )
+        for csnum, current_object in enumerate(target_list):
+            if id(current_object) == action.object_id:
+                # have same status, only update status usage
+                target_list.pop(csnum)
+                logging.info(
+                    f'player {player_id} '
+                    f'removed {target_name} {current_object.name}.'
+                )
+                return [RemoveObjectEventArguments(
+                    match = self,
+                    action = action,
+                    object_name = current_object.name,
+                )]
+        logging.error(
+            f'player {player_id} '
+            f'tried to remove non-exist {target_name} with id '
+            f'{action.object_id}.'
+        )
+        self._set_match_state(MatchState.ERROR)
+        return []
 
     def _action_change_object_usage(self, action: ChangeObjectUsageAction) \
             -> List[ChangeObjectUsageEventArguments]:
@@ -1635,40 +1675,45 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         # charactor_id = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
-            for csnum, current_status in enumerate(table.team_status):
-                if id(current_status) == action.object_id:
-                    # have same status, only update status usage
-                    old_usage = current_status.usage
-                    new_usage = action.change_usage
-                    if action.change_type == 'DELTA':
-                        new_usage += old_usage
-                    new_usage = min(max(new_usage, action.min_usage),
-                                    action.max_usage)
-                    current_status.usage = new_usage
-                    logging.info(
-                        f'player {player_id} '
-                        f'changed team status {current_status.name} '
-                        f'usage to {new_usage}.'
-                    )
-                    return [ChangeObjectUsageEventArguments(
-                        match = self,
-                        action = action,
-                        object_name = current_status.name,
-                        usage_before = old_usage,
-                        usage_after = new_usage,
-                    )]
-            logging.error(
-                f'player {player_id} '
-                f'tried to change non-exist team status with id '
-                f'{action.object_id}.'
-            )
-            self._set_match_state(MatchState.ERROR)
-            return []
+            target_list = table.team_status
+            target_name = 'team status'
+        elif action.object_position.area == ObjectPositionType.SUMMON:
+            target_list = table.summons
+            target_name = 'summon'
         else:
             raise NotImplementedError(
                 f'Change object usage action for area '
                 f'{action.object_position.area} is not implemented.'
             )
+        for csnum, current_object in enumerate(target_list):
+            if id(current_object) == action.object_id:
+                # have same status, only update status usage
+                old_usage = current_object.usage
+                new_usage = action.change_usage
+                if action.change_type == 'DELTA':
+                    new_usage += old_usage
+                new_usage = min(max(new_usage, action.min_usage),
+                                action.max_usage)
+                current_object.usage = new_usage
+                logging.info(
+                    f'player {player_id} '
+                    f'changed {target_name} {current_object.name} '
+                    f'usage to {new_usage}.'
+                )
+                return [ChangeObjectUsageEventArguments(
+                    match = self,
+                    action = action,
+                    object_name = current_object.name,
+                    usage_before = old_usage,
+                    usage_after = new_usage,
+                )]
+        logging.error(
+            f'player {player_id} '
+            f'tried to change non-exist {target_list} with id '
+            f'{action.object_id}.'
+        )
+        self._set_match_state(MatchState.ERROR)
+        return []
 
     """
     Action funtions that only used to trigger specific event

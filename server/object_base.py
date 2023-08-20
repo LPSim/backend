@@ -86,17 +86,18 @@ class SkillBase(ObjectBase):
                 target_id = 1 - args.player_id,
                 damage_value_list = [
                     DamageValue(
-                        target_player_id = 1 - args.player_id,
-                        target_charactor_id = args.enemy_active_charactor_id,
-                        damage = self.damage,
+                        player_id = args.player_id,
                         damage_type = DamageType.DAMAGE,
+                        damage_source_type
+                        = DamageSourceType.CURRENT_PLAYER_CHARACTOR,
+                        damage = self.damage,
                         damage_elemental_type = self.damage_type,
-                        damage_source_type = 
-                        DamageSourceType.CURRENT_PLAYER_CHARACTOR,
                         charge_cost = 0,
+                        target_player = 'ENEMY',
+                        target_charactor = 'ACTIVE',
                     )
                 ],
-                change_charactor = args.enemy_active_charactor_id,
+                charactor_change_rule = 'NONE'
             ),
         ]
 
@@ -192,6 +193,7 @@ class CardBase(ObjectBase):
     type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
                   ObjectType.TALENT, ObjectType.SUMMON,
                   ObjectType.SUPPORT] = ObjectType.CARD
+    version: str
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,

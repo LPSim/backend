@@ -17,9 +17,13 @@ class StatusBase(ObjectBase):
 
     def renew(self, new_status: 'StatusBase') -> None:
         """
-        Renew the status. It will copy the usage from the new status.
+        Renew the status. 
         """
-        assert self.renew_type == 'ADD'  # now should be ADD
-        self.usage += new_status.usage
-        if self.max_usage < self.usage:
-            self.usage = self.max_usage
+        if self.renew_type == 'ADD':
+            self.usage += new_status.usage
+            if self.max_usage < self.usage:
+                self.usage = self.max_usage
+        elif self.renew_type == 'RESET':
+            self.usage = new_status.usage
+        elif self.renew_type == 'RESET_WITH_MAX':
+            self.usage = max(self.usage, new_status.usage)

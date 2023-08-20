@@ -4,7 +4,7 @@ from .consts import (
     ElementType, ElementalReactionType, DamageElementalType,
     DamageType, ELEMENT_TO_DAMAGE_TYPE, ObjectPositionType,
 )
-from .modifiable_values import DamageValue
+from .modifiable_values import DamageIncreaseValue
 from .action import Actions, CreateObjectAction
 from .struct import ObjectPosition
 
@@ -252,9 +252,9 @@ def check_elemental_reaction(
 
 def apply_elemental_reaction(
         target_charactors: List[Charactors],
-        damage: DamageValue,
+        damage: DamageIncreaseValue,
         reaction: ElementalReactionType,
-        reacted_elements: List[ElementType]) -> List[DamageValue]:
+        reacted_elements: List[ElementType]) -> List[DamageIncreaseValue]:
     """
     Apply elemental reaction to damage. Damage will be modified in-place.
     The modified damage will be
@@ -263,7 +263,7 @@ def apply_elemental_reaction(
     NOTE: Only direct damage will count, summons and status will not 
     considered to generate here.
     """
-    res: List[DamageValue] = [damage]
+    res: List[DamageIncreaseValue] = [damage]
     if reaction == ElementalReactionType.NONE:
         return res
     if damage.damage_type != DamageType.DAMAGE:
@@ -284,7 +284,7 @@ def apply_elemental_reaction(
             cnum = (cnum + attack_target) % len(target_charactors)
             c = target_charactors[cnum]
             if c.is_alive:
-                res.append(DamageValue(
+                res.append(DamageIncreaseValue(
                     target_player_id = damage.target_player_id,
                     target_charactor_id = cnum,
                     damage = 1,
@@ -306,7 +306,7 @@ def apply_elemental_reaction(
                 if cnum == attack_target:
                     continue
                 if c.is_alive:
-                    res.append(DamageValue(
+                    res.append(DamageIncreaseValue(
                         target_player_id = damage.target_player_id,
                         target_charactor_id = cnum,
                         damage = 1,
@@ -329,7 +329,16 @@ def elemental_reaction_side_effect(
     elif reaction == ElementalReactionType.CRYSTALLIZE:
         raise NotImplementedError
     elif reaction == ElementalReactionType.BURNING:
-        raise NotImplementedError
+        position = ObjectPosition(
+            player_id = 1 - player_id,
+            charactor_id = -1,
+            area = ObjectPositionType.SUMMON
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'Burning Flame',
+            object_arguments = {}
+        )
     elif reaction == ElementalReactionType.BLOOM:
         position = ObjectPosition(
             player_id = 1 - player_id,

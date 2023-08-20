@@ -5,6 +5,7 @@ from .consts import (
     DieColor, DamageType, DamageElementalType, DamageSourceType,
     ElementalReactionType, ElementType
 )
+from .struct import DamageValue
 
 
 class ModifiableValueTypes(str, Enum):
@@ -16,6 +17,10 @@ class ModifiableValueTypes(str, Enum):
     REROLL = 'REROLL'
     DICE_COST = 'DICE_COST'
 
+    # declare a damage. When processing damage, the damage will be change to
+    # a damage increase value, based on the declaration and current charactor
+    # status.
+    DAMAGE = 'DAMAGE'
     # damage calculation is split into 3 parts: increase, multiply and 
     # decrease. damage will be first increased, then multiplied, 
     # then decreased.
@@ -109,6 +114,9 @@ class DiceCostValue(ModifiableValueBase):
 
 
 class DamageIncreaseValue(ModifiableValueBase):
+    """
+    It describes a detailed damage, i.e. charactor X will receive the damage.
+    """
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
 
     damage_type: DamageType
@@ -120,6 +128,57 @@ class DamageIncreaseValue(ModifiableValueBase):
     charge_cost: int
     element_reaction: ElementalReactionType = ElementalReactionType.NONE
     reacted_elements: List[ElementType] = []
+
+    @staticmethod
+    def from_damage_value(
+        damage_value: DamageValue,
+        is_charactors_defeated: List[List[bool]],
+        active_charactors_id: List[int],
+    ) -> List['DamageIncreaseValue']:
+        """
+        use this to identify the real target player and charactor. One 
+        DamageValue may generate multiple DamageIncreaseValue (back attack)
+        is_charactors_defeated: [[player 1 charactors defeated],
+                                 [player 2 charactors defeated]]
+        # TODO: need test
+        """
+        target_player = damage_value.player_id
+        if damage_value.target_player == 'ENEMY':
+            target_player = 1 - target_player
+        charactors = is_charactors_defeated[target_player]
+        active_id = active_charactors_id[target_player]
+        target_charactor = []
+        if damage_value.target_charactor == 'ACTIVE':
+            assert not charactors[active_id], 'Active charactor is defeated.'
+            target_charactor = [active_id]
+        if damage_value.target_charactor == 'BACK':
+            target_charactor = [x for x in range(len(charactors))
+                                if not charactors[x] and x != active_id]
+        elif damage_value.target_charactor == 'NEXT':
+            for i in range(1, len(charactors)):
+                if not charactors[(active_id + i) % len(charactors)]:
+                    target_charactor.append((active_id + i) % len(charactors))
+                    break
+        elif damage_value.target_charactor == 'PREV':
+            for i in range(1, len(charactors)):
+                idx = (active_id - i + len(charactors)) % len(charactors)
+                if not charactors[idx]:
+                    target_charactor.append(idx)
+                    break
+        result: List[DamageIncreaseValue] = []
+        for target in target_charactor:
+            assert not charactors[target], 'Target charactor is defeated.'
+            value = DamageIncreaseValue(
+                damage_type = damage_value.damage_type,
+                damage_source_type = damage_value.damage_source_type,
+                target_player_id = target_player,
+                target_charactor_id = target,
+                damage = damage_value.damage,
+                damage_elemental_type = damage_value.damage_elemental_type,
+                charge_cost = damage_value.charge_cost,
+            )
+            result.append(value)
+        return result
 
 
 class DamageMultiplyValue(DamageIncreaseValue):
@@ -162,5 +221,4 @@ class DamageDecreaseValue(DamageIncreaseValue):
         )
 
 
-DamageValue = DamageIncreaseValue  # alias
 FinalDamageValue = DamageDecreaseValue  # alias

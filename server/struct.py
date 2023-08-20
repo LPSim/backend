@@ -1,7 +1,44 @@
-from typing import List
+from typing import List, Literal
 
 from utils import BaseModel
-from .consts import ObjectPositionType
+from .consts import (
+    ObjectPositionType, DamageType, DamageElementalType, DamageSourceType
+)
+
+
+class DamageValue(BaseModel):
+    """
+    It declares a damage, i.e. damge is received by active/back charactor,
+    it will change active charactor with what rule.
+
+    Args:
+        player_id (int): The player id of the player who declares the damage.
+        damage_type (DamageType): The type of the damage.
+        damage_source_type (DamageSourceType): The source type of the damage.
+        damage (int): The damage value.
+        damage_elemental_type (DamageElementalType): The elemental type of the
+            damage.
+        charge_cost (int): The charge cost of the damage.
+        target_player (Literal['CURRENT', 'ENEMY']): The player who will
+            receive the damage.
+        target_charactor (Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 
+            'ABSOLUTE']): The charactor who will receive the damage.
+            If it is defeated, this damage will be ignored.
+        target_charactor_id (int): The charactor id of the charactor who will
+            receive the damage. Only used when target_charactor is 'ABSOLUTE'.
+    """
+
+    player_id: int
+    damage_type: DamageType
+    damage_source_type: DamageSourceType
+    damage: int
+    damage_elemental_type: DamageElementalType
+    charge_cost: int
+
+    # damage which player
+    target_player: Literal['CURRENT', 'ENEMY']
+    target_charactor: Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 'ABSOLUTE']
+    target_charactor_id: int = -1
 
 
 class SkillActionArguments(BaseModel):

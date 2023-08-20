@@ -20,7 +20,7 @@ from .action import (
     RemoveObjectAction,
     ChangeObjectUsageAction,
 )
-from .modifiable_values import DamageValue, FinalDamageValue
+from .modifiable_values import DamageIncreaseValue, FinalDamageValue
 
 
 class EventArgumentsBase(BaseModel):
@@ -163,7 +163,7 @@ class ReceiveDamageEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.RECEIVE_DAMAGE] = ActionTypes.RECEIVE_DAMAGE
     action: MakeDamageAction
-    original_damage: DamageValue
+    original_damage: DamageIncreaseValue
     final_damage: FinalDamageValue
     hp_before: int
     hp_after: int
