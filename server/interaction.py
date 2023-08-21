@@ -203,8 +203,7 @@ class SwitchCharactorResponse(ResponseBase):
         if self.charactor_id not in self.request.candidate_charactor_ids:
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        self.request.cost.is_valid(cost_colors)
-        return True
+        return self.request.cost.is_valid(cost_colors)
 
 
 class ElementalTuningResponse(ResponseBase):
@@ -240,8 +239,7 @@ class UseSkillResponse(ResponseBase):
         Check whether the response is valid.
         """
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        self.request.cost.is_valid(cost_colors)
-        return True
+        return self.request.cost.is_valid(cost_colors)
 
 
 Requests = (
