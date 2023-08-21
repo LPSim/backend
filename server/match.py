@@ -756,7 +756,7 @@ class Match(BaseModel):
         TODO: With Leave It to Me, it can be a quick action.
         """
         table = self.player_tables[player_id]
-        dice_cost = DiceCostValue(same_dice_number = 1)
+        dice_cost = DiceCostValue(any_dice_number = 1)
         self._modify_value(dice_cost, mode = 'TEST')
         if not dice_cost.is_valid(
             dice_colors = [die.color for die in table.dice],
