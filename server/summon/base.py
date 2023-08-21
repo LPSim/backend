@@ -75,7 +75,7 @@ class AttackerSummonBase(SummonBase):
         return [
             RemoveObjectAction(
                 object_position = self.position,
-                object_id = id(self),
+                object_id = self.id,
             )
         ]
 

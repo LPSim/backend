@@ -5,6 +5,8 @@ be defined in their own files.
 """
 
 
+import time
+import random
 from utils import BaseModel
 from typing import List, Literal
 from .action import (
@@ -26,6 +28,7 @@ class ObjectBase(BaseModel):
     type: ObjectType = ObjectType.EMPTY
     index: int = 0
     position: ObjectPosition
+    id: int = 0
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -43,6 +46,11 @@ class ObjectBase(BaseModel):
                     k = ModifiableValueTypes(k)
                 except ValueError:
                     raise ValueError(f'Invalid value modifier name: {k}')
+        # if id is zero, generate a new id
+        if self.id == 0:
+            self.id = (
+                int(time.time() * 1000000) * 1024 + random.randint(0, 1023)
+            )
 
 
 class SkillBase(ObjectBase):

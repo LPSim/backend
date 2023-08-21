@@ -1646,7 +1646,7 @@ class Match(BaseModel):
                 'is not implemented.'
             )
         for csnum, current_object in enumerate(target_list):
-            if id(current_object) == action.object_id:
+            if current_object.id == action.object_id:
                 # have same status, only update status usage
                 target_list.pop(csnum)
                 logging.info(
@@ -1686,7 +1686,7 @@ class Match(BaseModel):
                 f'{action.object_position.area} is not implemented.'
             )
         for csnum, current_object in enumerate(target_list):
-            if id(current_object) == action.object_id:
+            if current_object.id == action.object_id:
                 # have same status, only update status usage
                 old_usage = current_object.usage
                 new_usage = action.change_usage

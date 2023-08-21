@@ -281,7 +281,7 @@ class RemoveObjectAction(ActionBase):
     type: Literal[ActionTypes.REMOVE_OBJECT] = \
         ActionTypes.REMOVE_OBJECT
     object_position: ObjectPosition
-    object_id: int  # TODO using id will cause problem when S/L
+    object_id: int
 
 
 class ChangeObjectUsageAction(ActionBase):
