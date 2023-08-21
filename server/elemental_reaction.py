@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Literal
 from .charactor import Charactors
 from .consts import (
     ElementType, ElementalReactionType, DamageElementalType,
@@ -318,7 +318,7 @@ def apply_elemental_reaction(
     return res
 
 
-def elemental_reaction_side_effect(
+def elemental_reaction_side_effect_ver_3_4(
         reaction: ElementalReactionType, player_id: int,
         charator_id: int) -> Actions | None:
     """
@@ -362,3 +362,38 @@ def elemental_reaction_side_effect(
             object_arguments = {}
         )
     return None
+
+
+def elemental_reaction_side_effect_ver_3_3(
+        reaction: ElementalReactionType, player_id: int,
+        charator_id: int) -> Actions | None:
+    """
+    Apply side effect of elemental reaction. In 3.3, only quicken is different.
+    """
+    if reaction == ElementalReactionType.QUICKEN:
+        position = ObjectPosition(
+            player_id = 1 - player_id,
+            charactor_id = -1,
+            area = ObjectPositionType.TEAM_STATUS
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'CatalyzingField',
+            object_arguments = { 'version': '3.3' }
+        )
+    return elemental_reaction_side_effect_ver_3_4(
+        reaction, player_id, charator_id
+    )
+
+
+def elemental_reaction_side_effect(
+        reaction: ElementalReactionType, player_id: int,
+        charator_id: int, version: Literal['3.3', '3.4'] = '3.4'
+) -> Actions | None:
+    if version == '3.3':
+        return elemental_reaction_side_effect_ver_3_3(
+            reaction, player_id, charator_id
+        )
+    return elemental_reaction_side_effect_ver_3_4(
+        reaction, player_id, charator_id
+    )

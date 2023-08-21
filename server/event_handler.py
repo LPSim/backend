@@ -37,6 +37,8 @@ class SystemEventHandlerBase(ObjectBase):
 
 class SystemEventHandler(SystemEventHandlerBase):
 
+    version: Literal['3.3', '3.4'] = '3.4'
+
     def event_handler_DRAW_CARD(
             self, event: DrawCardEventArguments) -> List[Actions]:
         """
@@ -68,7 +70,10 @@ class SystemEventHandler(SystemEventHandlerBase):
         reaction = event.elemental_reaction
         player_id = event.final_damage.target_player_id
         charactor_id = event.final_damage.target_charactor_id
-        act = elemental_reaction_side_effect(reaction, player_id, charactor_id)
+        act = elemental_reaction_side_effect(
+            reaction, player_id, charactor_id, 
+            version = self.version
+        )
         if act is not None:
             return [act]
         return []
