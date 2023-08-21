@@ -11,7 +11,7 @@ from server.interaction import (
 
 class NothingAgent(AgentBase):
     """
-    Agent that do nothing.
+    Agent that do nothing, only response essential requests.
     """
     def generate_response(self, match: Match) -> Responses | None:
         for req in match.requests:
