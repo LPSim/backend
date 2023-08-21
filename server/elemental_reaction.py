@@ -327,7 +327,16 @@ def elemental_reaction_side_effect_ver_3_4(
     if reaction == ElementalReactionType.FROZEN:
         raise NotImplementedError
     elif reaction == ElementalReactionType.CRYSTALLIZE:
-        raise NotImplementedError
+        position = ObjectPosition(
+            player_id = 1 - player_id,
+            charactor_id = -1,
+            area = ObjectPositionType.TEAM_STATUS
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'Crystallize',
+            object_arguments = {}
+        )
     elif reaction == ElementalReactionType.BURNING:
         position = ObjectPosition(
             player_id = 1 - player_id,
