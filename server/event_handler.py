@@ -143,3 +143,8 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
         """
         value.value = 0
         return value
+
+
+SystemEventHandlers = (
+    SystemEventHandlerBase | SystemEventHandler | OmnipotentGuideEventHandler
+)

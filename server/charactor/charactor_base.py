@@ -8,7 +8,7 @@ will break the import loop.
 
 from typing import List, Literal
 from ..consts import (
-    ObjectType, WeaponType, ElementType, FactionType
+    ObjectType, WeaponType, ElementType, FactionType, ObjectPositionType
 )
 from ..object_base import (
     ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
@@ -27,7 +27,7 @@ class CharactorBase(ObjectBase):
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
-        area = 'INVALID'
+        area = ObjectPositionType.INVALID
     )
 
     element: ElementType
@@ -50,8 +50,24 @@ class CharactorBase(ObjectBase):
     is_alive: bool = True
 
     @property
-    def is_defeated(self):
+    def is_defeated(self) -> bool:
         return not self.is_alive
+
+    @property
+    def is_stunned(self) -> bool:
+        """
+        Check if the charactor is stunned.
+        """
+        stun_status_names = [
+            'Frozen',
+            'Petrification',
+            'Mist Bubble',
+            'Stun',
+        ]
+        for status in self.status:
+            if status.name in stun_status_names:
+                return True
+        return False
 
     def get_object_lists(self) -> List[ObjectBase]:
         """

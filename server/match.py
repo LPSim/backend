@@ -3,6 +3,7 @@ import logging
 import numpy as np
 from typing import Literal, List, Any, Dict
 from enum import Enum
+from pydantic import PrivateAttr
 
 from utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
@@ -78,7 +79,7 @@ from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
 )
-from .event_handler import SystemEventHandler
+from .event_handler import SystemEventHandlers, SystemEventHandler
 from .status import TeamStatus
 from .summon import Summons
 
@@ -184,12 +185,16 @@ class Match(BaseModel):
 
     match_config: MatchConfig = MatchConfig()
 
+    # history logger
+    _history: List['Match'] = PrivateAttr(default_factory = list)
+    enable_history: bool = False
+
     # random state
     random_state: List[Any] = []
     _random_state: np.random.RandomState = np.random.RandomState()
 
     # event handlers to implement special rules. TODO add special handler
-    event_handlers: List[ObjectBase] = [
+    event_handlers: List[SystemEventHandlers] = [
         SystemEventHandler(),
         # OmnipotentGuideEventHandler(),
     ]
@@ -200,15 +205,28 @@ class Match(BaseModel):
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
     action_queues: List[List[Actions]] = []
-    requests: List[Requests] = []
+    requests: List[Requests] = []  # TODO: add currently who need response
     winner: int = -1
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
+        self._init_random_state()
+
+    def copy(self, *argv, **kwargs) -> 'Match':
+        """
+        Copy the match, and init random state of new match.
+        """
+        ret = super().copy(*argv, **kwargs)
+        ret._init_random_state()
+        return ret
+
+    def _init_random_state(self):
         if self.random_state:
             random_state = self.random_state[:]
             random_state[1] = np.array(random_state[1], dtype = 'uint32')
             self._random_state.set_state(random_state)  # type: ignore
+        else:
+            self._save_random_state()
 
     def set_deck(self, decks: List[Deck]):
         """
@@ -220,6 +238,12 @@ class Match(BaseModel):
         assert len(decks) == len(self.player_tables)
         for player_table, deck in zip(self.player_tables, decks):
             player_table.player_deck_information = deck
+
+    def get_history_json(self) -> List[str]:
+        """
+        Return the history of the match in jsonl format.
+        """
+        return [match.json() for match in self._history]
 
     def _save_random_state(self):
         """
@@ -298,14 +322,14 @@ class Match(BaseModel):
             # copy charactors
             for cnum, charactor in enumerate(
                     player_table.player_deck_information.charactors):
-                charactor_copy = charactor.copy()
+                charactor_copy = charactor.copy(deep = True)
                 charactor_copy.position.player_id = pnum
                 charactor_copy.position.charactor_id = cnum
                 charactor_copy.position.area = ObjectPositionType.CHARACTOR
                 player_table.charactors.append(charactor_copy)
             # copy cards
             for card in player_table.player_deck_information.cards:
-                card_copy = card.copy()
+                card_copy = card.copy(deep = True)
                 card_copy.position.player_id = pnum
                 card_copy.position.area = ObjectPositionType.DECK
                 player_table.table_deck.append(card_copy)
@@ -382,6 +406,13 @@ class Match(BaseModel):
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
+            if self.enable_history:
+                hist = self._history[:]
+                self._history.clear()
+                copy = self.copy(deep = True)
+                self._history += hist
+                self._history.append(copy)
+                # self._history.append(self.copy(deep = True))
             if len(self.requests) or not run_continuously:
                 if len(self.requests):
                     logging.info(
@@ -803,11 +834,19 @@ class Match(BaseModel):
         ))
 
     def _request_use_skill(self, player_id: int):
+        """
+        Generate use skill requests. If active charactor is stunned, or
+        not satisfy the condition to use skill, it will skip generating
+        request.
+        """
         table = self.player_tables[player_id]
         front_charactor = table.charactors[table.active_charactor_id]
+        if front_charactor.is_stunned:
+            # stunned, cannot use skill.
+            return
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(front_charactor.hp, front_charactor.charge):
-                cost = skill.cost.copy()
+                cost = skill.cost.copy(deep = True)
                 self._modify_value(cost, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
                 if cost.is_valid(dice_colors = dice_colors, strict = False):
@@ -1258,7 +1297,7 @@ class Match(BaseModel):
                 selected_color = candidates[int(self._random() 
                                                 * len(candidates))]
                 dice.append(Die(color = selected_color, 
-                                position = dice_position.copy()))
+                                position = dice_position.copy(deep = True)))
         elif is_different:
             if number > len(candidates):
                 logging.error('Not enough dice colors.')
@@ -1268,7 +1307,7 @@ class Match(BaseModel):
             candidates = candidates[:number]
             for selected_color in candidates:
                 dice.append(Die(color = selected_color,
-                                position = dice_position.copy()))
+                                position = dice_position.copy(deep = True)))
         else:
             if color is None:
                 logging.error('Dice color should be specified.')
@@ -1276,7 +1315,7 @@ class Match(BaseModel):
                 return []
             for _ in range(number):
                 dice.append(Die(color = color,
-                                position = dice_position.copy()))
+                                position = dice_position.copy(deep = True)))
         # if there are more dice than the maximum, discard the rest
         max_obtainable_dice = (self.match_config.max_dice_number 
                                - len(table.dice))
@@ -1438,7 +1477,7 @@ class Match(BaseModel):
             damage_increase_value_lists += damages
         while len(damage_increase_value_lists) > 0:
             damage = damage_increase_value_lists.pop(0)
-            damage_original = damage.copy()
+            damage_original = damage.copy(deep = True)
             table = self.player_tables[damage.target_player_id]
             charactor = table.charactors[damage.target_charactor_id]
             damage_element_type = DAMAGE_TYPE_TO_ELEMENT[

@@ -26,7 +26,6 @@ class ObjectBase(BaseModel):
     should inherit from this class.
     """
     type: ObjectType = ObjectType.EMPTY
-    index: int = 0
     position: ObjectPosition
     id: int = 0
 
