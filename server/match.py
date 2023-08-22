@@ -80,7 +80,7 @@ from .elemental_reaction import (
     apply_elemental_reaction,
 )
 from .event_handler import SystemEventHandlers, SystemEventHandler
-from .status import TeamStatus
+from .status import TeamStatus, CharactorStatus
 from .summon import Summons
 
 
@@ -205,7 +205,7 @@ class Match(BaseModel):
     player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
     match_state: MatchState = MatchState.WAITING
     action_queues: List[List[Actions]] = []
-    requests: List[Requests] = []  # TODO: add currently who need response
+    requests: List[Requests] = []
     winner: int = -1
 
     def __init__(self, *argv, **kwargs):
@@ -244,6 +244,15 @@ class Match(BaseModel):
         Return the history of the match in jsonl format.
         """
         return [match.json() for match in self._history]
+
+    def need_respond(self, player_id: int) -> bool:
+        """
+        Check if the player needs to respond to any request.
+        """
+        for request in self.requests:
+            if request.player_id == player_id:
+                return True
+        return False
 
     def _save_random_state(self):
         """
@@ -1622,6 +1631,12 @@ class Match(BaseModel):
             target_classes = TeamStatus
             target_list = table.team_status
             target_name = 'team status'
+        elif action.object_position.area \
+                == ObjectPositionType.CHARACTOR_STATUS:
+            target_classes = CharactorStatus
+            target_list = table.charactors[
+                action.object_position.charactor_id].status
+            target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_classes = Summons
             target_list = table.summons
@@ -1676,6 +1691,11 @@ class Match(BaseModel):
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_list = table.team_status
             target_name = 'team status'
+        elif action.object_position.area \
+                == ObjectPositionType.CHARACTOR_STATUS:
+            target_list = table.charactors[
+                action.object_position.charactor_id].status
+            target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
             target_name = 'summon'

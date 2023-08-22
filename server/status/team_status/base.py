@@ -44,7 +44,7 @@ class RoundTeamStatus(TeamStatusBase):
     """
     name: Literal['RoundTeamStatus'] = 'RoundTeamStatus'
     usage: int
-    max_round: int = 999
+    max_usage: int = 999
 
     def check_should_remove(self) -> List[RemoveObjectAction]:
         """

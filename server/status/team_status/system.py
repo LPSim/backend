@@ -40,7 +40,7 @@ class CatalyzingField(UsageTeamStatus):
     def event_handler_MAKE_DAMAGE(
             self, event: AfterMakeDamageEventArguments) -> List[Actions]:
         """
-        When damage made, check whether the round status should be removed.
+        When damage made, check whether the team status should be removed.
         Not trigger on AFTER_MAKE_DAMAGE because when damage made, run out
         of usage, but new one is generated, should remove first then generate
         new one, otherwise newly updated status will be removed.
@@ -75,10 +75,10 @@ class DendroCore(UsageTeamStatus):
                 self.usage -= 1
         return value
 
-    def event_handler_AFTER_MAKE_DAMAGE(
+    def event_handler_MAKE_DAMAGE(
             self, event: AfterMakeDamageEventArguments) -> List[Actions]:
         """
-        After damage made, check whether the team status should be removed.
+        When damage made, check whether the team status should be removed.
         """
         return self.check_remove_triggered()
 
@@ -108,10 +108,10 @@ class Crystallize(UsageTeamStatus):
                 self.usage -= decrease
         return value
 
-    def event_handler_AFTER_MAKE_DAMAGE(
+    def event_handler_MAKE_DAMAGE(
             self, event: AfterMakeDamageEventArguments) -> List[Actions]:
         """
-        After damage made, check whether the team status should be removed.
+        When damage made, check whether the team status should be removed.
         """
         return self.check_remove_triggered()
 

@@ -325,7 +325,16 @@ def elemental_reaction_side_effect_ver_3_4(
     Apply side effect of elemental reaction. 
     """
     if reaction == ElementalReactionType.FROZEN:
-        raise NotImplementedError
+        position = ObjectPosition(
+            player_id = player_id,
+            charactor_id = charator_id,
+            area = ObjectPositionType.CHARACTOR_STATUS
+        )
+        return CreateObjectAction(
+            object_position = position,
+            object_name = 'Frozen',
+            object_arguments = {}
+        )
     elif reaction == ElementalReactionType.CRYSTALLIZE:
         position = ObjectPosition(
             player_id = 1 - player_id,
