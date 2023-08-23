@@ -10,6 +10,7 @@ from server.interaction import (
     ElementalTuningRequest, ElementalTuningResponse,
     SwitchCharactorRequest, SwitchCharactorResponse,
     UseSkillRequest, UseSkillResponse,
+    UseCardRequest, UseCardResponse,
 )
 from server.consts import DieColor
 
@@ -60,6 +61,8 @@ class RandomAgent(AgentBase):
             return self.resp_switch_charactor(req)
         elif req.name == 'UseSkillRequest':
             return self.resp_use_skill(req)
+        elif req.name == 'UseCardRequest':
+            return self.resp_use_card(req)
         else:
             raise ValueError(f'Unknown request name: {req.name}')
 
@@ -158,3 +161,54 @@ class RandomAgent(AgentBase):
             request = req, 
             cost_ids = selected
         )
+
+    def resp_use_card(
+            self, req: UseCardRequest) -> UseCardResponse:
+        """
+        Randomly choose dice to use card.
+        """
+        cost = req.cost
+        ele_dice_ids = [num for num, color in enumerate(req.dice_colors)
+                        if color == cost.elemental_dice_color
+                        or color == DieColor.OMNI]
+        other_dice_ids = [x for x in range(len(req.dice_colors))
+                          if x not in ele_dice_ids]
+        selected = []
+        for _ in range(cost.elemental_dice_number):
+            if len(ele_dice_ids) > 0:
+                idx = int(self.random() * len(ele_dice_ids))
+                selected.append(ele_dice_ids.pop(idx))
+            else:
+                raise ValueError('Not enough elemental dice')
+        if cost.same_dice_number > 0:
+            color_map = {}
+            for color in req.dice_colors:
+                if color not in color_map:
+                    color_map[color] = 0
+                color_map[color] += 1
+            for k, v in color_map.items():
+                if v >= cost.same_dice_number:
+                    other_dice_ids = []
+                    ele_dice_ids = []
+                    for i, color in enumerate(req.dice_colors):
+                        if color == k:
+                            if len(selected) < cost.same_dice_number:
+                                selected.append(i)
+                            else:
+                                other_dice_ids.append(i)
+                        else:
+                            other_dice_ids.append(i)
+                    break
+        other_dice_ids += ele_dice_ids
+        for _ in range(cost.any_dice_number):
+            if len(other_dice_ids) > 0:
+                idx = int(self.random() * len(other_dice_ids))
+                selected.append(other_dice_ids.pop(idx))
+            else:
+                raise ValueError('Not enough dice')
+        selected.sort()
+
+        return UseCardResponse(
+            request = req, 
+            cost_ids = selected
+    )

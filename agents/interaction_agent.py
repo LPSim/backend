@@ -12,6 +12,7 @@ from server.interaction import (
     ElementalTuningRequest, ElementalTuningResponse,
     SwitchCharactorRequest, SwitchCharactorResponse,
     UseSkillRequest, UseSkillResponse,
+    UseCardRequest, UseCardResponse,
 )
 from server.consts import DieColor
 
@@ -42,6 +43,7 @@ class InteractionAgent(AgentBase):
         'tune': 'ElementalTuningRequest',
         'sw_char': 'SwitchCharactorRequest',
         'skill': 'UseSkillRequest',
+        'card': 'UseCardRequest',
     }
     verbose_level: int = 0
     available_reqs: List[Requests] = []
@@ -137,6 +139,8 @@ class InteractionAgent(AgentBase):
                 return self.resp_switch_charactor(args, reqs)  # type: ignore
             if req_name == 'UseSkillRequest':
                 return self.resp_use_skill(args, reqs)  # type: ignore
+            if req_name == 'UseCardRequest':
+                return self.resp_use_card(args, reqs)  # type: ignore
         except Exception as e:
             print(f'error: {e}')
             return self.generate_response(match)
@@ -223,5 +227,18 @@ class InteractionAgent(AgentBase):
         cost_ids = self._colors_to_ids(args[1:], skill_req.dice_colors)
         return UseSkillResponse(
             request = skill_req,
+            cost_ids = cost_ids
+        )
+
+    def resp_use_card(
+            self, args: List[str],
+            reqs: List[UseCardRequest]) -> UseCardResponse:
+        """
+        args: one card idx, variable length of cost colors.
+        """
+        card_req = reqs[int(args[0])]
+        cost_ids = self._colors_to_ids(args[1:], card_req.dice_colors)
+        return UseCardResponse(
+            request = card_req,
             cost_ids = cost_ids
         )
