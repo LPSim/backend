@@ -110,6 +110,17 @@ class UseSkillRequest(RequestBase):
     cost: DiceCostValue
 
 
+class UseCardRequest(RequestBase):
+    """
+    Request for use card.
+    """
+    name: Literal['UseCardRequest'] = 'UseCardRequest'
+    type: Literal[RequestActionType.COMBAT, RequestActionType.QUICK]
+    card_id: int
+    dice_colors: List[DieColor]
+    cost: DiceCostValue
+
+
 class ResponseBase(BaseModel):
     """
     Base class of response.
@@ -232,6 +243,22 @@ class UseSkillResponse(ResponseBase):
     name: Literal['UseSkillResponse'] = 'UseSkillResponse'
     request: UseSkillRequest
     cost_ids: List[int]
+    # TODO: choose target
+
+    @property
+    def is_valid(self) -> bool:
+        """
+        Check whether the response is valid.
+        """
+        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
+        return self.request.cost.is_valid(cost_colors)
+
+
+class UseCardResponse(ResponseBase):
+    name: Literal['UseCardResponse'] = 'UseCardResponse'
+    request: UseCardRequest
+    cost_ids: List[int]
+    # TODO: choose target
 
     @property
     def is_valid(self) -> bool:
@@ -245,11 +272,11 @@ class UseSkillResponse(ResponseBase):
 Requests = (
     SwitchCardRequest | ChooseCharactorRequest | RerollDiceRequest
     | SwitchCharactorRequest | ElementalTuningRequest
-    | DeclareRoundEndRequest | UseSkillRequest
+    | DeclareRoundEndRequest | UseSkillRequest | UseCardRequest
 )
 
 Responses = (
     SwitchCardResponse | ChooseCharactorResponse | RerollDiceResponse
     | SwitchCharactorResponse | ElementalTuningResponse
-    | DeclareRoundEndResponse | UseSkillResponse
+    | DeclareRoundEndResponse | UseSkillResponse | UseCardResponse
 )

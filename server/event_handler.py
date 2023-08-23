@@ -65,8 +65,6 @@ class SystemEventHandler(SystemEventHandlerBase):
         """
         After receive damage, generate side effects of elemental reaction.
         """
-        if str(event.elemental_reaction) != 'NONE':
-            ...
         reaction = event.elemental_reaction
         player_id = event.final_damage.target_player_id
         charactor_id = event.final_damage.target_charactor_id

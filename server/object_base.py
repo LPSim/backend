@@ -18,6 +18,7 @@ from .consts import (
 )
 from .modifiable_values import ModifiableValueTypes, DiceCostValue, DamageValue
 from .struct import SkillActionArguments, ObjectPosition
+from .interaction import RequestActionType
 
 
 class ObjectBase(BaseModel):
@@ -206,12 +207,27 @@ class CardBase(ObjectBase):
         charactor_id = -1,
         area = ObjectPositionType.INVALID
     )
+    cost: DiceCostValue
+
+    @property
+    def action_type(self) -> RequestActionType:
+        """
+        Return the action type of the card.
+        """
+        return RequestActionType.QUICK
 
     def get_actions(self) -> List[ActionBase]:
         """
         Act the card. It will return a list of actions.
         """
         raise NotImplementedError()
+
+    def is_valid(self) -> bool:
+        """
+        Check if the card can be used. Note that this function will not check
+        the cost of the card.
+        """
+        return True
 
 
 class WeaponBase(CardBase):

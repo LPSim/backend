@@ -37,6 +37,7 @@ from .interaction import (
     ElementalTuningRequest, ElementalTuningResponse,
     DeclareRoundEndRequest, DeclareRoundEndResponse,
     UseSkillRequest, UseSkillResponse,
+    UseCardRequest, UseCardResponse,
 )
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR,
@@ -478,8 +479,8 @@ class Match(BaseModel):
             self._respond_declare_round_end(response)
         elif isinstance(response, UseSkillResponse):
             self._respond_use_skill(response)
-        # elif isinstance(response, UseCardResponse):
-        #     self._respond_use_card(response)
+        elif isinstance(response, UseCardResponse):
+            self._respond_use_card(response)
         elif isinstance(response, SwitchCardResponse):
             self._respond_switch_card(response)
         elif isinstance(response, ChooseCharactorResponse):
@@ -873,8 +874,6 @@ class Match(BaseModel):
                         dice_colors = dice_colors,
                         cost = cost
                     ))
-                else:
-                    ...
 
     def _request_use_card(self, player_id: int):
         """
@@ -886,7 +885,22 @@ class Match(BaseModel):
                 card_ids = available_card_ids
             ))
         """
-        ...
+        table = self.player_tables[player_id]
+        cards = table.hands
+        for cid, card in enumerate(cards):
+            if card.is_valid():
+                cost = card.cost.copy(deep = True)
+                self._modify_value(cost, mode = 'TEST')
+                dice_colors = [die.color for die in table.dice]
+                if cost.is_valid(dice_colors = dice_colors, strict = False):
+                    assert card.action_type != RequestActionType.SYSTEM
+                    self.requests.append(UseCardRequest(
+                        player_id = player_id,
+                        card_id = cid,
+                        type = card.action_type,
+                        dice_colors = dice_colors,
+                        cost = cost
+                    ))
 
     """
     Response functions. To deal with specific responses.
@@ -1105,8 +1119,34 @@ class Match(BaseModel):
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
 
-    def _respond_use_card(self, response: Responses):
-        ...
+    def _respond_use_card(self, response: UseCardResponse):
+        request = response.request
+        self._modify_value(
+            value = request.cost.original_value,
+            mode = 'REAL'
+        )
+        table = self.player_tables[response.player_id]
+        card = table.hands[request.card_id]
+        actions: List[Actions] = [
+            RemoveDiceAction(
+                player_id = response.player_id,
+                dice_ids = response.cost_ids,
+            ),
+            RemoveCardAction(
+                player_id = response.player_id,
+                card_id = request.card_id,
+                card_position = 'HAND',
+                remove_type = 'USED',
+            )
+        ]
+        actions += card.get_actions()
+        if request.type == RequestActionType.COMBAT:
+            actions.append(CombatActionAction(
+                player_id = response.player_id,
+            ))
+        self.action_queues.append(actions)
+        self.requests = [x for x in self.requests
+                         if x.player_id != response.player_id]
 
     """
     Action Functions
