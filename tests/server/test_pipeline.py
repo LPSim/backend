@@ -221,7 +221,54 @@ def test_random_same_after_load():
     assert match.match_state != MatchState.ERROR
 
 
+def test_use_card():
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        commands = [
+            'sw_card',
+            'choose 2',
+            'card 0 omni',
+            'card 0 omni',
+            'card 0 omni',
+            'card 0 omni',
+            'end',
+            'card 0 omni',
+            'card 0 omni',
+            'card 0 omni',
+            'card 0 omni',
+        ]
+    )
+    match = Match()
+    deck = TEST_DECK
+    deck = Deck(**deck)
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    hand_numbers = [10, 10, 10, 10, 10, 9, 8, 7, 6, 5, 5, 5]
+    deck_numbers = [7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 25, 25]
+
+    while len(agent_1.commands) > 0:
+        if match.need_respond(0):
+            current_agent = agent_0
+        elif match.need_respond(1):
+            current_agent = agent_1
+        else:
+            raise Exception('no need respond')
+        make_respond(current_agent, match)
+        assert len(match.player_tables[1].hands) == hand_numbers[
+            len(agent_1.commands)]
+        assert len(match.player_tables[1].table_deck) == deck_numbers[
+            len(agent_1.commands)]
+
+    assert match.match_state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_match_pipeline()
-    test_save_load()
-    test_random_same_after_load()
+    # test_match_pipeline()
+    # test_save_load()
+    # test_random_same_after_load()
+    test_use_card()
