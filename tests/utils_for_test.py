@@ -30,12 +30,8 @@ def check_hp(match: Match, hp: List[List[int]]):
     """
     input hps for each player and check
     """
-    assert len(match.player_tables) == len(hp)
-    for h, t in zip(hp, match.player_tables):
-        c = t.charactors
-        assert len(c) == len(h)
-        for onec, oneh in zip(c, h):
-            assert onec.hp == oneh
+    hps = [[x.hp for x in t.charactors] for t in match.player_tables]
+    assert hps == hp
 
 
 def check_name(name: str, lists: List[Any], exist: bool = True):
