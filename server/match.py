@@ -239,11 +239,16 @@ class Match(BaseModel):
         for player_table, deck in zip(self.player_tables, decks):
             player_table.player_deck_information = deck
 
-    def get_history_json(self) -> List[str]:
+    def get_history_json(self, filename: str | None = None) -> List[str]:
         """
         Return the history of the match in jsonl format.
+        if filename is set, save the history to file.
         """
-        return [match.json() for match in self._history]
+        res = [match.json() for match in self._history]
+        if filename is not None:
+            with open(filename, 'w') as f:
+                f.write('\n'.join(res))
+        return res
 
     def need_respond(self, player_id: int) -> bool:
         """
@@ -1520,7 +1525,7 @@ class Match(BaseModel):
                     reacted_elements,
                 )
             damage = damages_after_elemental_reaction.pop(0)
-            damage_lists += damages_after_elemental_reaction
+            damage_increase_value_lists += damages_after_elemental_reaction
             # apply 3-step damage modification
             self._modify_value(damage, 'REAL')
             damage = DamageMultiplyValue.from_increase_value(damage)
