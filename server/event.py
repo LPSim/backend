@@ -1,6 +1,6 @@
 from utils import BaseModel
 from typing import Literal, List, Any
-from .consts import DieColor, ElementalReactionType, ElementType
+from .consts import DieColor, ElementalReactionType, ElementType, SkillType
 from .action import (
     ActionTypes, 
     ActionBase,
@@ -19,6 +19,7 @@ from .action import (
     CreateObjectAction,
     RemoveObjectAction,
     ChangeObjectUsageAction,
+    MoveObjectAction,
 )
 from .modifiable_values import DamageIncreaseValue, FinalDamageValue
 
@@ -224,6 +225,8 @@ class SkillEndEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
+    player_id: int
+    skill_type: SkillType
 
 
 class CharactorDefeatedEventArguments(EventArgumentsBase):
@@ -265,6 +268,15 @@ class ChangeObjectUsageEventArguments(EventArgumentsBase):
     object_name: str
     usage_before: int
     usage_after: int
+
+
+class MoveObjectEventArguments(EventArgumentsBase):
+    """
+    Event arguments for move object event.
+    """
+    type: Literal[ActionTypes.MOVE_OBJECT] = ActionTypes.MOVE_OBJECT
+    action: MoveObjectAction
+    object_name: str
 
 
 class RoundEndEventArguments(EventArgumentsBase):

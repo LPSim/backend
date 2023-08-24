@@ -1,4 +1,5 @@
 from .event.others import Strategize
+from ..support import Supports
 
 
-Cards = Strategize | Strategize
+Cards = Strategize | Supports

@@ -25,6 +25,7 @@ from .action import (
     CreateObjectAction,
     RemoveObjectAction,
     ChangeObjectUsageAction,
+    MoveObjectAction,
     CharactorDefeatedAction,
     GenerateChooseCharactorRequestAction,
 )
@@ -44,6 +45,7 @@ from .consts import (
     DAMAGE_TYPE_TO_ELEMENT,
     ElementalReactionType,
     ObjectPositionType,
+    ObjectType,
 )
 from .die import Die
 from .event import (
@@ -68,6 +70,7 @@ from .event import (
     CreateObjectEventArguments,
     RemoveObjectEventArguments,
     ChangeObjectUsageEventArguments,
+    MoveObjectEventArguments,
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
@@ -1111,6 +1114,7 @@ class Match(BaseModel):
         actions.append(SkillEndAction(
             player_id = response.player_id,
             charactor_id = request.charactor_id,
+            skill_type = skill.skill_type,
         ))
         if request.type == RequestActionType.COMBAT:
             actions.append(CombatActionAction(
@@ -1133,13 +1137,15 @@ class Match(BaseModel):
                 player_id = response.player_id,
                 dice_ids = response.cost_ids,
             ),
-            RemoveCardAction(
+        ]
+        if card.type == ObjectType.CARD:
+            # only card will be removed. TODO is it correct?
+            actions.append(RemoveCardAction(
                 player_id = response.player_id,
                 card_id = request.card_id,
                 card_position = 'HAND',
                 remove_type = 'USED',
-            )
-        ]
+            ))
         actions += card.get_actions()
         if request.type == RequestActionType.COMBAT:
             actions.append(CombatActionAction(
@@ -1199,6 +1205,8 @@ class Match(BaseModel):
             return list(self._action_remove_object(action))
         elif isinstance(action, ChangeObjectUsageAction):
             return list(self._action_change_object_usage(action))
+        elif isinstance(action, MoveObjectAction):
+            return list(self._action_move_object(action))
         elif isinstance(action, GenerateChooseCharactorRequestAction):
             return list(self._action_generate_choose_charactor_request(action))
         else:
@@ -1820,6 +1828,62 @@ class Match(BaseModel):
         self._set_match_state(MatchState.ERROR)
         return []
 
+    def _action_move_object(self, action: MoveObjectAction) \
+            -> List[MoveObjectEventArguments]:
+        """
+        Action for moving objects, e.g. equipments, supports.
+        """
+        player_id = action.object_position.player_id
+        table = self.player_tables[player_id]
+        # charactor_id = action.object_position.charactor_id
+        if action.object_position.area == ObjectPositionType.HAND:
+            current_list = table.hands
+            current_name = 'hand'
+        elif action.object_position.area == ObjectPositionType.SUPPORT:
+            current_list = table.supports
+            current_name = 'support'
+        else:
+            raise NotImplementedError(
+                f'Move object action from area '
+                f'{action.object_position.area} is not implemented.'
+            )
+        for csnum, current_object in enumerate(current_list):
+            if current_object.id == action.object_id:
+                if action.target_position.area == ObjectPositionType.HAND:
+                    target_list = table.hands
+                    target_name = 'hand'
+                elif action.target_position.area == ObjectPositionType.SUPPORT:
+                    target_list = table.supports
+                    assert current_object.type == ObjectType.SUPPORT
+                    assert (len(target_list) 
+                            < self.match_config.max_support_number)
+                    target_name = 'support'
+                else:
+                    raise NotImplementedError(
+                        f'Move object action to area '
+                        f'{action.target_position.area} is not implemented.'
+                    )
+                current_list.pop(csnum)
+                current_object.position = action.target_position
+                target_list.append(current_object)  # type: ignore
+                logging.info(
+                    f'player {player_id} '
+                    f'moved {current_name} {current_object.name} '
+                    f'to {target_name}.'
+                )
+                return [MoveObjectEventArguments(
+                    match = self,
+                    action = action,
+                    object_name = current_object.name,
+                )]
+        logging.error(
+            f'player {player_id} '
+            f'tried to move non-exist {current_name} with id '
+            f'{action.object_id}.'
+        )
+        self._set_match_state(MatchState.ERROR)
+        return []
+
     """
     Action funtions that only used to trigger specific event
     """
@@ -1837,6 +1901,8 @@ class Match(BaseModel):
         return [SkillEndEventArguments(
             match = self,
             action = action,
+            player_id = player_id,
+            skill_type = action.skill_type,
         )]
 
     """

@@ -8,7 +8,7 @@ from .interaction import (
     DeclareRoundEndResponse,
     SwitchCharactorResponse,
 )
-from .consts import DieColor
+from .consts import DieColor, SkillType
 from .modifiable_values import DamageValue
 from .struct import ObjectPosition
 
@@ -31,6 +31,7 @@ class ActionTypes(str, Enum):
     REMOVE_OBJECT = 'REMOVE_OBJECT'
     OBJECT_REMOVED = 'OBJECT_REMOVED'
     CHANGE_OBJECT_USAGE = 'CHANGE_OBJECT_USAGE'
+    MOVE_OBJECT = 'MOVE_OBJECT'
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
@@ -244,6 +245,7 @@ class SkillEndAction(ActionBase):
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     player_id: int
     charactor_id: int
+    skill_type: SkillType
 
 
 class CharactorDefeatedAction(ActionBase):
@@ -297,6 +299,17 @@ class ChangeObjectUsageAction(ActionBase):
     change_usage: int
     min_usage: int = 0
     max_usage: int = 999
+
+
+class MoveObjectAction(ActionBase):
+    """
+    Action for moving objects.
+    """
+    type: Literal[ActionTypes.MOVE_OBJECT] = \
+        ActionTypes.MOVE_OBJECT
+    object_position: ObjectPosition
+    object_id: int
+    target_position: ObjectPosition
 
 
 class GenerateChooseCharactorRequestAction(ActionBase):

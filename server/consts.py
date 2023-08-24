@@ -318,3 +318,22 @@ class ElementalReactionType(str, Enum):
 
     def __repr__(self):
         return self.value
+
+
+class DiceCostLabels(int, Enum):
+    SKILL = 0x1
+    CARD = 0x2
+    COMPANION = 0x4
+    LOCATION = 0x8
+    ITEM = 0x10
+    ARTIFACT = 0x20
+    WEAPON = 0x40
+    TALENT = 0x80
+    FOOD = 0x100
+    ARCANE = 0x200
+
+    def __str__(self):
+        return self.value
+
+    def __repr__(self):
+        return self.value

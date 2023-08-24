@@ -60,6 +60,7 @@ class RerollValue(ModifiableValueBase):
 
 class DiceCostValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.DICE_COST
+    label: int = 0
     elemental_dice_number: int = 0
     elemental_dice_color: DieColor | None = None
     same_dice_number: int = 0
@@ -106,11 +107,18 @@ class DiceCostValue(ModifiableValueBase):
             if ele_num + omni_num < self.elemental_dice_number:
                 return False  # elemental dice not enough
         if self.same_dice_number > 0:
+            if DieColor.OMNI not in d:
+                d[DieColor.OMNI] = 0
+            if d[DieColor.OMNI] >= self.same_dice_number:
+                return True
+            success = False
             for color, same_num in d.items():
                 if color == DieColor.OMNI:
                     continue
-                if same_num + omni_num < self.same_dice_number:
-                    return False  # same dice not enough
+                if same_num + omni_num >= self.same_dice_number:
+                    success = True
+                    break
+            return success
         return True
 
 

@@ -1,4 +1,4 @@
-from .support_base import SupportBase
+from .companions import Rana
 
 
-Supports = SupportBase | SupportBase
+Supports = Rana | Rana

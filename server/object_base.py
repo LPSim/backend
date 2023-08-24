@@ -15,6 +15,7 @@ from .action import (
 from .consts import (
     ObjectType, WeaponType, ElementType, DamageElementalType, SkillType,
     DamageType, DamageSourceType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
+    DiceCostLabels,
 )
 from .modifiable_values import ModifiableValueTypes, DiceCostValue, DamageValue
 from .struct import SkillActionArguments, ObjectPosition
@@ -214,6 +215,14 @@ class CardBase(ObjectBase):
         area = ObjectPositionType.INVALID
     )
     cost: DiceCostValue
+    cost_label: int = DiceCostLabels.CARD.value
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        # set cost label into cost
+        self.cost.label = self.cost_label
+        if self.cost.original_value is not None:
+            self.cost.original_value.label = self.cost_label
 
     @property
     def action_type(self) -> RequestActionType:
@@ -242,6 +251,7 @@ class WeaponBase(CardBase):
     """
     name: str
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
+    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.WEAPON.value
     weapon_type: WeaponType
 
 
@@ -251,11 +261,14 @@ class ArtifactBase(CardBase):
     """
     name: str
     type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
+    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.ARTIFACT.value
 
 
 class TalentBase(CardBase):
     """
-    Base class of talents.
+    Base class of talents. Note almost all talents are skills, and will receive
+    cost decrease from other objects.
     """
     name: str
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
+    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.TALENT.value

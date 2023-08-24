@@ -7,7 +7,7 @@ from ...event import RoundEndEventArguments
 
 class TeamStatusBase(StatusBase):
     """
-    Base class of team status. If show_usage is true, usage will be shown 
+    Base class of team status. TODO: If show_usage is true, usage will be shown 
     beside its icon.
     """
     type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
