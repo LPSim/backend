@@ -10,7 +10,7 @@ from ..event import (
 from ..action import (
     MakeDamageAction, RemoveObjectAction
 )
-from ..modifiable_values import DamageValue
+from ..modifiable_values import DamageValue, DiceCostValue
 
 
 class SummonBase(CardBase):
@@ -19,6 +19,7 @@ class SummonBase(CardBase):
     name: str
     usage: int
     max_usage: int
+    cost: DiceCostValue = DiceCostValue()
 
     def renew(self, new_status: 'SummonBase') -> None:
         """

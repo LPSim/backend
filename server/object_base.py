@@ -68,6 +68,11 @@ class SkillBase(ObjectBase):
         area = ObjectPositionType.INVALID
     )
 
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        # set id to 0, as skills are not real objects
+        self.id = 0
+
     def is_valid(self, hp: int, charge: int) -> bool:
         """
         Check if the skill can be used.
