@@ -203,12 +203,15 @@ def test_random_same_after_load():
         remove_ids(results_1[i])
         now = match.copy(deep = True)
         remove_ids(now)
-        assert now == results_1[i]
+        assert now == results_1[i], f'deepcopy error at {i}'
     assert match.match_state != MatchState.ERROR
 
     # use json to rerun
     match = Match(**json.loads(initial_match.json()))
+    assert match.json() == initial_match.json()
+    assert match == initial_match
     agent_1 = RandomAgent(**json.loads(initial_agent_1.json()))
+    assert agent_1 == initial_agent_1
     assert match.start()
     match.step()
     for i in range(test_step):
@@ -217,7 +220,7 @@ def test_random_same_after_load():
         remove_ids(results_1[i])
         now = match.copy(deep = True)
         remove_ids(now)
-        assert now == results_1[i]
+        assert now == results_1[i], f'json error at {i}'
     assert match.match_state != MatchState.ERROR
 
 
@@ -256,13 +259,13 @@ def test_use_card():
             current_agent = agent_0
         elif match.need_respond(1):
             current_agent = agent_1
+            assert len(match.player_tables[1].hands) == hand_numbers[
+                len(agent_1.commands)]
+            assert len(match.player_tables[1].table_deck) == deck_numbers[
+                len(agent_1.commands)]
         else:
             raise Exception('no need respond')
         make_respond(current_agent, match)
-        assert len(match.player_tables[1].hands) == hand_numbers[
-            len(agent_1.commands)]
-        assert len(match.player_tables[1].table_deck) == deck_numbers[
-            len(agent_1.commands)]
 
     assert match.match_state != MatchState.ERROR
 
@@ -270,5 +273,5 @@ def test_use_card():
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
-    # test_random_same_after_load()
-    test_use_card()
+    test_random_same_after_load()
+    # test_use_card()
