@@ -69,7 +69,7 @@ from .event import (
     RemoveObjectEventArguments,
     ChangeObjectUsageEventArguments,
 )
-from .object_base import ObjectBase, CardBase
+from .object_base import ObjectBase
 from .modifiable_values import (
     ModifiableValueBase,
     InitialDiceColorValue, RerollValue, DiceCostValue,
@@ -83,6 +83,7 @@ from .elemental_reaction import (
 from .event_handler import SystemEventHandlers, SystemEventHandler
 from .status import TeamStatus, CharactorStatus
 from .summon import Summons
+from .card import Cards
 
 
 class MatchState(str, Enum):
@@ -1249,7 +1250,7 @@ class Match(BaseModel):
         card_ids = action.card_ids[:]
         card_ids.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cid].name for cid in card_ids]
-        restore_cards: List[CardBase] = []
+        restore_cards: List[Cards] = []
         for cid in card_ids:
             restore_cards.append(table.hands[cid])
             table.hands = table.hands[:cid] + table.hands[cid + 1:]
