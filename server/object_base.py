@@ -49,7 +49,8 @@ class ObjectBase(BaseModel):
         # if id is zero, generate a new id
         if self.id == 0:
             self.id = (
-                int(time.time() * 1000000) * 1024 + random.randint(0, 1023)
+                int(time.time() % 65536 * 1000000) 
+                * 1024 + random.randint(0, 1023)
             )
 
 

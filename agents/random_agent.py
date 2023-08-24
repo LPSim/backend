@@ -30,7 +30,7 @@ class RandomAgent(AgentBase):
         """
         if not self.random_state_set:
             if self.random_seed is None:
-                self.random_seed = np.random.randint(0, 2 ** 32 - 1)
+                self.random_seed = np.random.randint(0, 2 ** 31 - 1)
             self._random_state.seed(self.random_seed)
             self.random_state_set = True
         return self._random_state.rand()
