@@ -186,19 +186,31 @@ class RandomAgent(AgentBase):
                 if color not in color_map:
                     color_map[color] = 0
                 color_map[color] += 1
-            for k, v in color_map.items():
+            keys = list(color_map.keys())
+            keys.sort()
+            if DieColor.OMNI not in color_map:
+                color_map[DieColor.OMNI] = 0
+            available_keys = []
+            for k in keys:
+                v = color_map[k]
                 if v >= cost.same_dice_number:
-                    other_dice_ids = []
-                    ele_dice_ids = []
-                    for i, color in enumerate(req.dice_colors):
-                        if color == k:
-                            if len(selected) < cost.same_dice_number:
-                                selected.append(i)
-                            else:
-                                other_dice_ids.append(i)
+                    available_keys.append(k)
+                elif (k != DieColor.OMNI 
+                      and v + color_map[DieColor.OMNI] 
+                      >= cost.same_dice_number):
+                    available_keys.append(k)
+            if len(available_keys) > 0:
+                k = available_keys[int(self.random() * len(available_keys))]
+                other_dice_ids = []
+                ele_dice_ids = []
+                for i, color in enumerate(req.dice_colors):
+                    if color == k:
+                        if len(selected) < cost.same_dice_number:
+                            selected.append(i)
                         else:
                             other_dice_ids.append(i)
-                    break
+                    else:
+                        other_dice_ids.append(i)
         other_dice_ids += ele_dice_ids
         for _ in range(cost.any_dice_number):
             if len(other_dice_ids) > 0:
@@ -211,4 +223,4 @@ class RandomAgent(AgentBase):
         return UseCardResponse(
             request = req, 
             cost_ids = selected
-    )
+        )
