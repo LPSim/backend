@@ -49,6 +49,7 @@ class InteractionAgent(AgentBase):
     available_reqs: List[Requests] = []
 
     commands: List[str] = []
+    only_use_command: bool = False
 
     random_after_no_command: bool = False
     random_agent: RandomAgent = RandomAgent(player_id = -1)
@@ -67,6 +68,8 @@ class InteractionAgent(AgentBase):
             self.commands = self.commands[1:]
             logging.info(f'InteractionAgent {self.player_id}: {cmd}')
             return cmd
+        if self.only_use_command:
+            return 'no_command'
         print(f'InteractionAgent {self.player_id}: ')
         return input()
 
@@ -78,6 +81,8 @@ class InteractionAgent(AgentBase):
             cmd = i[0]
             if cmd == 'help':
                 print(f'available commands: {list(self._cmd_to_name.keys())}')
+            elif cmd == 'no_command':
+                return 'no_command', []
             elif cmd == 'print':
                 self._print_requests()
             elif cmd == 'verbose':
@@ -121,6 +126,8 @@ class InteractionAgent(AgentBase):
             self._print_requests()
         try:
             req_name, args = self._get_cmd()
+            if req_name == 'no_command':
+                return None
             reqs = [x for x in self.available_reqs if x.name == req_name]
             if len(reqs) == 0:
                 print(f'no such request: {req_name}')

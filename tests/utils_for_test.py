@@ -1,8 +1,10 @@
+import numpy as np
 from typing import List, Any
 from server.match import Match
 from server.event_handler import OmnipotentGuideEventHandler
 from agents.agent_base import AgentBase
 from utils import BaseModel
+from tests.default_random_state import get_default_random_state
 
 
 def set_16_omni(match: Match):
@@ -57,3 +59,20 @@ def remove_ids(model: BaseModel) -> BaseModel:
     if 'id' in model.__fields__.keys():
         model.id = 0
     return model
+
+
+def get_random_state(offset: int = 0):
+    """
+    get random state tuple for test. it will use a fixed random state and
+    random offset times as the result random state.
+    """
+    state: List = get_default_random_state()
+    if offset > 0:
+        random_state = np.random.RandomState()
+        state[1] = np.array(state[1], dtype = 'uint32')
+        random_state.set_state(random_state)  # type: ignore
+        for _ in range(offset):
+            random_state.random()
+        state = list(random_state.get_state(legacy = True))  # type: ignore
+        state[1] = state[1].tolist()
+    return state

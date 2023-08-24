@@ -17,6 +17,22 @@
             "justMyCode": true
         },
         {
+            "name": "Uvicorn",
+            "type": "python",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "network:app",
+                "--reload"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "justMyCode": true
+        },
+        {
             "name": "Main",
             "type": "python",
             "request": "launch",
