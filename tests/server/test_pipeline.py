@@ -231,15 +231,15 @@ def test_use_card():
         commands = [
             'sw_card',
             'choose 2',
-            'card 0 omni',
-            'card 0 omni',
-            'card 0 omni',
-            'card 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
             'end',
-            'card 0 omni',
-            'card 0 omni',
-            'card 0 omni',
-            'card 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
+            'card 0 0 omni',
         ]
     )
     match = Match()
