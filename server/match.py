@@ -78,7 +78,7 @@ from .modifiable_values import (
     InitialDiceColorValue, RerollValue, DiceCostValue,
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
-from .struct import SkillActionArguments, ObjectPosition
+from .struct import SkillActionArguments, ObjectPosition, DiceCost
 from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
@@ -554,7 +554,16 @@ class Match(BaseModel):
         # generate new dice
         event_args: List[EventArgumentsBase] = []
         for pnum, player_table in enumerate(self.player_tables):
-            initial_color_value = InitialDiceColorValue(player_id = pnum)
+            initial_color_value = InitialDiceColorValue(
+                player_id = pnum,
+                match = self,
+                position = ObjectPosition(
+                    player_id = pnum,
+                    charactor_id = -1,
+                    area = ObjectPositionType.SYSTEM
+                ),
+                id = 0,
+            )
             self._modify_value(initial_color_value, 'REAL')
             initial_color_value.dice_colors = initial_color_value.dice_colors[
                 :self.match_config.initial_dice_number
@@ -588,6 +597,13 @@ class Match(BaseModel):
         for pnum, player_table in enumerate(self.player_tables):
             reroll_times = self.match_config.initial_dice_reroll_times
             reroll_value = RerollValue(
+                match = self,
+                position = ObjectPosition(
+                    player_id = pnum,
+                    charactor_id = -1,
+                    area = ObjectPositionType.SYSTEM
+                ),
+                id = 0,
                 value = reroll_times,
                 player_id = pnum,
             )
@@ -743,7 +759,8 @@ class Match(BaseModel):
         Args:
             value (ModifiableValues): The value to be modified. It contains 
                 value itself and all necessary information to modify the value.
-            sort_rule (ObjectSortRule): The sort rule used to sort objects.
+            potision (ObjectPosition): The position of the object that the 
+                value is based on.
             mode (Literal['test', 'real']): If 'test', objects will only modify
                 the value but not updating inner state, which is used to 
                 calculate costs used in requests. If 'real', it will modify 
@@ -806,9 +823,19 @@ class Match(BaseModel):
         TODO: With Leave It to Me, it can be a quick action.
         """
         table = self.player_tables[player_id]
-        dice_cost = DiceCostValue(any_dice_number = 1)
-        self._modify_value(dice_cost, mode = 'TEST')
-        if not dice_cost.is_valid(
+        dice_cost = DiceCost(any_dice_number = 1)
+        dice_cost_value = DiceCostValue(
+            cost = dice_cost,
+            match = self,
+            position = ObjectPosition(
+                player_id = player_id,
+                charactor_id = -1,
+                area = ObjectPositionType.SYSTEM
+            ),
+            id = 0
+        )
+        self._modify_value(dice_cost_value, mode = 'TEST')
+        if not dice_cost_value.cost.is_valid(
             dice_colors = [die.color for die in table.dice],
             strict = False,
         ):
@@ -825,7 +852,7 @@ class Match(BaseModel):
                 active_charactor_id = table.active_charactor_id,
                 candidate_charactor_ids = candidate_charactor_ids,
                 dice_colors = [die.color for die in table.dice],
-                cost = dice_cost,
+                cost = dice_cost_value.cost,
             ))
 
     def _request_elemental_tuning(self, player_id: int):
@@ -866,9 +893,17 @@ class Match(BaseModel):
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(front_charactor.hp, front_charactor.charge):
                 cost = skill.cost.copy(deep = True)
-                self._modify_value(cost, mode = 'TEST')
+                cost_value = DiceCostValue(
+                    cost = cost,
+                    match = self,
+                    position = skill.position,
+                    id = skill.id
+                )
+                self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
-                if cost.is_valid(dice_colors = dice_colors, strict = False):
+                if cost_value.cost.is_valid(
+                    dice_colors = dice_colors, strict = False
+                ):
                     self.requests.append(UseSkillRequest(
                         player_id = player_id,
                         # TODO currently only combat
@@ -876,7 +911,7 @@ class Match(BaseModel):
                         charactor_id = table.active_charactor_id,
                         skill_id = sid,
                         dice_colors = dice_colors,
-                        cost = cost
+                        cost = cost_value.cost
                     ))
 
     def _request_use_card(self, player_id: int):
@@ -894,16 +929,24 @@ class Match(BaseModel):
         for cid, card in enumerate(cards):
             if card.is_valid():
                 cost = card.cost.copy(deep = True)
-                self._modify_value(cost, mode = 'TEST')
+                cost_value = DiceCostValue(
+                    cost = cost,
+                    match = self,
+                    position = card.position,
+                    id = card.id
+                )
+                self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
-                if cost.is_valid(dice_colors = dice_colors, strict = False):
+                if cost_value.cost.is_valid(
+                    dice_colors = dice_colors, strict = False
+                ):
                     assert card.action_type != RequestActionType.SYSTEM
                     self.requests.append(UseCardRequest(
                         player_id = player_id,
                         card_id = cid,
                         type = card.action_type,
                         dice_colors = dice_colors,
-                        cost = cost
+                        cost = cost_value.cost
                     ))
 
     """
@@ -1025,8 +1068,19 @@ class Match(BaseModel):
                 player_id = response.player_id,
                 dice_ids = cost_ids,
             ))
+        cost = response.request.cost.original_value
+        cost_value = DiceCostValue(
+            match = self,
+            position = ObjectPosition(
+                player_id = response.player_id,
+                charactor_id = -1,
+                area = ObjectPositionType.SYSTEM
+            ),
+            id = 0,
+            cost = cost,
+        )
         self._modify_value(
-            value = response.request.cost.original_value,
+            value = cost_value,
             mode = 'REAL'
         )  # TODO: should use original value. need test.
         actions.append(SwitchCharactorAction.from_response(response))
@@ -1083,12 +1137,19 @@ class Match(BaseModel):
 
     def _respond_use_skill(self, response: UseSkillResponse):
         request = response.request
-        self._modify_value(
-            value = request.cost.original_value,
-            mode = 'REAL'
-        )  # TODO: should use original value. need test.
         skill = self.player_tables[response.player_id].charactors[
             request.charactor_id].skills[request.skill_id]
+        cost = response.request.cost.original_value
+        cost_value = DiceCostValue(
+            match = self,
+            position = skill.position,
+            id = skill.id,
+            cost = cost,
+        )
+        self._modify_value(
+            value = cost_value,
+            mode = 'REAL'
+        )  # TODO: should use original value. need test.
         skill_action_args = SkillActionArguments(
             player_id = response.player_id,
             our_active_charactor_id = self.player_tables[
@@ -1126,12 +1187,19 @@ class Match(BaseModel):
 
     def _respond_use_card(self, response: UseCardResponse):
         request = response.request
-        self._modify_value(
-            value = request.cost.original_value,
-            mode = 'REAL'
-        )
         table = self.player_tables[response.player_id]
         card = table.hands[request.card_id]
+        cost = response.request.cost.original_value
+        cost_value = DiceCostValue(
+            match = self,
+            position = card.position,
+            id = card.id,
+            cost = cost,
+        )
+        self._modify_value(
+            value = cost_value,
+            mode = 'REAL'
+        )
         actions: List[Actions] = [
             RemoveDiceAction(
                 player_id = response.player_id,
@@ -1139,7 +1207,7 @@ class Match(BaseModel):
             ),
         ]
         if card.type == ObjectType.CARD:
-            # only card will be removed. TODO is it correct?
+            # only card type will be removed. TODO is it correct?
             actions.append(RemoveCardAction(
                 player_id = response.player_id,
                 card_id = request.card_id,
@@ -1531,6 +1599,13 @@ class Match(BaseModel):
         damage_increase_value_lists: List[DamageIncreaseValue] = []
         for damage in damage_lists:
             damages = DamageIncreaseValue.from_damage_value(
+                match = self,
+                position = ObjectPosition(
+                    player_id = action.player_id,
+                    charactor_id = -1,
+                    area = ObjectPositionType.SYSTEM,
+                ),
+                id = 0,  # TODO: use correct position and id
                 damage_value = damage,
                 is_charactors_defeated = [[c.is_defeated for c in t.charactors] 
                                           for t in self.player_tables],

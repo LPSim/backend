@@ -285,6 +285,9 @@ def apply_elemental_reaction(
             c = target_charactors[cnum]
             if c.is_alive:
                 res.append(DamageIncreaseValue(
+                    match = damage.match,
+                    position = damage.position,
+                    id = damage.id,
                     target_player_id = damage.target_player_id,
                     target_charactor_id = cnum,
                     damage = 1,
@@ -307,6 +310,9 @@ def apply_elemental_reaction(
                     continue
                 if c.is_alive:
                     res.append(DamageIncreaseValue(
+                        match = damage.match,
+                        position = damage.position,
+                        id = damage.id,
                         target_player_id = damage.target_player_id,
                         target_charactor_id = cnum,
                         damage = 1,

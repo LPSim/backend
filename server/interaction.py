@@ -2,7 +2,7 @@ from utils import BaseModel
 from typing import Literal, List
 from enum import Enum
 from .consts import DieColor
-from .modifiable_values import DiceCostValue
+from .struct import DiceCost
 
 
 class RequestActionType(str, Enum):
@@ -76,7 +76,7 @@ class SwitchCharactorRequest(RequestBase):
     active_charactor_id: int
     candidate_charactor_ids: List[int]
     dice_colors: List[DieColor]
-    cost: DiceCostValue
+    cost: DiceCost
 
 
 class ElementalTuningRequest(RequestBase):
@@ -107,7 +107,7 @@ class UseSkillRequest(RequestBase):
     charactor_id: int
     skill_id: int
     dice_colors: List[DieColor]
-    cost: DiceCostValue
+    cost: DiceCost
 
 
 class UseCardRequest(RequestBase):
@@ -118,7 +118,7 @@ class UseCardRequest(RequestBase):
     type: Literal[RequestActionType.COMBAT, RequestActionType.QUICK]
     card_id: int
     dice_colors: List[DieColor]
-    cost: DiceCostValue
+    cost: DiceCost
 
 
 class ResponseBase(BaseModel):

@@ -17,9 +17,12 @@ from .consts import (
     DamageType, DamageSourceType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
     DiceCostLabels,
 )
-from .modifiable_values import ModifiableValueTypes, DiceCostValue, DamageValue
-from .struct import SkillActionArguments, ObjectPosition
+from .modifiable_values import ModifiableValueTypes, DamageValue
+from .struct import SkillActionArguments, ObjectPosition, DiceCost
 from .interaction import RequestActionType
+
+
+used_object_ids = set()
 
 
 class ObjectBase(BaseModel):
@@ -49,10 +52,14 @@ class ObjectBase(BaseModel):
                     raise ValueError(f'Invalid value modifier name: {k}')
         # if id is zero, generate a new id
         if self.id == 0:
-            self.id = (
-                int(time.time() % 65536 * 1000000) 
-                * 1024 + random.randint(0, 1023)
-            )
+            while True:
+                self.id = (
+                    int(time.time() % 86400 * 1000000) 
+                    * 1024 + random.randint(0, 1023)
+                )
+                if self.id not in used_object_ids:
+                    break
+        used_object_ids.add(self.id)
 
 
 class SkillBase(ObjectBase):
@@ -63,7 +70,7 @@ class SkillBase(ObjectBase):
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
     damage_type: DamageElementalType
     damage: int
-    cost: DiceCostValue
+    cost: DiceCost
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
@@ -126,8 +133,8 @@ class PhysicalNormalAttackBase(SkillBase):
     damage: int = 2
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCostValue:
-        return DiceCostValue(
+    def get_cost(element: ElementType) -> DiceCost:
+        return DiceCost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 1,
             any_dice_number = 2,
@@ -143,8 +150,8 @@ class ElementalNormalAttackBase(SkillBase):
     damage: int = 1
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCostValue:
-        return DiceCostValue(
+    def get_cost(element: ElementType) -> DiceCost:
+        return DiceCost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 1,
             any_dice_number = 2,
@@ -160,8 +167,8 @@ class ElementalSkillBase(SkillBase):
     damage: int = 3
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCostValue:
-        return DiceCostValue(
+    def get_cost(element: ElementType) -> DiceCost:
+        return DiceCost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 3,
         )
@@ -176,8 +183,8 @@ class ElementalBurstBase(SkillBase):
     charge: int
 
     @staticmethod
-    def get_cost(element: ElementType, number: int) -> DiceCostValue:
-        return DiceCostValue(
+    def get_cost(element: ElementType, number: int) -> DiceCost:
+        return DiceCost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = number,
         )
@@ -214,7 +221,7 @@ class CardBase(ObjectBase):
         charactor_id = -1,
         area = ObjectPositionType.INVALID
     )
-    cost: DiceCostValue
+    cost: DiceCost
     cost_label: int = DiceCostLabels.CARD.value
 
     def __init__(self, *argv, **kwargs):

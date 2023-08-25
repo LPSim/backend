@@ -5,7 +5,7 @@ from .consts import (
     DieColor, DamageType, DamageElementalType, DamageSourceType,
     ElementalReactionType, ElementType
 )
-from .struct import DamageValue
+from .struct import DamageValue, ObjectPosition, DiceCost
 
 
 class ModifiableValueTypes(str, Enum):
@@ -39,6 +39,9 @@ class ModifiableValueBase(BaseModel):
     """
     type: ModifiableValueTypes
     original_value: Any = None
+    match: Any
+    position: ObjectPosition
+    id: int
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -60,66 +63,14 @@ class RerollValue(ModifiableValueBase):
 
 class DiceCostValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.DICE_COST
-    label: int = 0
-    elemental_dice_number: int = 0
-    elemental_dice_color: DieColor | None = None
-    same_dice_number: int = 0
-    any_dice_number: int = 0
-    omni_dice_number: int = 0
+    cost: DiceCost
 
-    def is_valid(self, dice_colors: List[DieColor], strict = True) -> bool:
-        """
-        Check if dice colors matches the dice cost value.
-        TODO: test in strict and unstrict mode.
-
-        Args:
-            dice_colors (List[DieColor]): The dice colors to be checked.
-            strict (bool): If True, the dice colors must match the dice cost
-                value strictly. If False, the dice colors can be more than the
-                cost.
-        """
-        assert self.omni_dice_number == 0, 'Omni dice is not supported yet.'
-        if self.same_dice_number > 0:
-            assert self.elemental_dice_number == 0 and \
-                self.any_dice_number == 0, \
-                'Same dice and elemental/any dice cannot be both used now.'
-        assert not (self.elemental_dice_number > 0 
-                    and self.elemental_dice_color is None), \
-            'Elemental dice number and color should be both set.'
-        if strict:
-            if len(dice_colors) != (
-                self.elemental_dice_number + self.same_dice_number
-                + self.any_dice_number + self.omni_dice_number
-            ):
-                return False  # dice number not match
-        else:
-            if len(dice_colors) < (
-                self.elemental_dice_number + self.same_dice_number
-                + self.any_dice_number + self.omni_dice_number
-            ):
-                return False  # dice number not enough
-        d = {}
-        for color in dice_colors:
-            d[color] = d.get(color, 0) + 1
-        omni_num = d.get(DieColor.OMNI, 0)
-        if self.elemental_dice_number > 0:
-            ele_num = d.get(self.elemental_dice_color, 0)
-            if ele_num + omni_num < self.elemental_dice_number:
-                return False  # elemental dice not enough
-        if self.same_dice_number > 0:
-            if DieColor.OMNI not in d:
-                d[DieColor.OMNI] = 0
-            if d[DieColor.OMNI] >= self.same_dice_number:
-                return True
-            success = False
-            for color, same_num in d.items():
-                if color == DieColor.OMNI:
-                    continue
-                if same_num + omni_num >= self.same_dice_number:
-                    success = True
-                    break
-            return success
-        return True
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.cost = self.cost.copy()
+        self.original_value.cost = self.original_value.cost.copy()
+        self.original_value.cost.original_value = None
+        self.cost.original_value = self.original_value.cost.copy()
 
 
 class DamageIncreaseValue(ModifiableValueBase):
@@ -143,6 +94,9 @@ class DamageIncreaseValue(ModifiableValueBase):
         damage_value: DamageValue,
         is_charactors_defeated: List[List[bool]],
         active_charactors_id: List[int],
+        match: Any,
+        position: ObjectPosition,
+        id: int,
     ) -> List['DamageIncreaseValue']:
         """
         use this to identify the real target player and charactor. One 
@@ -178,6 +132,9 @@ class DamageIncreaseValue(ModifiableValueBase):
         for target in target_charactor:
             assert not charactors[target], 'Target charactor is defeated.'
             value = DamageIncreaseValue(
+                match = match,
+                position = position,
+                id = id,
                 damage_type = damage_value.damage_type,
                 damage_source_type = damage_value.damage_source_type,
                 target_player_id = target_player,
@@ -198,6 +155,9 @@ class DamageMultiplyValue(DamageIncreaseValue):
         increase_value: DamageIncreaseValue
     ) -> 'DamageMultiplyValue':
         return DamageMultiplyValue(
+            match = increase_value.match,
+            position = increase_value.position,
+            id = increase_value.id,
             damage_type = increase_value.damage_type,
             damage_source_type = increase_value.damage_source_type,
             target_player_id = increase_value.target_player_id,
@@ -218,6 +178,9 @@ class DamageDecreaseValue(DamageIncreaseValue):
         multiply_value: DamageMultiplyValue
     ) -> 'DamageDecreaseValue':
         return DamageDecreaseValue(
+            match = multiply_value.match,
+            position = multiply_value.position,
+            id = multiply_value.id,
             damage_type = multiply_value.damage_type,
             damage_source_type = multiply_value.damage_source_type,
             target_player_id = multiply_value.target_player_id,

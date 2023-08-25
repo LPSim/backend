@@ -5,13 +5,13 @@ Event cards that not belong to any other categories.
 from typing import Literal
 from ...object_base import CardBase
 from ...action import ActionBase, DrawCardAction
-from ...modifiable_values import DiceCostValue
+from ...struct import DiceCost
 
 
 class Strategize(CardBase):
     name: Literal['Strategize']
     version: Literal['3.3'] = '3.3'
-    cost: DiceCostValue = DiceCostValue(
+    cost: DiceCost = DiceCost(
         same_dice_number = 1
     )
 

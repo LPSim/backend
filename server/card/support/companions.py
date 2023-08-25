@@ -4,9 +4,9 @@ from ...consts import (
     DiceCostLabels, ElementType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
     SkillType
 )
-from ...modifiable_values import DiceCostValue
+from ...struct import DiceCost
 from ...action import ActionBase, CreateDiceAction
-from ...event import RoundEndEventArguments, SkillEndEventArguments
+from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 
 class CompanionBase(SupportBase):
@@ -17,10 +17,10 @@ class CompanionBase(SupportBase):
 class Rana(CompanionBase):
     name: Literal['Rana'] = 'Rana'
     version: Literal['3.7'] = '3.7'
-    cost: DiceCostValue = DiceCostValue(same_dice_number = 2)
+    cost: DiceCost = DiceCost(same_dice_number = 2)
     usage: int = 1
 
-    def event_handler_ROUND_PREPARE(self, event: RoundEndEventArguments) \
+    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
             -> list[ActionBase]:
         """
         When in round prepare, reset usage
