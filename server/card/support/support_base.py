@@ -44,17 +44,41 @@ class SupportBase(CardBase):
         raise NotImplementedError()
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
-        # TODO: when support area number exceeded, select one to remove.
+        max_support_number = match.match_config.max_support_number
+        supports = (
+            match.player_tables[self.position.player_id].supports
+        )
+        assert max_support_number >= len(supports)
+        if len(supports) == max_support_number:
+            # choose one support to remove
+            ret: List[CardActionTarget] = []
+            for support in supports:
+                ret.append(CardActionTarget(
+                    target_position = support.position.copy(deep = True),
+                    target_id = support.id,
+                ))
+            return ret
         return []
 
     def get_actions(
         self, target: CardActionTarget | None, match: Any
-    ) -> List[MoveObjectAction]:
+    ) -> List[RemoveObjectAction | MoveObjectAction]:
         """
         Act the support. will place it into support area.
-        TODO: when support area number exceeded, remove one selected support.
         """
-        return [MoveObjectAction(
+        ret: List[RemoveObjectAction | MoveObjectAction] = []
+        max_support_number = match.match_config.max_support_number
+        supports = (
+            match.player_tables[self.position.player_id].supports
+        )
+        assert max_support_number >= len(supports)
+        if len(supports) == max_support_number:
+            assert target is not None
+            ret.append(RemoveObjectAction(
+                object_position = target.target_position,
+                object_id = target.target_id,
+            ))
+        ret.append(MoveObjectAction(
             object_position = self.position,
             object_id = self.id,
             target_position = ObjectPosition(
@@ -62,4 +86,5 @@ class SupportBase(CardBase):
                 charactor_id = -1,
                 area = ObjectPositionType.SUPPORT,
             ),
-        )]
+        ))
+        return ret
