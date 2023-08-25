@@ -321,7 +321,7 @@ class ElementalReactionType(str, Enum):
 
 
 class DiceCostLabels(int, Enum):
-    SKILL = 0x1
+    SWITCH_CHARACTOR = 0x1
     CARD = 0x2
     COMPANION = 0x4
     LOCATION = 0x8
@@ -331,6 +331,11 @@ class DiceCostLabels(int, Enum):
     TALENT = 0x80
     FOOD = 0x100
     ARCANE = 0x200
+    NORMAL_ATTACK = 0x400
+    ELEMENTAL_SKILL = 0x800
+    ELEMENTAL_BURST = 0x1000
+    CHARGED_ATTACK = 0x2000
+    PLUNGING_ATTACK = 0x4000
 
     def __str__(self):
         return self.value

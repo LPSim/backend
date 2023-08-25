@@ -2,7 +2,7 @@ from utils import BaseModel
 from typing import Literal, List
 from enum import Enum
 from .consts import DieColor
-from .struct import DiceCost
+from .struct import DiceCost, CardActionTarget
 
 
 class RequestActionType(str, Enum):
@@ -118,6 +118,7 @@ class UseCardRequest(RequestBase):
     type: Literal[RequestActionType.COMBAT, RequestActionType.QUICK]
     card_id: int
     dice_colors: List[DieColor]
+    targets: List[CardActionTarget]
     cost: DiceCost
 
 
@@ -258,6 +259,7 @@ class UseCardResponse(ResponseBase):
     name: Literal['UseCardResponse'] = 'UseCardResponse'
     request: UseCardRequest
     cost_ids: List[int]
+    target: CardActionTarget | None
     # TODO: choose target
 
     @property
@@ -265,8 +267,18 @@ class UseCardResponse(ResponseBase):
         """
         Check whether the response is valid.
         """
+        # dice color right
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        return self.request.cost.is_valid(cost_colors)
+        if not self.request.cost.is_valid(cost_colors):
+            return False
+        # if has targets, response target should not be None
+        if self.target is None and len(self.request.targets) > 0:
+            return False
+        # if response target is not None, it should be in targets
+        if self.target is not None:
+            if self.target not in self.request.targets:
+                return False
+        return True
 
 
 Requests = (

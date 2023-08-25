@@ -11,10 +11,11 @@ from ..consts import (
     ObjectType, WeaponType, ElementType, FactionType, ObjectPositionType
 )
 from ..object_base import (
-    ObjectBase, SkillBase, ArtifactBase, WeaponBase, TalentBase
+    ObjectBase, SkillBase, WeaponBase, TalentBase
 )
 from ..struct import ObjectPosition
 from ..status import CharactorStatus
+from ..card.equipment.artifact import Artifacts
 
 
 class CharactorBase(ObjectBase):
@@ -43,7 +44,7 @@ class CharactorBase(ObjectBase):
 
     # charactor status
     weapon: WeaponBase | None = None
-    artifact: ArtifactBase | None = None
+    artifact: Artifacts | None = None
     talent: TalentBase | None = None
     status: List[CharactorStatus] = []
     element_application: List[ElementType] = []

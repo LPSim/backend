@@ -67,10 +67,10 @@ class DiceCostValue(ModifiableValueBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.cost = self.cost.copy()
-        self.original_value.cost = self.original_value.cost.copy()
+        self.cost = self.cost.copy(deep = True)
+        self.original_value.cost = self.original_value.cost.copy(deep = True)
         self.original_value.cost.original_value = None
-        self.cost.original_value = self.original_value.cost.copy()
+        self.cost.original_value = self.original_value.cost.copy(deep = True)
 
 
 class DamageIncreaseValue(ModifiableValueBase):
@@ -95,8 +95,6 @@ class DamageIncreaseValue(ModifiableValueBase):
         is_charactors_defeated: List[List[bool]],
         active_charactors_id: List[int],
         match: Any,
-        position: ObjectPosition,
-        id: int,
     ) -> List['DamageIncreaseValue']:
         """
         use this to identify the real target player and charactor. One 
@@ -105,7 +103,7 @@ class DamageIncreaseValue(ModifiableValueBase):
                                  [player 2 charactors defeated]]
         # TODO: need test
         """
-        target_player = damage_value.player_id
+        target_player = damage_value.position.player_id
         if damage_value.target_player == 'ENEMY':
             target_player = 1 - target_player
         charactors = is_charactors_defeated[target_player]
@@ -133,8 +131,8 @@ class DamageIncreaseValue(ModifiableValueBase):
             assert not charactors[target], 'Target charactor is defeated.'
             value = DamageIncreaseValue(
                 match = match,
-                position = position,
-                id = id,
+                position = damage_value.position,
+                id = damage_value.id,
                 damage_type = damage_value.damage_type,
                 damage_source_type = damage_value.damage_source_type,
                 target_player_id = target_player,

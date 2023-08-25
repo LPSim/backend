@@ -8,7 +8,7 @@ be defined in their own files.
 import time
 import random
 from utils import BaseModel
-from typing import List, Literal
+from typing import List, Literal, Any
 from .action import (
     ActionBase, ActionTypes, Actions, MakeDamageAction, ChargeAction
 )
@@ -18,7 +18,9 @@ from .consts import (
     DiceCostLabels,
 )
 from .modifiable_values import ModifiableValueTypes, DamageValue
-from .struct import SkillActionArguments, ObjectPosition, DiceCost
+from .struct import (
+    SkillActionArguments, ObjectPosition, DiceCost, CardActionTarget
+)
 from .interaction import RequestActionType
 
 
@@ -71,6 +73,7 @@ class SkillBase(ObjectBase):
     damage_type: DamageElementalType
     damage: int
     cost: DiceCost
+    cost_label: int
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
         charactor_id = -1,
@@ -81,6 +84,10 @@ class SkillBase(ObjectBase):
         super().__init__(*argv, **kwargs)
         # set id to 0, as skills are not real objects
         self.id = 0
+        # set cost label into cost
+        self.cost.label = self.cost_label
+        if self.cost.original_value is not None:
+            self.cost.original_value.label = self.cost_label
 
     def is_valid(self, hp: int, charge: int) -> bool:
         """
@@ -108,7 +115,8 @@ class SkillBase(ObjectBase):
                 target_id = 1 - args.player_id,
                 damage_value_list = [
                     DamageValue(
-                        player_id = args.player_id,
+                        position = self.position,
+                        id = self.id,
                         damage_type = DamageType.DAMAGE,
                         damage_source_type
                         = DamageSourceType.CURRENT_PLAYER_CHARACTOR,
@@ -131,6 +139,7 @@ class PhysicalNormalAttackBase(SkillBase):
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
+    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -148,6 +157,7 @@ class ElementalNormalAttackBase(SkillBase):
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
+    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -165,6 +175,7 @@ class ElementalSkillBase(SkillBase):
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
+    cost_label: int = DiceCostLabels.ELEMENTAL_SKILL.value
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -181,6 +192,7 @@ class ElementalBurstBase(SkillBase):
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     charge: int
+    cost_label: int = DiceCostLabels.ELEMENTAL_BURST.value
 
     @staticmethod
     def get_cost(element: ElementType, number: int) -> DiceCost:
@@ -238,9 +250,22 @@ class CardBase(ObjectBase):
         """
         return RequestActionType.QUICK
 
-    def get_actions(self) -> List[ActionBase]:
+    def get_targets(self, match: Any) -> List[CardActionTarget]:
+        """
+        Get the targets of the card.
+        """
+        raise NotImplementedError
+
+    def get_actions(
+        self, target: CardActionTarget | None, match: Any
+    ) -> List[ActionBase]:
         """
         Act the card. It will return a list of actions.
+
+        Arguments:
+            args (CardActionArguments | None): The arguments of the action.
+                for cards that do not need to specify target, args is None.
+            match (Any): The match object.
         """
         raise NotImplementedError()
 
@@ -260,15 +285,6 @@ class WeaponBase(CardBase):
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.WEAPON.value
     weapon_type: WeaponType
-
-
-class ArtifactBase(CardBase):
-    """
-    Base class of artifacts.
-    """
-    name: str
-    type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
-    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.ARTIFACT.value
 
 
 class TalentBase(CardBase):

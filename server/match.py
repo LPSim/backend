@@ -78,7 +78,9 @@ from .modifiable_values import (
     InitialDiceColorValue, RerollValue, DiceCostValue,
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
-from .struct import SkillActionArguments, ObjectPosition, DiceCost
+from .struct import (
+    SkillActionArguments, ObjectPosition, DiceCost
+)
 from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
@@ -345,6 +347,8 @@ class Match(BaseModel):
                 charactor_copy.position.player_id = pnum
                 charactor_copy.position.charactor_id = cnum
                 charactor_copy.position.area = ObjectPositionType.CHARACTOR
+                for skill in charactor_copy.skills:
+                    skill.position = charactor_copy.position.copy(deep = True)
                 player_table.charactors.append(charactor_copy)
             # copy cards
             for card in player_table.player_deck_information.cards:
@@ -946,7 +950,8 @@ class Match(BaseModel):
                         card_id = cid,
                         type = card.action_type,
                         dice_colors = dice_colors,
-                        cost = cost_value.cost
+                        cost = cost_value.cost,
+                        targets = card.get_targets(self)
                     ))
 
     """
@@ -1214,7 +1219,10 @@ class Match(BaseModel):
                 card_position = 'HAND',
                 remove_type = 'USED',
             ))
-        actions += card.get_actions()
+        actions += card.get_actions(
+            target = response.target,
+            match = self,
+        )
         if request.type == RequestActionType.COMBAT:
             actions.append(CombatActionAction(
                 player_id = response.player_id,
@@ -1600,12 +1608,6 @@ class Match(BaseModel):
         for damage in damage_lists:
             damages = DamageIncreaseValue.from_damage_value(
                 match = self,
-                position = ObjectPosition(
-                    player_id = action.player_id,
-                    charactor_id = -1,
-                    area = ObjectPositionType.SYSTEM,
-                ),
-                id = 0,  # TODO: use correct position and id
                 damage_value = damage,
                 is_charactors_defeated = [[c.is_defeated for c in t.charactors] 
                                           for t in self.player_tables],
@@ -1828,6 +1830,36 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
             target_name = 'summon'
+        elif action.object_position.area == ObjectPositionType.CHARACTOR:
+            # remove artifact, weapon or talent
+            charactor = table.charactors[action.object_position.charactor_id]
+            removed_equip = None
+            if charactor.weapon is not None and charactor.weapon.id == \
+                    action.object_id:
+                removed_equip = charactor.weapon
+                charactor.weapon = None
+                target_name = 'weapon'
+            elif charactor.artifact is not None and charactor.artifact.id == \
+                    action.object_id:
+                removed_equip = charactor.artifact
+                charactor.artifact = None
+                target_name = 'artifact'
+            elif charactor.talent is not None and charactor.talent.id == \
+                    action.object_id:
+                removed_equip = charactor.talent
+                charactor.talent = None
+                target_name = 'talent'
+            else:
+                raise ValueError(
+                    f'player {player_id} tried to remove non-exist equipment '
+                    f'from charactor {charactor.name} with id '
+                    f'{action.object_id}.'
+                )
+            return [RemoveObjectEventArguments(
+                match = self,
+                action = action,
+                object_name = removed_equip.name,
+            )]
         else:
             raise NotImplementedError(
                 f'Remove object action for area {action.object_position.area} '
@@ -1933,6 +1965,36 @@ class Match(BaseModel):
                     assert (len(target_list) 
                             < self.match_config.max_support_number)
                     target_name = 'support'
+                elif action.target_position.area \
+                        == ObjectPositionType.CHARACTOR:
+                    # quip equipments
+                    assert (action.object_position.player_id
+                            == action.target_position.player_id)
+                    charactor = table.charactors[
+                        action.target_position.charactor_id
+                    ]
+                    current_list.pop(csnum)
+                    current_object.position = action.target_position
+                    if current_object.type == ObjectType.ARTIFACT:
+                        assert charactor.artifact is None
+                        charactor.artifact = current_object  # type: ignore
+                        target_name = 'artifact'
+                    else:
+                        raise NotImplementedError(
+                            f'Move object action as eqipment with type '
+                            f'{current_object.type} is not implemented.'
+                        )
+                    logging.info(
+                        f'player {player_id} '
+                        f'moved {current_name} {current_object.name} '
+                        f'to charactor {action.target_position.charactor_id}'
+                        f':{target_name}.'
+                    )
+                    return [MoveObjectEventArguments(
+                        match = self,
+                        action = action,
+                        object_name = current_object.name,
+                    )]
                 else:
                     raise NotImplementedError(
                         f'Move object action to area '

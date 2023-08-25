@@ -1,9 +1,9 @@
-from typing import Literal, List
+from typing import Literal, List, Any
 from ...object_base import CardBase
 from ...consts import ObjectType, ObjectPositionType, DiceCostLabels
 from ...struct import DiceCost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
-from ...struct import ObjectPosition
+from ...struct import ObjectPosition, CardActionTarget
 
 
 class SupportBase(CardBase):
@@ -43,7 +43,13 @@ class SupportBase(CardBase):
         """
         raise NotImplementedError()
 
-    def get_actions(self) -> List[MoveObjectAction]:
+    def get_targets(self, match: Any) -> List[CardActionTarget]:
+        # TODO: when support area number exceeded, select one to remove.
+        return []
+
+    def get_actions(
+        self, target: CardActionTarget | None, match: Any
+    ) -> List[MoveObjectAction]:
         """
         Act the support. will place it into support area.
         TODO: when support area number exceeded, remove one selected support.

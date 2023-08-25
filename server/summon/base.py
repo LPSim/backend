@@ -56,7 +56,8 @@ class AttackerSummonBase(SummonBase):
                 target_id = 1 - player_id,
                 damage_value_list = [
                     DamageValue(
-                        player_id = player_id,
+                        position = self.position,
+                        id = self.id,
                         damage_type = DamageType.DAMAGE,
                         damage_source_type = source_type,
                         damage = self.damage,

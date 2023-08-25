@@ -220,7 +220,14 @@ class RandomAgent(AgentBase):
                 raise ValueError('Not enough dice')
         selected.sort()
 
+        target = None
+        if len(req.targets):
+            target = req.targets[
+                int(self.random() * len(req.targets))
+            ]
+
         return UseCardResponse(
             request = req, 
-            cost_ids = selected
+            cost_ids = selected,
+            target = target,
         )
