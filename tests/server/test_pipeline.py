@@ -6,8 +6,7 @@ from server.deck import Deck
 from agents.random_agent import RandomAgent
 from agents.interaction_agent import InteractionAgent
 from tests.utils_for_test import (
-    set_16_omni, make_respond,
-    remove_ids
+    set_16_omni, make_respond, remove_ids, get_random_state, check_hp
 )
 
 
@@ -270,8 +269,147 @@ def test_use_card():
     assert match.match_state != MatchState.ERROR
 
 
+def test_support_over_maximum():
+    """
+    put 6 Ranas and check usages and order.
+    """
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            'sw_card',
+            'choose 1',
+            'card 0 0 omni omni',
+            'card 0 0 omni omni',
+            'card 0 0 omni omni',
+            'end',
+            'end',
+            'skill 1 omni omni omni',
+            'card 0 0 omni electro',
+            'card 0 3 electro electro',
+            # 4 rana, usage 0 0 0 1
+            'card 0 0 omni omni',
+            # 4 rana, usage 0 0 1 1
+            'skill 1 omni omni omni',
+            # dice 7 omni + 2 electro
+            'end',
+            'skill 1 omni omni omni',
+            # 13 omni and 3 electro and 0 usage
+            'end',
+            'skill 2 omni omni omni',
+            # 13 omni, all 1 usage
+            'end',
+        ],
+        random_after_no_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = {
+        'name': 'Deck',
+        'charactors': [
+            {
+                'name': 'DendroMobMage',
+                'element': 'DENDRO',
+                'hp': 99,
+                'max_hp': 99,
+            },
+            {
+                'name': 'DendroMobMage',
+                'element': 'DENDRO',
+            },
+            {
+                'name': 'ElectroMobMage',
+                'element': 'ELECTRO',
+            },
+        ],
+        'cards': [
+            {
+                'name': 'Rana',
+            }
+        ] * 30,
+    }
+    deck = Deck(**deck)
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+
+            # asserts
+            if len(agent_1.commands) == 999:
+                ...
+            elif len(agent_1.commands) == 7:
+                # 4 rana, usage 0 0 0 1
+                assert len(match.player_tables[1].supports) == 4
+                for support, usage in zip(
+                        match.player_tables[1].supports, [0, 0, 0, 1]):
+                    assert support.name == 'Rana'
+                    assert support.usage == usage
+            elif len(agent_1.commands) == 6:
+                # 4 rana, usage 0 0 1 1
+                assert len(match.player_tables[1].supports) == 4
+                for support, usage in zip(
+                        match.player_tables[1].supports, [0, 0, 1, 1]):
+                    assert support.name == 'Rana'
+                    assert support.usage == usage
+            elif len(agent_1.commands) == 5:
+                # dice 7 omni + 2 electro
+                assert len(match.player_tables[1].dice) == 9
+                omni_counter = 0
+                electro_counter = 0
+                for d in match.player_tables[1].dice:
+                    if d.color == 'OMNI':
+                        omni_counter += 1
+                    elif d.color == 'ELECTRO':
+                        electro_counter += 1
+                assert omni_counter == 7
+                assert electro_counter == 2
+            elif len(agent_1.commands) == 3:
+                # 13 omni and 3 electro and 0 usage
+                assert len(match.player_tables[1].dice) == 16
+                omni_counter = 0
+                electro_counter = 0
+                for d in match.player_tables[1].dice:
+                    if d.color == 'OMNI':
+                        omni_counter += 1
+                    elif d.color == 'ELECTRO':
+                        electro_counter += 1
+                assert omni_counter == 13
+                assert electro_counter == 3
+                for support in match.player_tables[1].supports:
+                    assert support.name == 'Rana'
+                    assert support.usage == 0
+            elif len(agent_1.commands) == 1:
+                # 13 omni, all 1 usage
+                assert len(match.player_tables[1].dice) == 13
+                for d in match.player_tables[1].dice:
+                    assert d.color == 'OMNI'
+                for support in match.player_tables[1].supports:
+                    assert support.name == 'Rana'
+                    assert support.usage == 1
+
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 6
+    check_hp(match, [[85, 10, 10], [99, 10, 10]])
+    assert len(match.player_tables[1].supports) == 4
+    for support in match.player_tables[1].supports:
+        assert support.name == 'Rana'
+
+    assert match.match_state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
-    test_random_same_after_load()
+    # test_random_same_after_load()
     # test_use_card()
+    test_support_over_maximum()
