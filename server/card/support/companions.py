@@ -1,12 +1,12 @@
 from typing import Literal
 from .support_base import SupportBase
-from ..consts import (
+from ...consts import (
     DiceCostLabels, ElementType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
     SkillType
 )
-from ..modifiable_values import DiceCostValue
-from ..action import ActionBase, CreateDiceAction
-from ..event import RoundEndEventArguments, SkillEndEventArguments
+from ...modifiable_values import DiceCostValue
+from ...action import ActionBase, CreateDiceAction
+from ...event import RoundEndEventArguments, SkillEndEventArguments
 
 
 class CompanionBase(SupportBase):

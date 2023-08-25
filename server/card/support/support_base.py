@@ -1,9 +1,9 @@
 from typing import Literal, List
-from ..object_base import CardBase
-from ..consts import ObjectType, ObjectPositionType, DiceCostLabels
-from ..modifiable_values import DiceCostValue
-from ..action import Actions, RemoveObjectAction, MoveObjectAction
-from ..struct import ObjectPosition
+from ...object_base import CardBase
+from ...consts import ObjectType, ObjectPositionType, DiceCostLabels
+from ...modifiable_values import DiceCostValue
+from ...action import Actions, RemoveObjectAction, MoveObjectAction
+from ...struct import ObjectPosition
 
 
 class SupportBase(CardBase):
@@ -41,6 +41,7 @@ class SupportBase(CardBase):
         when this support card is activated from hand, this function is called
         to update the status.
         """
+        raise NotImplementedError()
 
     def get_actions(self) -> List[MoveObjectAction]:
         """

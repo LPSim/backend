@@ -7,7 +7,7 @@ from .deck import Deck
 from .card import Cards
 from .die import Die
 from .summon import Summons
-from .support import Supports
+from .card.support import Supports
 from .charactor import Charactors
 from .status import TeamStatus
 
