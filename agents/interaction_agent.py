@@ -244,8 +244,13 @@ class InteractionAgent(AgentBase):
         args: one card idx, variable length of cost colors.
         """
         card_req = reqs[int(args[0])]
-        cost_ids = self._colors_to_ids(args[1:], card_req.dice_colors)
+        target_idx = int(args[1])
+        target = None
+        if len(card_req.targets) > 0:
+            target = card_req.targets[target_idx]
+        cost_ids = self._colors_to_ids(args[2:], card_req.dice_colors)
         return UseCardResponse(
             request = card_req,
-            cost_ids = cost_ids
+            cost_ids = cost_ids,
+            target = target
         )
