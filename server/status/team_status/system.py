@@ -15,6 +15,10 @@ class CatalyzingField(UsageTeamStatus):
     Catalyzing field.
     """
     name: Literal['CatalyzingField'] = 'CatalyzingField'
+    desc: str = (
+        'When you deal Electro DMG or Pyro DMG to an opposing active '
+        'charactor, DMG dealt +1.'
+    )
     version: Literal['3.4'] = '3.4'
     usage: int = 2
     max_usage: int = 2
@@ -24,6 +28,7 @@ class CatalyzingField(UsageTeamStatus):
             mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
         """
         Increase damage for dendro or electro damages, and decrease usage.
+        TODO only active charactor will count!
         """
         if value.target_player_id == self.position.player_id:
             # attack self, not activate
@@ -53,6 +58,10 @@ class DendroCore(UsageTeamStatus):
     Dendro core.
     """
     name: Literal['DendroCore'] = 'DendroCore'
+    desc: str = (
+        'When you deal Pyro DMG or Electro DMG to an opposing active '
+        'charactor, DMG dealt +2.'
+    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -88,6 +97,10 @@ class Crystallize(UsageTeamStatus):
     Crystallize.
     """
     name: Literal['Crystallize'] = 'Crystallize'
+    desc: str = (
+        'Grants 1 Shield point to your active charactor. '
+        '(Can stack. Max 2 Points.)'
+    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 2

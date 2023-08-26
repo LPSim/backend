@@ -28,6 +28,7 @@ class Mob(CharactorBase):
         'DendroMob',
         'AnemoMob',
     ]
+    desc: str = 'A _NAME_.'
     version = '1.0.0'
     element: ElementType
     hp: int = 10
@@ -78,3 +79,4 @@ class Mob(CharactorBase):
             charge = 2
         )
         self.skills = [normal_attack, elemental_skill, elemental_burst]
+        self.desc = self.desc.replace('_NAME_', self.name)

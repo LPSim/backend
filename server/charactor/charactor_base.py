@@ -23,6 +23,7 @@ class CharactorBase(ObjectBase):
     Base class of charactors.
     """
     name: str
+    desc: str
     version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     position: ObjectPosition = ObjectPosition(

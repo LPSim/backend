@@ -8,6 +8,7 @@ class StatusBase(ObjectBase):
     Base class of status.
     """
     name: str
+    desc: str
     version: str
     show_usage: bool = True
     usage: int

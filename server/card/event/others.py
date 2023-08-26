@@ -11,6 +11,7 @@ from ...struct import DiceCost, CardActionTarget
 
 class Strategize(CardBase):
     name: Literal['Strategize']
+    desc: str = '''Draw 2 cards.'''
     version: Literal['3.3'] = '3.3'
     cost: DiceCost = DiceCost(
         same_dice_number = 1

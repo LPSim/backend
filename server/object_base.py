@@ -69,6 +69,7 @@ class SkillBase(ObjectBase):
     Base class of skills.
     """
     name: str
+    desc: str
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
     damage_type: DamageElementalType
     damage: int
@@ -136,6 +137,7 @@ class PhysicalNormalAttackBase(SkillBase):
     """
     Base class of physical normal attacks.
     """
+    desc: str = """Deals 2 Physical DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
@@ -154,10 +156,16 @@ class ElementalNormalAttackBase(SkillBase):
     """
     Base class of elemental normal attacks.
     """
+    desc: str = """Deals 1 XXX DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
     cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            'XXX', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -172,10 +180,16 @@ class ElementalSkillBase(SkillBase):
     """
     Base class of elemental skills.
     """
+    desc: str = """Deals 3 XXX DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
     cost_label: int = DiceCostLabels.ELEMENTAL_SKILL.value
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            'XXX', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -189,6 +203,7 @@ class ElementalBurstBase(SkillBase):
     """
     Base class of elemental bursts.
     """
+    desc: str = """Deals %d XXX DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     charge: int
@@ -200,6 +215,12 @@ class ElementalBurstBase(SkillBase):
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = number,
         )
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            'XXX', self.damage_type.value.lower().capitalize())
+        self.desc = self.desc.replace('%d', str(self.damage))
 
     def is_valid(self, hp: int, charge: int) -> bool:
         """
@@ -224,6 +245,7 @@ class CardBase(ObjectBase):
     Base class of all real cards. 
     """
     name: str
+    desc: str
     type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
                   ObjectType.TALENT, ObjectType.SUMMON,
                   ObjectType.SUPPORT] = ObjectType.CARD

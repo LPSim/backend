@@ -16,6 +16,10 @@ class CatalyzingField(UsageTeamStatus):
     Catalyzing field.
     """
     name: Literal['CatalyzingField'] = 'CatalyzingField'
+    desc: str = (
+        'When you deal Electro DMG or Pyro DMG to an opposing active '
+        'charactor, DMG dealt +1.'
+    )
     version: Literal['3.3']
     usage: int = 3
     max_usage: int = 3

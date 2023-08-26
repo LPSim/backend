@@ -15,6 +15,11 @@ class Frozen(RoundCharactorStatus):
     Frozen.
     """
     name: Literal['Frozen'] = 'Frozen'
+    desc: str = (
+        'Charactor cannot use skills. (Lasts until the end of this Round) '
+        'When this charactor receives Pyro DMG or Physical DMG, '
+        'removes this effect and increases DMG taken by 2.'
+    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1

@@ -312,14 +312,14 @@ def test_frozen_and_pyro():
     assert match.match_state != MatchState.ERROR
 
 
-def test_burning_fire():
+def test_burning_flame():
     """
     agent 0 goes first, sw 2, 1 pyro to p1c2, sw 0, 1 dendro to p1c2, end,
         1 dendro to p1c2, end, 1 dendro to p1c2, 1 dendro to p1c2, sw 2, 
         1 pyro to p1c2, sw 0, 1 dendro to p1c2, end, 1 dendro to p1c2, 
         sw 2, 1 pyro to p1c2, end.
     agent 1 sw2, end, end, end, end.
-    result: 18 damage and 2 burning fire.
+    result: 18 damage and 2 burning flame.
     """
     agent_0 = InteractionAgent(
         player_id = 0,

@@ -22,6 +22,10 @@ class SmallElementalArtifact(ArtifactBase):
         "Witch's Scorching Hat",  # pyro
     ]
 
+    desc: str = (
+        'When the character uses a Skill or equips a Talent: Spend 1 less'
+        'XXX Die. (Once per Round)'
+    )
     version: Literal["4.0"] = "4.0"
     usage: int = 1
     cost: DiceCost = DiceCost(any_dice_number=2)
@@ -43,6 +47,9 @@ class SmallElementalArtifact(ArtifactBase):
             self.element = ElementType.HYDRO
         elif self.name == "Witch's Scorching Hat":
             self.element = ElementType.PYRO
+        self.desc = self.desc.replace(
+            "XXX", self.element.value.capitalize()
+        )
 
     def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
             -> list[ActionBase]:

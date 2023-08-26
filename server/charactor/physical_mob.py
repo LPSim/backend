@@ -17,6 +17,7 @@ class PhysicalMob(CharactorBase):
     Their elemeny type is only used to decide dice color when using skills.
     """
     name: Literal['PhysicalMob']
+    desc: str = 'A PhysicalMob.'
     version = '1.0.0'
     element: ElementType
     hp: int = 10

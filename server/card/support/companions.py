@@ -16,6 +16,11 @@ class CompanionBase(SupportBase):
 
 class Rana(CompanionBase):
     name: Literal['Rana'] = 'Rana'
+    desc: str = (
+        'After your character uses an Elemental Skill: '
+        'Create 1 Elemental Die of the same Type as your next off-field '
+        'character. (Once per Round)'
+    )
     version: Literal['3.7'] = '3.7'
     cost: DiceCost = DiceCost(same_dice_number = 2)
     usage: int = 1
