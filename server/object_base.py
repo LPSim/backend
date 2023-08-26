@@ -90,7 +90,7 @@ class SkillBase(ObjectBase):
         if self.cost.original_value is not None:
             self.cost.original_value.label = self.cost_label
 
-    def is_valid(self, hp: int, charge: int) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check if the skill can be used.
         """
@@ -222,11 +222,13 @@ class ElementalBurstBase(SkillBase):
             'XXX', self.damage_type.value.lower().capitalize())
         self.desc = self.desc.replace('%d', str(self.damage))
 
-    def is_valid(self, hp: int, charge: int) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check if the skill can be used.
         """
-        return self.charge <= charge
+        table = match.player_tables[self.position.player_id]
+        charactor = table.charactors[self.position.charactor_id]
+        return self.charge <= charactor.charge
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -291,7 +293,7 @@ class CardBase(ObjectBase):
         """
         raise NotImplementedError()
 
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check if the card can be used. Note that this function will not check
         the cost of the card.

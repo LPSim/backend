@@ -471,7 +471,7 @@ class Match(BaseModel):
             logging.error('Match is not waiting for response.')
             return False
         # check if the response is valid
-        if not response.is_valid:
+        if not response.is_valid(self):
             logging.error('Response is not valid.')
             return False
         # check if the request exist
@@ -895,7 +895,7 @@ class Match(BaseModel):
             # stunned, cannot use skill.
             return
         for sid, skill in enumerate(front_charactor.skills):
-            if skill.is_valid(front_charactor.hp, front_charactor.charge):
+            if skill.is_valid(self):
                 cost = skill.cost.copy(deep = True)
                 cost_value = DiceCostValue(
                     cost = cost,
@@ -931,7 +931,7 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         cards = table.hands
         for cid, card in enumerate(cards):
-            if card.is_valid():
+            if card.is_valid(self):
                 cost = card.cost.copy(deep = True)
                 cost_value = DiceCostValue(
                     cost = cost,

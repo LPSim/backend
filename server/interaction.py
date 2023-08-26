@@ -1,5 +1,5 @@
 from utils import BaseModel
-from typing import Literal, List
+from typing import Literal, List, Any
 from enum import Enum
 from .consts import DieColor
 from .struct import DiceCost, CardActionTarget
@@ -136,7 +136,7 @@ class ResponseBase(BaseModel):
         """
         return self.request.player_id
 
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
@@ -151,8 +151,7 @@ class SwitchCardResponse(ResponseBase):
     request: SwitchCardRequest
     card_ids: List[int]
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         if len(self.card_ids) > self.request.maximum_switch_number:
             return False
         if len(set(self.card_ids)) != len(self.card_ids):
@@ -175,8 +174,7 @@ class ChooseCharactorResponse(ResponseBase):
     request: ChooseCharactorRequest
     charactor_id: int
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         return self.charactor_id in self.request.available_charactor_ids
 
 
@@ -185,8 +183,7 @@ class RerollDiceResponse(ResponseBase):
     request: RerollDiceRequest
     reroll_dice_ids: List[int]
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         if have duplicate dice ids, or dice ids out of range, return False.
         """
@@ -206,8 +203,7 @@ class SwitchCharactorResponse(ResponseBase):
     charactor_id: int
     cost_ids: List[int]
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Charactor is in the candidate charactors.
         Cost matches the request.
@@ -224,8 +220,7 @@ class ElementalTuningResponse(ResponseBase):
     cost_id: int
     card_id: int
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
@@ -246,8 +241,7 @@ class UseSkillResponse(ResponseBase):
     cost_ids: List[int]
     # TODO: choose target
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
@@ -262,8 +256,7 @@ class UseCardResponse(ResponseBase):
     target: CardActionTarget | None
     # TODO: choose target
 
-    @property
-    def is_valid(self) -> bool:
+    def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
