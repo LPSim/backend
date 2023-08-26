@@ -36,6 +36,12 @@ class SupportBase(CardBase):
             )]
         return []
 
+    def is_valid(self, match: Any) -> bool:
+        """
+        If it is not in hand, cannot use.
+        """
+        return self.position.area == ObjectPositionType.HAND
+
     def act(self):
         """
         when this support card is activated from hand, this function is called

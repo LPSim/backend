@@ -43,7 +43,7 @@ class ArtifactBase(CardBase):
     ) -> List[MoveObjectAction | RemoveObjectAction]:
         """
         Act the artifact. will place it into artifact area.
-        When artifact is equipped, remove the old one.
+        When other artifact is equipped, remove the old one.
         """
         assert target is not None
         ret: List[MoveObjectAction | RemoveObjectAction] = []

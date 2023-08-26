@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Any
 from ..object_base import CardBase
 from ..consts import (
     ObjectType, DamageElementalType, DamageSourceType, DamageType
@@ -34,6 +34,12 @@ class SummonBase(CardBase):
             self.usage = new_status.usage
         elif self.renew_type == 'RESET_WITH_MAX':
             self.usage = max(self.usage, new_status.usage)
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        For summons, it is expected to be always invalid to use as card.
+        """
+        return False
 
 
 class AttackerSummonBase(SummonBase):

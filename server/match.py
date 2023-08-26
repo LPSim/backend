@@ -1965,6 +1965,10 @@ class Match(BaseModel):
                         assert charactor.artifact is None
                         charactor.artifact = current_object  # type: ignore
                         target_name = 'artifact'
+                    elif current_object.type == ObjectType.TALENT:
+                        assert charactor.talent is None
+                        charactor.talent = current_object  # type: ignore
+                        target_name = 'talent'
                     else:
                         raise NotImplementedError(
                             f'Move object action as eqipment with type '

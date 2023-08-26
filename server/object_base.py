@@ -156,7 +156,7 @@ class ElementalNormalAttackBase(SkillBase):
     """
     Base class of elemental normal attacks.
     """
-    desc: str = """Deals 1 XXX DMG."""
+    desc: str = """Deals 1 _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
@@ -165,7 +165,7 @@ class ElementalNormalAttackBase(SkillBase):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.desc = self.desc.replace(
-            'XXX', self.damage_type.value.lower().capitalize())
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -180,7 +180,7 @@ class ElementalSkillBase(SkillBase):
     """
     Base class of elemental skills.
     """
-    desc: str = """Deals 3 XXX DMG."""
+    desc: str = """Deals 3 _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
@@ -189,7 +189,7 @@ class ElementalSkillBase(SkillBase):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.desc = self.desc.replace(
-            'XXX', self.damage_type.value.lower().capitalize())
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> DiceCost:
@@ -203,7 +203,7 @@ class ElementalBurstBase(SkillBase):
     """
     Base class of elemental bursts.
     """
-    desc: str = """Deals %d XXX DMG."""
+    desc: str = """Deals _DAMAME_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     charge: int
@@ -219,8 +219,8 @@ class ElementalBurstBase(SkillBase):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.desc = self.desc.replace(
-            'XXX', self.damage_type.value.lower().capitalize())
-        self.desc = self.desc.replace('%d', str(self.damage))
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -309,13 +309,3 @@ class WeaponBase(CardBase):
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.WEAPON.value
     weapon_type: WeaponType
-
-
-class TalentBase(CardBase):
-    """
-    Base class of talents. Note almost all talents are skills, and will receive
-    cost decrease from other objects.
-    """
-    name: str
-    type: Literal[ObjectType.TALENT] = ObjectType.TALENT
-    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.TALENT.value
