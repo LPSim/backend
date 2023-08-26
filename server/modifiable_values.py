@@ -46,7 +46,11 @@ class ModifiableValueBase(BaseModel):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.original_value = None
-        self.original_value = self.copy()
+        # set match to None to avoid deepcopy
+        match = self.match
+        self.match = None
+        self.original_value = self.copy(deep = True)
+        self.original_value.match = self.match = match
 
 
 class InitialDiceColorValue(ModifiableValueBase):

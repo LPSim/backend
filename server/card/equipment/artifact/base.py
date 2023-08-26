@@ -43,7 +43,7 @@ class ArtifactBase(CardBase):
     ) -> List[MoveObjectAction | RemoveObjectAction]:
         """
         Act the artifact. will place it into artifact area.
-        TODO: when artifact is equipped, remove the old one.
+        When artifact is equipped, remove the old one.
         """
         assert target is not None
         ret: List[MoveObjectAction | RemoveObjectAction] = []
@@ -63,6 +63,6 @@ class ArtifactBase(CardBase):
         ret.append(MoveObjectAction(
             object_position = self.position,
             object_id = self.id,
-            target_position = position.copy(),
+            target_position = position.copy(deep = True),
         ))
         return ret
