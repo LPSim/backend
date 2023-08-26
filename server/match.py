@@ -2024,8 +2024,6 @@ class Match(BaseModel):
         return [SkillEndEventArguments(
             match = self,
             action = action,
-            player_id = player_id,
-            skill_type = action.skill_type,
         )]
 
     """
