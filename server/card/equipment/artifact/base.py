@@ -1,6 +1,5 @@
 from typing import Literal, List, Any
 
-from server.struct import ObjectPosition
 from ....object_base import CardBase
 from ....struct import DiceCost
 from ....consts import ObjectType, DiceCostLabels, ObjectPositionType
