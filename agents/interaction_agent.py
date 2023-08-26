@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, List
+from typing import Tuple, List, Literal
 from .agent_base import AgentBase
 from .random_agent import RandomAgent
 from server.match import Match
@@ -21,8 +21,34 @@ class InteractionAgent(AgentBase):
     """
     Agent that read inputs interactively, and generate responses.
 
+    Command format and sample:
+        sw_card: used to switch cards, with variable length of card ids.
+            sample: sw_card 0 1 2
+        choose: used to choose charactor, with one charactor id.
+            sample: choose 0
+        reroll: used to reroll dice, with variable length of dice ids.
+            sample: reroll 0 1 2
+        end: used to declare round end, with no args.
+            sample: end
+        tune: used to elemental tuning, with one card id and one dice color.
+            sample: tune pyro 0
+        sw_char: used to switch charactor, with one charactor id and variable
+                length of cost colors.
+            sample: sw_char 0 pyro
+        skill: used to use skill, with one skill idx and variable length of
+                cost colors. skill idx is the index of the skill in the
+                available requests.
+            sample: skill 0 omni hydro geo
+        card: used to use card, with one card idx, one target idx and variable
+                length of cost colors. card idx is the index of the card in the
+                available requests. target idx is the index of the target in
+                the targets of requests, if no targets is needed, target idx
+                can be any number.
+            sample: card 0 0 omni geo
+
     Args:
         player_id: The player id of the agent.
+        version: The version of the agent.
         _cmd_to_name: A dict that maps command to request name.
         verbose_level: The verbose level of the agent, higher means more
             verbose, 0 means no verbose. in level 1, when generate response,
@@ -35,6 +61,7 @@ class InteractionAgent(AgentBase):
         random_after_no_command: If True, when no command, generate random
             response by RandomAgent.
     """
+    version: Literal['1.0'] = '1.0'
     _cmd_to_name = {
         'sw_card': 'SwitchCardRequest',
         'choose': 'ChooseCharactorRequest',
@@ -241,7 +268,7 @@ class InteractionAgent(AgentBase):
             self, args: List[str],
             reqs: List[UseCardRequest]) -> UseCardResponse:
         """
-        args: one card idx, variable length of cost colors.
+        args: one card idx, one target idx, variable length of cost colors.
         """
         card_req = reqs[int(args[0])]
         target_idx = int(args[1])
