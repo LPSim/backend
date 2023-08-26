@@ -203,7 +203,7 @@ class ElementalBurstBase(SkillBase):
     """
     Base class of elemental bursts.
     """
-    desc: str = """Deals _DAMAME_ _ELEMENT_ DMG."""
+    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     charge: int

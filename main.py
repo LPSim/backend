@@ -26,15 +26,12 @@ if __name__ == '__main__':
         'charactors': [
             {
                 'name': 'DendroMobMage',
-                'element': 'DENDRO',
             },
             {
                 'name': 'HydroMob',
-                'element': 'HYDRO',
             },
             {
                 'name': 'ElectroMobMage',
-                'element': 'ELECTRO',
             },
         ],
         'cards': [
