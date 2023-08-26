@@ -79,7 +79,7 @@ from .modifiable_values import (
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
 from .struct import (
-    SkillActionArguments, ObjectPosition, DiceCost
+    ObjectPosition, DiceCost
 )
 from .elemental_reaction import (
     check_elemental_reaction,
@@ -1155,28 +1155,11 @@ class Match(BaseModel):
             value = cost_value,
             mode = 'REAL'
         )  # TODO: should use original value. need test.
-        skill_action_args = SkillActionArguments(
-            player_id = response.player_id,
-            our_active_charactor_id = self.player_tables[
-                response.player_id].active_charactor_id,
-            enemy_active_charactor_id = self.player_tables[
-                1 - response.player_id].active_charactor_id,
-            our_charactors = [
-                i for i, c in enumerate(self.player_tables[
-                    response.player_id].charactors)
-                if c.is_alive
-            ],
-            enemy_charactors = [
-                i for i, c in enumerate(self.player_tables[
-                    1 - response.player_id].charactors)
-                if c.is_alive
-            ],
-        )
         actions: List[Actions] = [RemoveDiceAction(
             player_id = response.player_id,
             dice_ids = response.cost_ids,
         )]
-        actions += skill.get_actions(skill_action_args)  # TODO add information
+        actions += skill.get_actions(self)  # TODO add information
         actions.append(SkillEndAction(
             player_id = response.player_id,
             charactor_id = request.charactor_id,

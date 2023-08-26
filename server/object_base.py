@@ -19,7 +19,7 @@ from .consts import (
 )
 from .modifiable_values import ModifiableValueTypes, DamageValue
 from .struct import (
-    SkillActionArguments, ObjectPosition, DiceCost, CardActionTarget
+    ObjectPosition, DiceCost, CardActionTarget
 )
 from .interaction import RequestActionType
 
@@ -96,7 +96,7 @@ class SkillBase(ObjectBase):
         """
         return True
 
-    def get_actions(self, args: SkillActionArguments) -> List[Actions]:
+    def get_actions(self, match: Any) -> List[Actions]:
         """
         The skill is triggered, and get actions of the skill.
         By default, it will generate three actions:
@@ -107,13 +107,13 @@ class SkillBase(ObjectBase):
         """
         return [
             ChargeAction(
-                player_id = args.player_id,
-                charactor_id = args.our_active_charactor_id,
+                player_id = self.position.player_id,
+                charactor_id = self.position.charactor_id,
                 charge = 1,
             ),
             MakeDamageAction(
-                player_id = args.player_id,
-                target_id = 1 - args.player_id,
+                player_id = self.position.player_id,
+                target_id = 1 - self.position.player_id,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -228,12 +228,12 @@ class ElementalBurstBase(SkillBase):
         """
         return self.charge <= charge
 
-    def get_actions(self, args: SkillActionArguments) -> List[Actions]:
+    def get_actions(self, match: Any) -> List[Actions]:
         """
         When using elemental burst, the charge of the active charactor will be
         reduced by `self.charge`.
         """
-        actions = super().get_actions(args)
+        actions = super().get_actions(match)
         for action in actions:
             if isinstance(action, ChargeAction):
                 action.charge = -self.charge

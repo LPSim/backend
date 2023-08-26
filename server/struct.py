@@ -63,17 +63,6 @@ class DamageValue(BaseModel):
     target_charactor_id: int = -1
 
 
-class SkillActionArguments(BaseModel):
-    """
-    Arguments used in getting skill actions.
-    """
-    player_id: int
-    our_active_charactor_id: int
-    enemy_active_charactor_id: int
-    our_charactors: List[int]
-    enemy_charactors: List[int]
-
-
 class CardActionTarget(BaseModel):
     """
     The target of a card action.
