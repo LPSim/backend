@@ -3,8 +3,8 @@ from typing import Literal
 from server.match import Match
 from utils import BaseModel
 from server.deck import Deck
-from agents.nothing_agent import NothingAgent
-from agents.random_agent import RandomAgent
+from agents import NothingAgent
+from agents import RandomAgent
 
 
 class Main(BaseModel):
