@@ -1,5 +1,5 @@
 from typing import List, Tuple, Literal
-from .charactor import Charactors
+from . import Charactors
 from .consts import (
     ElementType, ElementalReactionType, DamageElementalType,
     DamageType, ELEMENT_TO_DAMAGE_TYPE, ObjectPositionType,

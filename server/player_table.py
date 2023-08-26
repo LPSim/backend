@@ -4,12 +4,12 @@ from resources.consts import CharactorIcons
 from .consts import DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER
 from .object_base import ObjectBase
 from .deck import Deck
-from .card import Cards
+from . import Cards
 from .die import Die
-from .summon import Summons
-from .card.support import Supports
-from .charactor import Charactors
-from .status import TeamStatus
+from . import Summons
+from . import Supports
+from . import Charactors
+from . import TeamStatus
 
 
 class PlayerTable(BaseModel):
