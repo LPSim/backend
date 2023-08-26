@@ -17,9 +17,12 @@ from server.interaction import (
 from server.consts import DieColor
 
 
-class InteractionAgent(AgentBase):
+class InteractionAgent_V1_0(AgentBase):
     """
     Agent that read inputs interactively, and generate responses.
+    All idx are start with 0.
+
+    NOT THE NEWSET VERSION, ONLY FOR COMPATIBILITY.
 
     Command format and sample:
         sw_card: used to switch cards, with variable length of card ids.
@@ -30,7 +33,7 @@ class InteractionAgent(AgentBase):
             sample: reroll 0 1 2
         end: used to declare round end, with no args.
             sample: end
-        tune: used to elemental tuning, with one card id and one dice color.
+        tune: used to elemental tuning, with one dice color and one card id.
             sample: tune pyro 0
         sw_char: used to switch charactor, with one charactor id and variable
                 length of cost colors.
@@ -61,7 +64,7 @@ class InteractionAgent(AgentBase):
         random_after_no_command: If True, when no command, generate random
             response by RandomAgent.
     """
-    version: Literal['1.0'] = '1.0'
+    version: Literal['1.0']
     _cmd_to_name = {
         'sw_card': 'SwitchCardRequest',
         'choose': 'ChooseCharactorRequest',
@@ -281,3 +284,131 @@ class InteractionAgent(AgentBase):
             cost_ids = cost_ids,
             target = target
         )
+
+
+class InteractionAgent_V2_0(InteractionAgent_V1_0):
+    """
+    Thie version changes the command format of tune, card and skill to make 
+    easier use. And can use idx of dice to instead die color.
+    All idx are start with 0.
+
+    For tune, it will need to input the card id first, then the dice color. 
+    For skill, the skill idx is not the index of the skill in the available
+        requests, but the index of the skill in the skills of the active 
+        charactor.
+    For card, the card idx is not the index of the card in the available 
+        requests, but the index of the card in the hand. 
+
+    Changed commands:
+        tune: used to elemental tuning, with one card id and one dice color.
+            sample: tune 0 pyro | tune 0 6
+        skill: used to use skill, with one skill idx and variable length of
+                cost colors. skill idx is the index of the skill of the active
+                charactor.
+            sample: skill 0 omni hydro geo | skill 2 0 2 3
+        card: used to use card, with one card idx, one target idx and variable
+                length of cost colors. card idx is the index of the card in 
+                hands. target idx is the index of the target in
+                the targets of requests, if no targets is needed, target idx
+                can be any number.
+            sample: card 0 0 omni geo | card 1 0 5 6
+
+    Unchanged commands (but can use idx of dice):
+        sw_card: used to switch cards, with variable length of card ids.
+            sample: sw_card 0 1 2
+        choose: used to choose charactor, with one charactor id.
+            sample: choose 0
+        reroll: used to reroll dice, with variable length of dice ids or dice
+                colors.
+            sample: reroll 0 1 2 | reroll pyro geo
+        end: used to declare round end, with no args.
+            sample: end
+        sw_char: used to switch charactor, with one charactor id and variable
+                length of cost colors.
+            sample: sw_char 0 pyro | sw_char 1 6
+
+    Args:
+        Unchanged, please refer to V1.0
+    """
+    version: Literal['2.0'] = '2.0'
+
+    def _colors_to_ids(self, color_names: List[str], 
+                       all: List[DieColor]) -> List[int]:
+        try:
+            color_ids = [int(x) for x in color_names]
+            # int representation
+            return color_ids
+        except ValueError:
+            pass
+        # color representation
+        res: List[int] = []
+        selected = [DieColor[x.upper()] for x in color_names]
+        all_e: List[DieColor | None] = list(all)
+        for x in selected:
+            res.append(all_e.index(x))
+            all_e[all_e.index(x)] = None
+        return res
+
+    def resp_reroll_dice(
+            self, args: List[str],
+            reqs: List[RerollDiceRequest]) -> RerollDiceResponse:
+        """
+        args: variable length of dice idx or colors
+        """
+        assert len(reqs) == 1
+        dice_id = self._colors_to_ids(args, reqs[0].colors)
+        return RerollDiceResponse(
+            request = reqs[0], reroll_dice_ids = dice_id
+        )
+
+    def resp_elemental_tuning(
+            self, args: List[str],
+            reqs: List[ElementalTuningRequest]) -> ElementalTuningResponse:
+        """
+        args: one card id and dice color.
+        """
+        assert len(reqs) == 1
+        cost_id = self._colors_to_ids(args[1:], reqs[0].dice_colors)[0]
+        return ElementalTuningResponse(
+            request = reqs[0],
+            cost_id = cost_id,
+            card_id = int(args[0])
+        )
+
+    def resp_use_skill(
+            self, args: List[str],
+            reqs: List[UseSkillRequest]) -> UseSkillResponse:
+        """
+        args: one skill idx, variable length of cost colors.
+        """
+        skill_reqs = [x for x in reqs if x.skill_id == int(args[0])]
+        assert len(skill_reqs) == 1
+        skill_req = skill_reqs[0]
+        cost_ids = self._colors_to_ids(args[1:], skill_req.dice_colors)
+        return UseSkillResponse(
+            request = skill_req,
+            cost_ids = cost_ids
+        )
+
+    def resp_use_card(
+            self, args: List[str],
+            reqs: List[UseCardRequest]) -> UseCardResponse:
+        """
+        args: one card idx, one target idx, variable length of cost colors.
+        """
+        card_reqs = [x for x in reqs if x.card_id == int(args[0])]
+        assert len(card_reqs) == 1
+        card_req = card_reqs[0]
+        target_idx = int(args[1])
+        target = None
+        if len(card_req.targets) > 0:
+            target = card_req.targets[target_idx]
+        cost_ids = self._colors_to_ids(args[2:], card_req.dice_colors)
+        return UseCardResponse(
+            request = card_req,
+            cost_ids = cost_ids,
+            target = target
+        )
+
+
+InteractionAgent = InteractionAgent_V2_0

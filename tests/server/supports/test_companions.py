@@ -1,4 +1,6 @@
-from agents.interaction_agent import InteractionAgent
+from agents.interaction_agent import (
+    InteractionAgent_V1_0 as InteractionAgent
+)
 from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
@@ -14,6 +16,7 @@ def test_rana():
     """
     agent_0 = NothingAgent(player_id = 0)
     agent_1 = InteractionAgent(
+        version = '1.0',
         player_id = 1,
         verbose_level = 0,
         commands = [
@@ -100,6 +103,7 @@ def test_rana():
     TODO: if overcharged self, will generate next of next?
     """
     agent_0 = InteractionAgent(
+        version = '1.0',
         player_id = 0,
         verbose_level = 0,
         commands = [
@@ -113,6 +117,7 @@ def test_rana():
         random_after_no_command = True
     )
     agent_1 = InteractionAgent(
+        version = '1.0',
         player_id = 1,
         verbose_level = 0,
         commands = [
