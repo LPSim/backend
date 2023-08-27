@@ -1,38 +1,57 @@
-# Genius Invokation TCG simulator
+# Genius Invokation TCG Simulator
 
 ---
 
-Backend of Genius Invokation TCG, written with Python using Pydantic and FastAPI.
+Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
+TCG, written with Python using Pydantic and FastAPI.
 
-This project is created for killing time.
-No guarantee for progress and quality.
+This project is created for leisure, no guarantee for progress and quality.
 
-## usage
+This project is under AGPL-3.0 license.
 
-Currently not support text-based deck definition, need to define a 
-deck based on `server.deck` module. `main.py` gives an example, but cards in
-the deck are all the same.
+## Usage
 
-Initialize a new `server.Match`, and use `set_deck` to set decks for players.
-`Match.match_config` contains configurations of the match, modify it if needed.
-After deck set, use `start` to start the match, it will initialize the match
-based on the config and decks, then use `step` to move to next step, by 
-default, `step` will continuously run until the match is ended or the match
-generates requests and need response.
+Currently package-like usage is not supported, please follow the following
+instructions to run the project. 
+This project support a frontend `zyr17/GITCG-frontend`. To use the frontend, 
+please refer FastAPI section and readme of frontend.
 
-To make response, some simple agents are implemented in `agents`. You can use
-agents to respond requests. `InteractionAgent` supports reading command lines
-and generate responses, which can be used in console and in the frontend.
+Define decks for both players. Supports text-based or json-based deck 
+definition. Refer to `server/deck.py` for details.
+
+The outlines:
+
+1. Initialize a fresh `server.Match` instance.
+2. Use the `set_deck` function to assign decks for players.
+3. Modify the `Match.match_config` if specific configurations are necessary.
+4. Once the decks are set, initiate the match using the `Match.start` function. 
+   This initializes the match according to the configurations and decks.
+5. Progress through the match by employing the `Match.step` function. 
+   By default, the step function will continually execute until the match 
+   either ends or generates requests requiring responses.
+
+In order to manage responses, the project includes a selection of simple 
+agents within the `agents` module. These agents can generate 
+responses to various requests. Notably, the `InteractionAgent` is equipped 
+to interpret command lines and formulate responses. This proves useful both 
+in console environments and within frontend interfaces.
+
 
 ```python
 from server.match import Match
 from server.deck import Deck
 from agents import RandomAgent
-deck0 = Deck(**DECK)
-deck1 = Deck(**DECK)
+deck_string = '''
+charactor:Fischl*3
+Stellar Predator*10
+Strategize*10
+Laurel Coronet*10
+'''
+deck0 = Deck.from_str(deck_string)
+deck1 = Deck.from_str(deck_string)
 match = Match()
 match.set_deck([deck0, deck1])
-# match.match_config.max_same_card_number = 30  # disable deck limit
+match.match_config.max_same_card_number = 30  # disable deck limit
 match.start()
 match.step()
 
@@ -64,7 +83,7 @@ server side, make empty response on agent, return 404, or run JS failed on
 frontend. Please open console of frontend and check the error message on both
 sides.
 
-## feature
+## Feature
 
 Pydantic to save & load states of match, exported data is complete to restore 
 from certain state and continue running, and also easy for frontend to render
@@ -72,13 +91,23 @@ the game states.
 
 Interact by request and response. When request list is not empty, agents need
 to response to one of the request. When multiple players need to response,
+(e.g. switch card and choose charactor at startup),
 their requests will be generated simultaneously.
 
-All changes to the match table is done by actions. Every action will generate
-a event and may activate new actions, and new action lists are added to the
-top of all actions. It looks like a stack of lists of actions.
+All modifications to the match table are orchestrated through actions. 
+Each action triggers an event and has the potential to activate subsequent 
+actions. These newly activated actions are appended to the top of the existing 
+action list, akin to a stack structure.
 
-Object can add two types of triggers, the event handler and value modifier.
-Event handler is used to listen events and return action lists. Value modifier
-is used to modify modifiable values and update self states, for example, 
-initial dice color, damage, cost.
+Objects integrated into this system introduce two  types of triggers: event 
+handlers and value modifiers. Event handlers function to monitor events and 
+produce lists of actions in response. Value modifiers is used on edit 
+mutable values and updating internal states if is necessary. Modifiable values
+applies to attributes like initial dice color, damage, and cost.
+
+## Contribution
+
+Contributions are welcomed. To add a new charactor, please refer to
+`server/charactor/electro/fischl.py` `server/charactor/hydro/mona.py`
+and `server/charactor/dendro/nahida.py`. To add a new card, please refer to
+existing card implementations.
