@@ -28,31 +28,13 @@ app.add_middleware(
 
 
 def get_new_match(seed: Any = None, rich: bool = False):
-    TEST_DECK = {
-        'name': 'Deck',
-        'charactors': [
-            {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
-                'hp': 99,
-                'max_hp': 99,
-            },
-            {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
-            },
-            {
-                'name': 'ElectroMobMage',
-                'element': 'ELECTRO',
-            },
-        ],
-        'cards': [
-            {
-                'name': 'Strategize',
-            }
-        ] * 30,
-    }
-    deck = Deck(**TEST_DECK)
+    deck = Deck.from_str('''
+        charactor:Mona*2
+        charactor:Fischl
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+    ''')
     if seed:
         match: Match = Match(random_state = seed)
     else:
@@ -67,13 +49,14 @@ def get_new_match(seed: Any = None, rich: bool = False):
 
 
 agent_0 = NothingAgent(player_id = 0)
+agent_0 = InteractionAgent(player_id = 0, only_use_command = True)
 agent_1 = InteractionAgent(player_id = 1, only_use_command = True)
 
 
 @app.on_event('startup')
 async def startup_event():
     global match
-    match = get_new_match()
+    match = get_new_match(seed = get_random_state(), rich = False)
 
 
 @app.post('reset')
@@ -108,15 +91,26 @@ async def post_respond(data: RespondData):
     command = data.command
     if not match.need_respond(player_id):
         raise HTTPException(status_code = 404, detail = 'Not your turn')
-    if player_id != 1:
+    # if player_id != 1:
+    #     raise HTTPException(status_code = 404, 
+    #                         detail = 'player 0 not supported')
+    if player_id == 0:
+        agent = agent_0
+    elif player_id == 1:
+        agent = agent_1
+    else:
+        raise HTTPException(status_code = 404, detail = 'Player not found')
+    if agent.__class__ == NothingAgent:
         raise HTTPException(status_code = 404, 
-                            detail = 'player 0 not supported')
-    agent_1.commands = [command]
-    resp = agent_1.generate_response(match)
+                            detail = 'Cannot control this agent')
+    agent.commands = [command]
+    resp = agent.generate_response(match)
     if resp is None:
         raise HTTPException(status_code = 404, detail = 'Invalid command')
     match.respond(resp)
     match.step()
-    while match.need_respond(0):
-        make_respond(agent_0, match)
+    for agent in (agent_0, agent_1):
+        if agent.__class__ != InteractionAgent or len(agent.commands) > 0:
+            while match.need_respond(agent.player_id):
+                make_respond(agent, match)
     return JSONResponse(match.dict())
