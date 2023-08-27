@@ -30,7 +30,7 @@ class CatalyzingField(UsageTeamStatus):
         Increase damage for dendro or electro damages, and decrease usage.
         TODO only active charactor will count!
         """
-        if value.target_player_id == self.position.player_id:
+        if value.target_position.player_id == self.position.player_id:
             # attack self, not activate
             return value
         if value.damage_elemental_type in [
@@ -72,7 +72,7 @@ class DendroCore(UsageTeamStatus):
         """
         Increase damage for electro or pyro damages by 2, and decrease usage.
         """
-        if value.target_player_id == self.position.player_id:
+        if value.target_position.player_id == self.position.player_id:
             # attack self, not activate
             return value
         if value.damage_elemental_type in [
@@ -111,7 +111,7 @@ class Crystallize(UsageTeamStatus):
         """
         Decrease damage by its usage, and decrease usage.
         """
-        if value.target_player_id != self.position.player_id:
+        if value.target_position.player_id != self.position.player_id:
             # attack enemy, not activate
             return value
         if self.usage > 0:

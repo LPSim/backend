@@ -1628,8 +1628,13 @@ class Match(BaseModel):
         while len(damage_increase_value_lists) > 0:
             damage = damage_increase_value_lists.pop(0)
             damage_original = damage.copy(deep = True)
-            table = self.player_tables[damage.target_player_id]
-            charactor = table.charactors[damage.target_charactor_id]
+            assert (
+                damage.target_position.area == ObjectPositionType.CHARACTOR
+            ), (
+                'Damage target position should be charactor.'
+            )
+            table = self.player_tables[damage.target_position.player_id]
+            charactor = table.charactors[damage.target_position.charactor_id]
             damage_element_type = DAMAGE_TYPE_TO_ELEMENT[
                 damage.damage_elemental_type]
             target_element_application = charactor.element_application
@@ -1639,14 +1644,14 @@ class Match(BaseModel):
                     target_element_application
             )
             if (elemental_reaction is ElementalReactionType.OVERLOADED
-                    and damage.target_charactor_id 
+                    and damage.target_position.charactor_id 
                     == table.active_charactor_id):
                 # overloaded to next charactor
-                if damage.target_player_id != target_id:
+                if damage.target_position.player_id != target_id:
                     self._set_match_state(MatchState.ERROR)
                     raise ValueError(
                         'Overloaded damage target player '
-                        f'{damage.target_player_id} '
+                        f'{damage.target_position.player_id} '
                         f'does not match action target player {target_id}.'
                     )
                 assert action.charactor_change_rule == 'NONE', (

@@ -279,7 +279,7 @@ def apply_elemental_reaction(
         element_type = reacted_elements[0]
         if element_type == ElementType.ANEMO:
             element_type = reacted_elements[1]
-        attack_target = damage.target_charactor_id
+        attack_target = damage.target_position.charactor_id
         for cnum in range(1, len(target_charactors)):
             cnum = (cnum + attack_target) % len(target_charactors)
             c = target_charactors[cnum]
@@ -288,14 +288,16 @@ def apply_elemental_reaction(
                     match = damage.match,
                     position = damage.position,
                     id = damage.id,
-                    target_player_id = damage.target_player_id,
-                    target_charactor_id = cnum,
+                    target_position = ObjectPosition(
+                        player_id = damage.target_position.player_id,
+                        charactor_id = cnum,
+                        area = damage.target_position.area
+                    ),
                     damage = 1,
                     damage_type = DamageType.DAMAGE,
                     damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[
                         element_type],
                     charge_cost = 0,
-                    damage_source_type = damage.damage_source_type
                 ))
     else:
         # all others are +1 damage types
@@ -304,7 +306,7 @@ def apply_elemental_reaction(
                         ElementalReactionType.SUPERCONDUCT]:
             # 1 piercing dmg for other charactors
             damage_type = DamageElementalType.PIERCING
-            attack_target = damage.target_charactor_id
+            attack_target = damage.target_position.charactor_id
             for cnum, c in enumerate(target_charactors):
                 if cnum == attack_target:
                     continue
@@ -313,13 +315,15 @@ def apply_elemental_reaction(
                         match = damage.match,
                         position = damage.position,
                         id = damage.id,
-                        target_player_id = damage.target_player_id,
-                        target_charactor_id = cnum,
+                        target_position = ObjectPosition(
+                            player_id = damage.target_position.player_id,
+                            charactor_id = cnum,
+                            area = damage.target_position.area
+                        ),
                         damage = 1,
                         damage_type = DamageType.DAMAGE,
                         damage_elemental_type = damage_type,
                         charge_cost = 0,
-                        damage_source_type = damage.damage_source_type
                     ))
     return res
 

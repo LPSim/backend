@@ -2,7 +2,7 @@ from typing import List, Literal, Any
 
 from utils import BaseModel
 from .consts import (
-    ObjectPositionType, DamageType, DamageElementalType, DamageSourceType,
+    ObjectPositionType, DamageType, DamageElementalType,
     DieColor
 )
 
@@ -34,8 +34,8 @@ class DamageValue(BaseModel):
             damage.
         id (int): The id of the object who makes the damage, e.g. Skill,
             Summon, Status.
-        damage_type (DamageType): The type of the damage.
-        damage_source_type (DamageSourceType): The source type of the damage.
+        damage_type (DamageType): The type of the damage, damage, heal, or
+            element application (zero damage).
         damage (int): The damage value.
         damage_elemental_type (DamageElementalType): The elemental type of the
             damage.
@@ -52,7 +52,6 @@ class DamageValue(BaseModel):
     position: ObjectPosition
     id: int
     damage_type: DamageType
-    damage_source_type: DamageSourceType
     damage: int
     damage_elemental_type: DamageElementalType
     charge_cost: int

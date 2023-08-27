@@ -9,7 +9,7 @@ from ...object_base import (
 )
 from ...consts import (
     ElementType, FactionType, SkillType, WeaponType, DamageElementalType,
-    ObjectPositionType, DamageSourceType, DamageType, DieColor
+    ObjectPositionType, DamageType, DieColor
 )
 from ..charactor_base import CharactorBase, SkillTalent
 from ...struct import DamageValue, DiceCost
@@ -62,7 +62,6 @@ class MidnightPhantasmagoria(ElementalBurstBase):
                 position = self.position.copy(deep = True),
                 id = self.id,
                 damage_type = DamageType.DAMAGE,
-                damage_source_type = DamageSourceType.CURRENT_PLAYER_CHARACTOR,
                 damage = 2,
                 damage_elemental_type = DamageElementalType.PIERCING,
                 charge_cost = self.charge,
@@ -128,7 +127,6 @@ class Oz(AttackerSummonBase):
             # add RemoveObjectAction here.
             assert self.usage > 0
             self.usage -= 1
-            source_type = DamageSourceType.CURRENT_PLAYER_SUMMON
             return [
                 MakeDamageAction(
                     player_id = self.position.player_id,
@@ -138,7 +136,6 @@ class Oz(AttackerSummonBase):
                             position = self.position,
                             id = self.id,
                             damage_type = DamageType.DAMAGE,
-                            damage_source_type = source_type,
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,
                             charge_cost = 0,

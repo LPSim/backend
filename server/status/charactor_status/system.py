@@ -31,8 +31,10 @@ class Frozen(RoundCharactorStatus):
         Increase damage for pyro and physical damages to self by 2, and 
         decrease usage.
         """
-        if (value.target_player_id != self.position.player_id
-                or value.target_charactor_id != self.position.charactor_id):
+        if (
+            value.target_position.player_id != self.position.player_id
+            or value.target_position.charactor_id != self.position.charactor_id
+        ):
             # not attack self, not activate
             return value
         if value.damage_elemental_type in [

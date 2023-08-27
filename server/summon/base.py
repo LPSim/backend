@@ -1,7 +1,7 @@
 from typing import Literal, Any
 from ..object_base import CardBase
 from ..consts import (
-    ObjectType, DamageElementalType, DamageSourceType, DamageType
+    ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
     RoundEndEventArguments,
@@ -53,7 +53,6 @@ class AttackerSummonBase(SummonBase):
         When round end, make damage to the opponent.
         """
         player_id = self.position.player_id
-        source_type = DamageSourceType.CURRENT_PLAYER_SUMMON
         assert self.usage > 0
         self.usage -= 1
         return [
@@ -65,7 +64,6 @@ class AttackerSummonBase(SummonBase):
                         position = self.position,
                         id = self.id,
                         damage_type = DamageType.DAMAGE,
-                        damage_source_type = source_type,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
                         charge_cost = 0,

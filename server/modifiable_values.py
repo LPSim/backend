@@ -2,8 +2,8 @@ from enum import Enum
 from typing import List, Any, Literal
 from utils import BaseModel
 from .consts import (
-    DieColor, DamageType, DamageElementalType, DamageSourceType,
-    ElementalReactionType, ElementType
+    DieColor, DamageType, DamageElementalType,
+    ElementalReactionType, ElementType, ObjectPositionType
 )
 from .struct import DamageValue, ObjectPosition, DiceCost
 
@@ -91,9 +91,7 @@ class DamageIncreaseValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
 
     damage_type: DamageType
-    damage_source_type: DamageSourceType
-    target_player_id: int
-    target_charactor_id: int
+    target_position: ObjectPosition
     damage: int
     damage_elemental_type: DamageElementalType
     charge_cost: int
@@ -123,7 +121,7 @@ class DamageIncreaseValue(ModifiableValueBase):
         if damage_value.target_charactor == 'ACTIVE':
             assert not charactors[active_id], 'Active charactor is defeated.'
             target_charactor = [active_id]
-        if damage_value.target_charactor == 'BACK':
+        elif damage_value.target_charactor == 'BACK':
             target_charactor = [x for x in range(len(charactors))
                                 if not charactors[x] and x != active_id]
         elif damage_value.target_charactor == 'NEXT':
@@ -137,6 +135,11 @@ class DamageIncreaseValue(ModifiableValueBase):
                 if not charactors[idx]:
                     target_charactor.append(idx)
                     break
+        else:
+            raise NotImplementedError(
+                f'Unknown target charactor type: '
+                f'{damage_value.target_charactor}'
+            )
         result: List[DamageIncreaseValue] = []
         for target in target_charactor:
             assert not charactors[target], 'Target charactor is defeated.'
@@ -145,9 +148,11 @@ class DamageIncreaseValue(ModifiableValueBase):
                 position = damage_value.position,
                 id = damage_value.id,
                 damage_type = damage_value.damage_type,
-                damage_source_type = damage_value.damage_source_type,
-                target_player_id = target_player,
-                target_charactor_id = target,
+                target_position = ObjectPosition(
+                    player_id = target_player,
+                    charactor_id = target,
+                    area = ObjectPositionType.CHARACTOR
+                ),
                 damage = damage_value.damage,
                 damage_elemental_type = damage_value.damage_elemental_type,
                 charge_cost = damage_value.charge_cost,
@@ -168,9 +173,7 @@ class DamageMultiplyValue(DamageIncreaseValue):
             position = increase_value.position,
             id = increase_value.id,
             damage_type = increase_value.damage_type,
-            damage_source_type = increase_value.damage_source_type,
-            target_player_id = increase_value.target_player_id,
-            target_charactor_id = increase_value.target_charactor_id,
+            target_position = increase_value.target_position,
             damage = increase_value.damage,
             damage_elemental_type = increase_value.damage_elemental_type,
             charge_cost = increase_value.charge_cost,
@@ -191,9 +194,7 @@ class DamageDecreaseValue(DamageIncreaseValue):
             position = multiply_value.position,
             id = multiply_value.id,
             damage_type = multiply_value.damage_type,
-            damage_source_type = multiply_value.damage_source_type,
-            target_player_id = multiply_value.target_player_id,
-            target_charactor_id = multiply_value.target_charactor_id,
+            target_position = multiply_value.target_position,
             damage = multiply_value.damage,
             damage_elemental_type = multiply_value.damage_elemental_type,
             charge_cost = multiply_value.charge_cost,

@@ -14,7 +14,7 @@ from .action import (
 )
 from .consts import (
     ObjectType, WeaponType, ElementType, DamageElementalType, SkillType,
-    DamageType, DamageSourceType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
+    DamageType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
     DiceCostLabels,
 )
 from .modifiable_values import ModifiableValueTypes, DamageValue
@@ -118,8 +118,6 @@ class SkillBase(ObjectBase):
                         position = self.position,
                         id = self.id,
                         damage_type = DamageType.DAMAGE,
-                        damage_source_type
-                        = DamageSourceType.CURRENT_PLAYER_CHARACTOR,
                         damage = self.damage,
                         damage_elemental_type = self.damage_type,
                         charge_cost = 0,

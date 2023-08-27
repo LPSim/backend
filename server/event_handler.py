@@ -66,8 +66,8 @@ class SystemEventHandler(SystemEventHandlerBase):
         After receive damage, generate side effects of elemental reaction.
         """
         reaction = event.elemental_reaction
-        player_id = event.final_damage.target_player_id
-        charactor_id = event.final_damage.target_charactor_id
+        player_id = event.final_damage.target_position.player_id
+        charactor_id = event.final_damage.target_position.charactor_id
         act = elemental_reaction_side_effect(
             reaction, player_id, charactor_id, 
             version = self.version
