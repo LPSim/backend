@@ -70,10 +70,10 @@ class CardActionTarget(BaseModel):
     target_id: int = 0
 
 
-class DiceCost(BaseModel):
+class Cost(BaseModel):
     """
-    The cost of a dice, which is used to define original costs of objects.
-    When perform cost, should convert into DiceCostValue.
+    The cost, which is used to define original costs of objects.
+    When perform cost, should convert into CostValue.
     """
     label: int = 0
     elemental_dice_number: int = 0
@@ -81,19 +81,27 @@ class DiceCost(BaseModel):
     same_dice_number: int = 0
     any_dice_number: int = 0
     omni_dice_number: int = 0
+    charge: int = 0
     original_value: Any = None
 
-    def is_valid(self, dice_colors: List[DieColor], strict = True) -> bool:
+    def is_valid(self, dice_colors: List[DieColor], charge: int, 
+                 strict = True) -> bool:
         """
         Check if dice colors matches the dice cost value.
         TODO: test in strict and unstrict mode.
 
         Args:
             dice_colors (List[DieColor]): The dice colors to be checked.
+            charge (int): The charges to be checked.
             strict (bool): If True, the dice colors must match the dice cost
                 value strictly. If False, the dice colors can be more than the
-                cost.
+                cost. Note charges always match unstictly.
         """
+        # first charge check
+        if charge < self.charge:
+            return False
+
+        # then dice check
         assert self.omni_dice_number == 0, 'Omni dice is not supported yet.'
         if self.same_dice_number > 0:
             assert self.elemental_dice_number == 0 and \

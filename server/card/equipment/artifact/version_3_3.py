@@ -1,7 +1,7 @@
 from typing import Literal
 from .base import ArtifactBase
-from ....struct import DiceCost
-from ....modifiable_values import DiceCostValue
+from ....struct import Cost
+from ....modifiable_values import CostValue
 from ....consts import ElementType, ObjectPositionType, DiceCostLabels
 from ....event import RoundPrepareEventArguments
 from ....action import ActionBase
@@ -28,7 +28,7 @@ class SmallElementalArtifact(ArtifactBase):
     )
     version: Literal["4.0"] = "4.0"
     usage: int = 1
-    cost: DiceCost = DiceCost(any_dice_number=2)
+    cost: Cost = Cost(any_dice_number=2)
     element: ElementType = ElementType.NONE
 
     def __init__(self, *argv, **kwargs):
@@ -65,11 +65,11 @@ class SmallElementalArtifact(ArtifactBase):
         """
         self.usage = 1
 
-    def value_modifier_DICE_COST(
+    def value_modifier_COST(
         self, 
-        value: DiceCostValue, 
+        value: CostValue, 
         mode: Literal['TEST', 'REAL'],
-    ) -> DiceCostValue:
+    ) -> CostValue:
         """
         When charactor equipped with this artifact and used skill, decrease
         the elemental cost by 1. If element not match, decrease any dice cost

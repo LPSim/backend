@@ -76,11 +76,11 @@ from .object_base import ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
-    InitialDiceColorValue, RerollValue, DiceCostValue,
+    InitialDiceColorValue, RerollValue, CostValue,
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
 from .struct import (
-    ObjectPosition, DiceCost
+    ObjectPosition, Cost
 )
 from .elemental_reaction import (
     check_elemental_reaction,
@@ -828,8 +828,8 @@ class Match(BaseModel):
         TODO: With Leave It to Me, it can be a quick action.
         """
         table = self.player_tables[player_id]
-        dice_cost = DiceCost(any_dice_number = 1)
-        dice_cost_value = DiceCostValue(
+        dice_cost = Cost(any_dice_number = 1)
+        dice_cost_value = CostValue(
             cost = dice_cost,
             match = self,
             position = ObjectPosition(
@@ -842,6 +842,7 @@ class Match(BaseModel):
         self._modify_value(dice_cost_value, mode = 'TEST')
         if not dice_cost_value.cost.is_valid(
             dice_colors = [die.color for die in table.dice],
+            charge = table.charactors[table.active_charactor_id].charge,
             strict = False,
         ):
             return
@@ -897,7 +898,7 @@ class Match(BaseModel):
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(self):
                 cost = skill.cost.copy(deep = True)
-                cost_value = DiceCostValue(
+                cost_value = CostValue(
                     cost = cost,
                     match = self,
                     position = skill.position,
@@ -906,7 +907,9 @@ class Match(BaseModel):
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
                 if cost_value.cost.is_valid(
-                    dice_colors = dice_colors, strict = False
+                    dice_colors = dice_colors, 
+                    charge = front_charactor.charge,
+                    strict = False
                 ):
                     self.requests.append(UseSkillRequest(
                         player_id = player_id,
@@ -931,7 +934,7 @@ class Match(BaseModel):
         for cid, card in enumerate(cards):
             if card.is_valid(self):
                 cost = card.cost.copy(deep = True)
-                cost_value = DiceCostValue(
+                cost_value = CostValue(
                     cost = cost,
                     match = self,
                     position = card.position,
@@ -940,7 +943,10 @@ class Match(BaseModel):
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = [die.color for die in table.dice]
                 if cost_value.cost.is_valid(
-                    dice_colors = dice_colors, strict = False
+                    dice_colors = dice_colors, 
+                    charge = table.charactors[
+                        table.active_charactor_id].charge,
+                    strict = False
                 ):
                     self.requests.append(UseCardRequest(
                         player_id = player_id,
@@ -1070,7 +1076,7 @@ class Match(BaseModel):
                 dice_ids = cost_ids,
             ))
         cost = response.request.cost.original_value
-        cost_value = DiceCostValue(
+        cost_value = CostValue(
             match = self,
             position = ObjectPosition(
                 player_id = response.player_id,
@@ -1150,7 +1156,7 @@ class Match(BaseModel):
         skill = self.player_tables[response.player_id].charactors[
             request.charactor_id].skills[request.skill_id]
         cost = response.request.cost.original_value
-        cost_value = DiceCostValue(
+        cost_value = CostValue(
             match = self,
             position = skill.position,
             id = skill.id,
@@ -1183,7 +1189,7 @@ class Match(BaseModel):
         table = self.player_tables[response.player_id]
         card = table.hands[request.card_id]
         cost = response.request.cost.original_value
-        cost_value = DiceCostValue(
+        cost_value = CostValue(
             match = self,
             position = card.position,
             id = card.id,

@@ -1,7 +1,7 @@
 from typing import Literal, List, Any
 
 from ....object_base import CardBase
-from ....struct import DiceCost
+from ....struct import Cost
 from ....consts import ObjectType, DiceCostLabels, ObjectPositionType
 from ....action import MoveObjectAction, RemoveObjectAction
 from ....struct import CardActionTarget
@@ -16,7 +16,7 @@ class ArtifactBase(CardBase):
     cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.ARTIFACT.value
 
     version: str
-    cost: DiceCost
+    cost: Cost
     usage: int
 
     def act(self):

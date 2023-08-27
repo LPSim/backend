@@ -1,7 +1,7 @@
 from utils import BaseModel
 from typing import Literal, List, Any
 from .consts import DieColor
-from .struct import DiceCost, CardActionTarget
+from .struct import Cost, CardActionTarget
 
 
 class RequestBase(BaseModel):
@@ -46,7 +46,7 @@ class SwitchCharactorRequest(RequestBase):
     active_charactor_id: int
     candidate_charactor_ids: List[int]
     dice_colors: List[DieColor]
-    cost: DiceCost
+    cost: Cost
 
 
 class ElementalTuningRequest(RequestBase):
@@ -74,7 +74,7 @@ class UseSkillRequest(RequestBase):
     charactor_id: int
     skill_id: int
     dice_colors: List[DieColor]
-    cost: DiceCost
+    cost: Cost
 
 
 class UseCardRequest(RequestBase):
@@ -85,7 +85,7 @@ class UseCardRequest(RequestBase):
     card_id: int
     dice_colors: List[DieColor]
     targets: List[CardActionTarget]
-    cost: DiceCost
+    cost: Cost
 
 
 class ResponseBase(BaseModel):
@@ -177,7 +177,7 @@ class SwitchCharactorResponse(ResponseBase):
         if self.charactor_id not in self.request.candidate_charactor_ids:
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        return self.request.cost.is_valid(cost_colors)
+        return self.request.cost.is_valid(cost_colors, 0)
 
 
 class ElementalTuningResponse(ResponseBase):
@@ -212,7 +212,8 @@ class UseSkillResponse(ResponseBase):
         Check whether the response is valid.
         """
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        return self.request.cost.is_valid(cost_colors)
+        return self.request.cost.is_valid(cost_colors, 
+                                          self.request.cost.charge)
 
 
 class UseCardResponse(ResponseBase):
@@ -228,7 +229,8 @@ class UseCardResponse(ResponseBase):
         """
         # dice color right
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        if not self.request.cost.is_valid(cost_colors):
+        if not self.request.cost.is_valid(cost_colors, 
+                                          self.request.cost.charge):
             return False
         # if has targets, response target should not be None
         if self.target is None and len(self.request.targets) > 0:

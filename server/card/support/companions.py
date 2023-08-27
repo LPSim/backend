@@ -4,7 +4,7 @@ from ...consts import (
     DiceCostLabels, ElementType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
     SkillType
 )
-from ...struct import DiceCost
+from ...struct import Cost
 from ...action import ActionBase, CreateDiceAction
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
@@ -22,7 +22,7 @@ class Rana(CompanionBase):
         'character. (Once per Round)'
     )
     version: Literal['3.7'] = '3.7'
-    cost: DiceCost = DiceCost(same_dice_number = 2)
+    cost: Cost = Cost(same_dice_number = 2)
     usage: int = 1
 
     def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \

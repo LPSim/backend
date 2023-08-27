@@ -19,7 +19,7 @@ from .consts import (
 )
 from .modifiable_values import ModifiableValueTypes, DamageValue
 from .struct import (
-    ObjectPosition, DiceCost, CardActionTarget
+    ObjectPosition, Cost, CardActionTarget
 )
 
 
@@ -72,7 +72,7 @@ class SkillBase(ObjectBase):
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
     damage_type: DamageElementalType
     damage: int
-    cost: DiceCost
+    cost: Cost
     cost_label: int
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
@@ -141,8 +141,8 @@ class PhysicalNormalAttackBase(SkillBase):
     cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCost:
-        return DiceCost(
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 1,
             any_dice_number = 2,
@@ -165,8 +165,8 @@ class ElementalNormalAttackBase(SkillBase):
             '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCost:
-        return DiceCost(
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 1,
             any_dice_number = 2,
@@ -189,8 +189,8 @@ class ElementalSkillBase(SkillBase):
             '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
-    def get_cost(element: ElementType) -> DiceCost:
-        return DiceCost(
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = 3,
         )
@@ -203,14 +203,14 @@ class ElementalBurstBase(SkillBase):
     desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
-    charge: int
     cost_label: int = DiceCostLabels.ELEMENTAL_BURST.value
 
     @staticmethod
-    def get_cost(element: ElementType, number: int) -> DiceCost:
-        return DiceCost(
+    def get_cost(element: ElementType, number: int, charge: int) -> Cost:
+        return Cost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
             elemental_dice_number = number,
+            charge = charge
         )
 
     def __init__(self, *argv, **kwargs):
@@ -218,14 +218,6 @@ class ElementalBurstBase(SkillBase):
         self.desc = self.desc.replace(
             '_ELEMENT_', self.damage_type.value.lower().capitalize())
         self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
-
-    def is_valid(self, match: Any) -> bool:
-        """
-        Check if the skill can be used.
-        """
-        table = match.player_tables[self.position.player_id]
-        charactor = table.charactors[self.position.charactor_id]
-        return self.charge <= charactor.charge
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -235,7 +227,7 @@ class ElementalBurstBase(SkillBase):
         actions = super().get_actions(match)
         for action in actions:
             if isinstance(action, ChargeAction):
-                action.charge = -self.charge
+                action.charge = -self.cost.charge
         return actions
 
 
@@ -254,7 +246,7 @@ class CardBase(ObjectBase):
         charactor_id = -1,
         area = ObjectPositionType.INVALID
     )
-    cost: DiceCost
+    cost: Cost
     cost_label: int = DiceCostLabels.CARD.value
 
     def __init__(self, *argv, **kwargs):

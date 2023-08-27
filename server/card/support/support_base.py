@@ -1,7 +1,7 @@
 from typing import Literal, List, Any
 from ...object_base import CardBase
 from ...consts import ObjectType, ObjectPositionType, DiceCostLabels
-from ...struct import DiceCost
+from ...struct import Cost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
 from ...struct import ObjectPosition, CardActionTarget
 
@@ -16,7 +16,7 @@ class SupportBase(CardBase):
     name: str
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     version: str
-    cost: DiceCost
+    cost: Cost
     cost_label: int = DiceCostLabels.CARD.value
     usage: int
 

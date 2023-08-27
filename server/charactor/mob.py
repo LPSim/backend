@@ -78,9 +78,8 @@ class Mob(CharactorBase):
         elemental_burst = ElementalBurstBase(
             name = f'{element_name} Elemental Burst',
             damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-            cost = ElementalBurstBase.get_cost(self.element, 3),
+            cost = ElementalBurstBase.get_cost(self.element, 3, 2),
             damage = 5,
-            charge = 2
         )
         self.skills = [normal_attack, elemental_skill, elemental_burst]
         self.desc = self.desc.replace('_NAME_', self.name)

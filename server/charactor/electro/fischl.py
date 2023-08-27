@@ -12,7 +12,7 @@ from ...consts import (
     ObjectPositionType, DamageType, DieColor
 )
 from ..charactor_base import CharactorBase, SkillTalent
-from ...struct import DamageValue, DiceCost
+from ...struct import DamageValue, Cost
 from ...summon.base import AttackerSummonBase
 
 
@@ -22,7 +22,7 @@ class Nightrider(ElementalSkillBase):
     element: ElementType = ElementType.ELECTRO
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
-    cost: DiceCost = DiceCost(
+    cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )
@@ -47,10 +47,10 @@ class MidnightPhantasmagoria(ElementalBurstBase):
     )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
-    charge: int = 3
-    cost: DiceCost = DiceCost(
+    cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
+        charge = 3,
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -64,7 +64,7 @@ class MidnightPhantasmagoria(ElementalBurstBase):
                 damage_type = DamageType.DAMAGE,
                 damage = 2,
                 damage_elemental_type = DamageElementalType.PIERCING,
-                charge_cost = self.charge,
+                charge_cost = self.cost.charge,
                 target_player = 'ENEMY',
                 target_charactor = 'BACK',
             )
@@ -83,7 +83,7 @@ class StellarPredator(SkillTalent):
         'and after Fischl uses a Normal Attack: Deal 2 Electro DMG. '
         '(Consumes Usage(s))'
     )
-    cost: DiceCost = DiceCost(
+    cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )

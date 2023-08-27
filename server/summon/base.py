@@ -11,7 +11,7 @@ from ..action import (
     MakeDamageAction, RemoveObjectAction
 )
 from ..modifiable_values import DamageValue
-from ..struct import DiceCost
+from ..struct import Cost
 
 
 class SummonBase(CardBase):
@@ -20,7 +20,7 @@ class SummonBase(CardBase):
     name: str
     usage: int
     max_usage: int
-    cost: DiceCost = DiceCost()
+    cost: Cost = Cost()
 
     def renew(self, new_status: 'SummonBase') -> None:
         """

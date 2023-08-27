@@ -5,7 +5,7 @@ from .consts import (
     DieColor, DamageType, DamageElementalType,
     ElementalReactionType, ElementType, ObjectPositionType
 )
-from .struct import DamageValue, ObjectPosition, DiceCost
+from .struct import DamageValue, ObjectPosition, Cost
 
 
 class ModifiableValueTypes(str, Enum):
@@ -16,7 +16,7 @@ class ModifiableValueTypes(str, Enum):
     INITIAL_DICE_COLOR = 'INITIAL_DICE_COLOR'
     REROLL = 'REROLL'
     COMBAT_ACTION = 'COMBAT_ACTION'
-    DICE_COST = 'DICE_COST'
+    COST = 'COST'
 
     # declare a damage. When processing damage, the damage will be change to
     # a damage increase value, based on the declaration and current charactor
@@ -66,9 +66,9 @@ class RerollValue(ModifiableValueBase):
     player_id: int
 
 
-class DiceCostValue(ModifiableValueBase):
-    type: ModifiableValueTypes = ModifiableValueTypes.DICE_COST
-    cost: DiceCost
+class CostValue(ModifiableValueBase):
+    type: ModifiableValueTypes = ModifiableValueTypes.COST
+    cost: Cost
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)

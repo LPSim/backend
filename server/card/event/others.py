@@ -6,14 +6,14 @@ from typing import Any, List, Literal
 
 from ...object_base import CardBase
 from ...action import ActionBase, DrawCardAction
-from ...struct import DiceCost, CardActionTarget
+from ...struct import Cost, CardActionTarget
 
 
 class Strategize(CardBase):
     name: Literal['Strategize']
     desc: str = '''Draw 2 cards.'''
     version: Literal['3.3'] = '3.3'
-    cost: DiceCost = DiceCost(
+    cost: Cost = Cost(
         same_dice_number = 1
     )
 
