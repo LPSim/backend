@@ -21,7 +21,6 @@ from .modifiable_values import ModifiableValueTypes, DamageValue
 from .struct import (
     ObjectPosition, DiceCost, CardActionTarget
 )
-from .interaction import RequestActionType
 
 
 used_object_ids = set()
@@ -266,13 +265,6 @@ class CardBase(ObjectBase):
         self.cost.label = self.cost_label
         if self.cost.original_value is not None:
             self.cost.original_value.label = self.cost_label
-
-    @property
-    def action_type(self) -> RequestActionType:
-        """
-        Return the action type of the card.
-        """
-        return RequestActionType.QUICK
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         """

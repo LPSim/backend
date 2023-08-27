@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Any
+from typing import List, Any, Literal
 from utils import BaseModel
 from .consts import (
     DieColor, DamageType, DamageElementalType, DamageSourceType,
@@ -15,6 +15,7 @@ class ModifiableValueTypes(str, Enum):
     """
     INITIAL_DICE_COLOR = 'INITIAL_DICE_COLOR'
     REROLL = 'REROLL'
+    COMBAT_ACTION = 'COMBAT_ACTION'
     DICE_COST = 'DICE_COST'
 
     # declare a damage. When processing damage, the damage will be change to
@@ -75,6 +76,12 @@ class DiceCostValue(ModifiableValueBase):
         self.original_value.cost = self.original_value.cost.copy(deep = True)
         self.original_value.cost.original_value = None
         self.cost.original_value = self.original_value.cost.copy(deep = True)
+
+
+class CombatActionValue(ModifiableValueBase):
+    type: ModifiableValueTypes = ModifiableValueTypes.COMBAT_ACTION
+    action_type: Literal['SKILL', 'SWITCH', 'END']
+    do_combat_action: bool = True
 
 
 class DamageIncreaseValue(ModifiableValueBase):

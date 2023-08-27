@@ -2,7 +2,6 @@ from enum import Enum
 from utils import BaseModel
 from typing import Literal, List
 from .interaction import (
-    ResponseBase,
     ChooseCharactorResponse,
     RerollDiceResponse,
     DeclareRoundEndResponse,
@@ -172,16 +171,7 @@ class CombatActionAction(ActionBase):
     Action for combat.
     """
     type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
-    player_id: int
-
-    @classmethod
-    def from_response(cls, response: ResponseBase):
-        """
-        Generate CombatActionAction from Responses.
-        """
-        return cls(
-            player_id = response.player_id,
-        )
+    action_type: Literal['SKILL', 'SWITCH', 'END']
 
 
 class SwitchCharactorAction(ActionBase):

@@ -146,6 +146,7 @@ class CombatActionEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
     action: CombatActionAction
+    do_combat_action: bool
 
 
 class SwitchCharactorEventArguments(EventArgumentsBase):

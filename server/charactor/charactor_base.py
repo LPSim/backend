@@ -17,7 +17,9 @@ from ..object_base import (
 from ..struct import ObjectPosition, CardActionTarget
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
-from ..action import MoveObjectAction, RemoveObjectAction, Actions
+from ..action import (
+    CombatActionAction, MoveObjectAction, RemoveObjectAction, Actions
+)
 
 
 class TalentBase(CardBase):
@@ -89,6 +91,9 @@ class SkillTalent(TalentBase):
         ret = super().get_actions(target, match)
         self.skill.position = self.position
         ret += self.skill.get_actions(match)
+        # use cards are quick actions, but equip talent card will use skills,
+        # so should add CombatActionAction.
+        ret.append(CombatActionAction(action_type = 'SKILL'))
         return ret
 
 

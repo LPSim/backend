@@ -30,7 +30,7 @@ from .action import (
     GenerateChooseCharactorRequestAction,
 )
 from .interaction import (
-    Requests, Responses, RequestActionType,
+    Requests, Responses, 
     SwitchCardRequest, SwitchCardResponse,
     ChooseCharactorRequest, ChooseCharactorResponse,
     RerollDiceRequest, RerollDiceResponse,
@@ -74,6 +74,7 @@ from .event import (
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
+    CombatActionValue,
     ModifiableValueBase,
     InitialDiceColorValue, RerollValue, DiceCostValue,
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
@@ -852,7 +853,6 @@ class Match(BaseModel):
         if len(candidate_charactor_ids):
             self.requests.append(SwitchCharactorRequest(
                 player_id = player_id,
-                type = RequestActionType.COMBAT,  # TODO currently only combat
                 active_charactor_id = table.active_charactor_id,
                 candidate_charactor_ids = candidate_charactor_ids,
                 dice_colors = [die.color for die in table.dice],
@@ -910,8 +910,6 @@ class Match(BaseModel):
                 ):
                     self.requests.append(UseSkillRequest(
                         player_id = player_id,
-                        # TODO currently only combat
-                        type = RequestActionType.COMBAT,
                         charactor_id = table.active_charactor_id,
                         skill_id = sid,
                         dice_colors = dice_colors,
@@ -944,11 +942,9 @@ class Match(BaseModel):
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, strict = False
                 ):
-                    assert card.action_type != RequestActionType.SYSTEM
                     self.requests.append(UseCardRequest(
                         player_id = player_id,
                         card_id = cid,
-                        type = card.action_type,
                         dice_colors = dice_colors,
                         cost = cost_value.cost,
                         targets = card.get_targets(self)
@@ -1089,10 +1085,7 @@ class Match(BaseModel):
             mode = 'REAL'
         )  # TODO: should use original value. need test.
         actions.append(SwitchCharactorAction.from_response(response))
-        if response.request.type == RequestActionType.COMBAT:
-            actions.append(CombatActionAction(
-                player_id = response.player_id,
-            ))
+        actions.append(CombatActionAction(action_type = 'SWITCH'))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1133,9 +1126,7 @@ class Match(BaseModel):
         """
         actions: List[ActionBase] = []
         actions.append(DeclareRoundEndAction.from_response(response))
-        actions.append(CombatActionAction(
-            player_id = response.player_id,
-        ))
+        actions.append(CombatActionAction(action_type = 'END'))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1165,10 +1156,7 @@ class Match(BaseModel):
             charactor_id = request.charactor_id,
             skill_type = skill.skill_type,
         ))
-        if request.type == RequestActionType.COMBAT:
-            actions.append(CombatActionAction(
-                player_id = response.player_id,
-            ))
+        actions.append(CombatActionAction(action_type = 'SKILL'))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1206,10 +1194,6 @@ class Match(BaseModel):
             target = response.target,
             match = self,
         )
-        if request.type == RequestActionType.COMBAT:
-            actions.append(CombatActionAction(
-                player_id = response.player_id,
-            ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1500,7 +1484,32 @@ class Match(BaseModel):
 
     def _action_combat_action(self, action: CombatActionAction) \
             -> List[CombatActionEventArguments]:
-        player_id = action.player_id
+        player_id = self.current_player   
+        combat_action_value = CombatActionValue(
+            match = self,
+            position = ObjectPosition(
+                player_id = player_id,
+                charactor_id = -1,
+                area = ObjectPositionType.SYSTEM
+            ),
+            id = 0,
+            action_type = action.action_type
+        )
+        self._modify_value(
+            value = combat_action_value,
+            mode = 'REAL'
+        )
+        if not combat_action_value.do_combat_action:
+            logging.info(
+                f'player {player_id} did a combat action, but is modified'
+                f'as a quick action. current player '
+                f'is {self.current_player}.'
+            )
+            return [CombatActionEventArguments(
+                match = self,
+                action = action,
+                do_combat_action = False
+            )]
         if self.player_tables[1 - player_id].has_round_ended and \
                 not self.player_tables[player_id].has_round_ended:
             # the other player has declared round end and current player not, 
@@ -1518,7 +1527,8 @@ class Match(BaseModel):
         )
         return [CombatActionEventArguments(
             match = self,
-            action = action
+            action = action,
+            do_combat_action = True
         )]
 
     def _action_switch_charactor(self, action: SwitchCharactorAction) \
