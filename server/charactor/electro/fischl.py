@@ -1,9 +1,8 @@
 from typing import List, Literal, Any
 
-from server.action import MakeDamageAction
 from ...event import SkillEndEventArguments
 
-from ...action import Actions, CreateObjectAction
+from ...action import Actions, CreateObjectAction, MakeDamageAction
 from ...object_base import (
     PhysicalNormalAttackBase,
     ElementalSkillBase, ElementalBurstBase

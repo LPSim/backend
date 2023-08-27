@@ -1622,6 +1622,10 @@ class Match(BaseModel):
                         f'{damage.target_player_id} '
                         f'does not match action target player {target_id}.'
                     )
+                assert action.charactor_change_rule == 'NONE', (
+                    'When overloaded to switch charactor, it should not '
+                    'contain charactor change rule.'
+                )
                 nci = table.next_charactor_id()
                 if nci is not None:
                     next_charactor = nci
