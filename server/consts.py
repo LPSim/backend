@@ -242,6 +242,7 @@ class SkillType(str, Enum):
     NORMAL_ATTACK = 'NORMAL_ATTACK'
     ELEMENTAL_SKILL = 'ELEMENTAL_SKILL'
     ELEMENTAL_BURST = 'ELEMENTAL_BURST'
+    PASSIVE = 'PASSIVE'
 
     def __str__(self):
         return self.value

@@ -2,7 +2,7 @@ from typing import Literal, List
 from ...consts import ObjectType
 from ..base import StatusBase
 from ...action import RemoveObjectAction, Actions
-from ...event import RoundEndEventArguments
+from ...event import MakeDamageEventArguments, RoundEndEventArguments
 
 
 class CharactorStatusBase(StatusBase):
@@ -17,6 +17,14 @@ class UsageCharactorStatus(CharactorStatusBase):
     Base class of team status that based on usages.
     It will implement a method to check if run out of usage; when run out
     of usage, it will remove itself.
+
+    By default, it listens to MAKE_DAMAGE event to check if run out of usage,
+    as most usage-based status will decrease usage when damage made.
+    Not using AFTER_MAKE_DAMAGE because we should remove the status before
+    side effects of elemental reaction, which is triggered on RECEVIE_DAMAGE.
+
+    If it is not a damage related status, check_remove_triggered should be
+    called manually.
     """
     name: Literal['UsageCharactorStatus'] = 'UsageCharactorStatus'
     max_usage: int = 999
@@ -33,6 +41,13 @@ class UsageCharactorStatus(CharactorStatusBase):
                 object_id = self.id,
             )]
         return []
+
+    def event_handler_MAKE_DAMAGE(
+            self, event: MakeDamageEventArguments) -> List[Actions]:
+        """
+        When damage made, check whether the team status should be removed.
+        """
+        return self.check_remove_triggered()
 
 
 class RoundCharactorStatus(CharactorStatusBase):

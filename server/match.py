@@ -1510,11 +1510,7 @@ class Match(BaseModel):
         player_id = self.current_player   
         combat_action_value = CombatActionValue(
             match = self,
-            position = ObjectPosition(
-                player_id = player_id,
-                charactor_id = -1,
-                area = ObjectPositionType.SYSTEM
-            ),
+            position = action.position,
             id = 0,
             action_type = action.action_type
         )

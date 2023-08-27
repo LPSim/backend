@@ -90,7 +90,7 @@ class PlayerTable(BaseModel):
 
     def get_object_lists(self) -> List[ObjectBase]:
         """
-        Get all objects in the match by `self.table.get_object_lists`. 
+        Get all objects in the table.
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
         2. objects belongs to charactor goes first

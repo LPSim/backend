@@ -78,22 +78,40 @@ class SmallElementalArtifact(ArtifactBase):
         if (
             self.usage > 0 
             and self.position.area == ObjectPositionType.CHARACTOR
-        ):  # has usage and equipped
+            and value.position.player_id == self.position.player_id
+        ):  # has usage and equipped and value from self position
             label = value.cost.label
+            if label == 130:
+                pass
             if label & (
                 DiceCostLabels.NORMAL_ATTACK.value
                 | DiceCostLabels.ELEMENTAL_SKILL.value
                 | DiceCostLabels.ELEMENTAL_BURST.value
+                | DiceCostLabels.TALENT.value
             ) == 0:  # no label match
                 return value
             position = value.position
-            if position.area != ObjectPositionType.CHARACTOR:
-                # cost not from charactor
-                return value
             assert self.position.charactor_id != -1
-            if position.charactor_id != self.position.charactor_id:
-                # not same charactor
-                return value
+            if position.area == ObjectPositionType.CHARACTOR:
+                # cost from charactor
+                if position.charactor_id != self.position.charactor_id:
+                    # not same charactor
+                    return value
+            elif position.area == ObjectPositionType.HAND:
+                # cost from hand card, is a talent card
+                active_charactor_id = value.match.player_tables[
+                    self.position.player_id].active_charactor_id
+                charactor = value.match.player_tables[
+                    self.position.player_id].charactors[active_charactor_id]
+                if active_charactor_id != self.position.charactor_id:
+                    # not active charactor
+                    return value
+                for card in value.match.player_tables[
+                        self.position.player_id].hands:
+                    if card.id == value.id:
+                        if card.charactor_name != charactor.name:
+                            # talent card not for this charactor
+                            return value
             # can decrease cost
             used = 0
             if (value.cost.elemental_dice_color == self.element

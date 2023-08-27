@@ -8,8 +8,8 @@ will break the import loop.
 
 from typing import List, Literal, Any
 from ..consts import (
-    ObjectType, WeaponType, ElementType, FactionType, ObjectPositionType,
-    DiceCostLabels
+    ObjectType, SkillType, WeaponType, ElementType, FactionType, 
+    ObjectPositionType, DiceCostLabels
 )
 from ..object_base import (
     ObjectBase, SkillBase, WeaponBase, CardBase
@@ -85,17 +85,25 @@ class SkillTalent(TalentBase):
 
     skill: SkillBase
 
+    def is_valid(self, match: Any) -> bool:
+        """
+        Both TalentBase and SkillBase should be valid.
+        """
+        return super().is_valid(match) and self.skill.is_valid(match)
+
     def get_actions(
         self, target: CardActionTarget | None, match: Any
     ) -> List[Actions]:
         ret = super().get_actions(target, match)
-        self.skill.position = self.position
+        assert len(ret) > 0
+        assert ret[-1].type == 'MOVE_OBJECT'
+        self.skill.position = ret[-1].target_position
         ret += self.skill.get_actions(match)
         # use cards are quick actions, but equip talent card will use skills,
         # so should add CombatActionAction.
         ret.append(CombatActionAction(
             action_type = 'SKILL',
-            position = self.position.copy(deep = True)
+            position = self.skill.position.copy(deep = True)
         ))
         return ret
 
@@ -155,19 +163,14 @@ class CharactorBase(ObjectBase):
 
     def get_object_lists(self) -> List[ObjectBase]:
         """
-        Get all objects in the match by `self.table.get_object_lists`. 
-        The order of objects should follow the game rule. The rules are:
-        1. objects of `self.current_player` goes first
-        2. objects belongs to charactor goes first
-            2.1. active charactor first, otherwise the default order.
-            2.2. for one charactor, order is weapon, artifact, talent, status.
-            2.3. for status, order is their index in status list, i.e. 
-                generated time.
-        3. for other objects, order is: summon, support, hand, dice, deck.
-            3.1. all other objects in same region are sorted by their index in
-                the list.
+        Get all objects of the charactor, order is passive skill, weapon, 
+        artifact, talent, status. For status, order is their index in status 
+        list, i.e. generated time.
         """
         result: List[ObjectBase] = [self]
+        for skill in self.skills:
+            if skill.skill_type == SkillType.PASSIVE:
+                result.append(skill)
         if self.weapon is not None:
             result.append(self.weapon)
         if self.artifact is not None:

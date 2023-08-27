@@ -10,7 +10,7 @@ from ..event import (
 from ..action import (
     MakeDamageAction, RemoveObjectAction
 )
-from ..modifiable_values import DamageValue
+from ..modifiable_values import DamageDecreaseValue, DamageValue
 from ..struct import Cost
 
 
@@ -43,7 +43,10 @@ class SummonBase(CardBase):
 
 
 class AttackerSummonBase(SummonBase):
-
+    """
+    Attacker summons, e.g. Guoba, Oz. They do attack on round end, and 
+    disappears when run out of usage.
+    """
     damage_elemental_type: DamageElementalType
     damage: int
 
@@ -104,3 +107,98 @@ class AttackerSummonBase(SummonBase):
         if self.usage <= 0:
             return self._remove()
         return []
+
+
+class ShieldSummonBase(SummonBase):
+    """
+    Temporary shield summons, e.g. Ushi, Frog, Baron Bunny. They gives shield 
+    which can decrease damage, and will do one-time damage in round end.
+
+    Args:
+        damage_elemental_type: The elemental type when attack.
+        damage: The damage when attack.
+        usage: The usage of the shield, which is shown on top right when it is
+            summoned.
+        max_usage: The maximum usage of the shield.
+        min_damage_to_trigger: The minimum damage to trigger the damage 
+            decrease.
+        max_in_one_time: the maximum damage decrease in one time.
+        decrease_usage_type: The type of decrease usage. 'ONE' means decrease
+            one usage when damage decreased, regardless of how many. 
+            'DAMAGE' means decrease usage by the damage decreased. Currently
+            only 'ONE' is supported.
+        attack_until_run_out_of_usage: Whether attack until run out of usage.
+            If true, when usage is not zero, it will remain on the summon area
+            and do nothing in round end. If false, when usage is not zero, it
+            will do damage in round end and disappear.
+    """
+    damage_elemental_type: DamageElementalType
+    damage: int
+    usage: int
+    max_usage: int
+    min_damage_to_trigger: int
+    max_in_one_time: int
+    decrease_usage_type: Literal['ONE', 'DAMAGE']
+    attack_until_run_out_of_usage: bool
+
+    def event_handler_ROUND_END(self, event: RoundEndEventArguments) \
+            -> list[MakeDamageAction | RemoveObjectAction]:
+        """
+        When round end, make damage to the opponent if is needed and remove
+        itself.
+        """
+        player_id = self.position.player_id
+        if self.usage > 0 and self.attack_until_run_out_of_usage:
+            # attack until run out of usage
+            return []
+        return [
+            MakeDamageAction(
+                player_id = player_id,
+                target_id = 1 - player_id,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        id = self.id,
+                        damage_type = DamageType.DAMAGE,
+                        damage = self.damage,
+                        damage_elemental_type = self.damage_elemental_type,
+                        charge_cost = 0,
+                        target_player = 'ENEMY',
+                        target_charactor = 'ACTIVE'
+                    )
+                ],
+                charactor_change_rule = 'NONE',
+            )
+        ] + self._remove()
+
+    def _remove(self) -> list[RemoveObjectAction]:
+        """
+        Remove the summon.
+        """
+        return [
+            RemoveObjectAction(
+                object_position = self.position,
+                object_id = self.id,
+            )
+        ]
+
+    def value_modifier_DAMAGE_DECREASE(
+            self, value: DamageDecreaseValue,
+            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
+        """
+        Decrease damage.
+        """
+        if value.target_position.player_id != self.position.player_id:
+            # attack enemy, not activate
+            return value
+        if self.usage > 0:
+            if value.damage < self.min_damage_to_trigger:
+                # damage too small to trigger
+                return value
+            if self.decrease_usage_type != 'ONE':
+                raise NotImplementedError('Only ONE is supported')
+            decrease = min(self.max_in_one_time, value.damage)
+            value.damage -= decrease
+            if mode == 'REAL':
+                self.usage -= 1
+        return value

@@ -4,8 +4,11 @@ from .mob_mage import MobMage
 from .electro import (
     ElectroCharactorTalents, ElectroCharactors, SummonsOfElectroCharactors
 )
+from .hydro import (
+    HydroCharactorTalents, HydroCharactors, SummonsOfHydroCharactors
+)
 
 
-Charactors = Mob | PhysicalMob | MobMage | ElectroCharactors
-SummonsOfCharactors = SummonsOfElectroCharactors | SummonsOfElectroCharactors
-CharactorTalents = ElectroCharactorTalents | ElectroCharactorTalents
+Charactors = Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
+SummonsOfCharactors = SummonsOfElectroCharactors | SummonsOfHydroCharactors
+CharactorTalents = ElectroCharactorTalents | HydroCharactorTalents

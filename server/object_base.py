@@ -70,6 +70,7 @@ class SkillBase(ObjectBase):
     name: str
     desc: str
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
+    skill_type: SkillType
     damage_type: DamageElementalType
     damage: int
     cost: Cost
@@ -229,6 +230,31 @@ class ElementalBurstBase(SkillBase):
             if isinstance(action, ChargeAction):
                 action.charge = -self.cost.charge
         return actions
+
+
+class PassiveSkillBase(SkillBase):
+    """
+    Base class of passive skills.
+    It has no cost and is always invalid (cannot be used).
+    It has triggers to make effects.
+    """
+    skill_type: Literal[SkillType.PASSIVE] = SkillType.PASSIVE
+    damage_type: DamageElementalType = DamageElementalType.PHYSICAL
+    damage: int = 0
+    cost: Cost = Cost()
+    cost_label: int = 0
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        Passive skills are always invalid.
+        """
+        return False
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        """
+        Passive skills are always invalid, so it will return an empty list.
+        """
+        return []
 
 
 class CardBase(ObjectBase):
