@@ -87,9 +87,7 @@ def test_fischl():
         if match.need_respond(0):
             make_respond(agent_0, match)
         elif match.need_respond(1):
-            if len(agent_1.commands) == 4:
-                ...
-            elif len(agent_1.commands) == 16:
+            if len(agent_1.commands) == 16:
                 # Oz attack on next charactor
                 check_hp(match, [[0, 8, 10], [10, 10, 10]])
                 assert len(

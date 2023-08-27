@@ -1,5 +1,6 @@
 import numpy as np
 from typing import List, Any
+from agents.interaction_agent import InteractionAgent, InteractionAgent_V1_0
 from server.match import Match
 from server.event_handler import OmnipotentGuideEventHandler
 from agents.agent_base import AgentBase
@@ -76,3 +77,19 @@ def get_random_state(offset: int = 0):
         state = list(random_state.get_state(legacy = True))  # type: ignore
         state[1] = state[1].tolist()
     return state
+
+
+def get_test_id_from_command(agent: InteractionAgent | InteractionAgent_V1_0):
+    """
+    from commands to get test number. return test number and remove this
+    test message from commands if success. otherwise return 0.
+    A command should like: `TEST 1 other information about this test`,
+    and will return 1.
+    """
+    if len(agent.commands) == 0:
+        return 0
+    command = agent.commands[0]
+    if command.startswith('TEST'):
+        agent.commands = agent.commands[1:]
+        return int(command.split(' ')[1])
+    return 0
