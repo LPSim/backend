@@ -1085,7 +1085,14 @@ class Match(BaseModel):
             mode = 'REAL'
         )  # TODO: should use original value. need test.
         actions.append(SwitchCharactorAction.from_response(response))
-        actions.append(CombatActionAction(action_type = 'SWITCH'))
+        actions.append(CombatActionAction(
+            action_type = 'SWITCH',
+            position = ObjectPosition(
+                player_id = response.player_id,
+                charactor_id = response.request.active_charactor_id,
+                area = ObjectPositionType.CHARACTOR
+            ),
+        ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1126,7 +1133,14 @@ class Match(BaseModel):
         """
         actions: List[ActionBase] = []
         actions.append(DeclareRoundEndAction.from_response(response))
-        actions.append(CombatActionAction(action_type = 'END'))
+        actions.append(CombatActionAction(
+            action_type = 'END',
+            position = ObjectPosition(
+                player_id = response.player_id,
+                charactor_id = -1,
+                area = ObjectPositionType.SYSTEM
+            ),
+        ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]
@@ -1156,7 +1170,10 @@ class Match(BaseModel):
             charactor_id = request.charactor_id,
             skill_type = skill.skill_type,
         ))
-        actions.append(CombatActionAction(action_type = 'SKILL'))
+        actions.append(CombatActionAction(
+            action_type = 'SKILL',
+            position = skill.position.copy(deep = True),
+        ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
                          if x.player_id != response.player_id]

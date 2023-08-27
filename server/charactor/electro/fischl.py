@@ -78,10 +78,10 @@ class StellarPredator(SkillTalent):
     charactor_name: str = 'Fischl'
     version: Literal['3.3'] = '3.3'
     desc: str = (
-        'Combat Action: When your active character is Fischl, equip this card.'
-        'After Fischl equips this card, immediately use Nightrider once.'
-        'When your Fischl, who has this card equipped, creates an Oz, and '
-        'after Fischl uses a Normal Attack: Deal 2 Electro DMG. '
+        'Combat Action: When your active character is Fischl, equip this '
+        'card. After Fischl equips this card, immediately use Nightrider '
+        'once. When your Fischl, who has this card equipped, creates an Oz, '
+        'and after Fischl uses a Normal Attack: Deal 2 Electro DMG. '
         '(Consumes Usage(s))'
     )
     cost: DiceCost = DiceCost(

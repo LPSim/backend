@@ -168,10 +168,13 @@ class DeclareRoundEndAction(ActionBase):
 
 class CombatActionAction(ActionBase):
     """
-    Action for combat.
+    Do a combat action, i.e. skill, switch, end.
+    the position means the action source, i.e. the charactor who use the skill,
+    or the charactor who switch out.
     """
     type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
     action_type: Literal['SKILL', 'SWITCH', 'END']
+    position: ObjectPosition
 
 
 class SwitchCharactorAction(ActionBase):

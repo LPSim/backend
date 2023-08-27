@@ -93,7 +93,10 @@ class SkillTalent(TalentBase):
         ret += self.skill.get_actions(match)
         # use cards are quick actions, but equip talent card will use skills,
         # so should add CombatActionAction.
-        ret.append(CombatActionAction(action_type = 'SKILL'))
+        ret.append(CombatActionAction(
+            action_type = 'SKILL',
+            position = self.position.copy(deep = True)
+        ))
         return ret
 
 
