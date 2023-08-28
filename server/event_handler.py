@@ -113,11 +113,13 @@ class SystemEventHandler(SystemEventHandlerBase):
         initial_card_draw = event.initial_card_draw
         actions.append(DrawCardAction(
             player_id = first,
-            number = initial_card_draw
+            number = initial_card_draw,
+            draw_if_filtered_not_enough = True
         ))
         actions.append(DrawCardAction(
             player_id = 1 - first,
-            number = initial_card_draw
+            number = initial_card_draw,
+            draw_if_filtered_not_enough = True
         ))
         return actions
 

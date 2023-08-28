@@ -7,7 +7,7 @@ from .interaction import (
     DeclareRoundEndResponse,
     SwitchCharactorResponse,
 )
-from .consts import DieColor, SkillType
+from .consts import DieColor, ObjectType, SkillType
 from .modifiable_values import DamageValue
 from .struct import ObjectPosition
 
@@ -63,6 +63,13 @@ class DrawCardAction(ActionBase):
     type: Literal[ActionTypes.DRAW_CARD] = ActionTypes.DRAW_CARD
     player_id: int
     number: int
+    blacklist_names: List[str] = []
+    whitelist_names: List[str] = []
+    blacklist_types: List[ObjectType] = []
+    whitelist_types: List[ObjectType] = []
+    blacklist_cost_labels: int = 0
+    whitelist_cost_labels: int = 0
+    draw_if_filtered_not_enough: bool
 
 
 class RestoreCardAction(ActionBase):

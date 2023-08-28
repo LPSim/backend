@@ -54,7 +54,7 @@ def test_small_elemental_artifacts():
         ],
         random_after_no_command = True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
         'name': 'Deck',
         'charactors': [

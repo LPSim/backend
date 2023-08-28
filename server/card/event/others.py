@@ -28,5 +28,8 @@ class Strategize(CardBase):
         Act the card. Draw two cards.
         """
         assert target is None  # no targets
-        return [DrawCardAction(player_id = self.position.player_id, 
-                               number = 2)]
+        return [DrawCardAction(
+            player_id = self.position.player_id, 
+            number = 2,
+            draw_if_filtered_not_enough = True
+        )]

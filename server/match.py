@@ -364,7 +364,8 @@ class Match(BaseModel):
             # add draw initial cards action
             event_args = self._act(DrawCardAction(
                 player_id = pnum, 
-                number = self.match_config.initial_hand_size
+                number = self.match_config.initial_hand_size,
+                draw_if_filtered_not_enough = True,
             ))
             triggered_actions = self._trigger_events(event_args)
             if triggered_actions:
@@ -988,7 +989,9 @@ class Match(BaseModel):
         event_args += self._act(
             DrawCardAction(
                 player_id = response.player_id,
-                number = len(response.card_ids)
+                number = len(response.card_ids),
+                blacklist_names = card_names,
+                draw_if_filtered_not_enough = True
             )
         )
         triggered_actions = self._trigger_events(event_args)
@@ -1291,18 +1294,82 @@ class Match(BaseModel):
             action: DrawCardAction) -> List[DrawCardEventArguments]:
         """
         Draw cards from the deck, and return the argument of triggered events.
-        TODO: Input have draw rule, e.g. NRE.
-        TODO: maintain card type from DECK_CARD to HAND_CARD
-        TODO: destroy card if maximum hand size is reached
+        Can set blacklist or whitelist to filter cards. Cannot set both.
+        If writelist is set, card should satisfy all whitelists.
+        If blacklist is set, card should satisfy no blacklist.
+        If available cards are less than number, draw all available cards, 
+        and if draw_if_not_enough is set True, randomly draw cards until
+        number is reached or deck is empty.
         """
         player_id = action.player_id
         number = action.number
         table = self.player_tables[player_id]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
+        draw_cards: List[Cards] = []
+        blacklist: List[Cards] = []
+        if self.version <= '0.0.1':
+            # in 0.0.1, whitelist and blacklist are not supported
+            # no filter
+            draw_cards = table.table_deck[:number]
+            table.table_deck = table.table_deck[number:]
+        elif (
+            action.whitelist_cost_labels > 0 
+            or len(action.whitelist_names) > 0
+            or len(action.whitelist_types) > 0
+        ):
+            if (
+                action.blacklist_cost_labels > 0 
+                or len(action.blacklist_names) > 0
+                or len(action.blacklist_types) > 0
+            ):
+                logging.error('Whitelist and blacklist cannot be both '
+                              'specified.')
+                self._set_match_state(MatchState.ERROR)
+                return []
+            # whitelist set
+            while len(table.table_deck) > 0 and len(draw_cards) < number:
+                card = table.table_deck.pop(0)
+                if (
+                    card.cost_label & action.whitelist_cost_labels != 0
+                    or card.name in action.whitelist_names
+                    or card.type in action.whitelist_types
+                ):
+                    draw_cards.append(card)
+                else:
+                    blacklist.append(card)
+            if len(draw_cards) < number and action.draw_if_filtered_not_enough:
+                # draw blacklist cards
+                draw_cards += blacklist[:number - len(draw_cards)]
+                blacklist = blacklist[number - len(draw_cards):]
+        elif (
+            action.blacklist_cost_labels > 0
+            or len(action.blacklist_names) > 0
+            or len(action.blacklist_types) > 0
+        ):
+            # blacklist set
+            while len(table.table_deck) > 0 and len(draw_cards) < number:
+                card = table.table_deck.pop(0)
+                if (
+                    card.cost_label & action.blacklist_cost_labels == 0
+                    and card.name not in action.blacklist_names
+                    and card.type not in action.blacklist_types
+                ):
+                    draw_cards.append(card)
+                else:
+                    blacklist.append(card)
+            if len(draw_cards) < number and action.draw_if_filtered_not_enough:
+                # draw blacklist cards
+                draw_cards += blacklist[:number - len(draw_cards)]
+                blacklist = blacklist[number - len(draw_cards):]
+        else:
+            # no filter
+            draw_cards = table.table_deck[:number]
+            table.table_deck = table.table_deck[number:]
+        if len(blacklist):
+            table.table_deck += blacklist
+            self._random_shuffle(table.table_deck)
         names = [x.name for x in table.table_deck[:number]]
-        draw_cards = table.table_deck[:number]
-        table.table_deck = table.table_deck[number:]
         for card in draw_cards:
             card.position.area = ObjectPositionType.HAND
         table.hands.extend(draw_cards)
@@ -1337,6 +1404,9 @@ class Match(BaseModel):
         for card in restore_cards:
             card.position.area = ObjectPositionType.DECK
         table.table_deck.extend(restore_cards)
+        if self.version >= '0.0.2':
+            # after 0.0.2, deck is shuffled after restore cards
+            self._random_shuffle(table.table_deck)
         logging.info(
             f'Restore card action, player {player_id}, number {len(card_ids)},'
             f' cards: {card_names}, '

@@ -225,7 +225,7 @@ def test_nahida_talents():
         ],
         random_after_no_command = True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
         charactor:ElectroMobMage
         charactor:PyroMobMage
@@ -401,7 +401,7 @@ def test_nahida_talents():
         ],
         random_after_no_command = True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
         charactor:ElectroMobMage
         charactor:Nahida
