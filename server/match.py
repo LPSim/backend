@@ -189,7 +189,7 @@ class Match(BaseModel):
 
     name: Literal['Match'] = 'Match'
 
-    version: Literal['0.0.1'] = '0.0.1'
+    version: Literal['0.0.1', '0.0.2'] = '0.0.2'
 
     match_config: MatchConfig = MatchConfig()
 
@@ -210,7 +210,7 @@ class Match(BaseModel):
     # match information
     round_number: int = 0
     current_player: int = -1
-    player_tables: List[PlayerTable] = [PlayerTable(), PlayerTable()]
+    player_tables: List[PlayerTable] = []
     match_state: MatchState = MatchState.WAITING
     action_queues: List[List[Actions]] = []
     requests: List[Requests] = []
@@ -218,6 +218,9 @@ class Match(BaseModel):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
+        if len(self.player_tables) == 0:
+            self.player_tables.append(PlayerTable(version = self.version))
+            self.player_tables.append(PlayerTable(version = self.version))
         self._init_random_state()
 
     def copy(self, *argv, **kwargs) -> 'Match':

@@ -35,6 +35,7 @@ class PlayerTable(BaseModel):
         table_deck (List[Cards]): The list of cards in the table deck.
     """
     name: Literal['PlayerTable'] = 'PlayerTable'
+    version: Literal['0.0.1', '0.0.2']
 
     # player information
     player_name: str = 'Nahida'
@@ -52,7 +53,7 @@ class PlayerTable(BaseModel):
     hands: List[Cards] = []
     table_deck: List[Cards] = []
 
-    def dice_color_order(self) -> List[DieColor]:
+    def dice_color_order_0_0_1(self) -> List[DieColor]:
         """
         Returns the order of dice colors.
         """
@@ -71,6 +72,29 @@ class PlayerTable(BaseModel):
             if color not in result:
                 result.append(color)
         return result
+
+    def dice_color_order_0_0_2(self) -> List[DieColor]:
+        """
+        Returns the order of dice colors.
+        Dice colors are always ELEMENT_DEFAULT_ORDER.
+        """
+        result: List[DieColor] = [DieColor.OMNI]
+        for element in ELEMENT_DEFAULT_ORDER:
+            color = ELEMENT_TO_DIE_COLOR[element]
+            if color not in result:
+                result.append(color)
+        return result
+
+    def dice_color_order(self) -> List[DieColor]:
+        """
+        Returns the order of dice colors.
+        """
+        if self.version == '0.0.1':
+            return self.dice_color_order_0_0_1()
+        elif self.version == '0.0.2':
+            return self.dice_color_order_0_0_2()
+        else:
+            raise ValueError(f'Version {self.version} not supported.')
 
     def sort_dice(self):
         """
