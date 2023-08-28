@@ -183,7 +183,7 @@ class Mona(CharactorBase):
     faction: list[FactionType] = [
         FactionType.MONDSTADT,
     ]
-    weapon_type: WeaponType = WeaponType.BOW
+    weapon_type: WeaponType = WeaponType.CATALYST
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)  # type: ignore
