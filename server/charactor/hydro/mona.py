@@ -8,16 +8,14 @@ from ...event import RoundPrepareEventArguments
 from ...action import Actions, CreateObjectAction
 from ...struct import Cost
 
-from ...object_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    PassiveSkillBase
-)
-
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
     ObjectPositionType, WeaponType
 )
-from ..charactor_base import CharactorBase, SkillTalent
+from ..charactor_base import (
+    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
+    PassiveSkillBase, CharactorBase, SkillTalent
+)
 
 
 class Reflection(ShieldSummonBase):

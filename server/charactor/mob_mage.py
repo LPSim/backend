@@ -1,15 +1,14 @@
 from typing import Literal
 from pydantic import validator
-from ..object_base import (
-    ElementalNormalAttackBase,
-    ElementalSkillBase, ElementalBurstBase
-)
 from ..consts import (
     ElementType, FactionType, WeaponType,
     ELEMENT_TO_DAMAGE_TYPE
 )
 from .mob import Mob
-from .charactor_base import CharactorBase
+from .charactor_base import (
+    ElementalNormalAttackBase, ElementalSkillBase, ElementalBurstBase, 
+    CharactorBase
+)
 
 
 class MobMage(Mob):

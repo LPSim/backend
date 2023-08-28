@@ -8,18 +8,214 @@ will break the import loop.
 
 from typing import List, Literal, Any
 from ..consts import (
-    ObjectType, SkillType, WeaponType, ElementType, FactionType, 
+    ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
+    SkillType, WeaponType, ElementType, FactionType, 
     ObjectPositionType, DiceCostLabels
 )
 from ..object_base import (
-    ObjectBase, SkillBase, WeaponBase, CardBase
+    ObjectBase, WeaponBase, CardBase
 )
-from ..struct import ObjectPosition, CardActionTarget
+from ..struct import Cost, DamageValue, ObjectPosition, CardActionTarget
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
 from ..action import (
-    CombatActionAction, MoveObjectAction, RemoveObjectAction, Actions
+    ChargeAction, CombatActionAction, MakeDamageAction, MoveObjectAction, 
+    RemoveObjectAction, Actions
 )
+
+
+class SkillBase(ObjectBase):
+    """
+    Base class of skills.
+    """
+    name: str
+    desc: str
+    type: Literal[ObjectType.SKILL] = ObjectType.SKILL
+    skill_type: SkillType
+    damage_type: DamageElementalType
+    damage: int
+    cost: Cost
+    cost_label: int
+    position: ObjectPosition = ObjectPosition(
+        player_id = -1,
+        charactor_id = -1,
+        area = ObjectPositionType.INVALID
+    )
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        # set id to 0, as skills are not real objects
+        self.id = 0
+        # set cost label into cost
+        self.cost.label = self.cost_label
+        if self.cost.original_value is not None:
+            self.cost.original_value.label = self.cost_label
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        Check if the skill can be used.
+        """
+        return True
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        """
+        The skill is triggered, and get actions of the skill.
+        By default, it will generate three actions:
+        1. MakeDamageAction to attack the enemy active charactor with damage
+            `self.damage` and damage type `self.damage_type`.
+        2. ChargeAction to charge the active charactor by 1.
+        3. SkillEndAction to declare skill end, and trigger the event.
+        """
+        return [
+            ChargeAction(
+                player_id = self.position.player_id,
+                charactor_id = self.position.charactor_id,
+                charge = 1,
+            ),
+            MakeDamageAction(
+                player_id = self.position.player_id,
+                target_id = 1 - self.position.player_id,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        id = self.id,
+                        damage_type = DamageType.DAMAGE,
+                        damage = self.damage,
+                        damage_elemental_type = self.damage_type,
+                        charge_cost = 0,
+                        target_player = 'ENEMY',
+                        target_charactor = 'ACTIVE',
+                    )
+                ],
+                charactor_change_rule = 'NONE'
+            ),
+        ]
+
+
+class PhysicalNormalAttackBase(SkillBase):
+    """
+    Base class of physical normal attacks.
+    """
+    desc: str = """Deals 2 Physical DMG."""
+    skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
+    damage_type: DamageElementalType = DamageElementalType.PHYSICAL
+    damage: int = 2
+    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
+
+    @staticmethod
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
+            elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
+            elemental_dice_number = 1,
+            any_dice_number = 2,
+        )
+
+
+class ElementalNormalAttackBase(SkillBase):
+    """
+    Base class of elemental normal attacks.
+    """
+    desc: str = """Deals 1 _ELEMENT_ DMG."""
+    skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
+    damage_type: DamageElementalType
+    damage: int = 1
+    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+
+    @staticmethod
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
+            elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
+            elemental_dice_number = 1,
+            any_dice_number = 2,
+        )
+
+
+class ElementalSkillBase(SkillBase):
+    """
+    Base class of elemental skills.
+    """
+    desc: str = """Deals 3 _ELEMENT_ DMG."""
+    skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
+    damage_type: DamageElementalType
+    damage: int = 3
+    cost_label: int = DiceCostLabels.ELEMENTAL_SKILL.value
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+
+    @staticmethod
+    def get_cost(element: ElementType) -> Cost:
+        return Cost(
+            elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
+            elemental_dice_number = 3,
+        )
+
+
+class ElementalBurstBase(SkillBase):
+    """
+    Base class of elemental bursts.
+    """
+    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
+    skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
+    damage_type: DamageElementalType
+    cost_label: int = DiceCostLabels.ELEMENTAL_BURST.value
+
+    @staticmethod
+    def get_cost(element: ElementType, number: int, charge: int) -> Cost:
+        return Cost(
+            elemental_dice_color = ELEMENT_TO_DIE_COLOR[element],
+            elemental_dice_number = number,
+            charge = charge
+        )
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        """
+        When using elemental burst, the charge of the active charactor will be
+        reduced by `self.charge`.
+        """
+        actions = super().get_actions(match)
+        for action in actions:
+            if isinstance(action, ChargeAction):
+                action.charge = -self.cost.charge
+        return actions
+
+
+class PassiveSkillBase(SkillBase):
+    """
+    Base class of passive skills.
+    It has no cost and is always invalid (cannot be used).
+    It has triggers to make effects.
+    """
+    skill_type: Literal[SkillType.PASSIVE] = SkillType.PASSIVE
+    damage_type: DamageElementalType = DamageElementalType.PHYSICAL
+    damage: int = 0
+    cost: Cost = Cost()
+    cost_label: int = 0
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        Passive skills are always invalid.
+        """
+        return False
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        """
+        Passive skills are always invalid, so it will return an empty list.
+        """
+        return []
 
 
 class TalentBase(CardBase):
