@@ -3,13 +3,20 @@
 ---
 
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
-TCG, written with Python using Pydantic and FastAPI.
+TCG, written with Python 3.10 using Pydantic and FastAPI.
 
 This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
 ## Usage
+
+This project works with Python 3.10, and requires packages listed in
+`requirements.txt`. To install the packages, use 
+`pip install -r requirements.txt`.
+
+A FastAPI server is provided, which can be used to interact with the match.
+Its requirements are listed in `network/requirements.txt`.
 
 Currently package-like usage is not supported, please follow the following
 instructions to run the project. 
