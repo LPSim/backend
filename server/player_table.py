@@ -121,10 +121,12 @@ class PlayerTable(BaseModel):
 
         return result
 
-    def get_active_charactor(self) -> Charactors:
+    def get_active_charactor(self) -> Charactors | None:
         """
         Returns the active charactor.
         """
+        if self.active_charactor_id == -1:
+            return None
         return self.charactors[self.active_charactor_id]
 
     def next_charactor_id(self, current_id: int | None = None) -> int | None:

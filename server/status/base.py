@@ -21,6 +21,9 @@ class StatusBase(ObjectBase):
         Renew the status. 
         """
         if self.renew_type == 'ADD':
+            if self.max_usage <= self.usage:
+                # currently over maximum, ignore renew.
+                return
             self.usage += new_status.usage
             if self.max_usage < self.usage:
                 self.usage = self.max_usage

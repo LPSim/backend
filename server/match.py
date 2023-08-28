@@ -1791,6 +1791,10 @@ class Match(BaseModel):
             target_classes = CharactorStatus
             target_list = table.charactors[
                 action.object_position.charactor_id].status
+            assert table.charactors[
+                action.object_position.charactor_id].is_alive, (
+                'Cannot create status for defeated charactor.'
+            )
             target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_classes = Summons
@@ -1851,6 +1855,10 @@ class Match(BaseModel):
             target_list = table.charactors[
                 action.object_position.charactor_id].status
             target_name = 'charactor status'
+            assert table.charactors[
+                action.object_position.charactor_id].is_alive, (
+                'Cannot remove status for defeated charactor now.'
+            )
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
             target_name = 'summon'
@@ -1860,6 +1868,9 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.CHARACTOR:
             # remove artifact, weapon or talent
             charactor = table.charactors[action.object_position.charactor_id]
+            assert charactor.is_alive, (
+                'Cannot remove equips for defeated charactor now.'
+            )
             removed_equip = None
             if charactor.weapon is not None and charactor.weapon.id == \
                     action.object_id:
@@ -1924,6 +1935,11 @@ class Match(BaseModel):
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_list = table.team_status
             target_name = 'team status'
+        elif action.object_position.area == \
+                ObjectPositionType.CHARACTOR_STATUS:
+            target_list = table.charactors[
+                action.object_position.charactor_id].status
+            target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
             target_name = 'summon'
@@ -2000,6 +2016,9 @@ class Match(BaseModel):
                     charactor = table.charactors[
                         action.target_position.charactor_id
                     ]
+                    assert charactor.is_alive, (
+                        'Cannot equip to defeated charactor now.'
+                    )
                     current_list.pop(csnum)
                     current_object.position = action.target_position
                     if current_object.type == ObjectType.ARTIFACT:

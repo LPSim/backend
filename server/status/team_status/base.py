@@ -28,7 +28,6 @@ class UsageTeamStatus(TeamStatusBase):
     called manually.
     """
     name: Literal['UsageTeamStatus'] = 'UsageTeamStatus'
-    max_usage: int = 999
 
     def check_remove_triggered(self) -> List[Actions]:
         """
@@ -59,7 +58,6 @@ class RoundTeamStatus(TeamStatusBase):
     """
     name: Literal['RoundTeamStatus'] = 'RoundTeamStatus'
     usage: int
-    max_usage: int = 999
 
     def check_should_remove(self) -> List[RemoveObjectAction]:
         """

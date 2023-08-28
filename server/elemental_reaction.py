@@ -377,7 +377,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
         return CreateObjectAction(
             object_position = position,
-            object_name = 'DendroCore',
+            object_name = 'Dendro Core',
             object_arguments = {}
         )
     elif reaction == ElementalReactionType.QUICKEN:

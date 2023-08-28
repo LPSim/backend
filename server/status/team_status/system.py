@@ -52,7 +52,7 @@ class DendroCore(UsageTeamStatus):
     """
     Dendro core.
     """
-    name: Literal['DendroCore'] = 'DendroCore'
+    name: Literal['Dendro Core'] = 'Dendro Core'
     desc: str = (
         'When you deal Pyro DMG or Electro DMG to an opposing active '
         'charactor, DMG dealt +2.'

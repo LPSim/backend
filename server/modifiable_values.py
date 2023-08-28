@@ -135,6 +135,10 @@ class DamageIncreaseValue(ModifiableValueBase):
                 if not charactors[idx]:
                     target_charactor.append(idx)
                     break
+        elif damage_value.target_charactor == 'ABSOLUTE':
+            assert not charactors[damage_value.target_charactor_id], \
+                'Target charactor is defeated.'
+            target_charactor = [damage_value.target_charactor_id]
         else:
             raise NotImplementedError(
                 f'Unknown target charactor type: '

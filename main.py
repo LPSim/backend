@@ -21,26 +21,16 @@ if __name__ == '__main__':
     agent_0 = NothingAgent(player_id = 0)
     agent_1 = RandomAgent(player_id = 1)
     main = Main()
-    deck = {
-        'name': 'Deck',
-        'charactors': [
-            {
-                'name': 'DendroMobMage',
-            },
-            {
-                'name': 'HydroMob',
-            },
-            {
-                'name': 'ElectroMobMage',
-            },
-        ],
-        'cards': [
-            {
-                'name': 'Strategize',
-            }
-        ] * 30,
-    }
-    deck = Deck(**deck)
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        Rana*10
+        Wine-Stained Tricorne*10
+        The Seed of Stored Knowledge*10
+        '''
+    )
     main.match.set_deck([deck, deck])
     main.match.match_config.max_same_card_number = 30
     main.match.enable_history = True

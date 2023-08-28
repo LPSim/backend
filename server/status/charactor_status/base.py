@@ -27,7 +27,6 @@ class UsageCharactorStatus(CharactorStatusBase):
     called manually.
     """
     name: Literal['UsageCharactorStatus'] = 'UsageCharactorStatus'
-    max_usage: int = 999
 
     def check_remove_triggered(self) -> List[Actions]:
         """
@@ -58,7 +57,6 @@ class RoundCharactorStatus(CharactorStatusBase):
     """
     name: Literal['RoundCharactorStatus'] = 'RoundCharactorStatus'
     usage: int
-    max_usage: int = 999
 
     def check_should_remove(self) -> List[RemoveObjectAction]:
         """
