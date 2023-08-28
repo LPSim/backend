@@ -3,7 +3,8 @@ from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, get_random_state
+    check_hp, get_test_id_from_command, make_respond, get_random_state, 
+    set_16_omni
 )
 
 
@@ -243,5 +244,66 @@ def test_mona():
     assert match.match_state != MatchState.ERROR
 
 
+def test_mona_q_enemy_attack():
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "end",
+            "skill 1 0 1 2",
+        ],
+        random_after_no_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "skill 1 0 1 2",
+            "skill 1 0 1 2",
+            "skill 2 0 1 2",
+            "end",
+        ],
+        random_after_no_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:Mona*2
+        charactor:Fischl
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        """
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    set_16_omni(match)
+    match.match_config.random_first_player = False
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert len(agent_0.commands) == 0 and len(agent_1.commands) == 0
+    assert match.round_number == 2
+    assert len(match.player_tables[1].team_status) == 1
+    assert match.player_tables[1].team_status[0].name == 'Illusory Bubble'
+    check_hp(match, [[3, 10, 10], [8, 10, 10]])
+
+    assert match.match_state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_mona()
+    test_mona_q_enemy_attack()
