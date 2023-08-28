@@ -111,8 +111,10 @@ class IllusoryTorrent(PassiveSkillBase):
         """
         if value.action_type != 'SWITCH':
             return value
-        if (value.position.player_id != self.position.player_id
-                or value.position.charactor_id != self.position.charactor_id):
+        if not self.position.check_position_valid(
+            value.position, value.match, player_id_same = True,
+            charactor_id_same = True,
+        ):
             return value
         if self.usage <= 0:
             return value
@@ -147,19 +149,15 @@ class ProphecyOfSubmersion(SkillTalent):
         If mona is active charactor, and damage triggered hydro reaction,
         which is made by self, increase damage by 2.
         """
-        match = value.match
-        if self.position.area != ObjectPositionType.CHARACTOR:
-            # not equipped, not activate
-            return value
-        if match.player_tables[self.position.player_id].active_charactor_id \
-                != self.position.charactor_id:
-            # not active charactor, not activate
+        if not self.position.check_position_valid(
+            value.position, value.match,
+            source_area = ObjectPositionType.CHARACTOR,  # quipped
+            source_is_active_charactor = True,  # active charactor
+            player_id_same = True,  # self damage
+        ):
             return value
         if ElementType.HYDRO not in value.reacted_elements:
             # no hydro reaction, not activate
-            return value
-        if value.position.player_id != self.position.player_id:
-            # not self, not activate
             return value
         value.damage += 2
         return value

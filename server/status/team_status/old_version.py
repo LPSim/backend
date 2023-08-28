@@ -15,7 +15,7 @@ class CatalyzingField(UsageTeamStatus):
     """
     Catalyzing field.
     """
-    name: Literal['CatalyzingField'] = 'CatalyzingField'
+    name: Literal['Catalyzing Field'] = 'Catalyzing Field'
     desc: str = (
         'When you deal Electro DMG or Pyro DMG to an opposing active '
         'charactor, DMG dealt +1.'
@@ -30,6 +30,17 @@ class CatalyzingField(UsageTeamStatus):
         """
         Increase damage for dendro or electro damages, and decrease usage.
         """
+        if not self.position.check_position_valid(
+            value.position, value.match, player_id_same = True,
+        ):
+            # source not self, not activate
+            return value
+        if not self.position.check_position_valid(
+            value.target_position, value.match, 
+            player_id_same = False, target_is_active_charactor = True,
+        ):
+            # target not enemy, or target not active charactor, not activate
+            return value
         if value.damage_elemental_type in [
             DamageElementalType.DENDRO,
             DamageElementalType.ELECTRO,

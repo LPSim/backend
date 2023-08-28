@@ -1,4 +1,5 @@
 from typing import Literal
+
 from .base import ArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue
@@ -75,14 +76,16 @@ class SmallElementalArtifact(ArtifactBase):
         the elemental cost by 1. If element not match, decrease any dice cost
         by 1.
         """
-        if (
-            self.usage > 0 
-            and self.position.area == ObjectPositionType.CHARACTOR
-            and value.position.player_id == self.position.player_id
-        ):  # has usage and equipped and value from self position
+        if self.usage > 0:  
+            # has usage
+            if not self.position.check_position_valid(
+                value.position, value.match,
+                player_id_same = True, 
+                source_area = ObjectPositionType.CHARACTOR,
+            ):
+                # not from self position or not equipped
+                return value
             label = value.cost.label
-            if label == 130:
-                pass
             if label & (
                 DiceCostLabels.NORMAL_ATTACK.value
                 | DiceCostLabels.ELEMENTAL_SKILL.value
@@ -99,17 +102,13 @@ class SmallElementalArtifact(ArtifactBase):
                     return value
             elif position.area == ObjectPositionType.HAND:
                 # cost from hand card, is a talent card
-                active_charactor_id = value.match.player_tables[
-                    self.position.player_id].active_charactor_id
-                charactor = value.match.player_tables[
-                    self.position.player_id].charactors[active_charactor_id]
-                if active_charactor_id != self.position.charactor_id:
-                    # not active charactor
-                    return value
+                equipped_charactor = value.match.player_tables[
+                    self.position.player_id
+                ].charactors[self.position.charactor_id]
                 for card in value.match.player_tables[
                         self.position.player_id].hands:
                     if card.id == value.id:
-                        if card.charactor_name != charactor.name:
+                        if card.charactor_name != equipped_charactor.name:
                             # talent card not for this charactor
                             return value
             # can decrease cost

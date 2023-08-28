@@ -23,6 +23,48 @@ class ObjectPosition(BaseModel):
     charactor_id: int  # TODO set default to -1
     area: ObjectPositionType
 
+    def check_position_valid(
+        self, target_position, match: Any,
+        player_id_same: bool | None = None,
+        charactor_id_same: bool | None = None,
+        area_same: bool | None = None,
+        source_area: ObjectPositionType | None = None,
+        target_area: ObjectPositionType | None = None,
+        source_is_active_charactor: bool | None = None,
+        target_is_active_charactor: bool | None = None,
+    ) -> bool:
+        """
+        Based on this position, target position and constraints, give whether
+        two position relations fit the constraints.
+        """
+        if player_id_same is not None:
+            if player_id_same != (self.player_id == target_position.player_id):
+                return False
+        if charactor_id_same is not None:
+            if charactor_id_same != (
+                self.charactor_id == target_position.charactor_id
+            ):
+                return False
+        if area_same is not None:
+            if area_same != (self.area == target_position.area):
+                return False
+        if source_area is not None:
+            if self.area != source_area:
+                return False
+        if target_area is not None:
+            if target_position.area != target_area:
+                return False
+        if source_is_active_charactor is not None:
+            cid = match.player_tables[self.player_id].active_charactor_id
+            if self.charactor_id != cid:
+                return False
+        if target_is_active_charactor is not None:
+            cid = match.player_tables[
+                target_position.player_id].active_charactor_id
+            if target_position.charactor_id != cid:
+                return False
+        return True
+
 
 class DamageValue(BaseModel):
     """

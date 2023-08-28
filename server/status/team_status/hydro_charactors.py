@@ -25,14 +25,14 @@ class IllusoryBubble(UsageTeamStatus):
         """
         Double damage when skill damage made.
         """
+        if not self.position.check_position_valid(
+            value.position, value.match,
+            player_id_same = True, target_area = ObjectPositionType.CHARACTOR,
+        ):
+            # not from self position or not charactor skill
+            return value
         if value.target_position.player_id == self.position.player_id:
             # attack self, not activate
-            return value
-        if value.position.player_id != self.position.player_id:
-            # not self, not activate
-            return value
-        if value.position.area != ObjectPositionType.CHARACTOR:
-            # not charactor make damage (i.e. skill), not activate
             return value
         if self.usage > 0:
             value.damage *= 2

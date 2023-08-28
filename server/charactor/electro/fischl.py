@@ -111,11 +111,11 @@ class Oz(AttackerSummonBase):
         if action.skill_type != SkillType.NORMAL_ATTACK:
             # not using normal attack
             return []
-        if self.position.player_id != action.player_id:
+        if self.position.player_id != action.position.player_id:
             # not attack by self
             return []
-        charactor = match.player_tables[action.player_id].charactors[
-            action.charactor_id
+        charactor = match.player_tables[action.position.player_id].charactors[
+            action.position.charactor_id
         ]
         if (
             charactor.talent is not None and charactor.name == 'Fischl'

@@ -236,8 +236,7 @@ class SkillEndAction(ActionBase):
     Action for ending skill.
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
-    player_id: int
-    charactor_id: int
+    position: ObjectPosition
     skill_type: SkillType
 
 

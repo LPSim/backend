@@ -47,7 +47,7 @@ class Rana(CompanionBase):
         of next charactor.
         """
         if (self.position.area == ObjectPositionType.SUPPORT
-                and event.action.player_id == self.position.player_id 
+                and event.action.position.player_id == self.position.player_id 
                 and event.action.skill_type == SkillType.ELEMENTAL_SKILL
                 and self.usage > 0):
             table = event.match.player_tables[self.position.player_id]

@@ -234,7 +234,7 @@ def check_elemental_reaction(
             return (
                 ElementalReactionType.SWIRL, 
                 [ElementType.ANEMO, ElementType.CRYO], 
-                targets[:1]  # cryo must be first
+                targets[1:]  # cryo must be first
             )
         elif ElementType.ELECTRO in targets:
             return (
@@ -388,7 +388,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
         return CreateObjectAction(
             object_position = position,
-            object_name = 'CatalyzingField',
+            object_name = 'Catalyzing Field',
             object_arguments = {}
         )
     return None
@@ -408,7 +408,7 @@ def elemental_reaction_side_effect_ver_3_3(
         )
         return CreateObjectAction(
             object_position = position,
-            object_name = 'CatalyzingField',
+            object_name = 'Catalyzing Field',
             object_arguments = { 'version': '3.3' }
         )
     return elemental_reaction_side_effect_ver_3_4(

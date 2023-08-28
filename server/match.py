@@ -1170,10 +1170,13 @@ class Match(BaseModel):
             player_id = response.player_id,
             dice_ids = response.cost_ids,
         )]
-        actions += skill.get_actions(self)  # TODO add information
+        actions += skill.get_actions(self)
         actions.append(SkillEndAction(
-            player_id = response.player_id,
-            charactor_id = request.charactor_id,
+            position = ObjectPosition(
+                player_id = request.player_id,
+                charactor_id = request.charactor_id,
+                area = ObjectPositionType.CHARACTOR
+            ),
             skill_type = skill.skill_type,
         ))
         actions.append(CombatActionAction(
@@ -2055,7 +2058,7 @@ class Match(BaseModel):
 
     def _action_skill_end(self, action: SkillEndAction) \
             -> List[SkillEndEventArguments]:
-        player_id = action.player_id
+        player_id = action.position.player_id
         table = self.player_tables[player_id]
         charactor = table.charactors[table.active_charactor_id]
         logging.info(
