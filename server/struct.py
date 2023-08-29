@@ -130,7 +130,6 @@ class Cost(BaseModel):
                  strict = True) -> bool:
         """
         Check if dice colors matches the dice cost value.
-        TODO: test in strict and unstrict mode.
 
         Args:
             dice_colors (List[DieColor]): The dice colors to be checked.

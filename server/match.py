@@ -76,7 +76,8 @@ from .object_base import ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
-    InitialDiceColorValue, RerollValue, CostValue,
+    InitialDiceColorValue,
+    ModifiableValueTypes, RerollValue, CostValue,
     DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
 )
 from .struct import (
@@ -201,7 +202,7 @@ class Match(BaseModel):
     random_state: List[Any] = []
     _random_state: np.random.RandomState = np.random.RandomState()
 
-    # event handlers to implement special rules. TODO add special handler
+    # event handlers to implement special rules.
     event_handlers: List[SystemEventHandlers] = [
         SystemEventHandler(),
         # OmnipotentGuideEventHandler(),
@@ -306,9 +307,6 @@ class Match(BaseModel):
         from player to switch cards.
         """
         if self.match_state != MatchState.WAITING:
-            # TODO: support re-start
-            # logging.error('Match is not waiting for start. If it is running '
-            #               'or ended, please call stop first.')
             logging.error('Match is not waiting for start. If it is running '
                           'or ended, please re-generate a new match.')
             return False
@@ -509,12 +507,13 @@ class Match(BaseModel):
         """
         Check if the game reaches end condition. If game is ended, it will
         set `self.winner` to the winner of the game.
+        PVE may have different end condition with PVP, and currently not
+        supported.
 
         Returns:
             bool: True if game reaches end condition, False otherwise.
         """
         # all charactors are defeated
-        # TODO: for monsters, need different conditions
         for pnum, table in enumerate(self.player_tables):
             for charactor in table.charactors:
                 if charactor.is_alive:
@@ -551,9 +550,6 @@ class Match(BaseModel):
         """
         Start a round. Will clear existing dice, generate new random dice
         and asking players to reroll dice.
-
-        # TODO: implement locking dice colors like Jade Chamber.
-        # TODO: send round start event.
         """
         self.round_number += 1
         for table in self.player_tables:
@@ -695,7 +691,6 @@ class Match(BaseModel):
         """
         End a round. Will send round end event, collect actions.
         """
-        # TODO trigger event
         event = RoundEndEventArguments(
             match = self,
             player_go_first = self.current_player,
@@ -775,8 +770,11 @@ class Match(BaseModel):
                 calculate costs used in requests. If 'real', it will modify 
                 the value and update inner state, which means the request
                 related to the value is executed.
-        TODO: test will appear errors. Shenhe E status one time left + swirl
         """
+        if mode == 'TEST':
+            assert value.type == ModifiableValueTypes.COST, (
+                'Only cost can be modified in test mode.'
+            )
         object_list = self.get_object_lists()
         for obj in object_list:
             name = obj.__class__.__name__
@@ -829,7 +827,6 @@ class Match(BaseModel):
     def _request_switch_charactor(self, player_id: int):
         """
         Generate switch charactor requests.
-        TODO: With Leave It to Me, it can be a quick action.
         """
         table = self.player_tables[player_id]
         dice_cost = Cost(any_dice_number = 1)
@@ -865,7 +862,6 @@ class Match(BaseModel):
             ))
 
     def _request_elemental_tuning(self, player_id: int):
-        # TODO cannot burn omni and same die
         table = self.player_tables[player_id]
         target_color = ELEMENT_TO_DIE_COLOR[
             table.charactors[table.active_charactor_id].element
@@ -1012,13 +1008,7 @@ class Match(BaseModel):
         )
         triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) > 0:
-            if len(self.action_queues) != 0:
-                # already has actions in queue, append new actions
-                # TODO extend or stack?
-                self.action_queues[0].extend(triggered_actions)
-            else:
-                # no actions in queue, append new actions
-                self.action_queues.append(triggered_actions)
+            self.action_queues.append(triggered_actions)
         # remove related requests
         self.requests = [
             req for req in self.requests
@@ -1052,13 +1042,7 @@ class Match(BaseModel):
             actions = self._trigger_event(event_arg)
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
-            if len(self.action_queues) != 0:
-                # already has actions in queue, append new actions
-                # TODO extend or stack?
-                self.action_queues[0].extend(triggered_actions)
-            else:
-                # no actions in queue, append new actions
-                self.action_queues.append(triggered_actions)
+            self.action_queues.append(triggered_actions)
         # modify request
         for num, req in enumerate(self.requests):
             if isinstance(req, RerollDiceRequest):
@@ -1095,7 +1079,7 @@ class Match(BaseModel):
         self._modify_value(
             value = cost_value,
             mode = 'REAL'
-        )  # TODO: should use original value. need test.
+        )
         actions.append(SwitchCharactorAction.from_response(response))
         actions.append(CombatActionAction(
             action_type = 'SWITCH',
@@ -1114,7 +1098,6 @@ class Match(BaseModel):
         Deal with elemental tuning response. It is splitted into 3 actions,
         remove one hand card, remove one die, and add one die.
         """
-        # TODO tuned wrong color (active pyro, tuned dendro)
         die_id = response.cost_id
         table = self.player_tables[response.player_id]
         actions: List[ActionBase] = []
@@ -1128,11 +1111,12 @@ class Match(BaseModel):
             player_id = response.player_id,
             dice_ids = [die_id]
         ))
+        active_charactor = table.get_active_charactor()
+        assert active_charactor is not None
         actions.append(CreateDiceAction(
             player_id = response.player_id,
             number = 1,
-            color = ELEMENT_TO_DIE_COLOR[
-                table.charactors[table.active_charactor_id].element]
+            color = ELEMENT_TO_DIE_COLOR[active_charactor.element]
         ))
         self.action_queues.append(actions)
         self.requests = [x for x in self.requests
@@ -1171,7 +1155,7 @@ class Match(BaseModel):
         self._modify_value(
             value = cost_value,
             mode = 'REAL'
-        )  # TODO: should use original value. need test.
+        )
         actions: List[Actions] = [RemoveDiceAction(
             player_id = response.player_id,
             dice_ids = response.cost_ids,
@@ -1215,7 +1199,7 @@ class Match(BaseModel):
             ),
         ]
         if card.type == ObjectType.CARD:
-            # only card type will be removed. TODO is it correct?
+            # only card type will be removed from hand.
             actions.append(RemoveCardAction(
                 player_id = response.player_id,
                 card_id = request.card_id,
@@ -1792,8 +1776,6 @@ class Match(BaseModel):
             )
             sw_events = self._action_switch_charactor(sw_action)
             events += sw_events
-        # TODO side-effect of elemental reaction
-        # TODO when active charactor is defeated, trigger event
         return events
 
     def _action_charge(self, action: ChargeAction) \
@@ -1819,6 +1801,14 @@ class Match(BaseModel):
 
     def _action_charactor_defeated(self, action: CharactorDefeatedAction) \
             -> List[CharactorDefeatedEventArguments]:
+        """
+        Charactor defeated action, all equipments and status are removed, 
+        and is marked as defeated. Currently not support PVE character
+        disappear features.
+
+        TODO: multiple charactors defeated at the same time, should all mark
+        defeated before triggering events.
+        """
         player_id = action.player_id
         charactor_id = action.charactor_id
         table = self.player_tables[player_id]
@@ -1834,7 +1824,6 @@ class Match(BaseModel):
         charactor.status = []
         charactor.element_application = []
         charactor.is_alive = False
-        # TODO: for monsters, may disappear and generate new from candidate
         need_switch = False
         if table.active_charactor_id == charactor_id:
             table.active_charactor_id = -1  # reset active charactor
@@ -1915,7 +1904,6 @@ class Match(BaseModel):
         """
         Action for removing objects, e.g. status, summons, supports.
         It supports removing equipments and supports.
-        TODO: is it possible to remove charactors for PVE with this action?
         """
         player_id = action.object_position.player_id
         table = self.player_tables[player_id]

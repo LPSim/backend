@@ -202,10 +202,12 @@ class DeclareRoundEndResponse(ResponseBase):
 
 
 class UseSkillResponse(ResponseBase):
+    """
+    Response for use skill. Currently not support choose skill target.
+    """
     name: Literal['UseSkillResponse'] = 'UseSkillResponse'
     request: UseSkillRequest
     cost_ids: List[int]
-    # TODO: choose target
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -221,7 +223,6 @@ class UseCardResponse(ResponseBase):
     request: UseCardRequest
     cost_ids: List[int]
     target: CardActionTarget | None
-    # TODO: choose target
 
     def is_valid(self, match: Any) -> bool:
         """

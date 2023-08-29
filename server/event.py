@@ -293,7 +293,3 @@ class RoundEndEventArguments(EventArgumentsBase):
     player_go_first: int
     round: int
     initial_card_draw: int
-
-# TODO: combine arguments of events and actions. Event will not contain 
-# extra information, it will only add match: Any for event handlers to grab
-# information by self.

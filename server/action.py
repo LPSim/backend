@@ -147,7 +147,6 @@ class RemoveDiceAction(ActionBase):
     def from_response(cls, response: RerollDiceResponse):
         """
         Generate RemoveDiceAction from RerollDiceResponse.
-        TODO: from other responses, i.e. use skill response.
         """
         return cls(
             player_id = response.player_id,
@@ -272,8 +271,7 @@ class CreateObjectAction(ActionBase):
 
 class RemoveObjectAction(ActionBase):
     """
-    Action for removing objects. TODO: removing cards and dice should be
-    part of this action, use this instead?
+    Action for removing objects. 
 
     Args:
         object_position (ObjectPosition): The position of the object to remove.
@@ -289,7 +287,6 @@ class ChangeObjectUsageAction(ActionBase):
     """
     Action for changing object usage.
     """
-    # TODO: not tested
     type: Literal[ActionTypes.CHANGE_OBJECT_USAGE] = \
         ActionTypes.CHANGE_OBJECT_USAGE
     object_position: ObjectPosition

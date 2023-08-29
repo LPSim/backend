@@ -56,7 +56,7 @@ class InteractionAgent_V1_0(AgentBase):
         verbose_level: The verbose level of the agent, higher means more
             verbose, 0 means no verbose. in level 1, when generate response,
             request names are shown. in level 2, when generate response,
-            json of requests are shown. TODO: use __repr__?
+            json of requests are shown.
         available_reqs: The available requests of the agent. Will be updated
             when generate response.
         commands: The commands of the agent. If it is not empty, when get

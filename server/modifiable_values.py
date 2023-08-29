@@ -33,10 +33,7 @@ class ModifiableValueTypes(str, Enum):
 class ModifiableValueBase(BaseModel):
     """
     Base class of modifiable values. It saves the value and can pass through
-    value modifiers to update their values.
-
-    TODO: use modify rule lists and apply? especially for damage. And how
-    to update inner state when using rule lists?
+    value modifiers to update its value in-place.
     """
     type: ModifiableValueTypes
     original_value: Any = None
@@ -110,7 +107,6 @@ class DamageIncreaseValue(ModifiableValueBase):
         DamageValue may generate multiple DamageIncreaseValue (back attack)
         is_charactors_defeated: [[player 1 charactors defeated],
                                  [player 2 charactors defeated]]
-        # TODO: need test
         """
         target_player = damage_value.position.player_id
         if damage_value.target_player == 'ENEMY':
