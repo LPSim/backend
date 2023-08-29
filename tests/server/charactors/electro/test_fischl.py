@@ -79,7 +79,7 @@ def test_fischl():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     match.step()
 
@@ -134,7 +134,7 @@ def test_fischl():
     assert len(match.player_tables[1].dice.colors) == 5
     assert len(match.player_tables[1].summons) == 0
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     """
     second: when no talent or talent on other Fischl, cannot trigger Oz attack.
@@ -187,8 +187,8 @@ def test_fischl():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     assert match.start()
     match.step()
 
@@ -220,7 +220,7 @@ def test_fischl():
     assert match.round_number == 3
     check_hp(match, [[0, 8, 8], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 if __name__ == '__main__':

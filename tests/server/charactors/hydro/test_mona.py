@@ -81,7 +81,7 @@ def test_mona():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     match.step()
 
@@ -129,7 +129,7 @@ def test_mona():
     assert match.round_number == 7
     check_hp(match, [[0, 3, 9], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     """
     when shield of Reflection becomes 0, will not disappear; summon twice
@@ -219,7 +219,7 @@ def test_mona():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     match.step()
 
@@ -241,7 +241,7 @@ def test_mona():
     assert match.round_number == 6
     check_hp(match, [[3, 0, 0], [8, 10, 9]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_mona_q_enemy_attack():
@@ -282,9 +282,9 @@ def test_mona_q_enemy_attack():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
-    match.match_config.random_first_player = False
+    match.config.random_first_player = False
     assert match.start()
     match.step()
 
@@ -302,7 +302,7 @@ def test_mona_q_enemy_attack():
     assert match.player_tables[1].team_status[0].name == 'Illusory Bubble'
     check_hp(match, [[3, 10, 10], [8, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 if __name__ == '__main__':

@@ -210,7 +210,7 @@ class Match(BaseModel):
 
     version: Literal['0.0.1', '0.0.2'] = '0.0.2'
 
-    match_config: MatchConfig = MatchConfig()
+    config: MatchConfig = MatchConfig()
 
     # history logger
     _history: List['Match'] = PrivateAttr(default_factory = list)
@@ -230,7 +230,7 @@ class Match(BaseModel):
     round_number: int = 0
     current_player: int = -1
     player_tables: List[PlayerTable] = []
-    match_state: MatchState = MatchState.WAITING
+    state: MatchState = MatchState.WAITING
     action_queues: List[List[Actions]] = []
     requests: List[Requests] = []
     winner: int = -1
@@ -268,7 +268,7 @@ class Match(BaseModel):
         """
         Set the deck of the match.
         """
-        if self.match_state != MatchState.WAITING:
+        if self.state != MatchState.WAITING:
             raise ValueError('Match is not in waiting state.')
         assert len(decks) == len(self.player_tables)
         for player_table, deck in zip(self.player_tables, decks):
@@ -321,9 +321,9 @@ class Match(BaseModel):
         self._save_random_state()
 
     def _set_match_state(self, new_state: MatchState):
-        logging.info(f'Match state change from {self.match_state} to '
+        logging.info(f'Match state change from {self.state} to '
                      f'{new_state}.')
-        self.match_state = new_state
+        self.state = new_state
 
     def start(self) -> bool:
         """
@@ -331,13 +331,13 @@ class Match(BaseModel):
         start until reaching STARTING_CARD_SWITCH, then wait for responses 
         from player to switch cards.
         """
-        if self.match_state != MatchState.WAITING:
+        if self.state != MatchState.WAITING:
             logging.error('Match is not waiting for start. If it is running '
                           'or ended, please re-generate a new match.')
             return False
 
         # make valid check
-        if not self.match_config.check_config():
+        if not self.config.check_config():
             logging.error('Match config is not valid.')
             return False
         if len(self.player_tables) != 2:
@@ -345,9 +345,9 @@ class Match(BaseModel):
             return False
         for pnum, player_table in enumerate(self.player_tables):
             is_legal = player_table.player_deck_information.check_legal(
-                card_number = self.match_config.card_number,
-                max_same_card_number = self.match_config.max_same_card_number,
-                charactor_number = self.match_config.charactor_number
+                card_number = self.config.card_number,
+                max_same_card_number = self.config.max_same_card_number,
+                charactor_number = self.config.charactor_number
             )
             if not is_legal:
                 logging.error(f'Player {pnum} deck is not legal.')
@@ -356,7 +356,7 @@ class Match(BaseModel):
         self._set_match_state(MatchState.STARTING)
 
         # choose first player
-        if self.match_config.random_first_player:
+        if self.config.random_first_player:
             self.current_player = int(self._random() > 0.5)
         else:
             self.current_player = 0
@@ -384,7 +384,7 @@ class Match(BaseModel):
             # add draw initial cards action
             event_args = self._act(DrawCardAction(
                 player_id = pnum, 
-                number = self.match_config.initial_hand_size,
+                number = self.config.initial_hand_size,
                 draw_if_filtered_not_enough = True,
             ))
             triggered_actions = self._trigger_events(event_args)
@@ -420,37 +420,37 @@ class Match(BaseModel):
             elif len(self.action_queues) != 0:
                 self._next_action()
             # all response and action are cleared, start state transition
-            elif self.match_state == MatchState.STARTING:
+            elif self.state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
                 self._request_switch_card()
-            elif self.match_state == MatchState.STARTING_CARD_SWITCH:
+            elif self.state == MatchState.STARTING_CARD_SWITCH:
                 self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
                 for player_id in range(len(self.player_tables)):
                     self._request_choose_charactor(player_id)
-            elif self.match_state == MatchState.STARTING_CHOOSE_CHARACTOR:
+            elif self.state == MatchState.STARTING_CHOOSE_CHARACTOR:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
-            elif self.match_state == MatchState.ROUND_ROLL_DICE:
+            elif self.state == MatchState.ROUND_ROLL_DICE:
                 self._set_match_state(MatchState.ROUND_PREPARING)
                 self._round_prepare()
-            elif self.match_state == MatchState.ROUND_PREPARING:
+            elif self.state == MatchState.ROUND_PREPARING:
                 self._set_match_state(MatchState.PLAYER_ACTION_START)
                 self._player_action_start()
-            elif self.match_state == MatchState.PLAYER_ACTION_START:
+            elif self.state == MatchState.PLAYER_ACTION_START:
                 self._set_match_state(MatchState.PLAYER_ACTION_REQUEST)
                 self._player_action_request()
-            elif self.match_state == MatchState.PLAYER_ACTION_REQUEST:
+            elif self.state == MatchState.PLAYER_ACTION_REQUEST:
                 # request responded and all action clear
                 self._player_action_end()
-            elif self.match_state == MatchState.ROUND_ENDING:
+            elif self.state == MatchState.ROUND_ENDING:
                 self._set_match_state(MatchState.ROUND_ENDED)
                 self._round_ending()
-            elif self.match_state == MatchState.ROUND_ENDED:
+            elif self.state == MatchState.ROUND_ENDED:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
             else:
                 raise NotImplementedError(
-                    f'Match state {self.match_state} not implemented.')
+                    f'Match state {self.state} not implemented.')
             if self.enable_history:
                 hist = self._history[:]
                 self._history.clear()
@@ -590,10 +590,10 @@ class Match(BaseModel):
             )
             self._modify_value(initial_color_value, 'REAL')
             initial_color_value.dice_colors = initial_color_value.dice_colors[
-                :self.match_config.initial_dice_number
+                :self.config.initial_dice_number
             ]
             random_number = (
-                self.match_config.initial_dice_number 
+                self.config.initial_dice_number 
                 - len(initial_color_value.dice_colors)
             )
             color_dict: Dict[DieColor, int] = {}
@@ -618,7 +618,7 @@ class Match(BaseModel):
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
-            reroll_times = self.match_config.initial_dice_reroll_times
+            reroll_times = self.config.initial_dice_reroll_times
             reroll_value = RerollValue(
                 match = self,
                 position = ObjectPosition(
@@ -712,7 +712,7 @@ class Match(BaseModel):
             match = self,
             player_go_first = self.current_player,
             round = self.round_number,
-            initial_card_draw = self.match_config.initial_card_draw
+            initial_card_draw = self.config.initial_card_draw
         )
 
         actions = self._trigger_event(event)
@@ -1386,7 +1386,7 @@ class Match(BaseModel):
             match = self,
             action = action,
             hand_size = len(table.hands),
-            max_hand_size = self.match_config.max_hand_size,
+            max_hand_size = self.config.max_hand_size,
         )
         return [event_arg]
 
@@ -1515,7 +1515,7 @@ class Match(BaseModel):
             for _ in range(number):
                 dice.append(color)
         # if there are more dice than the maximum, discard the rest
-        max_obtainable_dice = (self.match_config.max_dice_number 
+        max_obtainable_dice = (self.config.max_dice_number 
                                - len(table.dice.colors))
         table.dice.colors += dice[:max_obtainable_dice]
         # sort dice by color
@@ -2082,7 +2082,7 @@ class Match(BaseModel):
                     target_list = table.supports
                     assert current_object.type == ObjectType.SUPPORT
                     assert (len(target_list) 
-                            < self.match_config.max_support_number)
+                            < self.config.max_support_number)
                     target_name = 'support'
                 elif action.target_position.area \
                         == ObjectPositionType.CHARACTOR:

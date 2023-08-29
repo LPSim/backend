@@ -87,7 +87,7 @@ def test_crystallize():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -105,7 +105,7 @@ def test_crystallize():
     assert match.round_number == 4
     check_hp(match, [[10, 10, 0], [10, 10, 7]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_frozen():
@@ -177,8 +177,8 @@ def test_frozen():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -218,7 +218,7 @@ def test_frozen():
     assert match.round_number == 3
     check_hp(match, [[10, 10, 5], [9, 10, 3]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_frozen_and_pyro():
@@ -294,8 +294,8 @@ def test_frozen_and_pyro():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -314,7 +314,7 @@ def test_frozen_and_pyro():
     check_hp(match, [[10, 10, 99], [10, 10, 82]])
     assert match.player_tables[1].charactors[2].element_application == ['PYRO']
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_burning_flame():
@@ -392,8 +392,8 @@ def test_burning_flame():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -414,7 +414,7 @@ def test_burning_flame():
     assert match.player_tables[0].summons[0].usage == 1
     check_hp(match, [[10, 10, 99], [10, 10, 80]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_dendro_core_catalyzing_field():
@@ -499,8 +499,8 @@ def test_dendro_core_catalyzing_field():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -519,7 +519,7 @@ def test_dendro_core_catalyzing_field():
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[10, 10, 99], [9, 9, 76]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl():
@@ -555,8 +555,8 @@ def test_swirl():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -574,7 +574,7 @@ def test_swirl():
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[6, 6, 6], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_2():
@@ -610,8 +610,8 @@ def test_swirl_2():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -629,7 +629,7 @@ def test_swirl_2():
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[4, 6, 6], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_3():
@@ -671,8 +671,8 @@ def test_swirl_3():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.player_tables[1].charactors[0].skills[1].damage_type = \
@@ -708,7 +708,7 @@ def test_swirl_3():
     assert len(match.player_tables[0].charactors[1].status) == 0
     assert len(match.player_tables[0].charactors[2].status) == 0
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_4():
@@ -744,8 +744,8 @@ def test_swirl_4():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -766,7 +766,7 @@ def test_swirl_4():
     assert match.player_tables[0].charactors[1].element_application == []
     assert match.player_tables[0].charactors[2].element_application == ['CRYO']
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_with_catalyzing_field():
@@ -829,8 +829,8 @@ def test_swirl_with_catalyzing_field():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -865,7 +865,7 @@ def test_swirl_with_catalyzing_field():
     assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
     assert match.player_tables[1].team_status[0].usage == 2
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_with_catalyzing_field_and_dendro_core():
@@ -925,9 +925,9 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.charactor_number = 4
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 4
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -979,7 +979,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     assert match.player_tables[1].team_status[1].name == 'Dendro Core'
     assert match.player_tables[1].team_status[1].usage == 1
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
@@ -1040,9 +1040,9 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.charactor_number = 4
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 4
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -1094,7 +1094,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     assert match.player_tables[1].team_status[1].name == 'Dendro Core'
     assert match.player_tables[1].team_status[1].usage == 1
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_overloaded():
@@ -1168,8 +1168,8 @@ def test_overloaded():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.player_tables[0].charactors[0].hp = 90
@@ -1199,7 +1199,7 @@ def test_overloaded():
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[76, 0, 0], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_background_overloaded():
@@ -1233,8 +1233,8 @@ def test_background_overloaded():
         '''
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.player_tables[0].charactors[0].hp = 90
@@ -1255,7 +1255,7 @@ def test_background_overloaded():
     assert match.player_tables[0].active_charactor_id == 0
     check_hp(match, [[86, 6, 6], [10, 10, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_pure_elemental_reaction():

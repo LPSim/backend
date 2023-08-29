@@ -89,7 +89,7 @@ def test_small_elemental_artifacts():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     match.step()
 
@@ -157,7 +157,7 @@ def test_small_elemental_artifacts():
     check_hp(match, [[85, 10, 10], [99, 10, 10]])
     assert match.player_tables[1].charactors[0].artifact is not None
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_create_small_element_artifacts():
@@ -176,14 +176,14 @@ def test_create_small_element_artifacts():
     )
     match = Match()
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 4
-    match.match_config.max_hand_size = 30
-    match.match_config.initial_hand_size = 30
+    match.config.max_same_card_number = 4
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 30
     match.enable_history = True
     match.start()
     match.step()
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 if __name__ == '__main__':

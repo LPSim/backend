@@ -40,7 +40,7 @@ def get_new_match(seed: Any = None, rich: bool = False):
     else:
         match: Match = Match()
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     if rich:
         set_16_omni(match)
     match.start()

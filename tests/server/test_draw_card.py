@@ -18,8 +18,8 @@ def test_draw_card():
     )
     match = Match()
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     match.start()
     match.step()
     agent_0 = NothingAgent(player_id = 0)
@@ -55,8 +55,8 @@ def test_draw_card():
     for _ in range(100):
         match = Match()
         match.set_deck([deck, deck])
-        match.match_config.max_same_card_number = 30
-        match.match_config.random_first_player = False
+        match.config.max_same_card_number = 30
+        match.config.random_first_player = False
         match.start()
         match.step()
         agent_0 = NothingAgent(player_id = 0)

@@ -126,7 +126,7 @@ def test_match_config_and_match_errors():
     config = MatchConfig(max_support_number = -1)
     assert not config.check_config()
     match = Match()
-    match.match_config = config
+    match.config = config
     assert not match.start()
     match = Match()
     match.player_tables = []
@@ -149,7 +149,7 @@ def test_match_config_and_match_errors():
         '''
     )
     match = Match()
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
     assert match.start()
     agent_0 = NothingAgent(player_id = 0)

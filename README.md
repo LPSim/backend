@@ -30,7 +30,7 @@ The outlines:
 
 1. Initialize a fresh `server.Match` instance.
 2. Use the `set_deck` function to assign decks for players.
-3. Modify the `Match.match_config` if specific configurations are necessary.
+3. Modify the `Match.config` if specific configurations are necessary.
 4. Once the decks are set, initiate the match using the `Match.start` function. 
    This initializes the match according to the configurations and decks.
 5. Progress through the match by employing the `Match.step` function. 
@@ -58,7 +58,7 @@ deck0 = Deck.from_str(deck_string)
 deck1 = Deck.from_str(deck_string)
 match = Match()
 match.set_deck([deck0, deck1])
-match.match_config.max_same_card_number = 30  # disable deck limit
+match.config.max_same_card_number = 30  # disable deck limit
 match.start()
 match.step()
 

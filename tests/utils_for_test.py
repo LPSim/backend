@@ -9,7 +9,7 @@ from tests.default_random_state import get_default_random_state
 
 
 def set_16_omni(match: Match):
-    match.match_config.initial_dice_number = 16
+    match.config.initial_dice_number = 16
     match.event_handlers.append(OmnipotentGuideEventHandler())
 
 

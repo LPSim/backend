@@ -44,7 +44,7 @@ class SupportBase(CardBase):
         return self.position.area == ObjectPositionType.HAND
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
-        max_support_number = match.match_config.max_support_number
+        max_support_number = match.config.max_support_number
         supports = (
             match.player_tables[self.position.player_id].supports
         )
@@ -67,7 +67,7 @@ class SupportBase(CardBase):
         Act the support. will place it into support area.
         """
         ret: List[RemoveObjectAction | MoveObjectAction] = []
-        max_support_number = match.match_config.max_support_number
+        max_support_number = match.config.max_support_number
         supports = (
             match.player_tables[self.position.player_id].supports
         )

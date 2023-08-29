@@ -49,7 +49,7 @@ def test_fischl_mona_nahida():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -86,7 +86,7 @@ def test_fischl_mona_nahida():
     assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
     assert match.player_tables[1].team_status[0].usage == 3
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_fischl_mona_nahida_no_talent():
@@ -129,7 +129,7 @@ def test_fischl_mona_nahida_no_talent():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -174,12 +174,12 @@ def test_fischl_mona_nahida_no_talent():
     assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
     assert match.player_tables[1].team_status[0].usage == 2
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     assert match.need_respond(1)
     agent_1.commands = ['skill 1 0 1 2']
     make_respond(agent_1, match)
-    assert match.match_state == MatchState.ENDED
+    assert match.state == MatchState.ENDED
     assert match.step()
 
 
@@ -259,8 +259,8 @@ def test_nahida_talents():
         """
     )
     match.set_deck([deck1, deck2])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.player_tables[1].charactors[0].skills[
@@ -364,7 +364,7 @@ def test_nahida_talents():
     assert match.round_number == 3
     check_hp(match, [[4, 1, 1], [10, 7, 10]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     """
     second: with pyro electro (hydro tested above)
@@ -435,8 +435,8 @@ def test_nahida_talents():
         """
     )
     match.set_deck([deck1, deck2])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -527,7 +527,7 @@ def test_nahida_talents():
     assert match.round_number == 3
     check_hp(match, [[2, 3, 1], [10, 10, 8]])
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_nahida_apply_seed_to_defeated():
@@ -564,7 +564,7 @@ def test_nahida_apply_seed_to_defeated():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -589,7 +589,7 @@ def test_nahida_apply_seed_to_defeated():
         else:
             assert len(charactor.status) == 0
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_maya_not_first_status():
@@ -625,8 +625,8 @@ def test_maya_not_first_status():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -660,7 +660,7 @@ def test_maya_not_first_status():
     assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
     assert match.player_tables[1].team_status[0].usage == 1
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_seed_not_first_status():
@@ -696,11 +696,11 @@ def test_seed_not_first_status():
         """
     )
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
-    match.match_config.initial_dice_number = 32
-    match.match_config.max_dice_number = 32
+    match.config.initial_dice_number = 32
+    match.config.max_dice_number = 32
     assert match.start()
     match.step()
 
@@ -724,7 +724,7 @@ def test_seed_not_first_status():
     assert charactors[2].status[0].name == 'Seed of Skandha'
     assert charactors[2].status[0].usage == 1
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_talent_enemy_has_other_charactor_status():
@@ -784,9 +784,9 @@ def test_talent_enemy_has_other_charactor_status():
     deck.charactors[0].hp = 90
     deck.charactors[0].max_hp = 90
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.charactor_number = 4
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 4
+    match.config.random_first_player = False
     set_16_omni(match)
     # match.enable_history = True
     assert match.start()
@@ -826,7 +826,7 @@ def test_talent_enemy_has_other_charactor_status():
     assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
     assert match.player_tables[1].team_status[0].usage == 2
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 if __name__ == '__main__':

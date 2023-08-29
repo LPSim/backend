@@ -70,7 +70,7 @@ def test_rana():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     match.step()
 
@@ -98,7 +98,7 @@ def test_rana():
     for support in match.player_tables[1].supports:
         assert support.name == 'Rana'
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     """
     second: next one is other people; cannot generate when only one charactor;
@@ -166,8 +166,8 @@ def test_rana():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
-    match.match_config.random_first_player = False
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -205,7 +205,7 @@ def test_rana():
     for support in match.player_tables[1].supports:
         assert support.name == 'Rana'
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 if __name__ == '__main__':

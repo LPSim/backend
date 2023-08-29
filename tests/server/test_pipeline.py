@@ -45,7 +45,7 @@ def test_match_pipeline():
     deck = TEST_DECK
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     # main.match.event_handlers[0].version = '3.3'
     assert match.start()
@@ -55,7 +55,7 @@ def test_match_pipeline():
         make_respond(agent_0, match, assertion = False)
         make_respond(agent_1, match, assertion = False)
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_save_load():
@@ -89,7 +89,7 @@ def test_save_load():
     deck = TEST_DECK
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     match.event_handlers[0].version = '3.3'
     assert match.start()
@@ -142,7 +142,7 @@ def test_save_load():
 
     assert len(agent_1.commands) == 0
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_copy_speed():
@@ -151,7 +151,7 @@ def test_copy_speed():
     deck = TEST_DECK
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     assert match.start()
     starttime = time.time()
     for i in range(run_time):
@@ -160,7 +160,7 @@ def test_copy_speed():
     print('not json speed', (endtime - starttime) / run_time)
 
     match = Match()
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
     mainjson = match.json()
     starttime = time.time()
@@ -180,7 +180,7 @@ def test_random_same_after_load():
     deck = TEST_DECK
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     initial_match = match.copy(deep = True)
     initial_agent_1 = agent_1.copy(deep = True)
     results_1 = []
@@ -191,7 +191,7 @@ def test_random_same_after_load():
         make_respond(agent_0, match, assertion = False)
         make_respond(agent_1, match, assertion = False)
         results_1.append(match.copy(deep = True))
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     # use deepcopy to rerun
     match = initial_match.copy(deep = True)
@@ -205,7 +205,7 @@ def test_random_same_after_load():
         now = match.copy(deep = True)
         remove_ids(now)
         assert now == results_1[i], f'deepcopy error at {i}'
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     # use json to rerun
     match = Match(**json.loads(initial_match.json()))
@@ -222,7 +222,7 @@ def test_random_same_after_load():
         now = match.copy(deep = True)
         remove_ids(now)
         assert now == results_1[i], f'json error at {i}'
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_use_card():
@@ -247,7 +247,7 @@ def test_use_card():
     deck = TEST_DECK
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -268,7 +268,7 @@ def test_use_card():
             raise Exception('no need respond')
         make_respond(current_agent, match)
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
 
 def test_support_over_maximum_and_error_tests():
@@ -332,7 +332,7 @@ def test_support_over_maximum_and_error_tests():
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
-    match.match_config.max_same_card_number = 30
+    match.config.max_same_card_number = 30
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -406,7 +406,7 @@ def test_support_over_maximum_and_error_tests():
     for support in match.player_tables[1].supports:
         assert support.name == 'Rana'
 
-    assert match.match_state != MatchState.ERROR
+    assert match.state != MatchState.ERROR
 
     # after start, set deck will raise error
     with pytest.raises(ValueError):
