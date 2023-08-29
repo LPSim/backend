@@ -1,5 +1,6 @@
 import logging
 from typing import Tuple, List, Literal
+
 from .agent_base import AgentBase
 from .random_agent import RandomAgent
 from server.match import Match
@@ -15,6 +16,7 @@ from server.interaction import (
     UseCardRequest, UseCardResponse,
 )
 from server.consts import DieColor
+from server.dice import Dice
 
 
 class InteractionAgent_V1_0(AgentBase):
@@ -341,12 +343,10 @@ class InteractionAgent_V2_0(InteractionAgent_V1_0):
         except ValueError:
             pass
         # color representation
-        res: List[int] = []
-        selected = [DieColor[x.upper()] for x in color_names]
-        all_e: List[DieColor | None] = list(all)
-        for x in selected:
-            res.append(all_e.index(x))
-            all_e[all_e.index(x)] = None
+        dice = Dice(colors = all)
+        res = dice.colors_to_idx(
+            [DieColor(x.upper()) for x in color_names]
+        )
         return res
 
     def resp_reroll_dice(

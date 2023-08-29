@@ -47,7 +47,6 @@ from .consts import (
     ObjectPositionType,
     ObjectType,
 )
-from .die import Die
 from .event import (
     EventArgumentsBase,
     DrawCardEventArguments, 
@@ -220,8 +219,14 @@ class Match(BaseModel):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if len(self.player_tables) == 0:
-            self.player_tables.append(PlayerTable(version = self.version))
-            self.player_tables.append(PlayerTable(version = self.version))
+            self.player_tables.append(PlayerTable(
+                version = self.version,
+                player_id = 0,
+            ))
+            self.player_tables.append(PlayerTable(
+                version = self.version,
+                player_id = 1,
+            ))
         self._init_random_state()
 
     def copy(self, *argv, **kwargs) -> 'Match':
@@ -555,7 +560,7 @@ class Match(BaseModel):
         for table in self.player_tables:
             table.has_round_ended = False
         for pnum, player_table in enumerate(self.player_tables):
-            player_table.dice.clear()
+            player_table.dice.colors.clear()
         # generate new dice
         event_args: List[EventArgumentsBase] = []
         for pnum, player_table in enumerate(self.player_tables):
@@ -622,10 +627,8 @@ class Match(BaseModel):
             match = self,
             player_go_first = self.current_player,
             round = self.round_number,
-            dice_colors = [
-                [dice.color for dice in table.dice]
-                for table in self.player_tables
-            ],
+            dice_colors = [table.dice.colors.copy()
+                           for table in self.player_tables],
         )
         actions = self._trigger_event(event_arg)
         logging.info(f'In round prepare, {len(actions)} actions triggered.')
@@ -818,7 +821,7 @@ class Match(BaseModel):
         player_table = self.player_tables[player_id]
         self.requests.append(RerollDiceRequest(
             player_id = player_id,
-            colors = [dice.color for dice in player_table.dice],
+            colors = player_table.dice.colors.copy(),
             reroll_times = reroll_number
         ))
 
@@ -839,7 +842,7 @@ class Match(BaseModel):
         )
         self._modify_value(dice_cost_value, mode = 'TEST')
         if not dice_cost_value.cost.is_valid(
-            dice_colors = [die.color for die in table.dice],
+            dice_colors = table.dice.colors,
             charge = table.charactors[table.active_charactor_id].charge,
             strict = False,
         ):
@@ -854,7 +857,7 @@ class Match(BaseModel):
                 player_id = player_id,
                 active_charactor_id = table.active_charactor_id,
                 candidate_charactor_ids = candidate_charactor_ids,
-                dice_colors = [die.color for die in table.dice],
+                dice_colors = table.dice.colors.copy(),
                 cost = dice_cost_value.cost,
             ))
 
@@ -863,16 +866,16 @@ class Match(BaseModel):
         target_color = ELEMENT_TO_DIE_COLOR[
             table.charactors[table.active_charactor_id].element
         ]
-        available_dice_ids = [
-            did for did, dice in enumerate(table.dice)
-            if dice.color != target_color and dice.color != DieColor.OMNI
+        available_dice_idx = [
+            did for did, color in enumerate(table.dice.colors)
+            if color != target_color and color != DieColor.OMNI
         ]
         available_card_ids = list(range(len(table.hands)))
-        if len(available_dice_ids) and len(available_card_ids):
+        if len(available_dice_idx) and len(available_card_ids):
             self.requests.append(ElementalTuningRequest(
                 player_id = player_id,
-                dice_colors = [dice.color for dice in table.dice],
-                dice_ids = available_dice_ids,
+                dice_colors = table.dice.colors.copy(),
+                dice_ids = available_dice_idx,
                 card_ids = available_card_ids
             ))
 
@@ -902,7 +905,7 @@ class Match(BaseModel):
                     id = skill.id
                 )
                 self._modify_value(cost_value, mode = 'TEST')
-                dice_colors = [die.color for die in table.dice]
+                dice_colors = table.dice.colors
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
                     charge = front_charactor.charge,
@@ -912,7 +915,7 @@ class Match(BaseModel):
                         player_id = player_id,
                         charactor_id = table.active_charactor_id,
                         skill_id = sid,
-                        dice_colors = dice_colors,
+                        dice_colors = dice_colors.copy(),
                         cost = cost_value.cost
                     ))
 
@@ -938,7 +941,7 @@ class Match(BaseModel):
                     id = card.id
                 )
                 self._modify_value(cost_value, mode = 'TEST')
-                dice_colors = [die.color for die in table.dice]
+                dice_colors = table.dice.colors
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
                     charge = table.charactors[
@@ -948,7 +951,7 @@ class Match(BaseModel):
                     self.requests.append(UseCardRequest(
                         player_id = player_id,
                         card_id = cid,
-                        dice_colors = dice_colors,
+                        dice_colors = dice_colors.copy(),
                         cost = cost_value.cost,
                         targets = card.get_targets(self)
                     ))
@@ -1454,7 +1457,7 @@ class Match(BaseModel):
         """
         Create dice.
         """
-        dice: List[Die] = []
+        dice: List[DieColor] = []
         player_id = action.player_id
         table = self.player_tables[player_id]
         number = action.number
@@ -1470,17 +1473,12 @@ class Match(BaseModel):
             DieColor.GEO, DieColor.DENDRO, DieColor.ANEMO
         ]
         # generate dice based on color
-        dice_position = ObjectPosition(
-            player_id = player_id,
-            area = ObjectPositionType.DICE
-        )
         if is_random:
             candidates.append(DieColor.OMNI)  # random, can be omni
             for _ in range(number):
                 selected_color = candidates[int(self._random() 
                                                 * len(candidates))]
-                dice.append(Die(color = selected_color, 
-                                position = dice_position.copy(deep = True)))
+                dice.append(selected_color)
         elif is_different:
             if number > len(candidates):
                 logging.error('Not enough dice colors.')
@@ -1489,27 +1487,24 @@ class Match(BaseModel):
             self._random_shuffle(candidates)
             candidates = candidates[:number]
             for selected_color in candidates:
-                dice.append(Die(color = selected_color,
-                                position = dice_position.copy(deep = True)))
+                dice.append(selected_color)
         else:
             if color is None:
                 logging.error('Dice color should be specified.')
                 self._set_match_state(MatchState.ERROR)
                 return []
             for _ in range(number):
-                dice.append(Die(color = color,
-                                position = dice_position.copy(deep = True)))
+                dice.append(color)
         # if there are more dice than the maximum, discard the rest
         max_obtainable_dice = (self.match_config.max_dice_number 
-                               - len(table.dice))
-        for die in dice[:max_obtainable_dice]:
-            table.dice.append(die)
+                               - len(table.dice.colors))
+        table.dice.colors += dice[:max_obtainable_dice]
         # sort dice by color
         table.sort_dice()
         logging.info(
             f'Create dice action, player {player_id}, '
             f'number {len(dice)}, '
-            f'dice colors {[die.color for die in dice]}, '
+            f'dice colors {dice}, '
             f'obtain {len(dice[:max_obtainable_dice])}, '
             f'over maximum {len(dice[max_obtainable_dice:])}, '
             f'current dice on table {table.dice}'
@@ -1517,10 +1512,8 @@ class Match(BaseModel):
         return [CreateDiceEventArguments(
             match = self,
             action = action,
-            colors_generated = [die.color for die 
-                                in dice[:max_obtainable_dice]],
-            colors_over_maximum = [die.color for die 
-                                   in dice[max_obtainable_dice:]]
+            colors_generated = dice[:max_obtainable_dice],
+            colors_over_maximum = dice[max_obtainable_dice:]
         )]
 
     def _action_remove_dice(self, action: RemoveDiceAction) \
@@ -1528,22 +1521,22 @@ class Match(BaseModel):
         player_id = action.player_id
         dice_ids = action.dice_ids
         table = self.player_tables[player_id]
-        removed_dice: List[Die] = []
+        removed_dice: List[DieColor] = []
         dice_ids.sort(reverse = True)  # reverse order to avoid index error
         for idx in dice_ids:
-            removed_dice.append(table.dice.pop(idx))
+            removed_dice.append(table.dice.colors.pop(idx))
         # sort dice by color
         table.sort_dice()
         logging.info(
             f'Remove dice action, player {player_id}, '
             f'number {len(dice_ids)}, '
-            f'dice colors {[die.color for die in removed_dice]}, '
+            f'dice colors {removed_dice.reverse()}, '
             f'current dice on table {table.dice}'
         )
         return [RemoveDiceEventArguments(
             match = self,
             action = action,
-            colors_removed = [die.color for die in removed_dice]
+            colors_removed = removed_dice
         )]
 
     def _action_declare_round_end(self, action: DeclareRoundEndAction) \

@@ -1,11 +1,14 @@
+from .struct import ObjectPosition
 from utils import BaseModel
 from typing import Literal, List
 from resources.consts import CharactorIcons
-from .consts import DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER
+from .consts import (
+    DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
+)
 from .object_base import ObjectBase
 from .deck import Deck
+from .dice import Dice
 from . import Cards
-from .die import Die
 from . import Summons
 from . import Supports
 from . import Charactors
@@ -43,15 +46,25 @@ class PlayerTable(BaseModel):
     player_deck_information: Deck = Deck()
 
     # table information
+    player_id: int
     active_charactor_id: int = -1
     has_round_ended: bool = False
-    dice: List[Die] = []
+    dice: Dice = Dice()
     team_status: List[TeamStatus] = []
     charactors: List[Charactors] = []
     summons: List[Summons] = []
     supports: List[Supports] = []
     hands: List[Cards] = []
     table_deck: List[Cards] = []
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        if self.dice.position.area == ObjectPositionType.INVALID:
+            # not initialized, do initialize.
+            self.dice = Dice(position = ObjectPosition(
+                player_id = kwargs['player_id'],
+                area = ObjectPositionType.DICE
+            ))
 
     def dice_color_order_0_0_1(self) -> List[DieColor]:
         """
@@ -98,19 +111,10 @@ class PlayerTable(BaseModel):
 
     def sort_dice(self):
         """
-        Sorts the dice on the table.
+        Sort the dice on the table.
         """
         order = self.dice_color_order()
-        self.dice.sort(key=lambda x: order.index(x.color))
-
-    def dice_colors_to_dice_ids(self):
-        """
-        Returns a dictionary mapping dice colors to dice IDs.
-        """
-        result = {}
-        for i, die in enumerate(self.dice):
-            result[die.color] = i
-        return result
+        self.dice.colors.sort(key=lambda x: order.index(x))
 
     def get_object_lists(self) -> List[ObjectBase]:
         """

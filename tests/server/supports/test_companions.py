@@ -80,9 +80,11 @@ def test_rana():
         elif match.need_respond(1):
             if len(agent_1.commands) == 6:
                 # should only have two electro dice
-                assert len(match.player_tables[1].dice) == 2
-                assert match.player_tables[1].dice[0].color == 'ELECTRO'
-                assert match.player_tables[1].dice[1].color == 'ELECTRO'
+                assert len(match.player_tables[1].dice.colors) == 2
+                assert match.player_tables[1].dice.colors == ['ELECTRO', 
+                                                              'ELECTRO']
+                assert match.player_tables[1].dice.colors[0] == 'ELECTRO'
+                assert match.player_tables[1].dice.colors[1] == 'ELECTRO'
             make_respond(agent_1, match)
         if len(agent_1.commands) == 0:
             break
@@ -90,8 +92,8 @@ def test_rana():
     assert len(agent_1.commands) == 0
     assert match.round_number == 3
     check_hp(match, [[83, 10, 10], [99, 10, 10]])
-    assert len(match.player_tables[1].dice) == 1
-    assert match.player_tables[1].dice[0].color == 'PYRO'
+    assert len(match.player_tables[1].dice.colors) == 1
+    assert match.player_tables[1].dice.colors[0] == 'PYRO'
     assert len(match.player_tables[1].supports) == 4
     for support in match.player_tables[1].supports:
         assert support.name == 'Rana'
@@ -176,21 +178,21 @@ def test_rana():
         elif match.need_respond(1):
             if len(agent_1.commands) == 4:
                 # should be 8 omni and 2 dendro
-                assert len(match.player_tables[1].dice) == 10
+                assert len(match.player_tables[1].dice.colors) == 10
                 omni_num = 8
                 dendro_num = 2
-                for die in match.player_tables[1].dice:
-                    if die.color == 'OMNI':
+                for die in match.player_tables[1].dice.colors:
+                    if die == 'OMNI':
                         omni_num -= 1
-                    elif die.color == 'DENDRO':
+                    elif die == 'DENDRO':
                         dendro_num -= 1
                 assert omni_num == 0
                 assert dendro_num == 0
             elif len(agent_1.commands) == 1:
                 # should be 13 omni
-                assert len(match.player_tables[1].dice) == 13
-                for die in match.player_tables[1].dice:
-                    assert die.color == 'OMNI'
+                assert len(match.player_tables[1].dice.colors) == 13
+                for die in match.player_tables[1].dice.colors:
+                    assert die == 'OMNI'
             make_respond(agent_1, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break

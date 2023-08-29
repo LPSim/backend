@@ -152,7 +152,7 @@ class ObjectType(str, Enum):
     """
     EMPTY = 'EMPTY'
     CHARACTOR = 'CHARACTOR'
-    DIE = 'DIE'
+    DICE = 'DICE'
     CARD = 'CARD'
     SUMMON = 'SUMMON'
     SUPPORT = 'SUPPORT'

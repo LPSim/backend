@@ -359,25 +359,25 @@ def test_support_over_maximum():
                     assert support.usage == usage
             elif len(agent_1.commands) == 5:
                 # dice 7 omni + 2 electro
-                assert len(match.player_tables[1].dice) == 9
+                assert len(match.player_tables[1].dice.colors) == 9
                 omni_counter = 0
                 electro_counter = 0
-                for d in match.player_tables[1].dice:
-                    if d.color == 'OMNI':
+                for d in match.player_tables[1].dice.colors:
+                    if d == 'OMNI':
                         omni_counter += 1
-                    elif d.color == 'ELECTRO':
+                    elif d == 'ELECTRO':
                         electro_counter += 1
                 assert omni_counter == 7
                 assert electro_counter == 2
             elif len(agent_1.commands) == 3:
                 # 13 omni and 3 electro and 0 usage
-                assert len(match.player_tables[1].dice) == 16
+                assert len(match.player_tables[1].dice.colors) == 16
                 omni_counter = 0
                 electro_counter = 0
-                for d in match.player_tables[1].dice:
-                    if d.color == 'OMNI':
+                for d in match.player_tables[1].dice.colors:
+                    if d == 'OMNI':
                         omni_counter += 1
-                    elif d.color == 'ELECTRO':
+                    elif d == 'ELECTRO':
                         electro_counter += 1
                 assert omni_counter == 13
                 assert electro_counter == 3
@@ -386,9 +386,9 @@ def test_support_over_maximum():
                     assert support.usage == 0
             elif len(agent_1.commands) == 1:
                 # 13 omni, all 1 usage
-                assert len(match.player_tables[1].dice) == 13
-                for d in match.player_tables[1].dice:
-                    assert d.color == 'OMNI'
+                assert len(match.player_tables[1].dice.colors) == 13
+                for d in match.player_tables[1].dice.colors:
+                    assert d == 'OMNI'
                 for support in match.player_tables[1].supports:
                     assert support.name == 'Rana'
                     assert support.usage == 1

@@ -131,7 +131,7 @@ def test_fischl():
     assert len(agent_1.commands) == 0
     assert match.round_number == 6
     check_hp(match, [[0, 0, 1], [10, 10, 10]])
-    assert len(match.player_tables[1].dice) == 5
+    assert len(match.player_tables[1].dice.colors) == 5
     assert len(match.player_tables[1].summons) == 0
 
     assert match.match_state != MatchState.ERROR
