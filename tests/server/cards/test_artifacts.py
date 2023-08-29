@@ -1,18 +1,18 @@
 from agents.interaction_agent import (
-    InteractionAgent_V1_0 as InteractionAgent
+    InteractionAgent_V1_0, InteractionAgent
 )
 from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, make_respond, get_random_state
+    check_hp, get_test_id_from_command, make_respond, get_random_state
 )
 from server.interaction import UseSkillRequest
 
 
 def test_small_elemental_artifacts():
     agent_0 = NothingAgent(player_id = 0)
-    agent_1 = InteractionAgent(
+    agent_1 = InteractionAgent_V1_0(
         version = '1.0',
         player_id = 1,
         verbose_level = 0,
@@ -179,13 +179,84 @@ def test_create_small_element_artifacts():
     match.config.max_same_card_number = 4
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 30
-    match.enable_history = True
     match.start()
     match.step()
 
     assert match.state != MatchState.ERROR
 
 
+def test_old_version_artifacts():
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "reroll 1 4",
+            "TEST 1 all card can use",
+            "sw_char 1 4",
+            "TEST 1 all card can use",
+            "sw_char 2 0",
+            "TEST 2 3 card can use, 0 and 4 cannot",
+            "end"
+        ],
+        only_use_command = True
+    )
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        Wine-Stained Tricorne*12
+        Timmie*2
+        Rana*2
+        Strategize*2
+        # Timmie*22
+        '''
+    )
+    old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
+    deck_dict = deck.dict()
+    deck_dict['cards'] += [old_wine] * 12
+    deck = Deck(**deck_dict)
+    match = Match(random_state = get_random_state())
+    match.config.max_same_card_number = 30
+    match.enable_history = True
+    match.set_deck([deck, deck])
+    match.start()
+    match.step()
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    counter = 0
+                    for request in match.requests:
+                        if request.name == 'UseCardRequest':
+                            counter += 1
+                    assert counter == 5
+                elif test_id == 2:
+                    counter = []
+                    for request in match.requests:
+                        if request.name == 'UseCardRequest':
+                            counter.append(request.card_id)
+                    assert len(counter) == 3
+                    assert 0 not in counter
+                    assert 4 not in counter
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_small_elemental_artifacts()
-    test_create_small_element_artifacts()
+    # test_create_small_element_artifacts()
+    test_old_version_artifacts()

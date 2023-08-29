@@ -1,3 +1,8 @@
-from .version_3_3 import SmallElementalArtifact
+from .element_artifacts import SmallElementalArtifact
+from .old_version import OldVersionArtifacts
 
-Artifacts = SmallElementalArtifact | SmallElementalArtifact
+Artifacts = (
+    SmallElementalArtifact
+    # finally old versions
+    | OldVersionArtifacts
+)

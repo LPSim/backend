@@ -29,7 +29,7 @@ class SmallElementalArtifact(ArtifactBase):
     )
     version: Literal["4.0"] = "4.0"
     usage: int = 1
-    cost: Cost = Cost(any_dice_number=2)
+    cost: Cost = Cost(any_dice_number = 2)
     element: ElementType = ElementType.NONE
 
     def __init__(self, *argv, **kwargs):
