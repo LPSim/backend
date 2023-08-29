@@ -2146,6 +2146,5 @@ class Match(BaseModel):
     def _action_generate_choose_charactor_request(
         self, action: GenerateChooseCharactorRequestAction
     ) -> List[EventArgumentsBase]:
-        # TODO switch, not choose
         self._request_choose_charactor(action.player_id)
         return []
