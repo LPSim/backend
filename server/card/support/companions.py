@@ -1,17 +1,61 @@
-from typing import Literal
+from typing import Literal, List
 from .support_base import SupportBase
 from ...consts import (
-    DiceCostLabels, ElementType, ELEMENT_TO_DIE_COLOR, ObjectPositionType,
-    SkillType
+    DiceCostLabels, DieColor, ElementType, ELEMENT_TO_DIE_COLOR, 
+    ObjectPositionType, SkillType
 )
 from ...struct import Cost
-from ...action import ActionBase, CreateDiceAction
+from ...action import (
+    ActionBase, Actions, CreateDiceAction, DrawCardAction, RemoveObjectAction
+)
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 
 class CompanionBase(SupportBase):
     cost_label: int = (DiceCostLabels.CARD.value 
                        | DiceCostLabels.COMPANION.value)
+
+
+class Timmie(CompanionBase):
+    name: Literal['Timmie'] = 'Timmie'
+    desc: str = (
+        'Triggers automatically once per Round: This card gains 1 Pigeon. '
+        'When this card gains 3 Pigeons, discard this card, then draw 1 card '
+        'and create Genius Invokation TCG Omni Dice Omni Element x1.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+    usage: int = 1
+
+    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
+            -> List[Actions]:
+        """
+        When in round prepare, increase usage. If usage is 3, remove self,
+        draw a card and create a dice.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        ret: List[Actions] = []
+        self.usage += 1
+        if self.usage == 3:
+            ret += [
+                RemoveObjectAction(
+                    object_position = self.position,
+                    object_id = self.id,
+                ),
+                DrawCardAction(
+                    player_id = self.position.player_id,
+                    number = 1,
+                    draw_if_filtered_not_enough = True,
+                ),
+                CreateDiceAction(
+                    player_id = self.position.player_id,
+                    number = 1,
+                    color = DieColor.OMNI,
+                ),
+            ]
+        return ret
 
 
 class Rana(CompanionBase):
@@ -56,3 +100,6 @@ class Rana(CompanionBase):
                     color = die_color,
                 )]
         return []
+
+
+Companions = Timmie | Rana

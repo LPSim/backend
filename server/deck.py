@@ -48,16 +48,21 @@ class Deck(BaseModel):
         write card name directly. To declare multiple same cards or charactors,
         add `*number` after the line. For example:
 
-        charactor:Fischl*2
-        charactor:PyroMobMage
-        Strategize*15
-        Stellar Predator*15
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        # you can write comment line with '#'
+        Timmie*15
+        Rana*15
 
         """
         deck_str = deck_str.strip()
         deck = Deck()
         for line in deck_str.split('\n'):
             line = line.strip()
+            if line[0] == '#':
+                # comment line
+                continue
             if '*' in line:
                 line, number = line.split('*')
                 number = int(number)

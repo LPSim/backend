@@ -28,13 +28,18 @@ app.add_middleware(
 
 
 def get_new_match(seed: Any = None, rich: bool = False):
-    deck = Deck.from_str('''
-        charactor:Mona*2
+    deck = Deck.from_str(
+        '''
         charactor:Fischl
-        Prophecy of Submersion*10
-        Stellar Predator*10
-        Wine-Stained Tricorne*10
-    ''')
+        charactor:Mona
+        charactor:Nahida
+        Wine-Stained Tricorne*2
+        Timmie*2
+        Rana*2
+        Strategize*2
+        Timmie*22
+        '''
+    )
     if seed:
         match: Match = Match(random_state = seed)
     else:

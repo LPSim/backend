@@ -1,4 +1,4 @@
-from .companions import Rana
+from .companions import Companions
 
 
-Supports = Rana | Rana
+Supports = Companions | Companions

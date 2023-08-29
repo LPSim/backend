@@ -1,11 +1,12 @@
 from agents.interaction_agent import (
-    InteractionAgent_V1_0 as InteractionAgent
+    InteractionAgent_V1_0, InteractionAgent
 )
 from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
 from tests.utils_for_test import (
-    set_16_omni, check_hp, make_respond, get_random_state
+    get_test_id_from_command, set_16_omni, check_hp, make_respond, 
+    get_random_state
 )
 
 
@@ -15,7 +16,7 @@ def test_rana():
     will trigger, can trigger multiple Rana.
     """
     agent_0 = NothingAgent(player_id = 0)
-    agent_1 = InteractionAgent(
+    agent_1 = InteractionAgent_V1_0(
         version = '1.0',
         player_id = 1,
         verbose_level = 0,
@@ -104,7 +105,7 @@ def test_rana():
     second: next one is other people; cannot generate when only one charactor;
     TODO: if overcharged self, will generate next of next?
     """
-    agent_0 = InteractionAgent(
+    agent_0 = InteractionAgent_V1_0(
         version = '1.0',
         player_id = 0,
         verbose_level = 0,
@@ -118,7 +119,7 @@ def test_rana():
         ],
         only_use_command = True
     )
-    agent_1 = InteractionAgent(
+    agent_1 = InteractionAgent_V1_0(
         version = '1.0',
         player_id = 1,
         verbose_level = 0,
@@ -208,5 +209,146 @@ def test_rana():
     assert match.state != MatchState.ERROR
 
 
+def test_timmie():
+    """
+    """
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "card 0 0",
+            "end",
+            "reroll",
+            "card 0 0",
+            "card 4 0 6 7",
+            "end",
+            "TEST 11 record current dice color",
+            "reroll",
+            "TEST 1 all have 1 omni, compare with previous.0 tm2 1 tm2*3",
+            "end",
+            "reroll"
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "card 0 0",
+            "card 2 0",
+            "end",
+            "reroll",
+            "card 1 0 1",
+            "card 1 0",
+            "card 2 0",
+            "card 2 1",
+            "end",
+            "reroll",
+            "end",
+            "TEST 22 record current dice color",
+            "reroll",
+            "TEST 2 check hand card number",
+            "end"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        Wine-Stained Tricorne*2
+        Timmie*2
+        Rana*2
+        Strategize*2
+        # not implement use timmie fill
+        Timmie*22
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    assert match.start()
+    match.step()
+
+    last_colors = [[], []]
+    while True:
+        if match.need_respond(0):
+            while True:
+                test_id = get_test_id_from_command(agent_0)
+                if test_id == 1:
+                    current_colors = [
+                        match.player_tables[0].dice.colors.copy(),
+                        match.player_tables[1].dice.colors.copy()
+                    ]
+                    assert len(current_colors[0]) == 9
+                    assert len(current_colors[1]) == 9
+                    assert current_colors[0][0] == 'OMNI'
+                    assert current_colors[1][0] == 'OMNI'
+                    assert current_colors[0][1:] == last_colors[0]
+                    assert current_colors[1][1:] == last_colors[1]
+                    tmcount = 0
+                    for support in match.player_tables[0].supports:
+                        if support.name == 'Timmie':
+                            assert support.usage == 2
+                            tmcount += 1
+                    assert tmcount == 1
+                    tmcount = 0
+                    for support in match.player_tables[1].supports:
+                        if support.name == 'Timmie':
+                            assert support.usage == 2
+                            tmcount += 1
+                    assert tmcount == 3
+                elif test_id == 11:
+                    last_colors = [
+                        match.player_tables[0].dice.colors.copy(),
+                        match.player_tables[1].dice.colors.copy()
+                    ]
+                else:
+                    break
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 2:
+                    current_colors = [
+                        match.player_tables[0].dice.colors.copy(),
+                        match.player_tables[1].dice.colors.copy()
+                    ]
+                    assert len(current_colors[0]) == 9
+                    assert len(current_colors[1]) == 11
+                    assert current_colors[0][0] == 'OMNI'
+                    assert current_colors[1][0] == 'OMNI'
+                    assert current_colors[1][1] == 'OMNI'
+                    assert current_colors[1][2] == 'OMNI'
+                    assert current_colors[0][1:] == last_colors[0]
+                    assert current_colors[1][3:] == last_colors[1]
+                    for support in match.player_tables[0].supports:
+                        assert support.name != 'Timmie'
+                    for support in match.player_tables[1].supports:
+                        assert support.name != 'Timmie'
+                    assert len(match.player_tables[0].hands) == 10
+                    assert len(match.player_tables[1].hands) == 10
+                elif test_id == 22:
+                    last_colors = [
+                        match.player_tables[0].dice.colors.copy(),
+                        match.player_tables[1].dice.colors.copy()
+                    ]
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_rana()
+    # test_rana()
+    test_timmie()
