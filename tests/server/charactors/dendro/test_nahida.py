@@ -35,7 +35,7 @@ def test_fischl_mona_nahida():
             "skill 1 0 1 2",
             "card 0 0 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
@@ -115,7 +115,7 @@ def test_fischl_mona_nahida_no_talent():
             "skill 1 0 1 2",
             "skill 3 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
@@ -162,11 +162,25 @@ def test_fischl_mona_nahida_no_talent():
     assert len(agent_1.commands) == 0
     assert match.round_number == 3
     check_hp(match, [[0, 0, 1], [10, 10, 10]])
+    # maks small tests on getting id
+    assert match.player_tables[0].previous_charactor_id() is None
+    assert match.player_tables[0].next_charactor_id() is None
+    assert match.player_tables[1].previous_charactor_id() == 1
+    assert match.player_tables[1].next_charactor_id() == 0
+    for i in range(3):
+        assert match.player_tables[1].previous_charactor_id(i) == (i + 2) % 3
+        assert match.player_tables[1].next_charactor_id(i) == (i + 1) % 3
     assert len(match.player_tables[1].team_status) == 1
     assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
     assert match.player_tables[1].team_status[0].usage == 2
 
     assert match.match_state != MatchState.ERROR
+
+    assert match.need_respond(1)
+    agent_1.commands = ['skill 1 0 1 2']
+    make_respond(agent_1, match)
+    assert match.match_state == MatchState.ENDED
+    assert match.step()
 
 
 def test_nahida_talents():
@@ -192,7 +206,7 @@ def test_nahida_talents():
             "end",
             "end"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -223,7 +237,7 @@ def test_nahida_talents():
             "TEST 7 hp 4 1 1, ele DDN, all 1seed, burining flame, 1 maya",
             "sw_char 0 0"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
@@ -372,7 +386,7 @@ def test_nahida_talents():
             "end",
             "end"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -399,7 +413,7 @@ def test_nahida_talents():
             "TEST 7 hp 4 3 1, all dendro, all 1seed, burining flame, 1 maya",
             "sw_char 0 0"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
@@ -536,7 +550,7 @@ def test_nahida_apply_seed_to_defeated():
             "skill 2 0 1 2 3 4",
             "end",
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
@@ -578,5 +592,243 @@ def test_nahida_apply_seed_to_defeated():
     assert match.match_state != MatchState.ERROR
 
 
+def test_maya_not_first_status():
+    """
+    AA + electro A + talent
+    """
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 2",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "end",
+            "card 0 0 0 1 2",
+            "TEST 1 maya 3",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:ElectroMobMage
+        charactor:Mona
+        charactor:Nahida
+        The Seed of Stored Knowledge*30
+        """
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    status = match.player_tables[1].team_status
+                    found = False
+                    for s in status:
+                        if s.name == 'Shrine of Maya':
+                            assert s.usage == 3
+                            found = True
+                    assert found
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 3
+    check_hp(match, [[1, 10, 10], [10, 10, 10]])
+    assert len(match.player_tables[1].team_status) == 2
+    assert match.player_tables[1].team_status[1].name == 'Shrine of Maya'
+    assert match.player_tables[1].team_status[1].usage == 2
+    assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
+    assert match.player_tables[1].team_status[0].usage == 1
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_seed_not_first_status():
+    """
+    AA + electro A + talent
+    """
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 1",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "skill 1 0 1 2",
+            "skill 1 0 1 2",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:CryoMobMage
+        charactor:Mona
+        charactor:Nahida
+        The Seed of Stored Knowledge*30
+        """
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    match.match_config.initial_dice_number = 32
+    match.match_config.max_dice_number = 32
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 1
+    check_hp(match, [[0, 9, 9], [10, 10, 10]])
+    charactors = match.player_tables[0].charactors
+    assert len(charactors[0].status) == 0
+    assert len(charactors[1].status) == 1
+    assert charactors[1].status[0].name == 'Seed of Skandha'
+    assert charactors[1].status[0].usage == 1
+    assert len(charactors[2].status) == 1
+    assert charactors[2].status[0].name == 'Seed of Skandha'
+    assert charactors[2].status[0].usage == 1
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_talent_enemy_has_other_charactor_status():
+    """
+    when enemy has other charactor status, equipping talent should only
+    add usage of seed.
+    in round 3, player 0 will do elemental reaction but will not increase
+    damage.
+    """
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "end",
+            "end",
+            "skill 0 0 1 2",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 1",
+            "skill 0 0 1 2",
+            "sw_char 3 0",
+            "skill 1 0 1 2",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "end",
+            "skill 0 0 1 2",
+            "sw_char 3 0",
+            "card 0 0 0 1 2",
+            "TEST 1 maya 3 seed all 2 frozen 1",
+            "skill 1 0 1 2",
+            "end",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:ElectroMobMage
+        charactor:CryoMobMage
+        charactor:Mona
+        charactor:Nahida
+        The Seed of Stored Knowledge*30
+        """
+    )
+    # add HP to avoid defeated.
+    deck.charactors[0].hp = 90
+    deck.charactors[0].max_hp = 90
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.charactor_number = 4
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    # match.enable_history = True
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    status = match.player_tables[1].team_status
+                    found = False
+                    for s in status:
+                        if s.name == 'Shrine of Maya':
+                            assert s.usage == 3
+                            found = True
+                    assert found
+                    charactors = match.player_tables[0].charactors
+                    for charactor in charactors:
+                        assert charactor.status[0].name == "Seed of Skandha"
+                        assert charactor.status[0].usage == 2
+                    assert len(charactors[0].status) == 2
+                    assert charactors[0].status[1].name == "Frozen"
+                    assert charactors[0].status[1].usage == 1
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0 and len(agent_0.commands) == 0
+    assert match.round_number == 3
+    check_hp(match, [[76, 9, 9, 9], [89, 9, 9, 7]])
+    assert len(match.player_tables[1].team_status) == 1
+    assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
+    assert match.player_tables[1].team_status[0].usage == 2
+
+    assert match.match_state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_nahida_apply_seed_to_defeated()
+    test_seed_not_first_status()
+    # test_talent_enemy_has_other_charactor_status()

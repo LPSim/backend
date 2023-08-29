@@ -20,14 +20,16 @@ class StatusBase(ObjectBase):
         """
         Renew the status. 
         """
-        if self.renew_type == 'ADD':
-            if self.max_usage <= self.usage:
-                # currently over maximum, ignore renew.
-                return
-            self.usage += new_status.usage
-            if self.max_usage < self.usage:
-                self.usage = self.max_usage
-        elif self.renew_type == 'RESET':
-            self.usage = new_status.usage
-        elif self.renew_type == 'RESET_WITH_MAX':
-            self.usage = max(self.usage, new_status.usage)
+        assert self.renew_type == 'ADD', 'Other types not tested'
+        if self.max_usage <= self.usage:
+            # currently over maximum, ignore renew.
+            return
+        self.usage += new_status.usage
+        if self.max_usage < self.usage:
+            self.usage = self.max_usage
+        return
+        # elif self.renew_type == 'RESET':
+        #     self.usage = new_status.usage
+        # elif self.renew_type == 'RESET_WITH_MAX':
+        #     raise NotImplementedError('Not tested part')
+        #     self.usage = max(self.usage, new_status.usage)

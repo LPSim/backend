@@ -105,5 +105,53 @@ def test_deck_string():
     assert deck_str_3 == deck_dict_3
 
 
+def test_deck_assertions():
+    deck = Deck.from_str('''
+        charactor:DendroMobMage*2
+        charactor:ElectroMobMage
+        Strategize*30
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None
+    )
+    assert deck.check_legal(
+        card_number = 30, 
+        max_same_card_number = 30,
+        charactor_number = 3
+    )
+    assert not deck.check_legal(
+        card_number = 29, 
+        max_same_card_number = 30,
+        charactor_number = 3
+    )
+    assert not deck.check_legal(
+        card_number = 31, 
+        max_same_card_number = 30,
+        charactor_number = 3
+    )
+    assert not deck.check_legal(
+        card_number = 30, 
+        max_same_card_number = 29,
+        charactor_number = 3
+    )
+    assert deck.check_legal(
+        card_number = 30, 
+        max_same_card_number = 31,
+        charactor_number = 3
+    )
+    assert not deck.check_legal(
+        card_number = 30, 
+        max_same_card_number = 31,
+        charactor_number = 2
+    )
+    assert not deck.check_legal(
+        card_number = 30, 
+        max_same_card_number = 31,
+        charactor_number = 4
+    )
+
+
 if __name__ == '__main__':
     test_deck_string()

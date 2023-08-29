@@ -53,7 +53,7 @@ def test_fischl():
             "reroll",
             "skill 0 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
@@ -169,7 +169,7 @@ def test_fischl():
             "skill 0 0 5 6",
             "skill 2 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {

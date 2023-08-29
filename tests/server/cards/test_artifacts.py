@@ -52,7 +52,7 @@ def test_small_elemental_artifacts():
             "end"
             # 85 10 10 99 10 10
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
@@ -160,5 +160,32 @@ def test_small_elemental_artifacts():
     assert match.match_state != MatchState.ERROR
 
 
+def test_create_small_element_artifacts():
+    deck = Deck.from_str(
+        """
+        charactor:Nahida*3
+        Broken Rime's Echo*4
+        Laurel Coronet*4
+        Mask of Solitude Basalt*4
+        Thunder Summoner's Crown*4
+        Viridescent Venerer's Diadem*4
+        Wine-Stained Tricorne*4
+        Witch's Scorching Hat*4
+        Strategize*2
+        """
+    )
+    match = Match()
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 4
+    match.match_config.max_hand_size = 30
+    match.match_config.initial_hand_size = 30
+    match.enable_history = True
+    match.start()
+    match.step()
+
+    assert match.match_state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_small_elemental_artifacts()
+    # test_small_elemental_artifacts()
+    test_create_small_element_artifacts()

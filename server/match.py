@@ -168,8 +168,27 @@ class MatchConfig(BaseModel):
         """
         Check whether the config is legal.
         """
+        if (
+            self.initial_hand_size < 0 
+            or self.initial_card_draw < 0
+            or self.initial_dice_number < 0
+            or self.initial_dice_reroll_times < 0
+            or self.card_number < 0
+            or self.max_same_card_number < 0
+            or self.charactor_number < 0
+            or self.max_round_number <= 0
+            or self.max_hand_size < 0
+            or self.max_dice_number < 0
+            or self.max_summon_number < 0
+            or self.max_support_number < 0
+        ):
+            return False
         if self.initial_hand_size > self.max_hand_size:
             logging.error('initial hand size should not be greater than '
+                          'max hand size')
+            return False
+        if self.initial_card_draw > self.max_hand_size:
+            logging.error('initial card draw should not be greater than '
                           'max hand size')
             return False
         if self.initial_card_draw > self.card_number:
@@ -250,13 +269,14 @@ class Match(BaseModel):
         Set the deck of the match.
         """
         if self.match_state != MatchState.WAITING:
-            logging.error('Match is not in waiting state.')
-            return
+            raise ValueError('Match is not in waiting state.')
         assert len(decks) == len(self.player_tables)
         for player_table, deck in zip(self.player_tables, decks):
             player_table.player_deck_information = deck
 
-    def get_history_json(self, filename: str | None = None) -> List[str]:
+    def get_history_json(
+        self, filename: str | None = None
+    ) -> List[str]:  # pragma: no cover
         """
         Return the history of the match in jsonl format.
         if filename is set, save the history to file.
@@ -319,11 +339,9 @@ class Match(BaseModel):
         # make valid check
         if not self.match_config.check_config():
             logging.error('Match config is not valid.')
-            self._set_match_state(MatchState.ERROR)
             return False
         if len(self.player_tables) != 2:
             logging.error('Only support 2 players now.')
-            self._set_match_state(MatchState.ERROR)
             return False
         for pnum, player_table in enumerate(self.player_tables):
             is_legal = player_table.player_deck_information.check_legal(
@@ -333,7 +351,6 @@ class Match(BaseModel):
             )
             if not is_legal:
                 logging.error(f'Player {pnum} deck is not legal.')
-                self._set_match_state(MatchState.ERROR)
                 return False
 
         self._set_match_state(MatchState.STARTING)
@@ -372,9 +389,9 @@ class Match(BaseModel):
             ))
             triggered_actions = self._trigger_events(event_args)
             if triggered_actions:
-                logging.error('Initial draw card should not trigger actions.')
-                self._set_match_state(MatchState.ERROR)
-                return False
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError(
+                    'Initial draw card should not trigger actions.')
         return True
 
     def step(self, run_continuously: bool = True) -> bool:
@@ -431,9 +448,6 @@ class Match(BaseModel):
             elif self.match_state == MatchState.ROUND_ENDED:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
-            elif self.match_state == MatchState.ENDED:
-                logging.warning('Match has ended.')
-                return True
             else:
                 raise NotImplementedError(
                     f'Match state {self.match_state} not implemented.')
@@ -504,7 +518,8 @@ class Match(BaseModel):
         elif isinstance(response, RerollDiceResponse):
             self._respond_reroll_dice(response)
         else:
-            logging.error(f'Response type {type(response)} not recognized.')
+            raise AssertionError(
+                f'Response type {type(response)} not recognized.')
             return False
         return True
 
@@ -585,12 +600,11 @@ class Match(BaseModel):
             for color in initial_color_value.dice_colors:
                 color_dict[color] = color_dict.get(color, 0) + 1
             for color, num in color_dict.items():
-                if num > 1:
-                    event_args += self._act(CreateDiceAction(
-                        player_id = pnum,
-                        number = num,
-                        color = color
-                    ))
+                event_args += self._act(CreateDiceAction(
+                    player_id = pnum,
+                    number = num,
+                    color = color
+                ))
             event_args += self._act(CreateDiceAction(
                 player_id = pnum,
                 number = random_number,
@@ -598,9 +612,9 @@ class Match(BaseModel):
             ))
         triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) != 0:
-            logging.error('Create dice should not trigger actions.')
-            self._set_match_state(MatchState.ERROR)
-            return False
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise AssertionError(
+                'Create dice should not trigger actions.')
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
@@ -643,11 +657,11 @@ class Match(BaseModel):
         for table in self.player_tables:
             if not table.has_round_ended:
                 not_all_declare_end = True
-                break
-        if not not_all_declare_end:
-            # all declare ended, go to round ending
-            self._set_match_state(MatchState.ROUND_ENDING)
-            return
+        assert not_all_declare_end, 'All players have declared round end.'
+        # if not not_all_declare_end:
+        #     # all declare ended, go to round ending
+        #     self._set_match_state(MatchState.ROUND_ENDING)
+        #     return
 
     def _player_action_request(self):
         """
@@ -686,7 +700,9 @@ class Match(BaseModel):
             self._set_match_state(MatchState.ROUND_ENDING)
         else:
             # not all declare ended, go to next action
-            self._set_match_state(MatchState.PLAYER_ACTION_START)
+            # change to ROUND_PREPARING so will immediately transform to
+            # PLAYER_ACTION_START in next step, and trigger correcponding event
+            self._set_match_state(MatchState.ROUND_PREPARING)
 
     def _round_ending(self):
         """
@@ -992,10 +1008,9 @@ class Match(BaseModel):
         )
         triggered_actions = self._trigger_events(event_args)
         if triggered_actions:
-            logging.error('Initial switch card should not trigger '
-                          'actions.')
-            self._set_match_state(MatchState.ERROR)
-            return
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise AssertionError(
+                'Initial Switch card should not trigger actions.')
         # remove related requests
         self.requests = [
             req for req in self.requests
@@ -1008,6 +1023,7 @@ class Match(BaseModel):
         )
         triggered_actions = self._trigger_events(event_args)
         if len(triggered_actions) > 0:
+            raise NotImplementedError('Not tested part')
             self.action_queues.append(triggered_actions)
         # remove related requests
         self.requests = [
@@ -1029,10 +1045,9 @@ class Match(BaseModel):
             actions = self._trigger_event(event_arg)
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
-            logging.error('Removing dice in Reroll Dice should not trigger '
-                          'actions.')
-            self._set_match_state(MatchState.ERROR)
-            return
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise AssertionError('Removing dice in Reroll Dice should not '
+                                 'trigger actions.')
         event_args = self._action_create_dice(CreateDiceAction(
             player_id = response.player_id,
             number = len(response.reroll_dice_ids),
@@ -1042,12 +1057,14 @@ class Match(BaseModel):
             actions = self._trigger_event(event_arg)
             triggered_actions.extend(actions)
         if len(triggered_actions) > 0:
+            raise NotImplementedError('Not tested part')
             self.action_queues.append(triggered_actions)
         # modify request
-        for num, req in enumerate(self.requests):
+        for num, req in enumerate(self.requests):  # pragma: no cover
             if isinstance(req, RerollDiceRequest):
                 if req.player_id == response.player_id:
                     if req.reroll_times > 1:
+                        raise NotImplementedError('Not tested part')
                         req.reroll_times -= 1
                     else:
                         self.requests.pop(num)
@@ -1065,6 +1082,8 @@ class Match(BaseModel):
                 player_id = response.player_id,
                 dice_ids = cost_ids,
             ))
+        else:
+            raise NotImplementedError('Not tested part')
         cost = response.request.cost.original_value
         cost_value = CostValue(
             match = self,
@@ -1267,9 +1286,8 @@ class Match(BaseModel):
         elif isinstance(action, GenerateChooseCharactorRequestAction):
             return list(self._action_generate_choose_charactor_request(action))
         else:
-            logging.error(f'Unknown action {action}.')
-            self._set_match_state(MatchState.ERROR)
-            return []
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise AssertionError(f'Unknown action {action}.')
 
     def _action_draw_card(
             self, 
@@ -1300,15 +1318,15 @@ class Match(BaseModel):
             or len(action.whitelist_names) > 0
             or len(action.whitelist_types) > 0
         ):
+            raise NotImplementedError('Not tested part')
             if (
                 action.blacklist_cost_labels > 0 
                 or len(action.blacklist_names) > 0
                 or len(action.blacklist_types) > 0
             ):
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
                 logging.error('Whitelist and blacklist cannot be both '
                               'specified.')
-                self._set_match_state(MatchState.ERROR)
-                return []
             # whitelist set
             while len(table.table_deck) > 0 and len(draw_cards) < number:
                 card = table.table_deck.pop(0)
@@ -1409,12 +1427,11 @@ class Match(BaseModel):
         table = self.player_tables[player_id]
         if card_position == 'HAND':
             card = table.hands.pop(action.card_id)
-        elif card_position == 'DECK':
-            card = table.table_deck.pop(action.card_id)
+        # elif card_position == 'DECK':
+        #     card = table.table_deck.pop(action.card_id)
         else:
-            logging.error(f'Unknown card position {card_position}.')
-            self._set_match_state(MatchState.ERROR)
-            return []
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise AssertionError(f'Unknown card position {card_position}.')
         logging.info(
             f'Remove hand card action, player {player_id}, '
             f'card position {card_position}, '
@@ -1465,9 +1482,8 @@ class Match(BaseModel):
         is_random = action.random
         is_different = action.different
         if is_random and is_different:
-            logging.error('Dice cannot be both random and different.')
-            self._set_match_state(MatchState.ERROR)
-            return []
+            self._set_match_state(MatchState.ERROR)  # pragma no cover
+            raise ValueError('Dice cannot be both random and different.')
         candidates: List[DieColor] = [
             DieColor.CRYO, DieColor.PYRO, DieColor.HYDRO, DieColor.ELECTRO,
             DieColor.GEO, DieColor.DENDRO, DieColor.ANEMO
@@ -1480,19 +1496,18 @@ class Match(BaseModel):
                                                 * len(candidates))]
                 dice.append(selected_color)
         elif is_different:
+            raise NotImplementedError('Not tested part')
             if number > len(candidates):
-                logging.error('Not enough dice colors.')
-                self._set_match_state(MatchState.ERROR)
-                return []
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError('Not enough dice colors.')
             self._random_shuffle(candidates)
             candidates = candidates[:number]
             for selected_color in candidates:
                 dice.append(selected_color)
         else:
             if color is None:
-                logging.error('Dice color should be specified.')
-                self._set_match_state(MatchState.ERROR)
-                return []
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise ValueError('Dice color should be specified.')
             for _ in range(number):
                 dice.append(color)
         # if there are more dice than the maximum, discard the rest
@@ -1643,14 +1658,17 @@ class Match(BaseModel):
         target_id = action.target_id
         next_charactor: int = self.player_tables[target_id].active_charactor_id
         if action.charactor_change_rule == 'PREV':
+            raise NotImplementedError('Not tested part')
             nci = self.player_tables[target_id].previous_charactor_id()
             if nci is not None:
                 next_charactor = nci
         elif action.charactor_change_rule == 'NEXT':
+            raise NotImplementedError('Not tested part')
             nci = self.player_tables[target_id].next_charactor_id()
             if nci is not None:
                 next_charactor = nci
         elif action.charactor_change_rule == 'ABSOLUTE':
+            raise NotImplementedError('Not tested part')
             next_charactor = action.charactor_change_id
             if self.player_tables[target_id].charactors[
                     next_charactor].is_defeated:
@@ -1684,6 +1702,9 @@ class Match(BaseModel):
             )
             table = self.player_tables[damage.target_position.player_id]
             charactor = table.charactors[damage.target_position.charactor_id]
+            assert charactor.is_alive, (
+                'Damage target charactor should be alive.'
+            )
             damage_element_type = DAMAGE_TYPE_TO_ELEMENT[
                 damage.damage_elemental_type]
             target_element_application = charactor.element_application
@@ -1697,8 +1718,8 @@ class Match(BaseModel):
                     == table.active_charactor_id):
                 # overloaded to next charactor
                 if damage.target_position.player_id != target_id:
-                    self._set_match_state(MatchState.ERROR)
-                    raise ValueError(
+                    self._set_match_state(MatchState.ERROR)  # pragma no cover
+                    raise AssertionError(
                         'Overloaded damage target player '
                         f'{damage.target_position.player_id} '
                         f'does not match action target player {target_id}.'
@@ -1922,6 +1943,7 @@ class Match(BaseModel):
             removed_equip = None
             if charactor.weapon is not None and charactor.weapon.id == \
                     action.object_id:
+                raise NotImplementedError('Not tested part')
                 removed_equip = charactor.weapon
                 charactor.weapon = None
                 target_name = 'weapon'
@@ -1936,7 +1958,7 @@ class Match(BaseModel):
                 charactor.talent = None
                 target_name = 'talent'
             else:
-                raise ValueError(
+                raise AssertionError(
                     f'player {player_id} tried to remove non-exist equipment '
                     f'from charactor {charactor.name} with id '
                     f'{action.object_id}.'
@@ -1964,13 +1986,12 @@ class Match(BaseModel):
                     action = action,
                     object_name = current_object.name,
                 )]
-        logging.error(
+        self._set_match_state(MatchState.ERROR)  # pragma no cover
+        raise AssertionError(
             f'player {player_id} '
             f'tried to remove non-exist {target_name} with id '
             f'{action.object_id}.'
         )
-        self._set_match_state(MatchState.ERROR)
-        return []
 
     def _action_change_object_usage(self, action: ChangeObjectUsageAction) \
             -> List[ChangeObjectUsageEventArguments]:
@@ -1988,9 +2009,9 @@ class Match(BaseModel):
             target_list = table.charactors[
                 action.object_position.charactor_id].status
             target_name = 'charactor status'
-        elif action.object_position.area == ObjectPositionType.SUMMON:
-            target_list = table.summons
-            target_name = 'summon'
+        # elif action.object_position.area == ObjectPositionType.SUMMON:
+        #     target_list = table.summons
+        #     target_name = 'summon'
         else:
             raise NotImplementedError(
                 f'Change object usage action for area '
@@ -2003,6 +2024,8 @@ class Match(BaseModel):
                 new_usage = action.change_usage
                 if action.change_type == 'DELTA':
                     new_usage += old_usage
+                else:
+                    raise NotImplementedError('Not tested part')
                 new_usage = min(max(new_usage, action.min_usage),
                                 action.max_usage)
                 current_object.usage = new_usage
@@ -2018,12 +2041,12 @@ class Match(BaseModel):
                     usage_before = old_usage,
                     usage_after = new_usage,
                 )]
-        logging.error(
+        self._set_match_state(MatchState.ERROR)  # pragma no cover
+        raise AssertionError(
             f'player {player_id} '
             f'tried to change non-exist {target_list} with id '
             f'{action.object_id}.'
         )
-        self._set_match_state(MatchState.ERROR)
         return []
 
     def _action_move_object(self, action: MoveObjectAction) \
@@ -2037,9 +2060,9 @@ class Match(BaseModel):
         if action.object_position.area == ObjectPositionType.HAND:
             current_list = table.hands
             current_name = 'hand'
-        elif action.object_position.area == ObjectPositionType.SUPPORT:
-            current_list = table.supports
-            current_name = 'support'
+        # elif action.object_position.area == ObjectPositionType.SUPPORT:
+        #     current_list = table.supports
+        #     current_name = 'support'
         else:
             raise NotImplementedError(
                 f'Move object action from area '
@@ -2048,6 +2071,7 @@ class Match(BaseModel):
         for csnum, current_object in enumerate(current_list):
             if current_object.id == action.object_id:
                 if action.target_position.area == ObjectPositionType.HAND:
+                    raise NotImplementedError('Not tested part')
                     target_list = table.hands
                     target_name = 'hand'
                 elif action.target_position.area == ObjectPositionType.SUPPORT:
@@ -2111,12 +2135,12 @@ class Match(BaseModel):
                     action = action,
                     object_name = current_object.name,
                 )]
-        logging.error(
+        self._set_match_state(MatchState.ERROR)  # pragma no cover
+        raise AssertionError(
             f'player {player_id} '
             f'tried to move non-exist {current_name} with id '
             f'{action.object_id}.'
         )
-        self._set_match_state(MatchState.ERROR)
         return []
 
     """

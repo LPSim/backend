@@ -211,8 +211,7 @@ class TheSeedOfStoredKnowledge(SkillTalent):
                     change_usage = 1,
                     change_type = 'DELTA',
                 )]
-        assert 0  # should not reach here.
-        return []
+        raise AssertionError('Shrine of Maya not found.')
 
 
 class Nahida(CharactorBase):

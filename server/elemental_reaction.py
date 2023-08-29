@@ -37,7 +37,7 @@ def check_elemental_reaction(
         'Anemo cannot be applied to enemies.'
     if source == ElementType.NONE:
         return ElementalReactionType.NONE, [], targets
-    if source == ElementType.CRYO:
+    elif source == ElementType.CRYO:
         if ElementType.PYRO in targets:
             return (
                 ElementalReactionType.MELT, 
@@ -65,7 +65,7 @@ def check_elemental_reaction(
                 [], 
                 new_targets
             )
-    if source == ElementType.HYDRO:
+    elif source == ElementType.HYDRO:
         if ElementType.PYRO in targets:
             return (
                 ElementalReactionType.VAPORIZE, 
@@ -96,7 +96,7 @@ def check_elemental_reaction(
                 [], 
                 [ElementType.HYDRO]
             )
-    if source == ElementType.PYRO:
+    elif source == ElementType.PYRO:
         if ElementType.HYDRO in targets:
             return (
                 ElementalReactionType.VAPORIZE, 
@@ -127,7 +127,7 @@ def check_elemental_reaction(
                 [], 
                 [ElementType.PYRO]
             )
-    if source == ElementType.ELECTRO:
+    elif source == ElementType.ELECTRO:
         if ElementType.HYDRO in targets:
             return (
                 ElementalReactionType.ELECTROCHARGED, 
@@ -158,7 +158,7 @@ def check_elemental_reaction(
                 [], 
                 [ElementType.ELECTRO]
             )
-    if source == ElementType.GEO:
+    elif source == ElementType.GEO:
         if ElementType.HYDRO in targets:
             return (
                 ElementalReactionType.CRYSTALLIZE, 
@@ -175,7 +175,7 @@ def check_elemental_reaction(
             return (
                 ElementalReactionType.CRYSTALLIZE, 
                 [ElementType.GEO, ElementType.CRYO], 
-                targets[:1]  # cryo must be first
+                targets[1:]  # cryo must be first
             )
         elif ElementType.ELECTRO in targets:
             return (
@@ -189,7 +189,7 @@ def check_elemental_reaction(
                 [], 
                 targets
             )
-    if source == ElementType.DENDRO:
+    elif source == ElementType.DENDRO:
         if ElementType.HYDRO in targets:
             return (
                 ElementalReactionType.BLOOM, 
@@ -217,7 +217,8 @@ def check_elemental_reaction(
                 [], 
                 new_targets
             )
-    if source == ElementType.ANEMO:
+    else:
+        assert source == ElementType.ANEMO
         if ElementType.HYDRO in targets:
             return (
                 ElementalReactionType.SWIRL, 
@@ -268,6 +269,7 @@ def apply_elemental_reaction(
         return res
     if damage.damage_type != DamageType.DAMAGE:
         # heal or no-damage element application, no need to change damage
+        raise NotImplementedError('Not tested part')
         return res
     damage.element_reaction = reaction
     damage.reacted_elements = reacted_elements
@@ -278,9 +280,9 @@ def apply_elemental_reaction(
         damage.damage += 2
     elif reaction == ElementalReactionType.SWIRL:
         # special swirl, 1 elemental damage for other charactors
-        element_type = reacted_elements[0]
-        if element_type == ElementType.ANEMO:
-            element_type = reacted_elements[1]
+        element_type = reacted_elements[1]
+        assert element_type != ElementType.ANEMO, \
+            'Anemo should always be first'
         attack_target = damage.target_position.charactor_id
         for cnum in range(1, len(target_charactors)):
             cnum = (cnum + attack_target) % len(target_charactors)

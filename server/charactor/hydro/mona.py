@@ -118,10 +118,11 @@ class IllusoryTorrent(PassiveSkillBase):
             return value
         if self.usage <= 0:
             return value
-        if value.do_combat_action:
-            value.do_combat_action = False
-            if mode == 'REAL':
-                self.usage -= 1
+        # as mona is active charactor, current switch is always combat action
+        assert value.do_combat_action
+        value.do_combat_action = False
+        assert mode == 'REAL'
+        self.usage -= 1
         return value
 
 

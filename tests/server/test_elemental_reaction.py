@@ -1,8 +1,11 @@
 from agents.interaction_agent import InteractionAgent
 from agents.nothing_agent import NothingAgent
+from server.elemental_reaction import check_elemental_reaction
 from server.match import Match, MatchState
 from server.deck import Deck
-from server.consts import DamageElementalType
+from server.consts import (
+    DamageElementalType, ElementType, ElementalReactionType
+)
 from tests.utils_for_test import (
     get_test_id_from_command, set_16_omni, check_hp, check_name, make_respond
 )
@@ -31,7 +34,7 @@ def test_crystallize():
             'skill 1 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -57,7 +60,7 @@ def test_crystallize():
             'end',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = {
@@ -131,7 +134,7 @@ def test_frozen():
             'end',
             'skill 0 omni omni omni',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -147,7 +150,7 @@ def test_frozen():
             'skill 0 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = {
@@ -250,7 +253,7 @@ def test_frozen_and_pyro():
             'skill 0 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -262,7 +265,7 @@ def test_frozen_and_pyro():
             'end',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = {
@@ -347,7 +350,7 @@ def test_burning_flame():
             'skill 0 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -360,7 +363,7 @@ def test_burning_flame():
             'end',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = {
@@ -455,7 +458,7 @@ def test_dendro_core_catalyzing_field():
             'skill 0 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -467,7 +470,7 @@ def test_dendro_core_catalyzing_field():
             'end',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = {
@@ -538,7 +541,7 @@ def test_swirl():
             "sw_char 2 0",
             "skill 0 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = Deck.from_str(
@@ -593,7 +596,7 @@ def test_swirl_2():
             "sw_char 2 0",
             "skill 0 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = Deck.from_str(
@@ -654,7 +657,7 @@ def test_swirl_3():
             "sw_char 2 0",
             "skill 0 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = Deck.from_str(
@@ -708,6 +711,64 @@ def test_swirl_3():
     assert match.match_state != MatchState.ERROR
 
 
+def test_swirl_4():
+    """
+    fourth: swirl defeated enemys should have no damage on it.
+    """
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "skill 1 0 1 2",
+            "skill 2 0 1 2",
+            "skill 0 0 1 2",
+            "end",
+            "sw_char 2 0",
+            "skill 0 0 1 2",
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:CryoMobMage
+        charactor:HydroMobMage
+        charactor:AnemoMobMage
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 2
+    assert len(match.player_tables[0].team_status) == 0
+    check_hp(match, [[0, 8, 9], [10, 10, 10]])
+    assert match.player_tables[0].charactors[0].element_application == []
+    assert match.player_tables[0].charactors[1].element_application == []
+    assert match.player_tables[0].charactors[2].element_application == ['CRYO']
+
+    assert match.match_state != MatchState.ERROR
+
+
 def test_swirl_with_catalyzing_field():
     """
     four: electro and dendro to generate catalyzing field, and swirl electro
@@ -729,7 +790,7 @@ def test_swirl_with_catalyzing_field():
             "end",
             "end",
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -754,7 +815,7 @@ def test_swirl_with_catalyzing_field():
             # no elemental application, 2 catalyzing field, field not increase
             # back electro damage.
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = Deck.from_str(
@@ -807,5 +868,438 @@ def test_swirl_with_catalyzing_field():
     assert match.match_state != MatchState.ERROR
 
 
+def test_swirl_with_catalyzing_field_and_dendro_core():
+    """
+    five: generate catalyzing field and dendro core, and swirl electro
+        will not trigger catalyzing field.
+    """
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "sw_char 1 0",
+            "sw_char 0 0",
+            "end",
+            "end",
+            "sw_char 1 0",
+            "end",
+            "skill 0 0 1 2",
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 1",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "end",
+            "skill 0 0 1 2",
+            "end",
+            "sw_char 3 0",
+            "skill 0 0 1 2",
+            "TEST 1 elec none elec elec, 1 dendro core 1 field",
+            "end",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:HydroMobMage
+        charactor:ElectroMobMage
+        charactor:DendroMobMage
+        charactor:AnemoMobMage
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.charactor_number = 4
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 10]])
+                    assert match.player_tables[0].charactors[
+                        0].element_application == ['ELECTRO']
+                    assert match.player_tables[0].charactors[
+                        1].element_application == []
+                    assert match.player_tables[0].charactors[
+                        2].element_application == ['ELECTRO']
+                    assert match.player_tables[0].charactors[
+                        3].element_application == ['ELECTRO']
+                    assert len(match.player_tables[1].team_status) == 2
+                    assert match.player_tables[1].team_status[
+                        0].name == 'Catalyzing Field'
+                    assert match.player_tables[1].team_status[0].usage == 1
+                    assert match.player_tables[1].team_status[
+                        1].name == 'Dendro Core'
+                    assert match.player_tables[1].team_status[1].usage == 1
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert len(agent_0.commands) == 0
+    assert match.round_number == 4
+    assert len(match.player_tables[0].team_status) == 0
+    check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 9]])
+    assert match.player_tables[0].charactors[0].element_application == [
+        'ELECTRO']
+    assert match.player_tables[0].charactors[1].element_application == []
+    assert match.player_tables[0].charactors[2].element_application == [
+        'ELECTRO']
+    assert match.player_tables[0].charactors[3].element_application == [
+        'ELECTRO']
+    assert len(match.player_tables[1].team_status) == 2
+    assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
+    assert match.player_tables[1].team_status[0].usage == 1
+    assert match.player_tables[1].team_status[1].name == 'Dendro Core'
+    assert match.player_tables[1].team_status[1].usage == 1
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
+    """
+    five: generate catalyzing field and dendro core, and swirl electro
+        will not trigger catalyzing field.
+    """
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "sw_char 1 0",
+            "sw_char 0 0",
+            "end",
+            "end",
+            "sw_char 1 0",
+            "end",
+            "skill 0 0 1 2",
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 1",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "end",
+            "skill 0 0 1 2",
+            "end",
+            "sw_char 3 0",
+            "skill 0 0 1 2",
+            "TEST 1 elec none elec elec, 1 dendro core 1 field",
+            "end",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    match.event_handlers[0].version = '3.3'
+    deck = Deck.from_str(
+        '''
+        charactor:HydroMobMage
+        charactor:ElectroMobMage
+        charactor:DendroMobMage
+        charactor:AnemoMobMage
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.charactor_number = 4
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 10]])
+                    assert match.player_tables[0].charactors[
+                        0].element_application == ['ELECTRO']
+                    assert match.player_tables[0].charactors[
+                        1].element_application == []
+                    assert match.player_tables[0].charactors[
+                        2].element_application == ['ELECTRO']
+                    assert match.player_tables[0].charactors[
+                        3].element_application == ['ELECTRO']
+                    assert len(match.player_tables[1].team_status) == 2
+                    assert match.player_tables[1].team_status[
+                        0].name == 'Catalyzing Field'
+                    assert match.player_tables[1].team_status[0].usage == 2
+                    assert match.player_tables[1].team_status[
+                        1].name == 'Dendro Core'
+                    assert match.player_tables[1].team_status[1].usage == 1
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert len(agent_0.commands) == 0
+    assert match.round_number == 4
+    assert len(match.player_tables[0].team_status) == 0
+    check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 9]])
+    assert match.player_tables[0].charactors[0].element_application == [
+        'ELECTRO']
+    assert match.player_tables[0].charactors[1].element_application == []
+    assert match.player_tables[0].charactors[2].element_application == [
+        'ELECTRO']
+    assert match.player_tables[0].charactors[3].element_application == [
+        'ELECTRO']
+    assert len(match.player_tables[1].team_status) == 2
+    assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
+    assert match.player_tables[1].team_status[0].usage == 2
+    assert match.player_tables[1].team_status[1].name == 'Dendro Core'
+    assert match.player_tables[1].team_status[1].usage == 1
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_overloaded():
+    """
+    test overloaded a loop, and single charactor overloaded, and overloaded 
+    kill not need to choose charactor.
+    """
+    agent_0 = InteractionAgent(
+        player_id = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "end",
+            "end",
+            "end",
+            "end",
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 0 0 1 2",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+            "TEST 2 active 1",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "TEST 3 active 2",
+            "end",
+            "skill 0 0 1 2",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+            "TEST 1 active 0",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "TEST 2 active 1",
+            "end",
+            "skill 0 0 1 2",
+            "sw_char 1 0",
+            "skill 1 0 1 2",
+            "TEST 3 active 2",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 1 0 1 2",
+            "TEST 1 active 0",
+            "end",
+            "skill 0 0 1 2",
+            "sw_char 1 0",
+            "skill 1 0 1 2",
+            "TEST 1 active 0",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:AnemoMobMage
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.player_tables[0].charactors[0].hp = 90
+    match.player_tables[0].charactors[0].max_hp = 90
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    assert match.player_tables[0].active_charactor_id == 0
+                if test_id == 2:
+                    assert match.player_tables[0].active_charactor_id == 1
+                if test_id == 3:
+                    assert match.player_tables[0].active_charactor_id == 2
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 5
+    assert len(match.player_tables[0].team_status) == 0
+    check_hp(match, [[76, 0, 0], [10, 10, 10]])
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_background_overloaded():
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = InteractionAgent(
+        player_id = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 1",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "skill 0 0 1 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "skill 0 0 1 2",
+            "end",
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:AnemoMobMage
+        Prophecy of Submersion*10
+        Stellar Predator*10
+        Wine-Stained Tricorne*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.match_config.max_same_card_number = 30
+    match.match_config.random_first_player = False
+    set_16_omni(match)
+    assert match.start()
+    match.player_tables[0].charactors[0].hp = 90
+    match.player_tables[0].charactors[0].max_hp = 90
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 2
+    assert len(match.player_tables[0].team_status) == 0
+    assert match.player_tables[0].active_charactor_id == 0
+    check_hp(match, [[86, 6, 6], [10, 10, 10]])
+
+    assert match.match_state != MatchState.ERROR
+
+
+def test_pure_elemental_reaction():
+    c = ElementType.CRYO
+    p = ElementType.PYRO
+    h = ElementType.HYDRO
+    e = ElementType.ELECTRO
+    d = ElementType.DENDRO
+    a = ElementType.ANEMO
+    g = ElementType.GEO
+    pc = ElementalReactionType.MELT
+    pe = ElementalReactionType.OVERLOADED
+    ec = ElementalReactionType.SUPERCONDUCT
+    ch = ElementalReactionType.FROZEN
+    aa = ElementalReactionType.SWIRL
+    gg = ElementalReactionType.CRYSTALLIZE
+    none = ElementalReactionType.NONE
+    assert check_elemental_reaction(p, [c, d]) == (pc, [p, c], [d])
+    assert check_elemental_reaction(c, [c, d]) == (none, [], [c, d])
+    assert check_elemental_reaction(c, [d]) == (none, [], [c, d])
+    assert check_elemental_reaction(c, [h]) == (ch, [h, c], [])
+    assert check_elemental_reaction(c, []) == (none, [], [c])
+    assert check_elemental_reaction(c, [p]) == (pc, [p, c], [])
+    assert check_elemental_reaction(c, [e]) == (ec, [e, c], [])
+    assert check_elemental_reaction(p, [e]) == (pe, [p, e], [])
+    assert check_elemental_reaction(e, [p]) == (pe, [p, e], [])
+    assert check_elemental_reaction(e, [c, d]) == (ec, [e, c], [d])
+    assert check_elemental_reaction(d, [c]) == (none, [], [c, d])
+    assert check_elemental_reaction(g, [p]) == (gg, [g, p], [])
+    assert check_elemental_reaction(g, [h]) == (gg, [g, h], [])
+    assert check_elemental_reaction(g, [e]) == (gg, [g, e], [])
+    assert check_elemental_reaction(g, [c]) == (gg, [g, c], [])
+    assert check_elemental_reaction(g, [d]) == (none, [], [d])
+    assert check_elemental_reaction(g, []) == (none, [], [])
+    assert check_elemental_reaction(a, [p]) == (aa, [a, p], [])
+    assert check_elemental_reaction(a, [h]) == (aa, [a, h], [])
+    assert check_elemental_reaction(a, [e]) == (aa, [a, e], [])
+    assert check_elemental_reaction(a, [c]) == (aa, [a, c], [])
+    assert check_elemental_reaction(a, [d]) == (none, [], [d])
+    assert check_elemental_reaction(a, []) == (none, [], [])
+
+
 if __name__ == '__main__':
-    test_swirl_with_catalyzing_field()
+    # test_swirl_with_catalyzing_field()
+    # test_pure_elemental_reaction()
+    # test_swirl_with_catalyzing_field_and_dendro_core()
+    test_background_overloaded()

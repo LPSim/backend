@@ -68,7 +68,7 @@ def test_mona():
             "skill 1 0 1 2",
             "end"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = Deck.from_str(
@@ -167,7 +167,7 @@ def test_mona():
             "reroll",
             "skill 0 0 6 7"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -206,7 +206,7 @@ def test_mona():
             "card 0 2 5 6",
             "skill 1 0 1 2"
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = Deck.from_str(
@@ -255,7 +255,7 @@ def test_mona_q_enemy_attack():
             "end",
             "skill 1 0 1 2",
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         player_id = 1,
@@ -269,7 +269,7 @@ def test_mona_q_enemy_attack():
             "skill 2 0 1 2",
             "end",
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(

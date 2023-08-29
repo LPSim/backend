@@ -43,8 +43,8 @@ class CatalyzingField(UsageTeamStatus):
             DamageElementalType.ELECTRO,
         ] and self.usage > 0:
             value.damage += 1
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value
 
 
@@ -83,8 +83,8 @@ class DendroCore(UsageTeamStatus):
             DamageElementalType.PYRO,
         ] and self.usage > 0:
             value.damage += 2
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value
 
 
@@ -110,11 +110,11 @@ class Crystallize(UsageTeamStatus):
         if value.target_position.player_id != self.position.player_id:
             # attack enemy, not activate
             return value
-        if self.usage > 0:
-            decrease = min(self.usage, value.damage)
-            value.damage -= decrease
-            if mode == 'REAL':
-                self.usage -= decrease
+        assert self.usage > 0
+        decrease = min(self.usage, value.damage)
+        value.damage -= decrease
+        assert mode == 'REAL'
+        self.usage -= decrease
         return value
 
 

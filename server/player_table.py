@@ -71,10 +71,12 @@ class PlayerTable(BaseModel):
         Returns the order of dice colors.
         """
         result: List[DieColor] = [DieColor.OMNI]
-        if self.active_charactor_id != -1:
-            c_element = self.charactors[self.active_charactor_id].element
-            color = ELEMENT_TO_DIE_COLOR[c_element]
-            result.append(color)
+        assert self.active_charactor_id != -1, (
+            'Cannot get order when active charactor ID not set.'
+        )
+        c_element = self.charactors[self.active_charactor_id].element
+        color = ELEMENT_TO_DIE_COLOR[c_element]
+        result.append(color)
         for charactor in self.charactors:
             c_element = charactor.element
             color = ELEMENT_TO_DIE_COLOR[c_element]
@@ -91,12 +93,9 @@ class PlayerTable(BaseModel):
         Returns the order of dice colors.
         Dice colors are always ELEMENT_DEFAULT_ORDER.
         """
-        result: List[DieColor] = [DieColor.OMNI]
-        for element in ELEMENT_DEFAULT_ORDER:
-            color = ELEMENT_TO_DIE_COLOR[element]
-            if color not in result:
-                result.append(color)
-        return result
+        return [DieColor.OMNI] + [
+            ELEMENT_TO_DIE_COLOR[x] for x in ELEMENT_DEFAULT_ORDER
+        ]
 
     def dice_color_order(self) -> List[DieColor]:
         """
@@ -104,10 +103,8 @@ class PlayerTable(BaseModel):
         """
         if self.version == '0.0.1':
             return self.dice_color_order_0_0_1()
-        elif self.version == '0.0.2':
-            return self.dice_color_order_0_0_2()
-        else:
-            raise ValueError(f'Version {self.version} not supported.')
+        assert self.version == '0.0.2'
+        return self.dice_color_order_0_0_2()
 
     def sort_dice(self):
         """
@@ -149,12 +146,14 @@ class PlayerTable(BaseModel):
 
         return result
 
-    def get_active_charactor(self) -> Charactors | None:
+    def get_active_charactor(self) -> Charactors:
         """
         Returns the active charactor.
         """
-        if self.active_charactor_id == -1:
-            return None
+        assert (
+            self.active_charactor_id >= 0 
+            and self.active_charactor_id < len(self.charactors)
+        )
         return self.charactors[self.active_charactor_id]
 
     def next_charactor_id(self, current_id: int | None = None) -> int | None:
@@ -168,6 +167,9 @@ class PlayerTable(BaseModel):
         """
         if current_id is None:
             current_id = self.active_charactor_id
+        assert self.charactors[current_id].is_alive, (
+            'Cannot get next charactor when current charactor is not alive.'
+        )
         cnum = len(self.charactors)
         for i in range(1, cnum):
             target = (current_id + i) % cnum
@@ -187,6 +189,10 @@ class PlayerTable(BaseModel):
         """
         if current_id is None:
             current_id = self.active_charactor_id
+        assert self.charactors[current_id].is_alive, (
+            'Cannot get previous charactor when current charactor is not '
+            'alive.'
+        )
         cnum = len(self.charactors)
         for i in range(1, cnum):
             target = (cnum + current_id - i) % cnum

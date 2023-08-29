@@ -47,8 +47,6 @@ class SkillBase(ObjectBase):
         self.id = 0
         # set cost label into cost
         self.cost.label = self.cost_label
-        if self.cost.original_value is not None:
-            self.cost.original_value.label = self.cost_label
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -214,6 +212,7 @@ class PassiveSkillBase(SkillBase):
         """
         Passive skills are always invalid, so it will return an empty list.
         """
+        raise AssertionError('Try to get actions of a passive skill')
         return []
 
 
@@ -233,7 +232,7 @@ class TalentBase(CardBase):
         """
         if self.position.area != ObjectPositionType.HAND:
             # not in hand, cannot equip
-            return False
+            raise AssertionError('Talent is not in hand')
         table = match.player_tables[self.position.player_id]
         return (table.charactors[table.active_charactor_id].name
                 == self.charactor_name)
@@ -366,6 +365,7 @@ class CharactorBase(ObjectBase):
             if skill.skill_type == SkillType.PASSIVE:
                 result.append(skill)
         if self.weapon is not None:
+            raise NotImplementedError('Not tested part')
             result.append(self.weapon)
         if self.artifact is not None:
             result.append(self.artifact)

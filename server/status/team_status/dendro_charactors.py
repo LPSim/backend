@@ -34,38 +34,38 @@ class ShrineOfMaya(RoundTeamStatus):
         match = event.match
         active_charactor = match.player_tables[
             self.position.player_id].get_active_charactor()
-        if active_charactor is not None:
-            if (
-                active_charactor.name == 'Nahida' 
-                and active_charactor.talent is not None
-            ):
-                # talent equipped, check if have electro charactor.
-                has_electro_charactor = False
+        assert active_charactor is not None
+        if (
+            active_charactor.name == 'Nahida' 
+            and active_charactor.talent is not None
+        ):
+            # talent equipped, check if have electro charactor.
+            has_electro_charactor = False
+            for charactor in match.player_tables[
+                    self.position.player_id].charactors:
+                if charactor.element == ElementType.ELECTRO:
+                    has_electro_charactor = True
+                    break
+            if has_electro_charactor:
+                # has electro charactor, add one usage for enemy
+                # Seed of Skandha.
+                ret = []
                 for charactor in match.player_tables[
-                        self.position.player_id].charactors:
-                    if charactor.element == ElementType.ELECTRO:
-                        has_electro_charactor = True
-                        break
-                if has_electro_charactor:
-                    # has electro charactor, add one usage for enemy
-                    # Seed of Skandha.
-                    ret = []
-                    for charactor in match.player_tables[
-                            1 - self.position.player_id].charactors:
-                        for status in charactor.status:
-                            if status.name == 'Seed of Skandha':
-                                position = status.position.copy(deep = True)
-                                position.area = \
-                                    ObjectPositionType.CHARACTOR_STATUS
-                                ret.append(
-                                    ChangeObjectUsageAction(
-                                        object_position = position,
-                                        object_id = status.id,
-                                        change_usage = 1,
-                                        change_type = 'DELTA',
-                                    )
+                        1 - self.position.player_id].charactors:
+                    for status in charactor.status:
+                        if status.name == 'Seed of Skandha':
+                            position = status.position.copy(deep = True)
+                            position.area = \
+                                ObjectPositionType.CHARACTOR_STATUS
+                            ret.append(
+                                ChangeObjectUsageAction(
+                                    object_position = position,
+                                    object_id = status.id,
+                                    change_usage = 1,
+                                    change_type = 'DELTA',
                                 )
-                    return ret
+                            )
+                return ret
         return []
 
     def value_modifier_DAMAGE_INCREASE(

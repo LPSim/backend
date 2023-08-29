@@ -30,9 +30,3 @@ class Dice(ObjectBase):
             res.append(all_c.index(x))
             all_c[all_c.index(x)] = None
         return res
-
-    def idx_to_colors(self, idx: List[int]) -> List[DieColor]:
-        """
-        Convert idx to colors.
-        """
-        return [self.colors[i] for i in idx]

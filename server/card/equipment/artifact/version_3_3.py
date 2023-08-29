@@ -46,7 +46,8 @@ class SmallElementalArtifact(ArtifactBase):
             self.element = ElementType.ANEMO
         elif self.name == "Wine-Stained Tricorne":
             self.element = ElementType.HYDRO
-        elif self.name == "Witch's Scorching Hat":
+        else:
+            assert self.name == "Witch's Scorching Hat"
             self.element = ElementType.PYRO
         self.desc = self.desc.replace(
             "XXX", self.element.value.capitalize()
@@ -94,7 +95,8 @@ class SmallElementalArtifact(ArtifactBase):
                 if position.charactor_id != self.position.charactor_id:
                     # not same charactor
                     return value
-            elif position.area == ObjectPositionType.HAND:
+            else:
+                assert position.area == ObjectPositionType.HAND
                 # cost from hand card, is a talent card
                 equipped_charactor = value.match.player_tables[
                     self.position.player_id

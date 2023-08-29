@@ -41,7 +41,7 @@ def test_rana():
             'skill 1 dendro dendro dendro',
             'skill 0 dendro geo anemo'
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
@@ -116,7 +116,7 @@ def test_rana():
             'skill 0 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     agent_1 = InteractionAgent(
         version = '1.0',
@@ -135,7 +135,7 @@ def test_rana():
             'skill 1 omni omni omni',
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {

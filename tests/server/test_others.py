@@ -1,0 +1,215 @@
+import pytest
+
+from agents.random_agent import RandomAgent
+from agents.nothing_agent import NothingAgent
+from server.action import CreateDiceAction
+from server.consts import ObjectPositionType
+from server.deck import Deck
+from server.interaction import SwitchCardResponse
+from server.object_base import ObjectBase
+from server.struct import ObjectPosition
+from server.match import Match, MatchConfig
+
+
+def test_object_position_validation():
+    p1 = ObjectPosition(
+        player_id = 0,
+        charactor_id = 1,
+        area = ObjectPositionType.CHARACTOR_STATUS,
+    )
+    p2 = ObjectPosition(
+        player_id = 1,
+        charactor_id = 0,
+        area = ObjectPositionType.CHARACTOR,
+    )
+    match = Match()
+    match.player_tables[0].active_charactor_id = 1
+    match.player_tables[1].active_charactor_id = 0
+    assert p1.check_position_valid(p2, match)
+    assert not p1.check_position_valid(p2, match, player_id_same = True)
+    assert not p1.check_position_valid(p2, match, charactor_id_same = True)
+    assert not p1.check_position_valid(p2, match, player_id_same = True, 
+                                       charactor_id_same = True)
+    assert not p1.check_position_valid(p2, match, area_same = True)
+    assert p1.check_position_valid(p2, match, area_same = False)
+    assert p1.check_position_valid(
+        p2, match, source_area = ObjectPositionType.CHARACTOR_STATUS)
+    assert p1.check_position_valid(
+        p2, match, target_area = ObjectPositionType.CHARACTOR)
+    assert p1.check_position_valid(
+        p2, match, source_is_active_charactor = True)
+    assert p1.check_position_valid(
+        p2, match, target_is_active_charactor = True)
+    assert not p1.check_position_valid(
+        p2, match, source_area = ObjectPositionType.CHARACTOR)
+    assert not p1.check_position_valid(
+        p2, match, target_area = ObjectPositionType.CHARACTOR_STATUS)
+    assert not p1.check_position_valid(
+        p2, match, source_is_active_charactor = False)
+    assert not p1.check_position_valid(
+        p2, match, target_is_active_charactor = False)
+    assert p1.check_position_valid(
+        p2, match, player_id_same = False)
+    assert p1.check_position_valid(
+        p2, match, player_id_same = False, charactor_id_same = False)
+    assert not p1.check_position_valid(
+        p2, match, player_id_same = True, charactor_id_same = False)
+    assert not p1.check_position_valid(
+        p2, match, player_id_same = False, charactor_id_same = True)
+
+
+def test_objectbase_wrong_handler_name():
+    class WrongEventHandler(ObjectBase):
+        position: ObjectPosition = ObjectPosition(
+            player_id = -1,
+            area = ObjectPositionType.INVALID,
+        )
+
+        def event_handler_NOT_EXIST(self, event):
+            ...
+
+    with pytest.raises(ValueError):
+        _ = WrongEventHandler()
+
+    class WrongValueModifier(ObjectBase):
+        position: ObjectPosition = ObjectPosition(
+            player_id = -1,
+            area = ObjectPositionType.INVALID,
+        )
+
+        def value_modifier_NOT_EXIST(self, value, match, mode):
+            ...
+
+    with pytest.raises(ValueError):
+        _ = WrongValueModifier()
+
+
+def test_match_config_and_match_errors():
+    config = MatchConfig()
+    assert config.check_config()
+    config.initial_hand_size = 11
+    assert not config.check_config()
+    config.initial_hand_size = 5
+    config.initial_card_draw = 11
+    assert not config.check_config()
+    config.max_hand_size = 999
+    config.card_number = 10
+    assert not config.check_config()
+    config.initial_card_draw = 2
+    config.initial_dice_number = 20
+    assert not config.check_config()
+    config.initial_dice_number = 8
+    config = MatchConfig(initial_hand_size = -1)
+    assert not config.check_config()
+    config = MatchConfig(initial_card_draw = -1)
+    assert not config.check_config()
+    config = MatchConfig(initial_dice_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(initial_dice_reroll_times = -1)
+    assert not config.check_config()
+    config = MatchConfig(card_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_same_card_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(charactor_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_round_number = 0)
+    assert not config.check_config()
+    config = MatchConfig(max_round_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_hand_size = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_dice_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_summon_number = -1)
+    assert not config.check_config()
+    config = MatchConfig(max_support_number = -1)
+    assert not config.check_config()
+    match = Match()
+    match.match_config = config
+    assert not match.start()
+    match = Match()
+    match.player_tables = []
+    assert not match.start()
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:GeoMob*3
+        Strategize*100
+        '''
+    )
+    with pytest.raises(AssertionError):
+        match.set_deck([])
+    match.set_deck([deck, deck])
+    assert not match.start()
+    deck = Deck.from_str(
+        '''
+        charactor:GeoMob*3
+        Strategize*30
+        '''
+    )
+    match = Match()
+    match.match_config.max_same_card_number = 30
+    match.set_deck([deck, deck])
+    assert match.start()
+    agent_0 = NothingAgent(player_id = 0)
+    agent_1 = RandomAgent(player_id = 1)
+    non_exist_tested = False
+    respond_no_request = False
+    req = None
+    resp = None
+    for _ in range(30):
+        if (
+            len(match.requests) == 0 
+            and not respond_no_request 
+            and non_exist_tested
+        ):
+            assert not match.need_respond(0)
+            assert not match.need_respond(1)
+            assert resp is not None
+            assert not match.respond(resp)
+        if match.need_respond(0):
+            if not non_exist_tested:
+                assert match.need_respond(1)
+                non_exist_tested = True
+                req = match.requests[0].copy(deep = True)
+                assert match.check_request_exist(req)
+                resp = SwitchCardResponse(
+                    request = req, card_ids = [-1])  # type: ignore
+                assert not match.respond(resp)
+                resp.card_ids = []
+                resp.request.player_id = 2
+                assert not match.respond(resp)
+            resp = agent_0.generate_response(match)
+            assert resp is not None
+            match.respond(resp)
+        elif match.need_respond(1):
+            resp = agent_1.generate_response(match)
+            assert resp is not None
+            match.respond(resp)
+        if len(match.requests) == 0:
+            match.step(run_continuously = False)
+
+
+def test_create_dice_assertions():
+    match = Match()
+    act = CreateDiceAction(
+        player_id = 0,
+        number = 4,
+        random = True,
+        different = True
+    )
+    with pytest.raises(ValueError):
+        match._act(act)
+    act = CreateDiceAction(
+        player_id = 0,
+        number = 4,
+    )
+    with pytest.raises(ValueError):
+        match._act(act)
+
+
+if __name__ == '__main__':
+    # test_object_position_validation()
+    # test_object_position_validation()
+    test_match_config_and_match_errors()

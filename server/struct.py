@@ -56,13 +56,12 @@ class ObjectPosition(BaseModel):
                 return False
         if source_is_active_charactor is not None:
             cid = match.player_tables[self.player_id].active_charactor_id
-            if self.charactor_id != cid:
-                return False
+            return source_is_active_charactor == (self.charactor_id == cid)
         if target_is_active_charactor is not None:
             cid = match.player_tables[
                 target_position.player_id].active_charactor_id
-            if target_position.charactor_id != cid:
-                return False
+            return target_is_active_charactor == (
+                target_position.charactor_id == cid)
         return True
 
 

@@ -27,6 +27,7 @@ class SupportBase(CardBase):
         when usage has changed, call this function to check if the support
         should be removed.
         """
+        raise NotImplementedError('Not tested part')
         if self.position.area != ObjectPositionType.SUPPORT:
             return []
         if self.usage <= 0:

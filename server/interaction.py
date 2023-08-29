@@ -1,4 +1,4 @@
-from utils import BaseModel
+from utils import BaseModel, list_unique_range_right
 from typing import Literal, List, Any
 from .consts import DieColor
 from .struct import Cost, CardActionTarget
@@ -120,12 +120,8 @@ class SwitchCardResponse(ResponseBase):
     def is_valid(self, match: Any) -> bool:
         if len(self.card_ids) > self.request.maximum_switch_number:
             return False
-        if len(set(self.card_ids)) != len(self.card_ids):
-            return False
-        for i in self.card_ids:
-            if i < 0 or i >= len(self.request.card_names):
-                return False
-        return True
+        return list_unique_range_right(
+            self.card_ids, minn = 0, maxn = len(self.request.card_names))
 
     @property
     def card_names(self) -> List[str]:
@@ -153,14 +149,8 @@ class RerollDiceResponse(ResponseBase):
         """
         if have duplicate dice ids, or dice ids out of range, return False.
         """
-        if len(self.reroll_dice_ids) != len(set(self.reroll_dice_ids)):
-            return False
-        if len(self.reroll_dice_ids) > 0:
-            if max(self.reroll_dice_ids) >= len(self.request.colors):
-                return False
-            if min(self.reroll_dice_ids) < 0:
-                return False
-        return True
+        return list_unique_range_right(
+            self.reroll_dice_ids, minn = 0, maxn = len(self.request.colors))
 
 
 class SwitchCharactorResponse(ResponseBase):
@@ -175,6 +165,10 @@ class SwitchCharactorResponse(ResponseBase):
         Cost matches the request.
         """
         if self.charactor_id not in self.request.candidate_charactor_ids:
+            return False
+        if not list_unique_range_right(
+            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+        ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
         return self.request.cost.is_valid(cost_colors, 0)
@@ -213,6 +207,10 @@ class UseSkillResponse(ResponseBase):
         """
         Check whether the response is valid.
         """
+        if not list_unique_range_right(
+            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+        ):
+            return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
         return self.request.cost.is_valid(cost_colors, 
                                           self.request.cost.charge)
@@ -229,6 +227,10 @@ class UseCardResponse(ResponseBase):
         Check whether the response is valid.
         """
         # dice color right
+        if not list_unique_range_right(
+            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+        ):
+            return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
         if not self.request.cost.is_valid(cost_colors, 
                                           self.request.cost.charge):

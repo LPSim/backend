@@ -121,11 +121,13 @@ class DamageIncreaseValue(ModifiableValueBase):
             target_charactor = [x for x in range(len(charactors))
                                 if not charactors[x] and x != active_id]
         elif damage_value.target_charactor == 'NEXT':
+            raise NotImplementedError('Not tested part')
             for i in range(1, len(charactors)):
                 if not charactors[(active_id + i) % len(charactors)]:
                     target_charactor.append((active_id + i) % len(charactors))
                     break
         elif damage_value.target_charactor == 'PREV':
+            raise NotImplementedError('Not tested part')
             for i in range(1, len(charactors)):
                 idx = (active_id - i + len(charactors)) % len(charactors)
                 if not charactors[idx]:

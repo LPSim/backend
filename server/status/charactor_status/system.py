@@ -42,8 +42,8 @@ class Frozen(RoundCharactorStatus):
             DamageElementalType.PHYSICAL,
         ] and self.usage > 0:
             value.damage += 2
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value
 
     def event_handler_MAKE_DAMAGE(

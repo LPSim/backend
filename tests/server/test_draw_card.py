@@ -28,7 +28,7 @@ def test_draw_card():
         commands = [
             'sw_card 1 2 3 4',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     while True:
         if match.need_respond(0):

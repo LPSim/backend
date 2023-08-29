@@ -33,11 +33,12 @@ class IllusoryBubble(UsageTeamStatus):
             return value
         if value.target_position.player_id == self.position.player_id:
             # attack self, not activate
+            raise NotImplementedError('Not tested part')
             return value
         if self.usage > 0:
             value.damage *= 2
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value
 
 

@@ -78,8 +78,7 @@ class CardBase(ObjectBase):
         super().__init__(*argv, **kwargs)
         # set cost label into cost
         self.cost.label = self.cost_label
-        if self.cost.original_value is not None:
-            self.cost.original_value.label = self.cost_label
+        assert self.cost.original_value is None
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         """

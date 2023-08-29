@@ -1,5 +1,7 @@
 import time
 import json
+
+import pytest
 from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
@@ -37,8 +39,8 @@ TEST_DECK = {
 
 
 def test_match_pipeline():
-    agent_0 = NothingAgent(player_id = 0)
-    agent_1 = RandomAgent(player_id = 1)
+    agent_0 = RandomAgent(player_id = 0)
+    agent_1 = NothingAgent(player_id = 1)
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)
@@ -81,7 +83,7 @@ def test_save_load():
             'skill 0 omni omni omni',
             'skill 0 omni omni omni',  # run out of field
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match()
     deck = TEST_DECK
@@ -269,7 +271,7 @@ def test_use_card():
     assert match.match_state != MatchState.ERROR
 
 
-def test_support_over_maximum():
+def test_support_over_maximum_and_error_tests():
     """
     put 6 Ranas and check usages and order.
     """
@@ -301,7 +303,7 @@ def test_support_over_maximum():
             # 13 omni, all 1 usage
             'end',
         ],
-        random_after_no_command = True
+        only_use_command = True
     )
     match = Match(random_state = get_random_state())
     deck = {
@@ -406,10 +408,15 @@ def test_support_over_maximum():
 
     assert match.match_state != MatchState.ERROR
 
+    # after start, set deck will raise error
+    with pytest.raises(ValueError):
+        match.set_deck([deck, deck])
+    assert not match.start()
+
 
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
     # test_random_same_after_load()
     # test_use_card()
-    test_support_over_maximum()
+    test_support_over_maximum_and_error_tests()

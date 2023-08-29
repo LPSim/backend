@@ -31,15 +31,17 @@ class SummonBase(CardBase):
             if self.max_usage < self.usage:
                 self.usage = self.max_usage
         elif self.renew_type == 'RESET':
+            raise NotImplementedError('RESET is not supported')
             self.usage = new_status.usage
-        elif self.renew_type == 'RESET_WITH_MAX':
+        else:
+            assert self.renew_type == 'RESET_WITH_MAX'
             self.usage = max(self.usage, new_status.usage)
 
     def is_valid(self, match: Any) -> bool:
         """
-        For summons, it is expected to be always invalid to use as card.
+        For summons, it is expected to never be used as card.
         """
-        return False
+        raise AssertionError('SummonBase is not expected to be used as card')
 
 
 class AttackerSummonBase(SummonBase):
@@ -96,6 +98,7 @@ class AttackerSummonBase(SummonBase):
         When usage is 0, remove the summon.
         """
         if self.usage <= 0:
+            raise AssertionError('Not tested part')
             return self._remove()
         return []
 
@@ -150,6 +153,7 @@ class ShieldSummonBase(SummonBase):
         player_id = self.position.player_id
         if self.usage > 0 and self.attack_until_run_out_of_usage:
             # attack until run out of usage
+            raise AssertionError('Not tested part')
             return []
         return [
             MakeDamageAction(
@@ -193,12 +197,13 @@ class ShieldSummonBase(SummonBase):
             return value
         if self.usage > 0:
             if value.damage < self.min_damage_to_trigger:
+                raise NotImplementedError('Not tested part')
                 # damage too small to trigger
                 return value
             if self.decrease_usage_type != 'ONE':
                 raise NotImplementedError('Only ONE is supported')
             decrease = min(self.max_in_one_time, value.damage)
             value.damage -= decrease
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value

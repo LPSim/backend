@@ -46,8 +46,8 @@ class CatalyzingField(UsageTeamStatus):
             DamageElementalType.ELECTRO,
         ] and self.usage > 0:
             value.damage += 1
-            if mode == 'REAL':
-                self.usage -= 1
+            assert mode == 'REAL'
+            self.usage -= 1
         return value
 
     def event_handler_MAKE_DAMAGE(
