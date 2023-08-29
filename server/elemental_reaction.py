@@ -350,7 +350,6 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.CRYSTALLIZE:
         position = ObjectPosition(
             player_id = 1 - player_id,
-            charactor_id = -1,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -361,7 +360,6 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.BURNING:
         position = ObjectPosition(
             player_id = 1 - player_id,
-            charactor_id = -1,
             area = ObjectPositionType.SUMMON
         )
         return CreateObjectAction(
@@ -372,7 +370,6 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.BLOOM:
         position = ObjectPosition(
             player_id = 1 - player_id,
-            charactor_id = -1,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -383,7 +380,6 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
             player_id = 1 - player_id,
-            charactor_id = -1,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -403,7 +399,6 @@ def elemental_reaction_side_effect_ver_3_3(
     if reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
             player_id = 1 - player_id,
-            charactor_id = -1,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(

@@ -30,7 +30,6 @@ class SystemEventHandlerBase(ObjectBase):
 
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
-        charactor_id = -1,
         area = ObjectPositionType.SYSTEM
     )
 

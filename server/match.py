@@ -564,7 +564,6 @@ class Match(BaseModel):
                 match = self,
                 position = ObjectPosition(
                     player_id = pnum,
-                    charactor_id = -1,
                     area = ObjectPositionType.SYSTEM
                 ),
                 id = 0,
@@ -605,7 +604,6 @@ class Match(BaseModel):
                 match = self,
                 position = ObjectPosition(
                     player_id = pnum,
-                    charactor_id = -1,
                     area = ObjectPositionType.SYSTEM
                 ),
                 id = 0,
@@ -835,7 +833,6 @@ class Match(BaseModel):
             match = self,
             position = ObjectPosition(
                 player_id = player_id,
-                charactor_id = -1,
                 area = ObjectPositionType.SYSTEM
             ),
             id = 0
@@ -1070,7 +1067,6 @@ class Match(BaseModel):
             match = self,
             position = ObjectPosition(
                 player_id = response.player_id,
-                charactor_id = -1,
                 area = ObjectPositionType.SYSTEM
             ),
             id = 0,
@@ -1133,7 +1129,6 @@ class Match(BaseModel):
             action_type = 'END',
             position = ObjectPosition(
                 player_id = response.player_id,
-                charactor_id = -1,
                 area = ObjectPositionType.SYSTEM
             ),
         ))
@@ -1477,7 +1472,6 @@ class Match(BaseModel):
         # generate dice based on color
         dice_position = ObjectPosition(
             player_id = player_id,
-            charactor_id = -1,
             area = ObjectPositionType.DICE
         )
         if is_random:

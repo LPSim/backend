@@ -38,7 +38,6 @@ class SkillBase(ObjectBase):
     cost_label: int
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
-        charactor_id = -1,
         area = ObjectPositionType.INVALID
     )
 
@@ -314,7 +313,6 @@ class CharactorBase(ObjectBase):
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     position: ObjectPosition = ObjectPosition(
         player_id = -1,
-        charactor_id = -1,
         area = ObjectPositionType.INVALID
     )
 

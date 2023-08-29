@@ -20,7 +20,7 @@ class ObjectPosition(BaseModel):
     events.
     """
     player_id: int
-    charactor_id: int  # TODO set default to -1
+    charactor_id: int = -1
     area: ObjectPositionType
 
     def check_position_valid(

@@ -82,7 +82,6 @@ class SupportBase(CardBase):
             object_id = self.id,
             target_position = ObjectPosition(
                 player_id = self.position.player_id,
-                charactor_id = -1,
                 area = ObjectPositionType.SUPPORT,
             ),
         ))
