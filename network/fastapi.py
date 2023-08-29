@@ -37,24 +37,32 @@ def get_new_match(seed: Any = None, rich: bool = False):
         Timmie*2
         Rana*2
         Strategize*2
-        Timmie*22
+        The Bestest Travel Companion!*2
+        The Bestest Travel Companion!*20
         '''
     )
+    # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
+    # deck_dict = deck.dict()
+    # deck_dict['cards'] += [old_wine] * 12
+    # deck = Deck(**deck_dict)
     if seed:
         match: Match = Match(random_state = seed)
     else:
         match: Match = Match()
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.random_first_player = False
     if rich:
         set_16_omni(match)
     match.start()
     match.step()
+    while match.need_respond(0):
+        make_respond(agent_0, match)
     return match
 
 
 agent_0 = NothingAgent(player_id = 0)
-agent_0 = InteractionAgent(player_id = 0, only_use_command = True)
+# agent_0 = InteractionAgent(player_id = 0, only_use_command = True)
 agent_1 = InteractionAgent(player_id = 1, only_use_command = True)
 
 
