@@ -86,9 +86,8 @@ class RemoveCardAction(ActionBase):
     Action for removing cards.
     """
     type: Literal[ActionTypes.REMOVE_CARD] = ActionTypes.REMOVE_CARD
-    player_id: int
-    card_id: int
-    card_position: Literal['HAND', 'DECK']
+    position: ObjectPosition
+    card_idx: int
     remove_type: Literal['USED', 'BURNED']
 
 

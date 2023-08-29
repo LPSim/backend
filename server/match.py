@@ -1120,9 +1120,11 @@ class Match(BaseModel):
         table = self.player_tables[response.player_id]
         actions: List[ActionBase] = []
         actions.append(RemoveCardAction(
-            player_id = response.player_id,
-            card_id = response.card_id,
-            card_position = 'HAND',
+            position = ObjectPosition(
+                player_id = response.player_id,
+                area = ObjectPositionType.HAND
+            ),
+            card_idx = response.card_id,
             remove_type = 'BURNED'
         ))
         actions.append(RemoveDiceAction(
@@ -1218,9 +1220,11 @@ class Match(BaseModel):
         if card.type == ObjectType.CARD:
             # only card type will be removed from hand.
             actions.append(RemoveCardAction(
-                player_id = response.player_id,
-                card_id = request.card_id,
-                card_position = 'HAND',
+                position = ObjectPosition(
+                    player_id = response.player_id,
+                    area = ObjectPositionType.HAND
+                ),
+                card_idx = request.card_id,
                 remove_type = 'USED',
             ))
         actions += card.get_actions(
@@ -1421,14 +1425,14 @@ class Match(BaseModel):
 
     def _action_remove_card(self, action: RemoveCardAction) \
             -> List[RemoveCardEventArguments]:
-        player_id = action.player_id
-        card_position = action.card_position
+        player_id = action.position.player_id
+        card_position = action.position.area
         remove_type = action.remove_type  # used or burned (Keqing, EleTuning)
         table = self.player_tables[player_id]
-        if card_position == 'HAND':
-            card = table.hands.pop(action.card_id)
-        # elif card_position == 'DECK':
-        #     card = table.table_deck.pop(action.card_id)
+        if card_position == ObjectPositionType.HAND:
+            card = table.hands.pop(action.card_idx)
+        # elif card_position == ObjectPositionType.DECK:
+        #     card = table.table_deck.pop(action.card_idx)
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f'Unknown card position {card_position}.')
