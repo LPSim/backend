@@ -19,13 +19,6 @@ class ArtifactBase(CardBase):
     cost: Cost
     usage: int
 
-    def act(self):
-        """
-        when this support card is activated from hand, this function is called
-        to update the status.
-        """
-        raise NotImplementedError()
-
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         # can quip on all self alive charactors
         ret: List[CardActionTarget] = []

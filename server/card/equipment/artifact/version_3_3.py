@@ -60,12 +60,6 @@ class SmallElementalArtifact(ArtifactBase):
         self.usage = 1
         return []
 
-    def act(self):
-        """
-        When activated, reset usage
-        """
-        self.usage = 1
-
     def value_modifier_COST(
         self, 
         value: CostValue, 

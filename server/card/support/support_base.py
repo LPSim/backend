@@ -42,13 +42,6 @@ class SupportBase(CardBase):
         """
         return self.position.area == ObjectPositionType.HAND
 
-    def act(self):
-        """
-        when this support card is activated from hand, this function is called
-        to update the status.
-        """
-        raise NotImplementedError()
-
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         max_support_number = match.match_config.max_support_number
         supports = (

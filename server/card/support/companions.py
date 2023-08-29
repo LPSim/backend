@@ -33,12 +33,6 @@ class Rana(CompanionBase):
         self.usage = 1
         return []
 
-    def act(self):
-        """
-        When activated, reset usage
-        """
-        self.usage = 1
-
     def event_handler_SKILL_END(self, event: SkillEndEventArguments) \
             -> list[CreateDiceAction]:
         """
