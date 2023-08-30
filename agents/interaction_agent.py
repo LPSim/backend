@@ -130,11 +130,15 @@ class InteractionAgent_V1_0(AgentBase):
                     cmd_num = int(cmd)
                     if cmd_num < 0 or cmd_num >= len(self.available_reqs):
                         print('invalid command number')
+                        if self.only_use_command:
+                            raise AssertionError()
                         continue
                     return self.available_reqs[cmd_num].name, i[1:]
                 except ValueError:
                     print('invalid command')
-                    continue               
+                    if self.only_use_command:
+                        raise AssertionError()
+                    continue
 
     def _colors_to_idx(self, color_names: List[str], 
                        all: List[DieColor]) -> List[int]:
@@ -182,6 +186,8 @@ class InteractionAgent_V1_0(AgentBase):
                 return self.resp_use_card(args, reqs)  # type: ignore
         except Exception as e:
             print(f'error: {e}')
+            if self.only_use_command:
+                raise e
             return self.generate_response(match)
 
     def resp_switch_card(
