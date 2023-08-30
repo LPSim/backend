@@ -379,12 +379,31 @@ class Match(BaseModel):
                     skill.position = charactor_copy.position.copy(deep = True)
                 player_table.charactors.append(charactor_copy)
             # copy cards
+            arcane_legend_cards = []
             for card in player_table.player_deck_information.cards:
                 card_copy = card.copy(deep = True)
                 card_copy.position.player_id = pnum
                 card_copy.position.area = ObjectPositionType.DECK
-                player_table.table_deck.append(card_copy)
+                if card_copy.type == ObjectType.ARCANE:
+                    arcane_legend_cards.append(card_copy)
+                else:
+                    player_table.table_deck.append(card_copy)
+            if len(arcane_legend_cards):
+                # have arcane legend cards, they must in hand
+                if len(arcane_legend_cards) > self.config.initial_hand_size:
+                    # shuffle arcane legend cards, and put over-maximum
+                    # into table deck
+                    self._random_shuffle(arcane_legend_cards)
+                    player_table.table_deck += arcane_legend_cards[
+                        self.config.initial_hand_size:]
+                    arcane_legend_cards = arcane_legend_cards[
+                        :self.config.initial_hand_size]
+            # shuffle deck
             self._random_shuffle(player_table.table_deck)
+            # prepend arcane legend cards
+            player_table.table_deck = (
+                arcane_legend_cards + player_table.table_deck
+            )
             # add draw initial cards action
             event_args = self._act(DrawCardAction(
                 player_id = pnum, 

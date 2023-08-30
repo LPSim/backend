@@ -20,9 +20,9 @@ def test_covenant_of_rock():
             "choose 0",
             "reroll",
             "TEST 1 no card can use",
-            "sw_char 1 1",
+            "sw_char 1 0",
             "tune 0 6",
-            "skill 1 0 1 2",
+            "skill 0 0 1 2",
             "tune 0 1",
             "skill 0 0 1 2",
             "sw_char 2 0",
@@ -106,8 +106,10 @@ def test_rock_dice_different_not_omni():
             "sw_card",
             "choose 0",
             "reroll",
-            "sw_char 1 1",
-            "skill 0 0 5 6",
+            "sw_char 1 0",
+            "tune 0 6",
+            "skill 0 0 1 2",
+            "tune 0 1",
             "skill 0 0 1 2",
             "sw_char 2 0",
         ],
@@ -170,6 +172,38 @@ def test_rock_dice_different_not_omni():
         assert len(colors) == 2
 
 
+def test_arcane_card_always_in_hand():
+    """
+    when 3 arcane card, they should always be the first three
+    """
+    deck = Deck.from_str(
+        """
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        # Wine-Stained Tricorne*2
+        # Timmie*2
+        # Rana*2
+        # Strategize*2
+        # The Bestest Travel Companion!*2
+        # Covenant of Rock
+        Covenant of Rock*3
+        Strategize*27
+        """
+    )
+    for i in range(50):
+        match = Match()
+        match.set_deck([deck, deck])
+        match.config.max_same_card_number = 30
+        assert match.start()
+        match.step()
+        for table in match.player_tables:
+            first_three = table.hands[:3]
+            for card in first_three:
+                assert card.name == 'Covenant of Rock'
+
+
 if __name__ == '__main__':
-    test_covenant_of_rock()
+    # test_covenant_of_rock()
     test_rock_dice_different_not_omni()
+    # test_arcane_card_always_in_hand()

@@ -124,7 +124,10 @@ async def post_respond(data: RespondData):
     match.respond(resp)
     match.step()
     for agent in (agent_0, agent_1):
-        if agent.__class__ != InteractionAgent or len(agent.commands) > 0:
+        if (
+            agent.__class__ != InteractionAgent 
+            or len(agent.commands) > 0  # type: ignore
+        ):
             while match.need_respond(agent.player_id):
                 make_respond(agent, match)
     return JSONResponse(match.dict())
