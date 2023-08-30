@@ -75,7 +75,7 @@ class SmallElementalArtifact(ArtifactBase):
             # has usage
             if not self.position.check_position_valid(
                 value.position, value.match,
-                player_id_same = True, 
+                player_idx_same = True, 
                 source_area = ObjectPositionType.CHARACTOR,
             ):
                 # not from self position or not equipped
@@ -89,20 +89,20 @@ class SmallElementalArtifact(ArtifactBase):
             ) == 0:  # no label match
                 return value
             position = value.position
-            assert self.position.charactor_id != -1
+            assert self.position.charactor_idx != -1
             if position.area == ObjectPositionType.CHARACTOR:
                 # cost from charactor
-                if position.charactor_id != self.position.charactor_id:
+                if position.charactor_idx != self.position.charactor_idx:
                     # not same charactor
                     return value
             else:
                 assert position.area == ObjectPositionType.HAND
                 # cost from hand card, is a talent card
                 equipped_charactor = value.match.player_tables[
-                    self.position.player_id
-                ].charactors[self.position.charactor_id]
+                    self.position.player_idx
+                ].charactors[self.position.charactor_idx]
                 for card in value.match.player_tables[
-                        self.position.player_id].hands:
+                        self.position.player_idx].hands:
                     if card.id == value.id:
                         if card.charactor_name != equipped_charactor.name:
                             # talent card not for this charactor

@@ -105,15 +105,15 @@ class IllusoryTorrent(PassiveSkillBase):
         self, value: CombatActionValue, mode: Literal['TEST', 'REAL'],
     ) -> CombatActionValue:
         """
-        When combat action is switch, player id is self, switch from mona to
+        When combat action is switch, player index is self, switch from mona to
         other people, has usage, and currently is a combat action,
         change the combat action to quick action and decrease usage.
         """
         if value.action_type != 'SWITCH':
             return value
         if not self.position.check_position_valid(
-            value.position, value.match, player_id_same = True,
-            charactor_id_same = True,
+            value.position, value.match, player_idx_same = True,
+            charactor_idx_same = True,
         ):
             return value
         if self.usage <= 0:
@@ -154,7 +154,7 @@ class ProphecyOfSubmersion(SkillTalent):
             value.position, value.match,
             source_area = ObjectPositionType.CHARACTOR,  # quipped
             source_is_active_charactor = True,  # active charactor
-            player_id_same = True,  # self damage
+            player_idx_same = True,  # self damage
         ):
             return value
         if ElementType.HYDRO not in value.reacted_elements:

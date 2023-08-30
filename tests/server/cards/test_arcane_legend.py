@@ -11,9 +11,9 @@ from agents.nothing_agent import NothingAgent
 
 
 def test_covenant_of_rock():
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -98,9 +98,9 @@ def test_rock_dice_different_not_omni():
     stop in using card, and set random random_state, then use card again
     to check always different and not omni
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -153,7 +153,7 @@ def test_rock_dice_different_not_omni():
     assert card_req is not None
     card_resp = UseCardResponse(
         request = card_req,
-        cost_ids = [],
+        dice_idxs = [],
         target = None
     )
     match_bk = match.copy(deep = True)

@@ -21,7 +21,7 @@ def test_crystallize():
     result: agent 1 get two crystallize, and agent 0 attack 3 + 1 - 2 = 2hp.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -37,7 +37,7 @@ def test_crystallize():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -117,7 +117,7 @@ def test_frozen():
         1 hydro to p0c2, end.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -137,7 +137,7 @@ def test_frozen():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -230,7 +230,7 @@ def test_frozen_and_pyro():
     agent 1 end, end, end.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -256,7 +256,7 @@ def test_frozen_and_pyro():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -327,7 +327,7 @@ def test_burning_flame():
     result: 18 damage and 2 burning flame.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -353,7 +353,7 @@ def test_burning_flame():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -430,7 +430,7 @@ def test_dendro_core_catalyzing_field():
     result: 22 damage and no status.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -461,7 +461,7 @@ def test_dendro_core_catalyzing_field():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -526,9 +526,9 @@ def test_swirl():
     """
     first: swirl pyro and hydro
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -581,9 +581,9 @@ def test_swirl_2():
     """
     second: swirl electro and hydro
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -637,9 +637,9 @@ def test_swirl_3():
     third: swirl cryo and hydro, and swirl pyro. To apply four elements, 
     after match start, modify p1c0 skill 1 element to pyro.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -715,9 +715,9 @@ def test_swirl_4():
     """
     fourth: swirl defeated enemys should have no damage on it.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -775,7 +775,7 @@ def test_swirl_with_catalyzing_field():
         will not trigger catalyzing field.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -793,7 +793,7 @@ def test_swirl_with_catalyzing_field():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -874,7 +874,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
         will not trigger catalyzing field.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -890,7 +890,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -988,7 +988,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
         will not trigger catalyzing field.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -1004,7 +1004,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -1103,7 +1103,7 @@ def test_overloaded():
     kill not need to choose charactor.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -1116,7 +1116,7 @@ def test_overloaded():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -1183,11 +1183,11 @@ def test_overloaded():
             while True:
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
-                    assert match.player_tables[0].active_charactor_id == 0
+                    assert match.player_tables[0].active_charactor_idx == 0
                 if test_id == 2:
-                    assert match.player_tables[0].active_charactor_id == 1
+                    assert match.player_tables[0].active_charactor_idx == 1
                 if test_id == 3:
-                    assert match.player_tables[0].active_charactor_id == 2
+                    assert match.player_tables[0].active_charactor_idx == 2
                 else:
                     break
             make_respond(agent_1, match)
@@ -1203,9 +1203,9 @@ def test_overloaded():
 
 
 def test_background_overloaded():
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -1252,7 +1252,7 @@ def test_background_overloaded():
     assert len(agent_1.commands) == 0
     assert match.round_number == 2
     assert len(match.player_tables[0].team_status) == 0
-    assert match.player_tables[0].active_charactor_id == 0
+    assert match.player_tables[0].active_charactor_idx == 0
     check_hp(match, [[86, 6, 6], [10, 10, 10]])
 
     assert match.state != MatchState.ERROR

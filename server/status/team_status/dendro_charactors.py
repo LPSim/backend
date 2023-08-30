@@ -33,7 +33,7 @@ class ShrineOfMaya(RoundTeamStatus):
             return []
         match = event.match
         active_charactor = match.player_tables[
-            self.position.player_id].get_active_charactor()
+            self.position.player_idx].get_active_charactor()
         assert active_charactor is not None
         if (
             active_charactor.name == 'Nahida' 
@@ -42,7 +42,7 @@ class ShrineOfMaya(RoundTeamStatus):
             # talent equipped, check if have electro charactor.
             has_electro_charactor = False
             for charactor in match.player_tables[
-                    self.position.player_id].charactors:
+                    self.position.player_idx].charactors:
                 if charactor.element == ElementType.ELECTRO:
                     has_electro_charactor = True
                     break
@@ -51,7 +51,7 @@ class ShrineOfMaya(RoundTeamStatus):
                 # Seed of Skandha.
                 ret = []
                 for charactor in match.player_tables[
-                        1 - self.position.player_id].charactors:
+                        1 - self.position.player_idx].charactors:
                     for status in charactor.status:
                         if status.name == 'Seed of Skandha':
                             position = status.position.copy(deep = True)
@@ -74,10 +74,10 @@ class ShrineOfMaya(RoundTeamStatus):
         """
         +1 on self elemental reaction damage.
         """
-        if value.target_position.player_id == self.position.player_id:
+        if value.target_position.player_idx == self.position.player_idx:
             # attack self, not activate
             return value
-        if value.position.player_id != self.position.player_id:
+        if value.position.player_idx != self.position.player_idx:
             # not self, not activate
             return value
         if value.element_reaction is not ElementalReactionType.NONE:

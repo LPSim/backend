@@ -15,10 +15,10 @@ def test_rana():
     first: test one round one time, can use imeediately, only elemental skill
     will trigger, can trigger multiple Rana.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent_V1_0(
         version = '1.0',
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -107,7 +107,7 @@ def test_rana():
     """
     agent_0 = InteractionAgent_V1_0(
         version = '1.0',
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -121,7 +121,7 @@ def test_rana():
     )
     agent_1 = InteractionAgent_V1_0(
         version = '1.0',
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -213,7 +213,7 @@ def test_timmie():
     """
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -234,7 +234,7 @@ def test_timmie():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",

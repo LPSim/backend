@@ -14,9 +14,9 @@ def test_fischl():
     when run out of Oz, Oz will disappear immediately, Oz can trigger
     catalyzing field.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -140,9 +140,9 @@ def test_fischl():
     second: when no talent or talent on other Fischl, cannot trigger Oz attack.
     re-summon Oz will refresh usage. Can equip talent multiple times.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",

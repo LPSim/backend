@@ -46,7 +46,7 @@ class SupportBase(CardBase):
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         max_support_number = match.config.max_support_number
         supports = (
-            match.player_tables[self.position.player_id].supports
+            match.player_tables[self.position.player_idx].supports
         )
         assert max_support_number >= len(supports)
         if len(supports) == max_support_number:
@@ -69,7 +69,7 @@ class SupportBase(CardBase):
         ret: List[RemoveObjectAction | MoveObjectAction] = []
         max_support_number = match.config.max_support_number
         supports = (
-            match.player_tables[self.position.player_id].supports
+            match.player_tables[self.position.player_idx].supports
         )
         assert max_support_number >= len(supports)
         if len(supports) == max_support_number:
@@ -82,7 +82,7 @@ class SupportBase(CardBase):
             object_position = self.position,
             object_id = self.id,
             target_position = ObjectPosition(
-                player_id = self.position.player_id,
+                player_idx = self.position.player_idx,
                 area = ObjectPositionType.SUPPORT,
             ),
         ))

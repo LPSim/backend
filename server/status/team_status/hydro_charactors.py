@@ -27,11 +27,11 @@ class IllusoryBubble(UsageTeamStatus):
         """
         if not self.position.check_position_valid(
             value.position, value.match,
-            player_id_same = True, target_area = ObjectPositionType.CHARACTOR,
+            player_idx_same = True, target_area = ObjectPositionType.CHARACTOR,
         ):
             # not from self position or not charactor skill
             return value
-        if value.target_position.player_id == self.position.player_id:
+        if value.target_position.player_idx == self.position.player_idx:
             # attack self, not activate
             raise NotImplementedError('Not tested part')
             return value

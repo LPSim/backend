@@ -37,7 +37,7 @@ class SkillBase(ObjectBase):
     cost: Cost
     cost_label: int
     position: ObjectPosition = ObjectPosition(
-        player_id = -1,
+        player_idx = -1,
         area = ObjectPositionType.INVALID
     )
 
@@ -65,13 +65,13 @@ class SkillBase(ObjectBase):
         """
         return [
             ChargeAction(
-                player_id = self.position.player_id,
-                charactor_id = self.position.charactor_id,
+                player_idx = self.position.player_idx,
+                charactor_idx = self.position.charactor_idx,
                 charge = 1,
             ),
             MakeDamageAction(
-                player_id = self.position.player_id,
-                target_id = 1 - self.position.player_id,
+                player_idx = self.position.player_idx,
+                target_idx = 1 - self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -233,8 +233,8 @@ class TalentBase(CardBase):
         if self.position.area != ObjectPositionType.HAND:
             # not in hand, cannot equip
             raise AssertionError('Talent is not in hand')
-        table = match.player_tables[self.position.player_id]
-        return (table.charactors[table.active_charactor_id].name
+        table = match.player_tables[self.position.player_idx]
+        return (table.charactors[table.active_charactor_idx].name
                 == self.charactor_name)
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
@@ -255,8 +255,8 @@ class TalentBase(CardBase):
         """
         assert target is None
         ret: List[Actions] = []
-        table = match.player_tables[self.position.player_id]
-        charactor = table.charactors[table.active_charactor_id]
+        table = match.player_tables[self.position.player_idx]
+        charactor = table.charactors[table.active_charactor_idx]
         # check if need to remove current talent
         if charactor.talent is not None:
             ret.append(RemoveObjectAction(
@@ -311,7 +311,7 @@ class CharactorBase(ObjectBase):
     version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     position: ObjectPosition = ObjectPosition(
-        player_id = -1,
+        player_idx = -1,
         area = ObjectPositionType.INVALID
     )
 

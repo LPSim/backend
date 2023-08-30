@@ -17,12 +17,12 @@ def test_response_is_valid():
     deck = Deck.from_str('charactor:Nahida')
     match.player_tables[0].charactors.append(deck.charactors[0])
     match.player_tables[1].charactors.append(deck.charactors[0])
-    match.player_tables[0].active_charactor_id = 0
-    match.player_tables[1].active_charactor_id = 0
+    match.player_tables[0].active_charactor_idx = 0
+    match.player_tables[1].active_charactor_idx = 0
     req = SwitchCharactorRequest(
-        player_id = 0,
-        active_charactor_id = 0,
-        candidate_charactor_ids = [1],
+        player_idx = 0,
+        active_charactor_idx = 0,
+        candidate_charactor_idxs = [1],
         dice_colors = [DieColor.CRYO, DieColor.PYRO],
         cost = Cost(
             any_dice_number = 1,
@@ -30,61 +30,61 @@ def test_response_is_valid():
     )
     resp = SwitchCharactorResponse(
         request = req,
-        charactor_id = 1,
-        cost_ids = [0],
+        charactor_idx = 1,
+        dice_idxs = [0],
     )
     assert resp.is_valid(match)
-    resp.charactor_id = 0
+    resp.charactor_idx = 0
     assert not resp.is_valid(match)
-    resp.charactor_id = 1
-    resp.cost_ids = []
+    resp.charactor_idx = 1
+    resp.dice_idxs = []
     assert not resp.is_valid(match)
-    resp.cost_ids = [-1]
+    resp.dice_idxs = [-1]
     assert not resp.is_valid(match)
-    resp.cost_ids = [0, 1]
+    resp.dice_idxs = [0, 1]
     assert not resp.is_valid(match)
-    resp.cost_ids = [5]
+    resp.dice_idxs = [5]
     assert not resp.is_valid(match)
-    resp.cost_ids = []
+    resp.dice_idxs = []
     resp.request.cost.any_dice_number = 0
     assert resp.is_valid(match)
     req = RerollDiceRequest(
-        player_id = 0,
+        player_idx = 0,
         colors = [DieColor.CRYO, DieColor.PYRO, DieColor.PYRO, DieColor.PYRO],
         reroll_times = 1,
     )
     resp = RerollDiceResponse(
         request = req,
-        reroll_dice_ids = [0, 1],
+        reroll_dice_idxs = [0, 1],
     )
     assert resp.is_valid(match)
-    resp.reroll_dice_ids = [0, 0]
+    resp.reroll_dice_idxs = [0, 0]
     assert not resp.is_valid(match)
-    resp.reroll_dice_ids = [-1, 0]
+    resp.reroll_dice_idxs = [-1, 0]
     assert not resp.is_valid(match)
-    resp.reroll_dice_ids = [0, 4]
+    resp.reroll_dice_idxs = [0, 4]
     assert not resp.is_valid(match)
     req = SwitchCardRequest(
-        player_id = 0,
+        player_idx = 0,
         card_names = ['A', 'B', 'A', 'B', 'C'],
         maximum_switch_number = 2,
     )
     resp = SwitchCardResponse(
         request = req,
-        card_ids = [0, 1],
+        card_idxs = [0, 1],
     )
     assert resp.is_valid(match)
-    resp.card_ids = [0, 0]
+    resp.card_idxs = [0, 0]
     assert not resp.is_valid(match)
-    resp.card_ids = [-1, 0]
+    resp.card_idxs = [-1, 0]
     assert not resp.is_valid(match)
-    resp.card_ids = [0, 5]
+    resp.card_idxs = [0, 5]
     assert not resp.is_valid(match)
-    resp.card_ids = [0, 1, 2, 3]
+    resp.card_idxs = [0, 1, 2, 3]
     assert not resp.is_valid(match)
     req = UseCardRequest(
-        player_id = 0,
-        card_id = 0,
+        player_idx = 0,
+        card_idx = 0,
         dice_colors = [DieColor.CRYO, DieColor.PYRO, DieColor.PYRO, 
                        DieColor.PYRO],
         targets = [],
@@ -94,22 +94,22 @@ def test_response_is_valid():
     )
     resp = UseCardResponse(
         request = req,
-        cost_ids = [1, 2],
+        dice_idxs = [1, 2],
         target = None
     )
     assert resp.is_valid(match)
-    resp.cost_ids = [1, 1]
+    resp.dice_idxs = [1, 1]
     assert not resp.is_valid(match)
-    resp.cost_ids = [-1, 1]
+    resp.dice_idxs = [-1, 1]
     assert not resp.is_valid(match)
-    resp.cost_ids = [1, 5]
+    resp.dice_idxs = [1, 5]
     assert not resp.is_valid(match)
-    resp.cost_ids = [1, 2, 3]
+    resp.dice_idxs = [1, 2, 3]
     assert not resp.is_valid(match)
-    resp.cost_ids = [1, 2]
+    resp.dice_idxs = [1, 2]
     target = CardActionTarget(
         target_position = ObjectPosition(
-            player_id = 0,
+            player_idx = 0,
             area = ObjectPositionType.HAND
         ),
         target_id = 123,
@@ -124,9 +124,9 @@ def test_response_is_valid():
     resp.target.target_id = 321
     assert not resp.is_valid(match)
     req = UseSkillRequest(
-        player_id = 0,
-        charactor_id = 2,
-        skill_id = 1,
+        player_idx = 0,
+        charactor_idx = 2,
+        skill_idx = 1,
         dice_colors = [DieColor.CRYO, DieColor.PYRO, DieColor.PYRO, 
                        DieColor.PYRO],
         cost = Cost(
@@ -137,20 +137,20 @@ def test_response_is_valid():
     )
     resp = UseSkillResponse(
         request = req,
-        cost_ids = [0, 2],
+        dice_idxs = [0, 2],
     )
     assert resp.is_valid(match)
-    resp.cost_ids = []
+    resp.dice_idxs = []
     assert not resp.is_valid(match)
-    resp.cost_ids = [-1, 3]
+    resp.dice_idxs = [-1, 3]
     assert not resp.is_valid(match)
-    resp.cost_ids = [0, 0]
+    resp.dice_idxs = [0, 0]
     assert not resp.is_valid(match)
-    resp.cost_ids = [0, 5]
+    resp.dice_idxs = [0, 5]
     assert not resp.is_valid(match)
-    resp.cost_ids = [0, 1, 2]
+    resp.dice_idxs = [0, 1, 2]
     assert not resp.is_valid(match)
-    resp.cost_ids = [1, 2]
+    resp.dice_idxs = [1, 2]
     assert not resp.is_valid(match)
 
 

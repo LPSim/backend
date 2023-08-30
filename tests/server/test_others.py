@@ -13,23 +13,23 @@ from server.match import Match, MatchConfig
 
 def test_object_position_validation():
     p1 = ObjectPosition(
-        player_id = 0,
-        charactor_id = 1,
+        player_idx = 0,
+        charactor_idx = 1,
         area = ObjectPositionType.CHARACTOR_STATUS,
     )
     p2 = ObjectPosition(
-        player_id = 1,
-        charactor_id = 0,
+        player_idx = 1,
+        charactor_idx = 0,
         area = ObjectPositionType.CHARACTOR,
     )
     match = Match()
-    match.player_tables[0].active_charactor_id = 1
-    match.player_tables[1].active_charactor_id = 0
+    match.player_tables[0].active_charactor_idx = 1
+    match.player_tables[1].active_charactor_idx = 0
     assert p1.check_position_valid(p2, match)
-    assert not p1.check_position_valid(p2, match, player_id_same = True)
-    assert not p1.check_position_valid(p2, match, charactor_id_same = True)
-    assert not p1.check_position_valid(p2, match, player_id_same = True, 
-                                       charactor_id_same = True)
+    assert not p1.check_position_valid(p2, match, player_idx_same = True)
+    assert not p1.check_position_valid(p2, match, charactor_idx_same = True)
+    assert not p1.check_position_valid(p2, match, player_idx_same = True, 
+                                       charactor_idx_same = True)
     assert not p1.check_position_valid(p2, match, area_same = True)
     assert p1.check_position_valid(p2, match, area_same = False)
     assert p1.check_position_valid(
@@ -49,19 +49,19 @@ def test_object_position_validation():
     assert not p1.check_position_valid(
         p2, match, target_is_active_charactor = False)
     assert p1.check_position_valid(
-        p2, match, player_id_same = False)
+        p2, match, player_idx_same = False)
     assert p1.check_position_valid(
-        p2, match, player_id_same = False, charactor_id_same = False)
+        p2, match, player_idx_same = False, charactor_idx_same = False)
     assert not p1.check_position_valid(
-        p2, match, player_id_same = True, charactor_id_same = False)
+        p2, match, player_idx_same = True, charactor_idx_same = False)
     assert not p1.check_position_valid(
-        p2, match, player_id_same = False, charactor_id_same = True)
+        p2, match, player_idx_same = False, charactor_idx_same = True)
 
 
 def test_objectbase_wrong_handler_name():
     class WrongEventHandler(ObjectBase):
         position: ObjectPosition = ObjectPosition(
-            player_id = -1,
+            player_idx = -1,
             area = ObjectPositionType.INVALID,
         )
 
@@ -73,7 +73,7 @@ def test_objectbase_wrong_handler_name():
 
     class WrongValueModifier(ObjectBase):
         position: ObjectPosition = ObjectPosition(
-            player_id = -1,
+            player_idx = -1,
             area = ObjectPositionType.INVALID,
         )
 
@@ -152,8 +152,8 @@ def test_match_config_and_match_errors():
     match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
     assert match.start()
-    agent_0 = NothingAgent(player_id = 0)
-    agent_1 = RandomAgent(player_id = 1)
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = RandomAgent(player_idx = 1)
     non_exist_tested = False
     respond_no_request = False
     req = None
@@ -176,11 +176,11 @@ def test_match_config_and_match_errors():
                 req = match.requests[0].copy(deep = True)
                 assert match.check_request_exist(req)
                 resp = SwitchCardResponse(
-                    request = req, card_ids = [-1])  # type: ignore
+                    request = req, card_idxs = [-1])  # type: ignore
                 with pytest.raises(ValueError):
                     match.respond(resp)
-                resp.card_ids = []
-                resp.request.player_id = 2
+                resp.card_idxs = []
+                resp.request.player_idx = 2
                 with pytest.raises(ValueError):
                     match.respond(resp)
             resp = agent_0.generate_response(match)
@@ -197,7 +197,7 @@ def test_match_config_and_match_errors():
 def test_create_dice():
     match = Match()
     act = CreateDiceAction(
-        player_id = 0,
+        player_idx = 0,
         number = 4,
         random = True,
         different = True
@@ -205,13 +205,13 @@ def test_create_dice():
     with pytest.raises(ValueError):
         match._act(act)
     act = CreateDiceAction(
-        player_id = 0,
+        player_idx = 0,
         number = 4,
     )
     with pytest.raises(ValueError):
         match._act(act)
     act = CreateDiceAction(
-        player_id = 0,
+        player_idx = 0,
         number = 8,
         different = True,
     )
@@ -219,7 +219,7 @@ def test_create_dice():
         # different over maximum color number
         match._act(act)
     act = CreateDiceAction(
-        player_id = 0,
+        player_idx = 0,
         number = 7,
         different = True,
     )
@@ -229,7 +229,7 @@ def test_create_dice():
     match.player_tables[0].dice.colors.clear()
     for i in range(50):
         act = CreateDiceAction(
-            player_id = 0,
+            player_idx = 0,
             number = 3,
             different = True,
         )

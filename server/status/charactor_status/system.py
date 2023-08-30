@@ -33,7 +33,7 @@ class Frozen(RoundCharactorStatus):
         """
         if not self.position.check_position_valid(
             value.target_position, value.match,
-            player_id_same = True, charactor_id_same = True,
+            player_idx_same = True, charactor_idx_same = True,
         ):
             # not attack self, not activate
             return value

@@ -45,12 +45,12 @@ class Timmie(CompanionBase):
                     object_id = self.id,
                 ),
                 DrawCardAction(
-                    player_id = self.position.player_id,
+                    player_idx = self.position.player_idx,
                     number = 1,
                     draw_if_filtered_not_enough = True,
                 ),
                 CreateDiceAction(
-                    player_id = self.position.player_id,
+                    player_idx = self.position.player_idx,
                     number = 1,
                     color = DieColor.OMNI,
                 ),
@@ -84,18 +84,20 @@ class Rana(CompanionBase):
         and have usage, and have next charactor, generate a die with color 
         of next charactor.
         """
-        if (self.position.area == ObjectPositionType.SUPPORT
-                and event.action.position.player_id == self.position.player_id 
-                and event.action.skill_type == SkillType.ELEMENTAL_SKILL
-                and self.usage > 0):
-            table = event.match.player_tables[self.position.player_id]
-            next_id = table.next_charactor_id()
-            if next_id is not None:
+        if (
+            self.position.area == ObjectPositionType.SUPPORT
+            and event.action.position.player_idx == self.position.player_idx 
+            and event.action.skill_type == SkillType.ELEMENTAL_SKILL
+            and self.usage > 0
+        ):
+            table = event.match.player_tables[self.position.player_idx]
+            next_idx = table.next_charactor_id()
+            if next_idx is not None:
                 self.usage -= 1
-                ele_type: ElementType = table.charactors[next_id].element
+                ele_type: ElementType = table.charactors[next_idx].element
                 die_color = ELEMENT_TO_DIE_COLOR[ele_type]
                 return [CreateDiceAction(
-                    player_id = self.position.player_id,
+                    player_idx = self.position.player_idx,
                     number = 1,
                     color = die_color,
                 )]

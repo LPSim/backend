@@ -35,11 +35,11 @@ class AllSchemesToKnow(ElementalSkillBase):
         ret: List[Actions] = []
         damage_ret = super().get_actions(match)
         # get target charactors and active charactor.
-        player_id = self.position.player_id
-        target_table = match.player_tables[1 - player_id]
+        player_idx = self.position.player_idx
+        target_table = match.player_tables[1 - player_idx]
         target_charactors = target_table.charactors
         target_active_charactor = target_charactors[
-            target_table.active_charactor_id]
+            target_table.active_charactor_idx]
         # default set status to active charactor
         position = target_active_charactor.position.copy(deep = True)
         position.area = ObjectPositionType.CHARACTOR_STATUS
@@ -93,8 +93,8 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
         ret: List[Actions] = []
         damage_ret = super().get_actions(match)
         # get target charactors and active charactor.
-        player_id = self.position.player_id
-        target_table = match.player_tables[1 - player_id]
+        player_idx = self.position.player_idx
+        target_table = match.player_tables[1 - player_idx]
         target_charactors = target_table.charactors
         # apply to all opposing charactors.
         for charactor in target_charactors:
@@ -185,14 +185,14 @@ class TheSeedOfStoredKnowledge(SkillTalent):
             # not creating Shrine of Maya, do nothing.
             return []
         if not self.position.check_position_valid(
-            event.action.object_position, event.match, player_id_same = True,
+            event.action.object_position, event.match, player_idx_same = True,
             source_area = ObjectPositionType.CHARACTOR,
             source_is_active_charactor = True,
         ):
             # not self, or not equipped, or not active charactor, do nothing.
             return []
         match = event.match
-        table = match.player_tables[self.position.player_id]
+        table = match.player_tables[self.position.player_idx]
         has_hydro_charactor = False
         for charactor in table.charactors:
             if charactor.element == ElementType.HYDRO:

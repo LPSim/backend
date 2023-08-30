@@ -28,13 +28,13 @@ class CatalyzingField(UsageTeamStatus):
         Increase damage for dendro or electro damages, and decrease usage.
         """
         if not self.position.check_position_valid(
-            value.position, value.match, player_id_same = True,
+            value.position, value.match, player_idx_same = True,
         ):
             # source not self, not activate
             return value
         if not self.position.check_position_valid(
             value.target_position, value.match, 
-            player_id_same = False, target_is_active_charactor = True,
+            player_idx_same = False, target_is_active_charactor = True,
         ):
             # target not enemy, or target not active charactor, not activate
             return value
@@ -68,13 +68,13 @@ class DendroCore(UsageTeamStatus):
         Increase damage for electro or pyro damages by 2, and decrease usage.
         """
         if not self.position.check_position_valid(
-            value.position, value.match, player_id_same = True,
+            value.position, value.match, player_idx_same = True,
         ):
             # source not self, not activate
             return value
         if not self.position.check_position_valid(
             value.target_position, value.match, 
-            player_id_same = False, target_is_active_charactor = True,
+            player_idx_same = False, target_is_active_charactor = True,
         ):
             # target not enemy, or target not active charactor, not activate
             return value
@@ -107,7 +107,7 @@ class Crystallize(UsageTeamStatus):
         """
         Decrease damage by its usage, and decrease usage.
         """
-        if value.target_position.player_id != self.position.player_id:
+        if value.target_position.player_idx != self.position.player_idx:
             # attack enemy, not activate
             return value
         assert self.usage > 0

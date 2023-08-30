@@ -26,7 +26,7 @@ class PlayerTable(BaseModel):
         player_icon (CharactorIcons): The icon of the player's character.
         player_deck_information (Deck): The description of the player's deck.
 
-        active_charactor_id (int): The ID of the active character.
+        active_charactor_idx (int): The index of the active character.
         has_round_ended (bool): Whether the player has declared that the
             round has ended.
         dice (List[Dice]): The list of dice on the table.
@@ -46,8 +46,8 @@ class PlayerTable(BaseModel):
     player_deck_information: Deck = Deck()
 
     # table information
-    player_id: int
-    active_charactor_id: int = -1
+    player_idx: int
+    active_charactor_idx: int = -1
     has_round_ended: bool = False
     dice: Dice = Dice()
     team_status: List[TeamStatus] = []
@@ -63,7 +63,7 @@ class PlayerTable(BaseModel):
         if self.dice.position.area == ObjectPositionType.INVALID:
             # not initialized, do initialize.
             self.dice = Dice(position = ObjectPosition(
-                player_id = kwargs['player_id'],
+                player_idx = kwargs['player_idx'],
                 area = ObjectPositionType.DICE
             ))
 
@@ -72,10 +72,10 @@ class PlayerTable(BaseModel):
         Returns the order of dice colors.
         """
         result: List[DieColor] = [DieColor.OMNI]
-        assert self.active_charactor_id != -1, (
-            'Cannot get order when active charactor ID not set.'
+        assert self.active_charactor_idx != -1, (
+            'Cannot get order when active charactor index not set.'
         )
-        c_element = self.charactors[self.active_charactor_id].element
+        c_element = self.charactors[self.active_charactor_idx].element
         color = ELEMENT_TO_DIE_COLOR[c_element]
         result.append(color)
         for charactor in self.charactors:
@@ -129,11 +129,11 @@ class PlayerTable(BaseModel):
                 the list.
         """
         result: List[ObjectBase] = []
-        if self.active_charactor_id != -1:
+        if self.active_charactor_idx != -1:
             result += self.charactors[
-                self.active_charactor_id].get_object_lists()
+                self.active_charactor_idx].get_object_lists()
         for i in range(len(self.charactors)):
-            if i != self.active_charactor_id:
+            if i != self.active_charactor_idx:
                 result += self.charactors[i].get_object_lists()
         result += self.team_status
         result += self.summons
@@ -152,51 +152,51 @@ class PlayerTable(BaseModel):
         Returns the active charactor.
         """
         assert (
-            self.active_charactor_id >= 0 
-            and self.active_charactor_id < len(self.charactors)
+            self.active_charactor_idx >= 0 
+            and self.active_charactor_idx < len(self.charactors)
         )
-        return self.charactors[self.active_charactor_id]
+        return self.charactors[self.active_charactor_idx]
 
-    def next_charactor_id(self, current_id: int | None = None) -> int | None:
+    def next_charactor_id(self, current_idx: int | None = None) -> int | None:
         """
-        Returns the next charactor ID. If `current_id` is not provided, the
-        active charactor ID will be used.
+        Returns the next charactor index. If `current_id` is not provided, the
+        active charactor index will be used.
 
         Returns:
             int: the next charactor ID. If there is no next charactor, returns
                 None.
         """
-        if current_id is None:
-            current_id = self.active_charactor_id
-        assert self.charactors[current_id].is_alive, (
+        if current_idx is None:
+            current_idx = self.active_charactor_idx
+        assert self.charactors[current_idx].is_alive, (
             'Cannot get next charactor when current charactor is not alive.'
         )
         cnum = len(self.charactors)
         for i in range(1, cnum):
-            target = (current_id + i) % cnum
+            target = (current_idx + i) % cnum
             if self.charactors[target].is_alive:
                 return target
         return None
 
     def previous_charactor_id(
-            self, current_id: int | None = None) -> int | None:
+            self, current_idx: int | None = None) -> int | None:
         """
         Returns the previous charactor ID. If `current_id` is not provided, the
-        active charactor ID will be used.
+        active charactor index will be used.
 
         Returns:
             int: the previous charactor ID. If there is no previous charactor,
                 returns None.
         """
-        if current_id is None:
-            current_id = self.active_charactor_id
-        assert self.charactors[current_id].is_alive, (
+        if current_idx is None:
+            current_idx = self.active_charactor_idx
+        assert self.charactors[current_idx].is_alive, (
             'Cannot get previous charactor when current charactor is not '
             'alive.'
         )
         cnum = len(self.charactors)
         for i in range(1, cnum):
-            target = (cnum + current_id - i) % cnum
+            target = (cnum + current_idx - i) % cnum
             if self.charactors[target].is_alive:
                 return target
         return None

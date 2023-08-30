@@ -22,9 +22,9 @@ def test_draw_card():
     match.config.random_first_player = False
     match.start()
     match.step()
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         commands = [
             'sw_card 1 2 3 4',
         ],
@@ -59,7 +59,7 @@ def test_draw_card():
         match.config.random_first_player = False
         match.start()
         match.step()
-        agent_0 = NothingAgent(player_id = 0)
+        agent_0 = NothingAgent(player_idx = 0)
         while True:
             if match.need_respond(0):
                 make_respond(agent_0, match)
@@ -67,13 +67,13 @@ def test_draw_card():
                 assert len(match.requests) == 1
                 assert match.requests[0].name == 'SwitchCardRequest'
                 req = match.requests[0]
-                ids = []
+                idxs = []
                 for id, name in enumerate(req.card_names):
                     if name == 'Strategize':
-                        ids.append(id)
+                        idxs.append(id)
                 resp: SwitchCardResponse = SwitchCardResponse(
                     request = req,
-                    card_ids = ids,
+                    card_idxs = idxs,
                 )
                 match.respond(resp)
                 match.step()

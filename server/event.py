@@ -81,7 +81,7 @@ class ChooseCharactorEventArguments(EventArgumentsBase):
     type: Literal[
         ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
     action: ChooseCharactorAction
-    original_charactor_id: int
+    original_charactor_idx: int
 
 
 class CreateDiceEventArguments(EventArgumentsBase):
@@ -118,7 +118,7 @@ class RoundPrepareEventArguments(EventArgumentsBase):
     by the system when a new round starts, so it does not have an action.
 
     Args:
-        player_go_first (int): The ID of the player who goes first.
+        player_go_first (int): The index of the player who goes first.
         round (int): The number of the round.
         dice_colors (List[List[DiceColor]]): The colors of the dice of each
             player.
@@ -156,7 +156,7 @@ class SwitchCharactorEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
     action: SwitchCharactorAction
-    last_active_charactor_id: int
+    last_active_charactor_idx: int
 
 
 class ReceiveDamageEventArguments(EventArgumentsBase):
@@ -295,7 +295,7 @@ class RoundEndEventArguments(EventArgumentsBase):
     by the system when a round ends, so it does not have an action.
 
     Args:
-        player_go_first (int): The ID of the player who goes first.
+        player_go_first (int): The index of the player who goes first.
         round (int): The number of the round.
     """
     type: Literal[ActionTypes.ROUND_END] = ActionTypes.ROUND_END

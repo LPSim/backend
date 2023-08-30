@@ -49,7 +49,9 @@ from server.match import Match
 from server.deck import Deck
 from agents import RandomAgent
 deck_string = '''
-charactor:Fischl*3
+charactor:Fischl
+charactor:Mona
+charactor:Nahida
 Stellar Predator*10
 Strategize*10
 Laurel Coronet*10
@@ -62,8 +64,8 @@ match.config.max_same_card_number = 30  # disable deck limit
 match.start()
 match.step()
 
-agent_0 = RandomAgent(player_id = 0)
-agent_1 = RandomAgent(player_id = 1)
+agent_0 = RandomAgent(player_idx = 0)
+agent_1 = RandomAgent(player_idx = 1)
 
 while not match.is_game_end():
     if match.need_respond(0):

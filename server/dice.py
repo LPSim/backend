@@ -13,7 +13,7 @@ class Dice(ObjectBase):
         colors: list of colors of dice.
     """
     position: ObjectPosition = ObjectPosition(
-        player_id = -1,
+        player_idx = -1,
         area = ObjectPositionType.INVALID
     )
     type: Literal[ObjectType.DICE] = ObjectType.DICE

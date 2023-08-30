@@ -68,7 +68,7 @@ class CardBase(ObjectBase):
                   ObjectType.SUPPORT] = ObjectType.CARD
     version: str
     position: ObjectPosition = ObjectPosition(
-        player_id = -1,
+        player_idx = -1,
         area = ObjectPositionType.INVALID
     )
     cost: Cost

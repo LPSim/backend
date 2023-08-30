@@ -9,7 +9,7 @@ class RequestBase(BaseModel):
     Base class of request.
     """
     name: Literal['RequestBase'] = 'RequestBase'
-    player_id: int
+    player_idx: int
 
 
 class SwitchCardRequest(RequestBase):
@@ -20,7 +20,7 @@ class SwitchCardRequest(RequestBase):
 
 class ChooseCharactorRequest(RequestBase):
     name: Literal['ChooseCharactorRequest'] = 'ChooseCharactorRequest'
-    available_charactor_ids: List[int]
+    available_charactor_idxs: List[int]
 
 
 class RerollDiceRequest(RequestBase):
@@ -43,8 +43,8 @@ class SwitchCharactorRequest(RequestBase):
     Request for switch charactor. It can be combat or quick request.
     """
     name: Literal['SwitchCharactorRequest'] = 'SwitchCharactorRequest'
-    active_charactor_id: int
-    candidate_charactor_ids: List[int]
+    active_charactor_idx: int
+    candidate_charactor_idxs: List[int]
     dice_colors: List[DieColor]
     cost: Cost
 
@@ -55,8 +55,8 @@ class ElementalTuningRequest(RequestBase):
     """
     name: Literal['ElementalTuningRequest'] = 'ElementalTuningRequest'
     dice_colors: List[DieColor]
-    dice_ids: List[int]
-    card_ids: List[int]
+    dice_idxs: List[int]
+    card_idxs: List[int]
 
 
 class DeclareRoundEndRequest(RequestBase):
@@ -71,8 +71,8 @@ class UseSkillRequest(RequestBase):
     Request for use skill.
     """
     name: Literal['UseSkillRequest'] = 'UseSkillRequest'
-    charactor_id: int
-    skill_id: int
+    charactor_idx: int
+    skill_idx: int
     dice_colors: List[DieColor]
     cost: Cost
 
@@ -82,7 +82,7 @@ class UseCardRequest(RequestBase):
     Request for use card.
     """
     name: Literal['UseCardRequest'] = 'UseCardRequest'
-    card_id: int
+    card_idx: int
     dice_colors: List[DieColor]
     targets: List[CardActionTarget]
     cost: Cost
@@ -96,11 +96,11 @@ class ResponseBase(BaseModel):
     request: RequestBase
 
     @property
-    def player_id(self) -> int:
+    def player_idx(self) -> int:
         """
-        Return the player id of the response.
+        Return the player idx of the response.
         """
-        return self.request.player_id
+        return self.request.player_idx
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -111,82 +111,83 @@ class ResponseBase(BaseModel):
 
 class SwitchCardResponse(ResponseBase):
     """
-    Card ids want to switch, based on the request.
+    Card indices want to switch, based on the request.
     """
     name: Literal['SwitchCardResponse'] = 'SwitchCardResponse'
     request: SwitchCardRequest
-    card_ids: List[int]
+    card_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
-        if len(self.card_ids) > self.request.maximum_switch_number:
+        if len(self.card_idxs) > self.request.maximum_switch_number:
             return False
         return list_unique_range_right(
-            self.card_ids, minn = 0, maxn = len(self.request.card_names))
+            self.card_idxs, minn = 0, maxn = len(self.request.card_names))
 
     @property
     def card_names(self) -> List[str]:
         """
         Return the card names of the response.
         """
-        return [self.request.card_names[i] for i in self.card_ids]
+        return [self.request.card_names[i] for i in self.card_idxs]
 
 
 class ChooseCharactorResponse(ResponseBase):
     name: Literal['ChooseCharactorResponse'] = 'ChooseCharactorResponse'
     request: ChooseCharactorRequest
-    charactor_id: int
+    charactor_idx: int
 
     def is_valid(self, match: Any) -> bool:
-        return self.charactor_id in self.request.available_charactor_ids
+        return self.charactor_idx in self.request.available_charactor_idxs
 
 
 class RerollDiceResponse(ResponseBase):
     name: Literal['RerollDiceResponse'] = 'RerollDiceResponse'
     request: RerollDiceRequest
-    reroll_dice_ids: List[int]
+    reroll_dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
         """
-        if have duplicate dice ids, or dice ids out of range, return False.
+        if have duplicate dice indices, or dice indices out of range, 
+        return False.
         """
         return list_unique_range_right(
-            self.reroll_dice_ids, minn = 0, maxn = len(self.request.colors))
+            self.reroll_dice_idxs, minn = 0, maxn = len(self.request.colors))
 
 
 class SwitchCharactorResponse(ResponseBase):
     name: Literal['SwitchCharactorResponse'] = 'SwitchCharactorResponse'
     request: SwitchCharactorRequest
-    charactor_id: int
-    cost_ids: List[int]
+    charactor_idx: int
+    dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
         """
         Charactor is in the candidate charactors.
         Cost matches the request.
         """
-        if self.charactor_id not in self.request.candidate_charactor_ids:
+        if self.charactor_idx not in self.request.candidate_charactor_idxs:
             return False
         if not list_unique_range_right(
-            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
         ):
             return False
-        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
+        cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
         return self.request.cost.is_valid(cost_colors, 0, False)
 
 
 class ElementalTuningResponse(ResponseBase):
     name: Literal['ElementalTuningResponse'] = 'ElementalTuningResponse'
     request: ElementalTuningRequest
-    cost_id: int
-    card_id: int
+    dice_idx: int
+    card_idx: int
 
     def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
         return (
-            self.cost_id in self.request.dice_ids
-            and self.card_id in self.request.card_ids
+            self.dice_idx in self.request.dice_idxs
+            and self.card_idx in self.request.card_idxs
         )
 
 
@@ -201,18 +202,18 @@ class UseSkillResponse(ResponseBase):
     """
     name: Literal['UseSkillResponse'] = 'UseSkillResponse'
     request: UseSkillRequest
-    cost_ids: List[int]
+    dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
         """
         Check whether the response is valid.
         """
         if not list_unique_range_right(
-            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
         ):
             return False
-        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        table = match.player_tables[self.request.player_id]
+        cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
+        table = match.player_tables[self.request.player_idx]
         charge, arcane_legend = table.get_charge_and_arcane_legend()
         return self.request.cost.is_valid(cost_colors, charge, arcane_legend)
 
@@ -220,7 +221,7 @@ class UseSkillResponse(ResponseBase):
 class UseCardResponse(ResponseBase):
     name: Literal['UseCardResponse'] = 'UseCardResponse'
     request: UseCardRequest
-    cost_ids: List[int]
+    dice_idxs: List[int]
     target: CardActionTarget | None
 
     def is_valid(self, match: Any) -> bool:
@@ -229,11 +230,11 @@ class UseCardResponse(ResponseBase):
         """
         # dice color right
         if not list_unique_range_right(
-            self.cost_ids, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
         ):
             return False
-        cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        table = match.player_tables[self.request.player_id]
+        cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
+        table = match.player_tables[self.request.player_idx]
         charge, arcane_legend = table.get_charge_and_arcane_legend()
         if not self.request.cost.is_valid(cost_colors, charge, arcane_legend):
             return False

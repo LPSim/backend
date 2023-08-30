@@ -111,11 +111,11 @@ class Oz(AttackerSummonBase):
         if action.skill_type != SkillType.NORMAL_ATTACK:
             # not using normal attack
             return []
-        if self.position.player_id != action.position.player_id:
+        if self.position.player_idx != action.position.player_idx:
             # not attack by self
             return []
-        charactor = match.player_tables[action.position.player_id].charactors[
-            action.position.charactor_id
+        charactor = match.player_tables[action.position.player_idx].charactors[
+            action.position.charactor_idx
         ]
         if (
             charactor.talent is not None and charactor.name == 'Fischl'
@@ -128,8 +128,8 @@ class Oz(AttackerSummonBase):
             self.usage -= 1
             return [
                 MakeDamageAction(
-                    player_id = self.position.player_id,
-                    target_id = 1 - self.position.player_id,
+                    player_idx = self.position.player_idx,
+                    target_idx = 1 - self.position.player_idx,
                     damage_value_list = [
                         DamageValue(
                             position = self.position,

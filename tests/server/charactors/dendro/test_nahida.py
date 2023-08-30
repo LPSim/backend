@@ -13,9 +13,9 @@ def test_fischl_mona_nahida():
     """
     3335 + E + talent
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -93,9 +93,9 @@ def test_fischl_mona_nahida_no_talent():
     """
     3335 + EQ
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -188,7 +188,7 @@ def test_nahida_talents():
     first: with no pyro hydro electro ally
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -209,7 +209,7 @@ def test_nahida_talents():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -370,7 +370,7 @@ def test_nahida_talents():
     second: with pyro electro (hydro tested above)
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -389,7 +389,7 @@ def test_nahida_talents():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -534,9 +534,9 @@ def test_nahida_apply_seed_to_defeated():
     """
     try to apply seed to defeated charactor.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -596,9 +596,9 @@ def test_maya_not_first_status():
     """
     AA + electro A + talent
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -667,9 +667,9 @@ def test_seed_not_first_status():
     """
     AA + electro A + talent
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -735,7 +735,7 @@ def test_talent_enemy_has_other_charactor_status():
     damage.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -749,7 +749,7 @@ def test_talent_enemy_has_other_charactor_status():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",

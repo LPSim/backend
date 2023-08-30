@@ -11,10 +11,10 @@ from server.interaction import UseSkillRequest
 
 
 def test_small_elemental_artifacts():
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent_V1_0(
         version = '1.0',
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -132,7 +132,7 @@ def test_small_elemental_artifacts():
                 skills = [x for x in match.requests 
                           if x.name == 'UseSkillRequest']
                 assert len(skills) == 3
-                skills.sort(key = lambda x: x.skill_id)
+                skills.sort(key = lambda x: x.skill_idx)
                 assert skills[0].cost.elemental_dice_number == 1
                 assert skills[0].cost.any_dice_number == 1
                 assert skills[1].cost.elemental_dice_number == 3
@@ -186,9 +186,9 @@ def test_create_small_element_artifacts():
 
 
 def test_old_version_artifacts():
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -241,7 +241,7 @@ def test_old_version_artifacts():
                     counter = []
                     for request in match.requests:
                         if request.name == 'UseCardRequest':
-                            counter.append(request.card_id)
+                            counter.append(request.card_idx)
                     assert len(counter) == 3
                     assert 0 not in counter
                     assert 4 not in counter

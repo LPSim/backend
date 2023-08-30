@@ -23,7 +23,7 @@ class ArtifactBase(CardBase):
         # can quip on all self alive charactors
         ret: List[CardActionTarget] = []
         for charactor in match.player_tables[
-                self.position.player_id].charactors:
+                self.position.player_idx].charactors:
             if charactor.is_alive:
                 ret.append(CardActionTarget(
                     target_position = charactor.position.copy(deep = True),
@@ -43,8 +43,8 @@ class ArtifactBase(CardBase):
         position = target.target_position
         id = target.target_id
         assert position.area == ObjectPositionType.CHARACTOR
-        assert position.player_id == self.position.player_id
-        charactors = match.player_tables[position.player_id].charactors
+        assert position.player_idx == self.position.player_idx
+        charactors = match.player_tables[position.player_idx].charactors
         for charactor in charactors:
             if charactor.id == id:
                 # check if need to remove current artifact

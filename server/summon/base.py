@@ -57,13 +57,13 @@ class AttackerSummonBase(SummonBase):
         """
         When round end, make damage to the opponent.
         """
-        player_id = self.position.player_id
+        player_idx = self.position.player_idx
         assert self.usage > 0
         self.usage -= 1
         return [
             MakeDamageAction(
-                player_id = player_id,
-                target_id = 1 - player_id,
+                player_idx = player_idx,
+                target_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -150,15 +150,15 @@ class ShieldSummonBase(SummonBase):
         When round end, make damage to the opponent if is needed and remove
         itself.
         """
-        player_id = self.position.player_id
+        player_idx = self.position.player_idx
         if self.usage > 0 and self.attack_until_run_out_of_usage:
             # attack until run out of usage
             raise AssertionError('Not tested part')
             return []
         return [
             MakeDamageAction(
-                player_id = player_id,
-                target_id = 1 - player_id,
+                player_idx = player_idx,
+                target_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -192,7 +192,7 @@ class ShieldSummonBase(SummonBase):
         """
         Decrease damage.
         """
-        if value.target_position.player_id != self.position.player_id:
+        if value.target_position.player_idx != self.position.player_idx:
             # attack enemy, not activate
             return value
         if self.usage > 0:

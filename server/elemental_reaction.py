@@ -283,7 +283,7 @@ def apply_elemental_reaction(
         element_type = reacted_elements[1]
         assert element_type != ElementType.ANEMO, \
             'Anemo should always be first'
-        attack_target = damage.target_position.charactor_id
+        attack_target = damage.target_position.charactor_idx
         for cnum in range(1, len(target_charactors)):
             cnum = (cnum + attack_target) % len(target_charactors)
             c = target_charactors[cnum]
@@ -293,8 +293,8 @@ def apply_elemental_reaction(
                     position = damage.position,
                     id = damage.id,
                     target_position = ObjectPosition(
-                        player_id = damage.target_position.player_id,
-                        charactor_id = cnum,
+                        player_idx = damage.target_position.player_idx,
+                        charactor_idx = cnum,
                         area = damage.target_position.area
                     ),
                     damage = 1,
@@ -310,7 +310,7 @@ def apply_elemental_reaction(
                         ElementalReactionType.SUPERCONDUCT]:
             # 1 piercing dmg for other charactors
             damage_type = DamageElementalType.PIERCING
-            attack_target = damage.target_position.charactor_id
+            attack_target = damage.target_position.charactor_idx
             for cnum, c in enumerate(target_charactors):
                 if cnum == attack_target:
                     continue
@@ -320,8 +320,8 @@ def apply_elemental_reaction(
                         position = damage.position,
                         id = damage.id,
                         target_position = ObjectPosition(
-                            player_id = damage.target_position.player_id,
-                            charactor_id = cnum,
+                            player_idx = damage.target_position.player_idx,
+                            charactor_idx = cnum,
                             area = damage.target_position.area
                         ),
                         damage = 1,
@@ -333,15 +333,15 @@ def apply_elemental_reaction(
 
 
 def elemental_reaction_side_effect_ver_3_4(
-        reaction: ElementalReactionType, player_id: int,
-        charator_id: int) -> Actions | None:
+        reaction: ElementalReactionType, player_idx: int,
+        charator_idx: int) -> Actions | None:
     """
     Apply side effect of elemental reaction. 
     """
     if reaction == ElementalReactionType.FROZEN:
         position = ObjectPosition(
-            player_id = player_id,
-            charactor_id = charator_id,
+            player_idx = player_idx,
+            charactor_idx = charator_idx,
             area = ObjectPositionType.CHARACTOR_STATUS
         )
         return CreateObjectAction(
@@ -351,7 +351,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
     elif reaction == ElementalReactionType.CRYSTALLIZE:
         position = ObjectPosition(
-            player_id = 1 - player_id,
+            player_idx = 1 - player_idx,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -361,7 +361,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
     elif reaction == ElementalReactionType.BURNING:
         position = ObjectPosition(
-            player_id = 1 - player_id,
+            player_idx = 1 - player_idx,
             area = ObjectPositionType.SUMMON
         )
         return CreateObjectAction(
@@ -371,7 +371,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
     elif reaction == ElementalReactionType.BLOOM:
         position = ObjectPosition(
-            player_id = 1 - player_id,
+            player_idx = 1 - player_idx,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -381,7 +381,7 @@ def elemental_reaction_side_effect_ver_3_4(
         )
     elif reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
-            player_id = 1 - player_id,
+            player_idx = 1 - player_idx,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -393,14 +393,14 @@ def elemental_reaction_side_effect_ver_3_4(
 
 
 def elemental_reaction_side_effect_ver_3_3(
-        reaction: ElementalReactionType, player_id: int,
-        charator_id: int) -> Actions | None:
+        reaction: ElementalReactionType, player_idx: int,
+        charator_idx: int) -> Actions | None:
     """
     Apply side effect of elemental reaction. In 3.3, only quicken is different.
     """
     if reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
-            player_id = 1 - player_id,
+            player_idx = 1 - player_idx,
             area = ObjectPositionType.TEAM_STATUS
         )
         return CreateObjectAction(
@@ -409,18 +409,18 @@ def elemental_reaction_side_effect_ver_3_3(
             object_arguments = { 'version': '3.3' }
         )
     return elemental_reaction_side_effect_ver_3_4(
-        reaction, player_id, charator_id
+        reaction, player_idx, charator_idx
     )
 
 
 def elemental_reaction_side_effect(
-        reaction: ElementalReactionType, player_id: int,
-        charator_id: int, version: Literal['3.3', '3.4'] = '3.4'
+        reaction: ElementalReactionType, player_idx: int,
+        charator_idx: int, version: Literal['3.3', '3.4'] = '3.4'
 ) -> Actions | None:
     if version == '3.3':
         return elemental_reaction_side_effect_ver_3_3(
-            reaction, player_id, charator_id
+            reaction, player_idx, charator_idx
         )
     return elemental_reaction_side_effect_ver_3_4(
-        reaction, player_id, charator_id
+        reaction, player_idx, charator_idx
     )

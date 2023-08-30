@@ -18,8 +18,8 @@ class Main(BaseModel):
 
 if __name__ == '__main__':
     logging.basicConfig(level = logging.WARNING)
-    agent_0 = NothingAgent(player_id = 0)
-    agent_1 = RandomAgent(player_id = 1)
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = RandomAgent(player_idx = 1)
     main = Main()
     deck = Deck.from_str(
         '''

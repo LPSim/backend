@@ -62,9 +62,9 @@ def get_new_match(seed: Any = None, rich: bool = False):
     return match
 
 
-agent_0 = NothingAgent(player_id = 0)
-# agent_0 = InteractionAgent(player_id = 0, only_use_command = True)
-agent_1 = InteractionAgent(player_id = 1, only_use_command = True)
+agent_0 = NothingAgent(player_idx = 0)
+# agent_0 = InteractionAgent(player_idx = 0, only_use_command = True)
+agent_1 = InteractionAgent(player_idx = 1, only_use_command = True)
 
 
 @app.on_event('startup')
@@ -84,33 +84,33 @@ async def reset(fixed_random_seed: bool = False, offset: int = 0,
     match = get_new_match(seed = random_seed, rich = rich)
 
 
-@app.get('/state/{player_id}')
-async def get_game_state(player_id: int):
-    if player_id < 0 or player_id > 1:
+@app.get('/state/{player_idx}')
+async def get_game_state(player_idx: int):
+    if player_idx < 0 or player_idx > 1:
         raise HTTPException(status_code = 404, detail = 'Player not found')
-    if player_id == 0:
+    if player_idx == 0:
         raise HTTPException(status_code = 404, 
                             detail = 'player 0 not suppoted')
     return JSONResponse(match.dict())
 
 
 class RespondData(BaseModel):
-    player_id: int
+    player_idx: int
     command: str
 
 
 @app.post('/respond')
 async def post_respond(data: RespondData):
-    player_id = data.player_id
+    player_idx = data.player_idx
     command = data.command
-    if not match.need_respond(player_id):
+    if not match.need_respond(player_idx):
         raise HTTPException(status_code = 404, detail = 'Not your turn')
-    # if player_id != 1:
+    # if player_idx != 1:
     #     raise HTTPException(status_code = 404, 
     #                         detail = 'player 0 not supported')
-    if player_id == 0:
+    if player_idx == 0:
         agent = agent_0
-    elif player_id == 1:
+    elif player_idx == 1:
         agent = agent_1
     else:
         raise HTTPException(status_code = 404, detail = 'Player not found')
@@ -128,6 +128,6 @@ async def post_respond(data: RespondData):
             agent.__class__ != InteractionAgent 
             or len(agent.commands) > 0  # type: ignore
         ):
-            while match.need_respond(agent.player_id):
+            while match.need_respond(agent.player_idx):
                 make_respond(agent, match)
     return JSONResponse(match.dict())

@@ -31,7 +31,7 @@ class Strategize(CardBase):
         """
         assert target is None  # no targets
         return [DrawCardAction(
-            player_id = self.position.player_id, 
+            player_idx = self.position.player_idx, 
             number = 2,
             draw_if_filtered_not_enough = True
         )]
@@ -57,7 +57,7 @@ class TheBestestTravelCompanion(CardBase):
         """
         assert target is None  # no targets
         return [CreateDiceAction(
-            player_id = self.position.player_id,
+            player_idx = self.position.player_idx,
             color = DieColor.OMNI,
             number = 2,
         )]

@@ -37,12 +37,12 @@ class RandomAgent(AgentBase):
 
     def generate_response(self, match: Match) -> Responses | None:
         req_names = list(set([x.name for x in match.requests 
-                              if x.player_id == self.player_id]))
+                              if x.player_idx == self.player_idx]))
         if len(req_names) == 0:
             return None
         req_name = req_names[int(self.random() * len(req_names))]
         reqs = [x for x in match.requests
-                if x.player_id == self.player_id and x.name == req_name]
+                if x.player_idx == self.player_idx and x.name == req_name]
         req = reqs[int(self.random() * len(reqs))]
 
         if req.name == 'SwitchCardRequest':
@@ -70,12 +70,12 @@ class RandomAgent(AgentBase):
         """
         Randomly choose a subset of cards.
         """
-        card_ids = []
+        card_idxs = []
         for i in range(len(req.card_names)):
             if self.random() < 0.5:
-                card_ids.append(i)
+                card_idxs.append(i)
         return SwitchCardResponse(
-            request = req, card_ids = card_ids
+            request = req, card_idxs = card_idxs
         )
 
     def resp_choose_charactor(
@@ -85,8 +85,8 @@ class RandomAgent(AgentBase):
         """
         return ChooseCharactorResponse(
             request = req, 
-            charactor_id = req.available_charactor_ids[
-                int(self.random() * len(req.available_charactor_ids))
+            charactor_idx = req.available_charactor_idxs[
+                int(self.random() * len(req.available_charactor_idxs))
             ]
         )
 
@@ -94,12 +94,12 @@ class RandomAgent(AgentBase):
         """
         Randomly choose a subset of dice.
         """
-        reroll_dice_ids = []
+        reroll_dice_idxs = []
         for i in range(len(req.colors)):
             if self.random() < 0.5:
-                reroll_dice_ids.append(i)
+                reroll_dice_idxs.append(i)
         return RerollDiceResponse(
-            request = req, reroll_dice_ids = reroll_dice_ids
+            request = req, reroll_dice_idxs = reroll_dice_idxs
         )
 
     def resp_elemental_tuning(
@@ -109,11 +109,11 @@ class RandomAgent(AgentBase):
         """
         return ElementalTuningResponse(
             request = req, 
-            cost_id = req.dice_ids[
-                int(self.random() * len(req.dice_ids))
+            dice_idx = req.dice_idxs[
+                int(self.random() * len(req.dice_idxs))
             ],
-            card_id = req.card_ids[
-                int(self.random() * len(req.card_ids))
+            card_idx = req.card_idxs[
+                int(self.random() * len(req.card_idxs))
             ]
         )
 
@@ -124,9 +124,9 @@ class RandomAgent(AgentBase):
         """
         return SwitchCharactorResponse(
             request = req, 
-            cost_ids = [int(self.random() * len(req.dice_colors))],
-            charactor_id = req.candidate_charactor_ids[
-                int(self.random() * len(req.candidate_charactor_ids))
+            dice_idxs = [int(self.random() * len(req.dice_colors))],
+            charactor_idx = req.candidate_charactor_idxs[
+                int(self.random() * len(req.candidate_charactor_idxs))
             ],
         )
 
@@ -136,30 +136,30 @@ class RandomAgent(AgentBase):
         Randomly choose dice to use skill.
         """
         cost = req.cost
-        ele_dice_ids = [num for num, color in enumerate(req.dice_colors)
-                        if color == cost.elemental_dice_color
-                        or color == DieColor.OMNI]
-        other_dice_ids = [x for x in range(len(req.dice_colors))
-                          if x not in ele_dice_ids]
+        ele_dice_idxs = [num for num, color in enumerate(req.dice_colors)
+                         if color == cost.elemental_dice_color
+                         or color == DieColor.OMNI]
+        other_dice_idxs = [x for x in range(len(req.dice_colors))
+                           if x not in ele_dice_idxs]
         selected = []
         for _ in range(cost.elemental_dice_number):
-            if len(ele_dice_ids) > 0:
-                idx = int(self.random() * len(ele_dice_ids))
-                selected.append(ele_dice_ids.pop(idx))
+            if len(ele_dice_idxs) > 0:
+                idx = int(self.random() * len(ele_dice_idxs))
+                selected.append(ele_dice_idxs.pop(idx))
             else:
                 raise ValueError('Not enough elemental dice')
-        other_dice_ids += ele_dice_ids
+        other_dice_idxs += ele_dice_idxs
         for _ in range(cost.any_dice_number):
-            if len(other_dice_ids) > 0:
-                idx = int(self.random() * len(other_dice_ids))
-                selected.append(other_dice_ids.pop(idx))
+            if len(other_dice_idxs) > 0:
+                idx = int(self.random() * len(other_dice_idxs))
+                selected.append(other_dice_idxs.pop(idx))
             else:
                 raise ValueError('Not enough dice')
         selected.sort()
 
         return UseSkillResponse(
             request = req, 
-            cost_ids = selected
+            dice_idxs = selected
         )
 
     def resp_use_card(
@@ -168,16 +168,16 @@ class RandomAgent(AgentBase):
         Randomly choose dice to use card.
         """
         cost = req.cost
-        ele_dice_ids = [num for num, color in enumerate(req.dice_colors)
-                        if color == cost.elemental_dice_color
-                        or color == DieColor.OMNI]
-        other_dice_ids = [x for x in range(len(req.dice_colors))
-                          if x not in ele_dice_ids]
+        ele_dice_idxs = [num for num, color in enumerate(req.dice_colors)
+                         if color == cost.elemental_dice_color
+                         or color == DieColor.OMNI]
+        other_dice_idxs = [x for x in range(len(req.dice_colors))
+                           if x not in ele_dice_idxs]
         selected = []
         for _ in range(cost.elemental_dice_number):
-            if len(ele_dice_ids) > 0:
-                idx = int(self.random() * len(ele_dice_ids))
-                selected.append(ele_dice_ids.pop(idx))
+            if len(ele_dice_idxs) > 0:
+                idx = int(self.random() * len(ele_dice_idxs))
+                selected.append(ele_dice_idxs.pop(idx))
             else:
                 raise ValueError('Not enough elemental dice')
         if cost.same_dice_number > 0:
@@ -201,21 +201,21 @@ class RandomAgent(AgentBase):
                     available_keys.append(k)
             if len(available_keys) > 0:
                 k = available_keys[int(self.random() * len(available_keys))]
-                other_dice_ids = []
-                ele_dice_ids = []
+                other_dice_idxs = []
+                ele_dice_idxs = []
                 for i, color in enumerate(req.dice_colors):
                     if color == k:
                         if len(selected) < cost.same_dice_number:
                             selected.append(i)
                         else:
-                            other_dice_ids.append(i)
+                            other_dice_idxs.append(i)
                     else:
-                        other_dice_ids.append(i)
-        other_dice_ids += ele_dice_ids
+                        other_dice_idxs.append(i)
+        other_dice_idxs += ele_dice_idxs
         for _ in range(cost.any_dice_number):
-            if len(other_dice_ids) > 0:
-                idx = int(self.random() * len(other_dice_ids))
-                selected.append(other_dice_ids.pop(idx))
+            if len(other_dice_idxs) > 0:
+                idx = int(self.random() * len(other_dice_idxs))
+                selected.append(other_dice_idxs.pop(idx))
             else:
                 raise ValueError('Not enough dice')
         selected.sort()
@@ -228,6 +228,6 @@ class RandomAgent(AgentBase):
 
         return UseCardResponse(
             request = req, 
-            cost_ids = selected,
+            dice_idxs = selected,
             target = target,
         )

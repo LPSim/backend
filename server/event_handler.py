@@ -29,7 +29,7 @@ class SystemEventHandlerBase(ObjectBase):
     """
 
     position: ObjectPosition = ObjectPosition(
-        player_id = -1,
+        player_idx = -1,
         area = ObjectPositionType.SYSTEM
     )
 
@@ -43,7 +43,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         """
         After draw card, check whether max card number is exceeded.
         """
-        player_id = event.action.player_id
+        player_idx = event.action.player_idx
         hand_size = event.hand_size
         max_hand_size = event.max_hand_size
         actions = []
@@ -53,7 +53,7 @@ class SystemEventHandler(SystemEventHandlerBase):
                 # is less than max hand size
                 actions.append(RemoveCardAction(
                     position = ObjectPosition(
-                        player_id = player_id,
+                        player_idx = player_idx,
                         area = ObjectPositionType.HAND
                     ),
                     card_idx = i - 1,
@@ -67,10 +67,10 @@ class SystemEventHandler(SystemEventHandlerBase):
         After receive damage, generate side effects of elemental reaction.
         """
         reaction = event.elemental_reaction
-        player_id = event.final_damage.target_position.player_id
-        charactor_id = event.final_damage.target_position.charactor_id
+        player_idx = event.final_damage.target_position.player_idx
+        charactor_idx = event.final_damage.target_position.charactor_idx
         act = elemental_reaction_side_effect(
-            reaction, player_id, charactor_id, 
+            reaction, player_idx, charactor_idx, 
             version = self.version
         )
         if act is not None:
@@ -88,8 +88,8 @@ class SystemEventHandler(SystemEventHandlerBase):
             for cnum, [hp, alive] in enumerate(zip(hps, lives)):
                 if hp == 0 and alive:
                     actions.append(CharactorDefeatedAction(
-                        player_id = pnum,
-                        charactor_id = cnum,
+                        player_idx = pnum,
+                        charactor_idx = cnum,
                     ))
         return actions
 
@@ -100,7 +100,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         """
         if event.need_switch:
             return [GenerateChooseCharactorRequestAction(
-                player_id = event.action.player_id,
+                player_idx = event.action.player_idx,
             )]
         return []
 
@@ -113,12 +113,12 @@ class SystemEventHandler(SystemEventHandlerBase):
         first = event.player_go_first
         initial_card_draw = event.initial_card_draw
         actions.append(DrawCardAction(
-            player_id = first,
+            player_idx = first,
             number = initial_card_draw,
             draw_if_filtered_not_enough = True
         ))
         actions.append(DrawCardAction(
-            player_id = 1 - first,
+            player_idx = 1 - first,
             number = initial_card_draw,
             draw_if_filtered_not_enough = True
         ))

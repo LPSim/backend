@@ -62,7 +62,7 @@ class DrawCardAction(ActionBase):
     Action for drawing cards.
     """
     type: Literal[ActionTypes.DRAW_CARD] = ActionTypes.DRAW_CARD
-    player_id: int
+    player_idx: int
     number: int
     blacklist_names: List[str] = []
     whitelist_names: List[str] = []
@@ -78,8 +78,8 @@ class RestoreCardAction(ActionBase):
     Action for restoring cards.
     """
     type: Literal[ActionTypes.RESTORE_CARD] = ActionTypes.RESTORE_CARD
-    player_id: int
-    card_ids: List[int]
+    player_idx: int
+    card_idxs: List[int]
 
 
 class RemoveCardAction(ActionBase):
@@ -97,8 +97,8 @@ class ChooseCharactorAction(ActionBase):
     Action for choosing charactors.
     """
     type: Literal[ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
-    player_id: int
-    charactor_id: int
+    player_idx: int
+    charactor_idx: int
 
     @classmethod
     def from_response(cls, response: ChooseCharactorResponse):
@@ -106,8 +106,8 @@ class ChooseCharactorAction(ActionBase):
         Generate ChooseCharactorAction from ChooseCharactorResponse.
         """
         return cls(
-            player_id = response.player_id,
-            charactor_id = response.charactor_id,
+            player_idx = response.player_idx,
+            charactor_idx = response.charactor_idx,
         )
 
 
@@ -116,7 +116,7 @@ class CreateDiceAction(ActionBase):
     Action for creating dice.
 
     Args:
-        player_id (int): The ID of the player to create the dice for.
+        player_idx (int): The index of the player to create the dice for.
         number (int): The number of dice to create.
         color (DieColor | None): The color of the dice to create. If None,
             the following generate rules will be activated.
@@ -124,7 +124,7 @@ class CreateDiceAction(ActionBase):
         different (bool): Whether to generate different colors of dice.
     """
     type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
-    player_id: int
+    player_idx: int
     number: int
     color: DieColor | None = None
     random: bool = False
@@ -136,12 +136,12 @@ class RemoveDiceAction(ActionBase):
     Action for removing dice.
 
     Args:
-        player_id (int): The ID of the player to remove the dice for.
-        dice_ids (List[int]): The IDs of the dice to remove.
+        player_idx (int): The index of the player to remove the dice for.
+        dice_idxs (List[int]): The indices of the dice to remove.
     """
     type: Literal[ActionTypes.REMOVE_DICE] = ActionTypes.REMOVE_DICE
-    player_id: int
-    dice_ids: List[int]
+    player_idx: int
+    dice_idxs: List[int]
 
     @classmethod
     def from_response(cls, response: RerollDiceResponse):
@@ -149,8 +149,8 @@ class RemoveDiceAction(ActionBase):
         Generate RemoveDiceAction from RerollDiceResponse.
         """
         return cls(
-            player_id = response.player_id,
-            dice_ids = response.reroll_dice_ids,
+            player_idx = response.player_idx,
+            dice_idxs = response.reroll_dice_idxs,
         )
 
 
@@ -160,7 +160,7 @@ class DeclareRoundEndAction(ActionBase):
     """
     type: Literal[ActionTypes.DECLARE_ROUND_END] = \
         ActionTypes.DECLARE_ROUND_END
-    player_id: int
+    player_idx: int
 
     @classmethod
     def from_response(cls, response: DeclareRoundEndResponse):
@@ -168,7 +168,7 @@ class DeclareRoundEndAction(ActionBase):
         Generate DeclareRoundEndAction from DeclareRoundEndResponse.
         """
         return cls(
-            player_id = response.player_id,
+            player_idx = response.player_idx,
         )
 
 
@@ -188,8 +188,8 @@ class SwitchCharactorAction(ActionBase):
     Action for switching charactor.
     """
     type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
-    player_id: int
-    charactor_id: int
+    player_idx: int
+    charactor_idx: int
 
     @classmethod
     def from_response(cls, response: SwitchCharactorResponse):
@@ -197,8 +197,8 @@ class SwitchCharactorAction(ActionBase):
         Generate SwitchCharactorAction from SwitchCharactorResponse.
         """
         return cls(
-            player_id = response.player_id,
-            charactor_id = response.charactor_id,
+            player_idx = response.player_idx,
+            charactor_idx = response.charactor_idx,
         )
 
 
@@ -208,23 +208,25 @@ class MakeDamageAction(ActionBase):
     applies to the charactor (e.g. Kokomi) treats as zero damage.
 
     Args:
-        player_id (int): The ID of the player to make damage from.
+        player_idx (int): The index of the player to make damage from.
         damage_value_list (List[DamageValue]): The damage values to make.
-        target_id (int): The ID of the player to make damage to.
+        target_idx (int): The index of the player to make damage to.
         charactor_change_rule (Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE']):
             The rule of charactor change. 
-        charactor_change_id (int): The charactor id of the charactor who will
-            be changed to. Only used when charactor_change_rule is 'ABSOLUTE'.
-            If it is defeated, select by default order.
+        charactor_change_idx (int): The charactor index of the charactor who 
+            will be changed to. Only used when charactor_change_rule is 
+            'ABSOLUTE'. If it is defeated, select by default order. (e.g.
+            absolute choose charactor 2, but it is defeated, then choose
+            0, 1, ...)
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
-    player_id: int
+    player_idx: int
     damage_value_list: List[DamageValue]
-    target_id: int
+    target_idx: int
 
     # charactor change
     charactor_change_rule: Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE'] = 'NONE'
-    charactor_change_id: int = -1
+    charactor_change_idx: int = -1
 
 
 class ChargeAction(ActionBase):
@@ -232,8 +234,8 @@ class ChargeAction(ActionBase):
     Action for charging.
     """
     type: Literal[ActionTypes.CHARGE] = ActionTypes.CHARGE
-    player_id: int
-    charactor_id: int
+    player_idx: int
+    charactor_idx: int
     charge: int
 
 
@@ -252,8 +254,8 @@ class CharactorDefeatedAction(ActionBase):
     """
     type: Literal[ActionTypes.CHARACTOR_DEFEATED] = \
         ActionTypes.CHARACTOR_DEFEATED
-    player_id: int
-    charactor_id: int
+    player_idx: int
+    charactor_idx: int
 
 
 class CreateObjectAction(ActionBase):
@@ -314,7 +316,7 @@ class ConsumeArcaneLegendAction(ActionBase):
     """
     type: Literal[ActionTypes.CONSUME_ARCANE_LEGEND] = \
         ActionTypes.CONSUME_ARCANE_LEGEND
-    player_id: int
+    player_idx: int
 
 
 class GenerateChooseCharactorRequestAction(ActionBase):
@@ -323,7 +325,7 @@ class GenerateChooseCharactorRequestAction(ActionBase):
     """
     type: Literal[ActionTypes.GENERATE_CHOOSE_CHARACTOR] = \
         ActionTypes.GENERATE_CHOOSE_CHARACTOR
-    player_id: int
+    player_idx: int
 
 
 Actions = (

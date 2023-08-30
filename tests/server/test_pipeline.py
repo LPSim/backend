@@ -39,8 +39,8 @@ TEST_DECK = {
 
 
 def test_match_pipeline():
-    agent_0 = RandomAgent(player_id = 0)
-    agent_1 = NothingAgent(player_id = 1)
+    agent_0 = RandomAgent(player_idx = 0)
+    agent_1 = NothingAgent(player_idx = 1)
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)
@@ -64,9 +64,9 @@ def test_save_load():
     when save on field generated, load should be same. otherwise, load should
     be different only on id.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',
@@ -174,8 +174,8 @@ def test_copy_speed():
 
 
 def test_random_same_after_load():
-    agent_0 = NothingAgent(player_id = 0)
-    agent_1 = RandomAgent(player_id = 1, random_seed = 19260817)
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)
@@ -226,9 +226,9 @@ def test_random_same_after_load():
 
 
 def test_use_card():
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         commands = [
             'sw_card',
             'choose 2',
@@ -275,9 +275,9 @@ def test_support_over_maximum_and_error_tests():
     """
     put 6 Ranas and check usages and order.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             'sw_card',

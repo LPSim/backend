@@ -14,9 +14,9 @@ def test_mona():
     and check card can cost less. multiple summon will renew old one. 
     Double damage will affect after elemental reaction, and only affect once.
     """
-    agent_0 = NothingAgent(player_id = 0)
+    agent_0 = NothingAgent(player_idx = 0)
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -97,7 +97,7 @@ def test_mona():
                     hands = match.player_tables[1].hands
                     requests = [x for x in match.requests 
                                 if x.name == 'UseCardRequest'
-                                and hands[x.card_id].name 
+                                and hands[x.card_idx].name 
                                 == 'Prophecy of Submersion']
                     assert len(requests) == 0
                     # assert requests[0].cost.elemental_dice_number == 3
@@ -105,7 +105,7 @@ def test_mona():
                     hands = match.player_tables[1].hands
                     requests = [x for x in match.requests 
                                 if x.name == 'UseCardRequest'
-                                and hands[x.card_id].name 
+                                and hands[x.card_idx].name 
                                 == 'Prophecy of Submersion']
                     assert len(requests) > 0
                     assert requests[0].cost.elemental_dice_number == 2
@@ -138,7 +138,7 @@ def test_mona():
     simultaneously, with damage: (1 + 1electrocharge + 2) * 2 = 8.
     """
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card 1 3 4",
@@ -170,7 +170,7 @@ def test_mona():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -246,7 +246,7 @@ def test_mona():
 
 def test_mona_q_enemy_attack():
     agent_0 = InteractionAgent(
-        player_id = 0,
+        player_idx = 0,
         verbose_level = 0,
         commands = [
             "sw_card",
@@ -258,7 +258,7 @@ def test_mona_q_enemy_attack():
         only_use_command = True
     )
     agent_1 = InteractionAgent(
-        player_id = 1,
+        player_idx = 1,
         verbose_level = 0,
         commands = [
             "sw_card",

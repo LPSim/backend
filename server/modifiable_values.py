@@ -53,14 +53,14 @@ class ModifiableValueBase(BaseModel):
 
 class InitialDiceColorValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.INITIAL_DICE_COLOR
-    player_id: int
+    player_idx: int
     dice_colors: List[DieColor] = []
 
 
 class RerollValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.REROLL
     value: int
-    player_id: int
+    player_idx: int
 
 
 class CostValue(ModifiableValueBase):
@@ -99,7 +99,7 @@ class DamageIncreaseValue(ModifiableValueBase):
     def from_damage_value(
         damage_value: DamageValue,
         is_charactors_defeated: List[List[bool]],
-        active_charactors_id: List[int],
+        active_charactors_idx: List[int],
         match: Any,
     ) -> List['DamageIncreaseValue']:
         """
@@ -108,35 +108,35 @@ class DamageIncreaseValue(ModifiableValueBase):
         is_charactors_defeated: [[player 1 charactors defeated],
                                  [player 2 charactors defeated]]
         """
-        target_player = damage_value.position.player_id
+        target_player = damage_value.position.player_idx
         if damage_value.target_player == 'ENEMY':
             target_player = 1 - target_player
         charactors = is_charactors_defeated[target_player]
-        active_id = active_charactors_id[target_player]
+        active_idx = active_charactors_idx[target_player]
         target_charactor = []
         if damage_value.target_charactor == 'ACTIVE':
-            assert not charactors[active_id], 'Active charactor is defeated.'
-            target_charactor = [active_id]
+            assert not charactors[active_idx], 'Active charactor is defeated.'
+            target_charactor = [active_idx]
         elif damage_value.target_charactor == 'BACK':
             target_charactor = [x for x in range(len(charactors))
-                                if not charactors[x] and x != active_id]
+                                if not charactors[x] and x != active_idx]
         elif damage_value.target_charactor == 'NEXT':
             raise NotImplementedError('Not tested part')
             for i in range(1, len(charactors)):
-                if not charactors[(active_id + i) % len(charactors)]:
-                    target_charactor.append((active_id + i) % len(charactors))
+                if not charactors[(active_idx + i) % len(charactors)]:
+                    target_charactor.append((active_idx + i) % len(charactors))
                     break
         elif damage_value.target_charactor == 'PREV':
             raise NotImplementedError('Not tested part')
             for i in range(1, len(charactors)):
-                idx = (active_id - i + len(charactors)) % len(charactors)
+                idx = (active_idx - i + len(charactors)) % len(charactors)
                 if not charactors[idx]:
                     target_charactor.append(idx)
                     break
         elif damage_value.target_charactor == 'ABSOLUTE':
-            assert not charactors[damage_value.target_charactor_id], \
+            assert not charactors[damage_value.target_charactor_idx], \
                 'Target charactor is defeated.'
-            target_charactor = [damage_value.target_charactor_id]
+            target_charactor = [damage_value.target_charactor_idx]
         else:
             raise NotImplementedError(
                 f'Unknown target charactor type: '
@@ -151,8 +151,8 @@ class DamageIncreaseValue(ModifiableValueBase):
                 id = damage_value.id,
                 damage_type = damage_value.damage_type,
                 target_position = ObjectPosition(
-                    player_id = target_player,
-                    charactor_id = target,
+                    player_idx = target_player,
+                    charactor_idx = target,
                     area = ObjectPositionType.CHARACTOR
                 ),
                 damage = damage_value.damage,

@@ -43,19 +43,19 @@ class SeedOfSkandha(UsageCharactorStatus):
             return []
         if not self.position.check_position_valid(
             damage_value.target_position, event.match, 
-            player_id_same = True, charactor_id_same = True,
+            player_idx_same = True, charactor_idx_same = True,
         ):
             # damage not received by self, not trigger
             return []
         assert self.usage > 0
         # trigger, check all seed on the same side
         actions: list[MakeDamageAction | ChangeObjectUsageAction] = []
-        table = event.match.player_tables[self.position.player_id]
+        table = event.match.player_tables[self.position.player_idx]
         has_pyro_charactor = False
         has_talent = False
         # check if enemy has pyro charactor and has talent nahida
         for charactor in event.match.player_tables[
-                1 - self.position.player_id].charactors:
+                1 - self.position.player_idx].charactors:
             if charactor.element == ElementType.PYRO:
                 has_pyro_charactor = True
             if charactor.name == 'Nahida':
@@ -78,8 +78,8 @@ class SeedOfSkandha(UsageCharactorStatus):
                         change_usage = -1,
                     ))
                     actions.append(MakeDamageAction(
-                        player_id = self.position.player_id,
-                        target_id = self.position.player_id,
+                        player_idx = self.position.player_idx,
+                        target_idx = self.position.player_idx,
                         damage_value_list = [
                             DamageValue(
                                 position = status.position,
@@ -91,8 +91,8 @@ class SeedOfSkandha(UsageCharactorStatus):
                                 target_charactor = 'ABSOLUTE',
                                 damage_elemental_type = d_ele_type,
 
-                                target_charactor_id = 
-                                status.position.charactor_id,
+                                target_charactor_idx = 
+                                status.position.charactor_idx,
                             )
                         ],
                     ))

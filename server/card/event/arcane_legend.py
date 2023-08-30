@@ -24,7 +24,7 @@ class ArcaneLegendBase(CardBase):
         """
         assert target is None
         return [ConsumeArcaneLegendAction(
-            player_id = self.position.player_id
+            player_idx = self.position.player_idx
         )]
 
 
@@ -42,7 +42,7 @@ class CovenantOfRock(ArcaneLegendBase):
         Can only be played when you have 0 Elemental Dice left.
         """
         return len(match.player_tables[
-            self.position.player_id].dice.colors) == 0
+            self.position.player_idx].dice.colors) == 0
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         """
@@ -60,7 +60,7 @@ class CovenantOfRock(ArcaneLegendBase):
         ret: List[ConsumeArcaneLegendAction | CreateDiceAction] = []
         ret += super().get_actions(target, match)
         ret.append(CreateDiceAction(
-            player_id = self.position.player_id,
+            player_idx = self.position.player_idx,
             number = 2,
             different = True
         ))

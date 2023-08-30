@@ -15,19 +15,19 @@ class NothingAgent(AgentBase):
     """
     def generate_response(self, match: Match) -> Responses | None:
         for req in match.requests:
-            if req.player_id == self.player_id:
+            if req.player_idx == self.player_idx:
                 if req.name == 'SwitchCardRequest':
                     return SwitchCardResponse(
-                        request = req, card_ids = []
+                        request = req, card_idxs = []
                     )
                 elif req.name == 'ChooseCharactorRequest':
                     return ChooseCharactorResponse(
                         request = req, 
-                        charactor_id = req.available_charactor_ids[0]
+                        charactor_idx = req.available_charactor_idxs[0]
                     )
                 elif req.name == 'RerollDiceRequest':
                     return RerollDiceResponse(
-                        request = req, reroll_dice_ids = []
+                        request = req, reroll_dice_idxs = []
                     )
                 elif req.name == 'DeclareRoundEndRequest':
                     return DeclareRoundEndResponse(

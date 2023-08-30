@@ -19,14 +19,14 @@ class ObjectPosition(BaseModel):
     to identify. Position is used for objects to decide whether to respond
     events.
     """
-    player_id: int
-    charactor_id: int = -1
+    player_idx: int
+    charactor_idx: int = -1
     area: ObjectPositionType
 
     def check_position_valid(
-        self, target_position, match: Any,
-        player_id_same: bool | None = None,
-        charactor_id_same: bool | None = None,
+        self, target_position: 'ObjectPosition', match: Any,
+        player_idx_same: bool | None = None,
+        charactor_idx_same: bool | None = None,
         area_same: bool | None = None,
         source_area: ObjectPositionType | None = None,
         target_area: ObjectPositionType | None = None,
@@ -37,12 +37,13 @@ class ObjectPosition(BaseModel):
         Based on this position, target position and constraints, give whether
         two position relations fit the constraints.
         """
-        if player_id_same is not None:
-            if player_id_same != (self.player_id == target_position.player_id):
+        if player_idx_same is not None:
+            if player_idx_same != (
+                    self.player_idx == target_position.player_idx):
                 return False
-        if charactor_id_same is not None:
-            if charactor_id_same != (
-                self.charactor_id == target_position.charactor_id
+        if charactor_idx_same is not None:
+            if charactor_idx_same != (
+                self.charactor_idx == target_position.charactor_idx
             ):
                 return False
         if area_same is not None:
@@ -55,13 +56,13 @@ class ObjectPosition(BaseModel):
             if target_position.area != target_area:
                 return False
         if source_is_active_charactor is not None:
-            cid = match.player_tables[self.player_id].active_charactor_id
-            return source_is_active_charactor == (self.charactor_id == cid)
+            cidx = match.player_tables[self.player_idx].active_charactor_idx
+            return source_is_active_charactor == (self.charactor_idx == cidx)
         if target_is_active_charactor is not None:
-            cid = match.player_tables[
-                target_position.player_id].active_charactor_id
+            cidx = match.player_tables[
+                target_position.player_idx].active_charactor_idx
             return target_is_active_charactor == (
-                target_position.charactor_id == cid)
+                target_position.charactor_idx == cidx)
         return True
 
 
@@ -86,8 +87,9 @@ class DamageValue(BaseModel):
         target_charactor (Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 
             'ABSOLUTE']): The charactor who will receive the damage.
             If it is defeated, this damage will be ignored.
-        target_charactor_id (int): The charactor id of the charactor who will
-            receive the damage. Only used when target_charactor is 'ABSOLUTE'.
+        target_charactor_idx (int): The charactor index of the charactor who 
+            will receive the damage. Only used when target_charactor is 
+            'ABSOLUTE'.
     """
 
     position: ObjectPosition
@@ -100,7 +102,7 @@ class DamageValue(BaseModel):
     # damage which player
     target_player: Literal['CURRENT', 'ENEMY']
     target_charactor: Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 'ABSOLUTE']
-    target_charactor_id: int = -1
+    target_charactor_idx: int = -1
 
 
 class CardActionTarget(BaseModel):

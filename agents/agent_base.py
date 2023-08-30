@@ -10,7 +10,7 @@ class AgentBase(BaseModel):
     """
     Base class of all agents.
     """
-    player_id: int
+    player_idx: int
 
     def generate_response(self, match: Match) -> Responses | None:
         """
