@@ -87,6 +87,8 @@ def test_rana():
                 assert match.player_tables[1].dice.colors[0] == 'ELECTRO'
                 assert match.player_tables[1].dice.colors[1] == 'ELECTRO'
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -185,7 +187,8 @@ def test_rana():
                 for die in match.player_tables[1].dice.colors:
                     if die == 'OMNI':
                         omni_num -= 1
-                    elif die == 'DENDRO':
+                    else:
+                        assert die == 'DENDRO'
                         dendro_num -= 1
                 assert omni_num == 0
                 assert dendro_num == 0
@@ -195,6 +198,8 @@ def test_rana():
                 for die in match.player_tables[1].dice.colors:
                     assert die == 'OMNI'
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -301,7 +306,7 @@ def test_timmie():
                     assert tmcount == 1
                     tmcount = 0
                     for support in match.player_tables[1].supports:
-                        if support.name == 'Timmie':
+                        if support.name == 'Timmie':  # pragma: no cover
                             assert support.usage == 2
                             tmcount += 1
                     assert tmcount == 3
@@ -331,8 +336,7 @@ def test_timmie():
                     assert current_colors[1][3:] == last_colors[1]
                     for support in match.player_tables[0].supports:
                         assert support.name != 'Timmie'
-                    for support in match.player_tables[1].supports:
-                        assert support.name != 'Timmie'
+                    assert len(match.player_tables[1].supports) == 0
                     assert len(match.player_tables[0].hands) == 10
                     assert len(match.player_tables[1].hands) == 10
                 elif test_id == 22:
@@ -343,6 +347,8 @@ def test_timmie():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 

@@ -4,6 +4,7 @@ branch = True
 [report]
 include = 
     ./server/*
+    ./tests/*
 ; Regexes for lines to exclude from consideration
 exclude_also =
     ; Don't complain about missing debug-only code:
@@ -21,6 +22,8 @@ exclude_also =
 
     ; Don't complain about abstract methods, they aren't run:
     @(abc\.)?abstractmethod
+
+    ; Don't complain about ...:
 
 ignore_errors = True
 

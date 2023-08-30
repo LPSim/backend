@@ -71,7 +71,7 @@ def test_objectbase_wrong_handler_name():
         )
 
         def event_handler_NOT_EXIST(self, event):
-            ...
+            ...  # pragma: no cover
 
     with pytest.raises(ValueError):
         _ = WrongEventHandler()
@@ -84,7 +84,7 @@ def test_objectbase_wrong_handler_name():
         )
 
         def value_modifier_NOT_EXIST(self, value, match, mode):
-            ...
+            ...  # pragma: no cover
 
     with pytest.raises(ValueError):
         _ = WrongValueModifier()
@@ -247,8 +247,25 @@ def test_create_dice():
         match.player_tables[0].dice.colors.clear()
 
 
+def test_id_wont_duplicate():
+    s = set()
+    position = ObjectPosition(
+        player_idx = -1,
+        area = ObjectPositionType.INVALID,
+        id = -1,
+    )
+    import tqdm
+    for _ in tqdm.tqdm(range(100000)):
+        o = ObjectBase(
+            position = position,
+        )
+        assert o.id not in s
+        s.add(o.id)
+
+
 if __name__ == '__main__':
-    test_object_position_validation()
-    test_match_config_and_match_errors()
-    test_objectbase_wrong_handler_name()
+    # test_object_position_validation()
+    # test_match_config_and_match_errors()
+    # test_objectbase_wrong_handler_name()
     # test_create_dice()
+    test_id_wont_duplicate()

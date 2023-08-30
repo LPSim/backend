@@ -150,6 +150,8 @@ def test_small_elemental_artifacts():
                 assert skill.cost.any_dice_number == 1
 
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -248,6 +250,8 @@ def test_old_version_artifacts():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -384,6 +388,8 @@ def test_gambler():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -395,5 +401,5 @@ def test_gambler():
 if __name__ == '__main__':
     # test_small_elemental_artifacts()
     # test_create_small_element_artifacts()
-    test_old_version_artifacts()
+    # test_old_version_artifacts()
     test_gambler()

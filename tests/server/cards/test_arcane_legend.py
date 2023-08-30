@@ -87,6 +87,8 @@ def test_covenant_of_rock():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -140,6 +142,8 @@ def test_rock_dice_different_not_omni():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
     match.step()

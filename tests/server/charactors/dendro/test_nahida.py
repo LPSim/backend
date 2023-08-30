@@ -76,6 +76,8 @@ def test_fischl_mona_nahida():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -156,6 +158,8 @@ def test_fischl_mona_nahida_no_talent():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -357,6 +361,8 @@ def test_nahida_talents():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -520,6 +526,8 @@ def test_nahida_talents():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -574,6 +582,8 @@ def test_nahida_apply_seed_to_defeated():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -648,6 +658,8 @@ def test_maya_not_first_status():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -709,6 +721,8 @@ def test_seed_not_first_status():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -802,7 +816,7 @@ def test_talent_enemy_has_other_charactor_status():
                     status = match.player_tables[1].team_status
                     found = False
                     for s in status:
-                        if s.name == 'Shrine of Maya':
+                        if s.name == 'Shrine of Maya':  # pragma: no cover
                             assert s.usage == 3
                             found = True
                     assert found
@@ -816,6 +830,8 @@ def test_talent_enemy_has_other_charactor_status():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 

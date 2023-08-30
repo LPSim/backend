@@ -65,6 +65,8 @@ def test_bestest():
                         omni_num -= 1
                 assert omni_num == 0
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 

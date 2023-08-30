@@ -125,6 +125,8 @@ def test_fischl():
                 assert len(match.player_tables[1].summons) == 1
                 assert match.player_tables[1].summons[0].name == 'Oz'
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -213,6 +215,8 @@ def test_fischl():
                 assert match.player_tables[1].summons[0].usage == 2
                 check_hp(match, [[4, 10, 10], [10, 10, 10]])
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 

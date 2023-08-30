@@ -36,7 +36,7 @@ def test_draw_card():
         elif match.need_respond(1):
             make_respond(agent_1, match)
         else:
-            break
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
     assert len(agent_1.commands) == 0
@@ -79,7 +79,7 @@ def test_draw_card():
                 match.step()
                 break
             else:
-                break
+                raise AssertionError('No need respond.')
         assert len(match.player_tables[1].hands) == 5
         for card in match.player_tables[1].hands:
             assert card.name == 'Rana'

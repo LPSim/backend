@@ -122,6 +122,8 @@ def test_mona():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -234,6 +236,8 @@ def test_mona():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -293,6 +297,8 @@ def test_mona_q_enemy_attack():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 

@@ -106,6 +106,8 @@ def test_save_load():
             length = len(agent_1.commands)
             saves[length] = match.copy(deep = True)
             agent_saves[length] = agent_1.copy(deep = True)
+        else:
+            raise AssertionError()
         if len(agent_1.commands) == 0:
             break
 
@@ -269,7 +271,7 @@ def test_use_card():
             assert len(match.player_tables[1].table_deck) == deck_numbers[
                 len(agent_1.commands)]
         else:
-            raise Exception('no need respond')
+            raise AssertionError('no need respond')
         make_respond(current_agent, match)
 
     assert match.state != MatchState.ERROR
@@ -347,9 +349,7 @@ def test_support_over_maximum_and_error_tests():
         elif match.need_respond(1):
 
             # asserts
-            if len(agent_1.commands) == 999:
-                ...
-            elif len(agent_1.commands) == 7:
+            if len(agent_1.commands) == 7:
                 # 4 rana, usage 0 0 0 1
                 assert len(match.player_tables[1].supports) == 4
                 for support, usage in zip(
@@ -371,7 +371,8 @@ def test_support_over_maximum_and_error_tests():
                 for d in match.player_tables[1].dice.colors:
                     if d == 'OMNI':
                         omni_counter += 1
-                    elif d == 'ELECTRO':
+                    else:
+                        assert d == 'ELECTRO'
                         electro_counter += 1
                 assert omni_counter == 7
                 assert electro_counter == 2
@@ -383,7 +384,8 @@ def test_support_over_maximum_and_error_tests():
                 for d in match.player_tables[1].dice.colors:
                     if d == 'OMNI':
                         omni_counter += 1
-                    elif d == 'ELECTRO':
+                    else:
+                        assert d == 'ELECTRO'
                         electro_counter += 1
                 assert omni_counter == 13
                 assert electro_counter == 3
@@ -400,6 +402,8 @@ def test_support_over_maximum_and_error_tests():
                     assert support.usage == 1
 
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('no need respond')
         if len(agent_1.commands) == 0:
             break
 

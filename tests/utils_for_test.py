@@ -62,7 +62,7 @@ def remove_ids(model: BaseModel) -> BaseModel:
     return model
 
 
-def get_random_state(offset: int = 0):
+def get_random_state(offset: int = 0):  # pragma no cover
     """
     get random state tuple for test. it will use a fixed random state and
     random offset times as the result random state.
@@ -86,7 +86,7 @@ def get_test_id_from_command(agent: InteractionAgent | InteractionAgent_V1_0):
     A command should like: `TEST 1 other information about this test`,
     and will return 1.
     """
-    if len(agent.commands) == 0:
+    if len(agent.commands) == 0:  # pragma: no cover
         return 0
     command = agent.commands[0]
     if command.startswith('TEST'):

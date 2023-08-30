@@ -97,6 +97,8 @@ def test_crystallize():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -210,6 +212,8 @@ def test_frozen():
                            exist = False)
                 check_name('UseSkillRequest', match.requests, exist = True)
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -305,6 +309,8 @@ def test_frozen_and_pyro():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -403,6 +409,8 @@ def test_burning_flame():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -510,6 +518,8 @@ def test_dendro_core_catalyzing_field():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -566,6 +576,8 @@ def test_swirl():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -621,6 +633,8 @@ def test_swirl_2():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -695,6 +709,8 @@ def test_swirl_3():
                 assert charactors[1].status[0].name == 'Frozen'
                 assert charactors[2].status[0].name == 'Frozen'
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -755,6 +771,8 @@ def test_swirl_4():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -850,6 +868,8 @@ def test_swirl_with_catalyzing_field():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -958,6 +978,8 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -1073,6 +1095,8 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -1191,6 +1215,8 @@ def test_overloaded():
                 else:
                     break
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
@@ -1246,6 +1272,8 @@ def test_background_overloaded():
             make_respond(agent_0, match)
         elif match.need_respond(1):
             make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
         if len(agent_1.commands) == 0:
             break
 
