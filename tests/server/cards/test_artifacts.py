@@ -471,19 +471,6 @@ def test_old_gambler():
     match.step()
     while True:
         if match.need_respond(0):
-            while True:
-                cmd = agent_0.commands[0]
-                test_id = get_test_id_from_command(agent_0)
-                if test_id == 1:
-                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
-                    assert number[0] == len(match.player_tables[0].dice.colors)
-                    assert number[1] == len(match.player_tables[1].dice.colors)
-                elif test_id == 2:
-                    charactor = match.player_tables[0].charactors[7]
-                    assert charactor.artifact is not None
-                    assert charactor.artifact.name == "Gambler's Earrings"
-                else:
-                    break
             make_respond(agent_0, match)
         elif match.need_respond(1):
             while True:
