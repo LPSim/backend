@@ -254,8 +254,7 @@ def test_id_wont_duplicate():
         area = ObjectPositionType.INVALID,
         id = -1,
     )
-    import tqdm
-    for _ in tqdm.tqdm(range(100000)):
+    for _ in range(100000):
         o = ObjectBase(
             position = position,
         )
