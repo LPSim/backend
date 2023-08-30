@@ -1,4 +1,5 @@
 from .companions import Companions
+from .locations import Locations
 
 
-Supports = Companions | Companions
+Supports = Companions | Locations

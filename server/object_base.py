@@ -59,12 +59,17 @@ class ObjectBase(BaseModel):
         """
         Renew the id of the object.
         """
-        self.id = (
-            int(time.time() % 86400 * 1000000) 
-            * 1024 + random.randint(0, 1023)
-        )
-        used_object_ids.add(self.id)
-        self.position.id = self.id
+        while True:
+            new_id = (
+                int(time.time() % ID_MOD_NUM * ID_MULTI_NUM) 
+                * ID_RAND_NUM + random.randint(0, ID_RAND_NUM - 1)
+            )
+            if new_id in used_object_ids:
+                continue
+            self.id = new_id
+            used_object_ids.add(self.id)
+            self.position.id = self.id
+            break
 
 
 class CardBase(ObjectBase):
