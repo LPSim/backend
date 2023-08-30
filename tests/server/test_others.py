@@ -191,7 +191,7 @@ def test_match_config_and_match_errors():
             match.step(run_continuously = False)
 
 
-def test_create_dice_assertions():
+def test_create_dice():
     match = Match()
     act = CreateDiceAction(
         player_id = 0,
@@ -207,9 +207,39 @@ def test_create_dice_assertions():
     )
     with pytest.raises(ValueError):
         match._act(act)
+    act = CreateDiceAction(
+        player_id = 0,
+        number = 8,
+        different = True,
+    )
+    with pytest.raises(ValueError):
+        # different over maximum color number
+        match._act(act)
+    act = CreateDiceAction(
+        player_id = 0,
+        number = 7,
+        different = True,
+    )
+    match._act(act)
+    assert len(match.player_tables[0].dice.colors) == 7
+    assert len(set(match.player_tables[0].dice.colors)) == 7
+    match.player_tables[0].dice.colors.clear()
+    for i in range(50):
+        act = CreateDiceAction(
+            player_id = 0,
+            number = 3,
+            different = True,
+        )
+        match._act(act)
+        assert len(match.player_tables[0].dice.colors) == 3
+        assert len(set(match.player_tables[0].dice.colors)) == 3
+        for color in match.player_tables[0].dice.colors:
+            assert color != 'OMNI'
+        match.player_tables[0].dice.colors.clear()
 
 
 if __name__ == '__main__':
     # test_object_position_validation()
     # test_object_position_validation()
-    test_match_config_and_match_errors()
+    # test_match_config_and_match_errors()
+    test_create_dice()
