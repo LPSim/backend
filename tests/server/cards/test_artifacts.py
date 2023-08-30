@@ -5,7 +5,8 @@ from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
 from server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, get_random_state
+    check_hp, get_test_id_from_command, make_respond, get_random_state, 
+    set_16_omni
 )
 from server.interaction import UseSkillRequest
 
@@ -221,7 +222,6 @@ def test_old_version_artifacts():
     deck = Deck(**deck_dict)
     match = Match(random_state = get_random_state())
     match.config.max_same_card_number = 30
-    match.enable_history = True
     match.set_deck([deck, deck])
     match.start()
     match.step()
@@ -256,7 +256,144 @@ def test_old_version_artifacts():
     assert match.state != MatchState.ERROR
 
 
+def test_gambler():
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "end",
+            "choose 1",
+            "choose 2",
+            "choose 3",
+            "choose 4",
+            "choose 5",
+            "choose 6",
+            "skill 0 0 1 2",
+            "choose 7",
+            "card 0 0 0",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "TEST 1 9 15",
+            "end",
+            "skill 0 0 1 2",
+            "TEST 1 13 15",
+            "card 0 0 0",
+            "skill 0 0 1 2",
+            "TEST 1 11 15",
+            "end",
+            "TEST 2 p0c7 usage2",
+            "end"
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "card 0 1 1",
+            "skill 0 0 1 2",
+            "TEST 1 16 12",
+            "card 0 0 1",
+            "skill 0 0 1 2",
+            "TEST 1 16 10",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "TEST 1 16 8",
+            "skill 0 0 1 2",
+            "TEST 1 16 5",
+            "card 0 0 0",
+            "skill 0 0 1 2",
+            "TEST 1 16 3",
+            "card 0 2 0",
+            "end",
+            "choose 1",
+            "skill 0 0 1 2",
+            "choose 2",
+            "TEST 1 11 15",
+            "end",
+            "choose 3",
+            "choose 4",
+            "card 0 0 0",
+            "end",
+            "choose 5",
+            "choose 6",
+            "end"
+        ],
+        only_use_command = True
+    )
+    deck = Deck.from_str(
+        '''
+        # charactor:Fischl
+        # charactor:Mona
+        # charactor:Nahida
+        charactor:Nahida*10
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Timmie*2
+        # Rana*2
+        # Strategize*2
+        # The Bestest Travel Companion!*2
+        # Covenant of Rock
+        Gambler's Earrings*30
+        '''
+    )
+    # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
+    # deck_dict = deck.dict()
+    # deck_dict['cards'] += [old_wine] * 12
+    # deck = Deck(**deck_dict)
+    for charactor in deck.charactors:
+        charactor.hp = 1
+        charactor.max_hp = 1
+    match = Match(random_state = get_random_state())
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 10
+    match.config.random_first_player = False
+    match.set_deck([deck, deck])
+    set_16_omni(match)
+    match.start()
+    match.step()
+    while True:
+        if match.need_respond(0):
+            while True:
+                cmd = agent_0.commands[0]
+                test_id = get_test_id_from_command(agent_0)
+                if test_id == 1:
+                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
+                    assert number[0] == len(match.player_tables[0].dice.colors)
+                    assert number[1] == len(match.player_tables[1].dice.colors)
+                elif test_id == 2:
+                    charactor = match.player_tables[0].charactors[7]
+                    assert charactor.artifact is not None
+                    assert charactor.artifact.name == "Gambler's Earrings"
+                else:
+                    break
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                cmd = agent_1.commands[0]
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
+                    assert number[0] == len(match.player_tables[0].dice.colors)
+                    assert number[1] == len(match.player_tables[1].dice.colors)
+                else:
+                    break
+            make_respond(agent_1, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0 and len(agent_0.commands) == 0
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_small_elemental_artifacts()
     # test_create_small_element_artifacts()
-    test_old_version_artifacts()
+    # test_old_version_artifacts()
+    test_gambler()
