@@ -988,31 +988,16 @@ class Match(BaseModel):
 
     def _respond_switch_card(self, response: SwitchCardResponse):
         # restore cards
-        card_names = response.card_names
-        card_name_dict = {}
-        for card_name in card_names:
-            if card_name not in card_name_dict:
-                card_name_dict[card_name] = 0
-            card_name_dict[card_name] += 1
-        card_hand_idxs = []
-        card_hand_names = [x.name for x in self.player_tables[
-            response.player_idx].hands]
-        for card_name, count in card_name_dict.items():
-            start_idx = -1
-            for _ in range(count):
-                next_idx = card_hand_names.index(card_name, start_idx + 1)
-                card_hand_idxs.append(next_idx)
-                start_idx = next_idx
         event_args: List[EventArgumentsBase] = []
         event_args += self._act(RestoreCardAction(
             player_idx = response.player_idx,
-            card_idxs = card_hand_idxs
+            card_idxs = response.card_idxs
         ))
         event_args += self._act(
             DrawCardAction(
                 player_idx = response.player_idx,
                 number = len(response.card_idxs),
-                blacklist_names = card_names,
+                blacklist_names = response.card_names,
                 draw_if_filtered_not_enough = True
             )
         )
