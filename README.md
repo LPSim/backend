@@ -98,6 +98,10 @@ Pydantic to save & load states of match, exported data is complete to restore
 from certain state and continue running, and also easy for frontend to render
 the game states.
 
+High compatible with different version of charactors or cards. (Although
+currently not implemented,) You can start a match between version 3.8 
+Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu Kenki.
+
 Interact by request and response. When request list is not empty, agents need
 to response to one of the request. When multiple players need to response,
 (e.g. switch card and choose charactor at startup),
@@ -116,7 +120,8 @@ applies to attributes like initial dice color, damage, and cost.
 
 ## Contribution
 
-Contributions are welcomed. To add a new charactor, please refer to
+Contributions are welcomed, however, currently there is no detailed guide for
+contribution. To add a new charactor, please refer to
 `server/charactor/electro/fischl.py` `server/charactor/hydro/mona.py`
 and `server/charactor/dendro/nahida.py`. To add a new card, please refer to
 existing card implementations.
