@@ -1,8 +1,9 @@
-from .element_artifacts import SmallElementalArtifact
+from .element_artifacts import ElementArtifacts
+from .others import OtherArtifacts
 from .old_version import OldVersionArtifacts
 
 Artifacts = (
-    SmallElementalArtifact
+    ElementArtifacts | OtherArtifacts
     # finally old versions
     | OldVersionArtifacts
 )

@@ -30,47 +30,54 @@ app.add_middleware(
 def get_new_match(seed: Any = None, rich: bool = False):
     deck = Deck.from_str(
         '''
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        # charactor:Fischl
+        # charactor:Mona
+        # charactor:Nahida
+        charactor:Nahida*10
+        # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Timmie*2
         # Rana*2
         # Strategize*2
         # The Bestest Travel Companion!*2
         # Covenant of Rock
-        Covenant of Rock*30
+        Gambler's Earrings*30
         '''
     )
     # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
     # deck_dict = deck.dict()
     # deck_dict['cards'] += [old_wine] * 12
     # deck = Deck(**deck_dict)
+    for charactor in deck.charactors:
+        charactor.hp = 1
+        charactor.max_hp = 1
     if seed:
         match: Match = Match(random_state = seed)
     else:
         match: Match = Match()
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.charactor_number = 10
     match.config.random_first_player = False
     if rich:
         set_16_omni(match)
     match.start()
     match.step()
-    while match.need_respond(0):
-        make_respond(agent_0, match)
+    if agent_0.__class__ != InteractionAgent:
+        while match.need_respond(0):
+            make_respond(agent_0, match)
     return match
 
 
 agent_0 = NothingAgent(player_idx = 0)
-# agent_0 = InteractionAgent(player_idx = 0, only_use_command = True)
+agent_0 = InteractionAgent(player_idx = 0, only_use_command = True)
 agent_1 = InteractionAgent(player_idx = 1, only_use_command = True)
 
 
 @app.on_event('startup')
 async def startup_event():
     global match
-    match = get_new_match(seed = get_random_state(), rich = False)
+    match = get_new_match(seed = get_random_state(), rich = True)
 
 
 @app.post('reset')
@@ -105,9 +112,6 @@ async def post_respond(data: RespondData):
     command = data.command
     if not match.need_respond(player_idx):
         raise HTTPException(status_code = 404, detail = 'Not your turn')
-    # if player_idx != 1:
-    #     raise HTTPException(status_code = 404, 
-    #                         detail = 'player 0 not supported')
     if player_idx == 0:
         agent = agent_0
     elif player_idx == 1:

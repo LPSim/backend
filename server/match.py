@@ -209,7 +209,7 @@ class Match(BaseModel):
 
     name: Literal['Match'] = 'Match'
 
-    version: Literal['0.0.1', '0.0.2'] = '0.0.2'
+    version: Literal['0.0.1', '0.0.2', '0.0.3'] = '0.0.3'
 
     config: MatchConfig = MatchConfig()
 
@@ -474,7 +474,7 @@ class Match(BaseModel):
             else:
                 raise NotImplementedError(
                     f'Match state {self.state} not implemented.')
-            if self.enable_history:
+            if self.enable_history:  # pragma: no cover
                 hist = self._history[:]
                 self._history.clear()
                 copy = self.copy(deep = True)
@@ -763,14 +763,15 @@ class Match(BaseModel):
         """
         ret: List[Actions] = []
         object_list = self.get_object_lists()
+        handler_name = f'event_handler_{event_arg.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
             if hasattr(obj, 'name'):
                 name = obj.name  # type: ignore
-            handler_name = f'event_handler_{event_arg.type}'
             func = getattr(obj, handler_name, None)
             if func is not None:
-                logging.info(f'Trigger event {event_arg.type} for {name}.')
+                logging.info(f'Trigger event {event_arg.type.name} '
+                             f'for {name}.')
                 actions = func(event_arg)
                 ret += actions
         return ret
@@ -808,14 +809,14 @@ class Match(BaseModel):
                 'Only cost can be modified in test mode.'
             )
         object_list = self.get_object_lists()
+        modifier_name = f'value_modifier_{value.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
             if hasattr(obj, 'name'):
                 name = obj.name  # type: ignore
-            modifier_name = f'value_modifier_{value.type}'
             func = getattr(obj, modifier_name, None)
             if func is not None:
-                logging.debug(f'Modify value {value.type} for {name}.')
+                logging.debug(f'Modify value {value.type.name} for {name}.')
                 value = func(value, mode)
 
     """

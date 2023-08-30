@@ -1,4 +1,6 @@
-from typing import Literal
+from typing import Any, Literal
+
+from server.action import Actions
 
 from .base import ArtifactBase
 from ....struct import Cost
@@ -52,6 +54,13 @@ class SmallElementalArtifact(ArtifactBase):
         self.desc = self.desc.replace(
             "XXX", self.element.value.capitalize()
         )
+
+    def equip(self, match: Any) -> list[Actions]:
+        """
+        Equip this artifact. Reset usage.
+        """
+        self.usage = 1
+        return []
 
     def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
             -> list[ActionBase]:
@@ -119,3 +128,6 @@ class SmallElementalArtifact(ArtifactBase):
             if mode == 'REAL':
                 self.usage -= used
         return value
+
+
+ElementArtifacts = SmallElementalArtifact | SmallElementalArtifact

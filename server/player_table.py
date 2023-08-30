@@ -38,7 +38,7 @@ class PlayerTable(BaseModel):
         table_deck (List[Cards]): The list of cards in the table deck.
     """
     name: Literal['PlayerTable'] = 'PlayerTable'
-    version: Literal['0.0.1', '0.0.2']
+    version: Literal['0.0.1', '0.0.2', '0.0.3']
 
     # player information
     player_name: str = 'Nahida'
@@ -104,7 +104,6 @@ class PlayerTable(BaseModel):
         """
         if self.version == '0.0.1':
             return self.dice_color_order_0_0_1()
-        assert self.version == '0.0.2'
         return self.dice_color_order_0_0_2()
 
     def sort_dice(self):

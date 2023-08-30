@@ -1,9 +1,11 @@
 from typing import Literal, List, Any
 
+from ....event import MoveObjectEventArguments
+
 from ....object_base import CardBase
 from ....struct import Cost
 from ....consts import ObjectType, CostLabels, ObjectPositionType
-from ....action import MoveObjectAction, RemoveObjectAction
+from ....action import Actions, MoveObjectAction, RemoveObjectAction
 from ....struct import CardActionTarget
 
 
@@ -18,6 +20,15 @@ class ArtifactBase(CardBase):
     version: str
     cost: Cost
     usage: int
+
+    def equip(self, match: Any) -> list[Actions]:
+        """
+        The artifact is equipped, i.e. from hand to charactor. Set the status
+        of artifact, and if it has actions when equipped, return the actions.
+        """
+        # should be used by small qianyan
+        raise NotImplementedError('Not tested part')
+        return []
 
     def get_targets(self, match: Any) -> List[CardActionTarget]:
         # can quip on all self alive charactors
@@ -59,3 +70,20 @@ class ArtifactBase(CardBase):
             target_position = position.copy(deep = True),
         ))
         return ret
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments
+    ) -> list[Actions]:
+        """
+        When this artifact is moved from hand to charactor, it is considered
+        as equipped, and will call `self.equip`.
+        """
+        if (
+            event.action.object_id == self.id
+            and event.action.object_position.area == ObjectPositionType.HAND
+            and event.action.target_position.area 
+            == ObjectPositionType.CHARACTOR
+        ):
+            # this artifact equipped from hand to charactor
+            return self.equip(event.match)
+        return []
