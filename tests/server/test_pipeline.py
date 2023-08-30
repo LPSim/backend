@@ -3,6 +3,7 @@ import json
 
 import pytest
 from agents.nothing_agent import NothingAgent
+from server.event_handler import OmnipotentGuideEventHandler
 from server.match import Match, MatchState
 from server.deck import Deck
 from agents.random_agent import RandomAgent
@@ -248,7 +249,10 @@ def test_use_card():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    set_16_omni(match)
+    match.config.initial_dice_number = 16
+    match.event_handlers = (
+        [OmnipotentGuideEventHandler()] + match.event_handlers
+    )
     assert match.start()
     match.step()
 

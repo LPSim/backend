@@ -306,4 +306,5 @@ def test_mona_q_enemy_attack():
 
 
 if __name__ == '__main__':
+    test_mona()
     test_mona_q_enemy_attack()

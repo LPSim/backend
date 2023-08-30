@@ -18,6 +18,9 @@ from .struct import (
 
 
 used_object_ids = set()
+ID_MOD_NUM = 86400
+ID_MULTI_NUM = 1000000
+ID_RAND_NUM = 1024
 
 
 class ObjectBase(BaseModel):

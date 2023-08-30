@@ -31,7 +31,7 @@ class GamblersEarrings(ArtifactBase):
         return []
 
     def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments
+        self, event: CharactorDefeatedEventArguments, match: Any
     ) -> list[CreateDiceAction]:
         """
         When an opposing character is defeated, check if the character this 
@@ -45,7 +45,7 @@ class GamblersEarrings(ArtifactBase):
             id = -1,  # id is not used to check, no need to find real id
         )
         if not self.position.check_position_valid(
-            target_position, event.match, 
+            target_position, match, 
             player_idx_same = False,
             source_area = ObjectPositionType.CHARACTOR,
             source_is_active_charactor = True,

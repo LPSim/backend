@@ -182,6 +182,7 @@ class ObjectPositionType(str, Enum):
     DICE = 'DICE'
     CHARACTOR = 'CHARACTOR'
     CHARACTOR_STATUS = 'CHARACTOR_STATUS'
+    SKILL = 'SKILL'
     TEAM_STATUS = 'TEAM_STATUS'
     SYSTEM = 'SYSTEM'
     INVALID = 'INVALID'

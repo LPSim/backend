@@ -1,6 +1,6 @@
 
 
-from typing import Literal
+from typing import Any, Literal
 
 from ...struct import DamageValue
 
@@ -27,7 +27,7 @@ class SeedOfSkandha(UsageCharactorStatus):
     max_usage: int = 2
 
     def event_handler_RECEIVE_DAMAGE(
-        self, event: ReceiveDamageEventArguments
+        self, event: ReceiveDamageEventArguments, match: Any
     ) -> list[MakeDamageAction | ChangeObjectUsageAction]:
         """
         Only seed of charactor received the damage will trigger event, it will
@@ -42,7 +42,7 @@ class SeedOfSkandha(UsageCharactorStatus):
             # not elemental reaction, not trigger
             return []
         if not self.position.check_position_valid(
-            damage_value.target_position, event.match, 
+            damage_value.target_position, match, 
             player_idx_same = True, charactor_idx_same = True,
         ):
             # damage not received by self, not trigger
@@ -50,11 +50,11 @@ class SeedOfSkandha(UsageCharactorStatus):
         assert self.usage > 0
         # trigger, check all seed on the same side
         actions: list[MakeDamageAction | ChangeObjectUsageAction] = []
-        table = event.match.player_tables[self.position.player_idx]
+        table = match.player_tables[self.position.player_idx]
         has_pyro_charactor = False
         has_talent = False
         # check if enemy has pyro charactor and has talent nahida
-        for charactor in event.match.player_tables[
+        for charactor in match.player_tables[
                 1 - self.position.player_idx].charactors:
             if charactor.element == ElementType.PYRO:
                 has_pyro_charactor = True

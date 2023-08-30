@@ -4,6 +4,7 @@ from ..consts import (
     ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
+    MakeDamageEventArguments,
     RoundEndEventArguments,
     ChangeObjectUsageEventArguments,
 )
@@ -52,8 +53,9 @@ class AttackerSummonBase(SummonBase):
     damage_elemental_type: DamageElementalType
     damage: int
 
-    def event_handler_ROUND_END(self, event: RoundEndEventArguments) \
-            -> list[MakeDamageAction]:
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> list[MakeDamageAction]:
         """
         When round end, make damage to the opponent.
         """
@@ -90,7 +92,7 @@ class AttackerSummonBase(SummonBase):
         ]
 
     def event_handler_CHANGE_OBJECT_USAGE(
-            self, event: ChangeObjectUsageEventArguments) \
+            self, event: ChangeObjectUsageEventArguments, match: Any) \
             -> list[RemoveObjectAction]:
         """
         When usage is 0, remove the summon.
@@ -100,8 +102,9 @@ class AttackerSummonBase(SummonBase):
             return self._remove()
         return []
 
-    def event_handler_MAKE_DAMAGE(self, event: MakeDamageAction) \
-            -> list[RemoveObjectAction]:
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> list[RemoveObjectAction]:
         """
         When usage is 0, remove the summon.
         """
@@ -142,8 +145,9 @@ class ShieldSummonBase(SummonBase):
     decrease_usage_type: Literal['ONE', 'DAMAGE']
     attack_until_run_out_of_usage: bool
 
-    def event_handler_ROUND_END(self, event: RoundEndEventArguments) \
-            -> list[MakeDamageAction | RemoveObjectAction]:
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> list[MakeDamageAction | RemoveObjectAction]:
         """
         When round end, make damage to the opponent if is needed and remove
         itself.

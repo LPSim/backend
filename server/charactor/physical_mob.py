@@ -31,6 +31,8 @@ class PhysicalMob(CharactorBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)  # type: ignore
+
+    def _init_skills(self):
         element_name = self.element.value.lower()
         element_name = element_name[0].upper() + element_name[1:]
         normal_attack = PhysicalNormalAttackBase(

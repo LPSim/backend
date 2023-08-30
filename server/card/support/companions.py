@@ -43,8 +43,9 @@ class Timmie(CompanionBase):
             change_usage = 1
         )]
 
-    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
-            -> List[Actions]:
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
         """
         When in round prepare, increase usage. 
         If usage is 3, remove self, draw a card and create a dice.
@@ -59,7 +60,7 @@ class Timmie(CompanionBase):
         )]
 
     def event_handler_CHANGE_OBJECT_USAGE(
-        self, event: ChangeObjectUsageEventArguments
+        self, event: ChangeObjectUsageEventArguments, match: Any
     ) -> List[RemoveObjectAction | DrawCardAction | CreateDiceAction]:
         """
         when self usage changed to 3, remove self, draw a card and create a 
@@ -109,16 +110,18 @@ class Rana(CompanionBase):
         self.usage = 1
         return super().play(match)
 
-    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
-            -> list[Actions]:
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> list[Actions]:
         """
         When in round prepare, reset usage
         """
         self.usage = 1
         return []
 
-    def event_handler_SKILL_END(self, event: SkillEndEventArguments) \
-            -> list[CreateDiceAction]:
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> list[CreateDiceAction]:
         """
         if it is in support are, and self player used a elemental skill,
         and have usage, and have next charactor, generate a die with color 
@@ -130,7 +133,7 @@ class Rana(CompanionBase):
             and event.action.skill_type == SkillType.ELEMENTAL_SKILL
             and self.usage > 0
         ):
-            table = event.match.player_tables[self.position.player_idx]
+            table = match.player_tables[self.position.player_idx]
             next_idx = table.next_charactor_id()
             if next_idx is not None:
                 self.usage -= 1

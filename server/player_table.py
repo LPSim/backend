@@ -114,6 +114,54 @@ class PlayerTable(BaseModel):
         order = self.dice_color_order()
         self.dice.colors.sort(key=lambda x: order.index(x))
 
+    def get_object(self, position: ObjectPosition) -> ObjectBase | None:
+        """
+        Get object by its position. If obect not exist, return None.
+        """
+        if position.area == ObjectPositionType.TEAM_STATUS:
+            for status in self.team_status:
+                if status.id == position.id:
+                    return status
+            raise NotImplementedError('Not tested part')
+            return None
+        elif position.area in [
+            ObjectPositionType.CHARACTOR,
+            ObjectPositionType.SKILL,
+            ObjectPositionType.CHARACTOR_STATUS
+        ]:
+            charactor = self.charactors[position.charactor_idx]
+            return charactor.get_object(position)
+        elif position.area == ObjectPositionType.SUMMON:
+            for summon in self.summons:
+                if summon.id == position.id:
+                    return summon
+            raise NotImplementedError('Not tested part')
+            return None
+        elif position.area == ObjectPositionType.SUPPORT:
+            for support in self.supports:
+                if support.id == position.id:
+                    return support
+            raise NotImplementedError('Not tested part')
+            return None
+        elif position.area == ObjectPositionType.HAND:
+            for card in self.hands:
+                if card.id == position.id:
+                    return card
+            raise NotImplementedError('Not tested part')
+            return None
+        # elif position.area == ObjectPositionType.DECK:
+        #     for card in self.table_deck:
+        #         if card.id == position.id:
+        #             return card
+        #     return None
+        # elif position.area == ObjectPositionType.DICE:
+        #     if position.id == self.dice.id:
+        #         return self.dice
+        #     else:
+        #         return None
+        else:
+            raise AssertionError(f'Unknown area {position.area}.')
+
     def get_object_lists(self) -> List[ObjectBase]:
         """
         Get all objects in the table.

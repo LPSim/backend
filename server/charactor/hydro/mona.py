@@ -93,8 +93,9 @@ class IllusoryTorrent(PassiveSkillBase):
     )
     usage: int = 1
 
-    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
-            -> list[Actions]:
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> list[Actions]:
         """
         When in round prepare, reset usage
         """
@@ -182,8 +183,7 @@ class Mona(CharactorBase):
     ]
     weapon_type: WeaponType = WeaponType.CATALYST
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)  # type: ignore
+    def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Ripple of Fate',

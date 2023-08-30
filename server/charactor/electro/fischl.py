@@ -18,7 +18,6 @@ from ...summon.base import AttackerSummonBase
 class Nightrider(ElementalSkillBase):
     name: Literal['Nightrider'] = 'Nightrider'
     desc: str = 'Deals 1 Electro DMG, summons 1 Oz.'
-    element: ElementType = ElementType.ELECTRO
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -99,13 +98,12 @@ class Oz(AttackerSummonBase):
     renew_type: Literal['RESET_WITH_MAX'] = 'RESET_WITH_MAX'
 
     def event_handler_SKILL_END(
-        self, event: SkillEndEventArguments
+        self, event: SkillEndEventArguments, match: Any
     ) -> list[MakeDamageAction]:
         """
         If Fischl made normal attack and with talent, make 2 electro damage 
         to front.
         """
-        match = event.match
         action = event.action
         if action.skill_type != SkillType.NORMAL_ATTACK:
             # not using normal attack
@@ -163,8 +161,7 @@ class Fischl(CharactorBase):
     ]
     weapon_type: WeaponType = WeaponType.BOW
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)  # type: ignore
+    def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
                 name = 'Bolts of Downfall',

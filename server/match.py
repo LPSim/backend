@@ -49,8 +49,10 @@ from .consts import (
 )
 from .event import (
     ConsumeArcaneLegendEventArguments,
+    EventArguments,
     EventArgumentsBase,
-    DrawCardEventArguments, 
+    DrawCardEventArguments,
+    EventFrame, 
     RestoreCardEventArguments, 
     RemoveCardEventArguments,
     ChooseCharactorEventArguments,
@@ -232,7 +234,7 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = []
     state: MatchState = MatchState.WAITING
-    action_queues: List[List[Actions]] = []
+    event_frames: List[EventFrame] = []
     requests: List[Requests] = []
     winner: int = -1
 
@@ -376,8 +378,11 @@ class Match(BaseModel):
                 charactor_copy.position.charactor_idx = cnum
                 charactor_copy.position.area = ObjectPositionType.CHARACTOR
                 charactor_copy.renew_id()
+                charactor_position = charactor_copy.position.copy(deep = True)
+                charactor_position.area = ObjectPositionType.SKILL
                 for skill in charactor_copy.skills:
-                    skill.position = charactor_copy.position.copy(deep = True)
+                    charactor_position.id = skill.id
+                    skill.position = charactor_position.copy(deep = True)
                 player_table.charactors.append(charactor_copy)
             # copy cards
             arcane_legend_cards = []
@@ -412,12 +417,29 @@ class Match(BaseModel):
                 number = self.config.initial_hand_size,
                 draw_if_filtered_not_enough = True,
             ))
-            triggered_actions = self._trigger_events(event_args)
-            if triggered_actions:
-                self._set_match_state(MatchState.ERROR)  # pragma no cover
-                raise AssertionError(
-                    'Initial draw card should not trigger actions.')
+            event_frame = self._stack_events(event_args)
+            self.empty_frame_assertion(
+                event_frame = event_frame,
+                error_message = 'Initial draw card should not trigger objects.'
+            )
         return True
+
+    def empty_frame_assertion(
+        self, event_frame: EventFrame, error_message: str
+    ) -> None:
+        while len(event_frame.events):
+            self._trigger_event(event_frame)
+            while len(event_frame.triggered_objects):
+                position = event_frame.triggered_objects.pop(0)
+                object = self.get_object(position)
+                event_arg = event_frame.processing_event
+                assert event_arg is not None
+                handler_name = 'event_handler_' + event_arg.type.value
+                func = getattr(object, handler_name)
+                actions = func(event_frame.processing_event, self)
+                if len(actions):
+                    self._set_match_state(MatchState.ERROR)  # pragma no cover
+                    raise AssertionError(error_message)
 
     def step(self, run_continuously: bool = True) -> bool:
         """
@@ -442,7 +464,7 @@ class Match(BaseModel):
                 logging.info('There are still requests not responded.')
                 return False
             # check if action is needed
-            elif len(self.action_queues) != 0:
+            elif len(self.event_frames) != 0:
                 self._next_action()
             # all response and action are cleared, start state transition
             elif self.state == MatchState.STARTING:
@@ -563,25 +585,51 @@ class Match(BaseModel):
 
     def _next_action(self):
         """
-        Do one action in `self._action_queue`. It will pick the first action in
-        the last action queue, do it, and trigger events. if events have
-        triggered new actions, they will be added as a new action queue.
+        Do one action in `self.event_frames`. If the last event frame has
+        triggered actions, it will do one action and stack new event frame.
+        If triggered actions is empty and has triggerred objects, get 
+        actions and do the first. If have unprocessed event arguments,
+        trigger objects. If none of all, pop last event frame.
+        Unless there are no actions, this function will exactly do one action.
         """
-        # pop empty action queue
-        while len(self.action_queues):
-            if len(self.action_queues[-1]) == 0:
-                self.action_queues.pop()
+        assert len(self.event_frames) > 0, 'No event frame to process.'
+        while len(self.event_frames):
+            event_frame = self.event_frames[-1]
+            if len(event_frame.triggered_actions):
+                # do one action
+                activated_action = event_frame.triggered_actions.pop(0)
+                logging.info(f'Action activated: {activated_action}')
+                event_args = self._act(activated_action)
+                self._stack_events(event_args)
+                return
+            elif len(event_frame.triggered_objects):
+                # get actions
+                event_arg = event_frame.processing_event
+                assert event_arg is not None
+                object_position = event_frame.triggered_objects.pop(0)
+                object = self.get_object(object_position)
+                object_name = object.__class__.__name__
+                if hasattr(object, 'name'):
+                    object_name = object.name  # type: ignore
+                if object is None:
+                    logging.warning(
+                        f'Object {object_position} does not exist.'
+                        'Is it be removed before triggering or a bug?'
+                    )
+                else:
+                    handler_name = f'event_handler_{event_arg.type.name}'
+                    func = getattr(object, handler_name, None)
+                    assert func is not None, (
+                        f'Object {object_name} does not have handler for '
+                        f'{event_arg.type.name}.'
+                    )
+                    event_frame.triggered_actions = func(event_arg, self)
+            elif len(event_frame.events):
+                # trigger objects
+                self._trigger_event(event_frame)
             else:
-                break
-        # if no action queue remain, return
-        if len(self.action_queues) == 0:
-            return
-        activated_action = self.action_queues[-1].pop(0)
-        logging.info(f'Action activated: {activated_action}')
-        event_args = self._act(activated_action)
-        triggered_actions = self._trigger_events(event_args)
-        if triggered_actions:
-            self.action_queues.append(triggered_actions)
+                # pop event frame
+                self.event_frames.pop()
 
     def _round_start(self):
         """
@@ -594,7 +642,7 @@ class Match(BaseModel):
         for pnum, player_table in enumerate(self.player_tables):
             player_table.dice.colors.clear()
         # generate new dice
-        event_args: List[EventArgumentsBase] = []
+        event_args: List[EventArguments] = []
         for pnum, player_table in enumerate(self.player_tables):
             initial_color_value = InitialDiceColorValue(
                 player_idx = pnum,
@@ -627,11 +675,15 @@ class Match(BaseModel):
                 number = random_number,
                 random = True
             ))
-        triggered_actions = self._trigger_events(event_args)
-        if len(triggered_actions) != 0:
-            self._set_match_state(MatchState.ERROR)  # pragma no cover
-            raise AssertionError(
-                'Create dice should not trigger actions.')
+        event_frame = EventFrame(
+            events = event_args,
+        )
+        while len(event_frame.events):
+            self._trigger_event(event_frame)
+            if len(event_frame.triggered_objects) != 0:
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError(
+                    'Create dice should not trigger objects.')
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
@@ -655,15 +707,16 @@ class Match(BaseModel):
         Activate round_prepare event, and add to actions.
         """
         event_arg = RoundPrepareEventArguments(
-            match = self,
             player_go_first = self.current_player,
             round = self.round_number,
             dice_colors = [table.dice.colors.copy()
                            for table in self.player_tables],
         )
-        actions = self._trigger_event(event_arg)
-        logging.info(f'In round prepare, {len(actions)} actions triggered.')
-        self.action_queues.append(actions)
+        event_frame = self._stack_event(event_arg)
+        logging.info(
+            f'In round prepare, {len(event_frame.triggered_objects)} '
+            f'handlers triggered.'
+        )
 
     def _player_action_start(self):
         """
@@ -723,20 +776,28 @@ class Match(BaseModel):
 
     def _round_ending(self):
         """
-        End a round. Will send round end event, collect actions.
+        End a round. Will stack round end event.
         """
         event = RoundEndEventArguments(
-            match = self,
             player_go_first = self.current_player,
             round = self.round_number,
             initial_card_draw = self.config.initial_card_draw
         )
+        self._stack_event(event)
 
-        actions = self._trigger_event(event)
-        logging.info(f'In round ending, {len(actions)} actions triggered.')
-        self.action_queues.append(actions)
+    def get_object(self, position: ObjectPosition) -> ObjectBase | None:
+        """
+        Get object by its position. If obect not exist, return None.
+        """
+        assert position.area != ObjectPositionType.INVALID, 'Invalid area.'
+        if position.area == ObjectPositionType.SYSTEM:
+            for object in self.event_handlers:
+                if object.id == position.id:
+                    return object
+            raise NotImplementedError('Currently should not be None')
+        return self.player_tables[position.player_idx].get_object(position)
 
-    def get_object_lists(self) -> List[ObjectBase]:
+    def get_object_list(self) -> List[ObjectBase]:
         """
         Get all objects in the match by `self.table.get_object_lists`. 
         The order of objects should follow the game rule. The rules are:
@@ -757,14 +818,42 @@ class Match(BaseModel):
             + self.event_handlers
         )
 
-    def _trigger_event(self, event_arg: EventArgumentsBase,
-                       ) -> List[Actions]:
+    def _stack_event(
+        self, event_arg: EventArguments,
+    ) -> EventFrame:
         """
-        Trigger event. It will return a list of actions that will be triggered
-        by the event. The actions will be sorted by the sort rule.
+        stack a new event. It will wrap it into a list and call 
+        self._trigger_events.
         """
-        ret: List[Actions] = []
-        object_list = self.get_object_lists()
+        return self._stack_events([event_arg])
+
+    def _stack_events(
+        self, event_args: List[EventArguments],
+    ) -> EventFrame:
+        """
+        stack events. It will create a new EventFrame with events and
+        append it into self.event_frames. Then it will return the event frame.
+        """
+        frame = EventFrame(
+            events = event_args,
+        )
+        self.event_frames.append(frame)
+        return frame
+
+    def _trigger_event(
+        self, event_frame: EventFrame,
+    ) -> EventArguments:
+        """
+        trigger new event to update triggered object lists of a EventFrame.
+        it will take first event from events, put it into processing_event,
+        and update triggered object lists.
+        """
+        assert len(event_frame.triggered_objects) == 0
+        assert len(event_frame.triggered_actions) == 0
+        assert len(event_frame.events) != 0
+        event_arg = event_frame.events.pop(0)
+        event_frame.processing_event = event_arg
+        object_list = self.get_object_list()
         handler_name = f'event_handler_{event_arg.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
@@ -774,21 +863,8 @@ class Match(BaseModel):
             if func is not None:
                 logging.info(f'Trigger event {event_arg.type.name} '
                              f'for {name}.')
-                actions = func(event_arg)
-                ret += actions
-        return ret
-
-    def _trigger_events(self, event_args: List[EventArgumentsBase],
-                        ) -> List[Actions]:
-        """
-        Trigger events. It will return a list of actions that will be triggered
-        by the events. The order of actions is the same as the order of events.
-        For one event, the actions will be sorted by the sort rule.
-        """
-        ret: List[Actions] = []
-        for event_arg in event_args:
-            ret.extend(self._trigger_event(event_arg))
-        return ret
+                event_frame.triggered_objects.append(obj.position)
+        return event_arg
 
     def _modify_value(self, value: ModifiableValueBase, 
                       mode: Literal['TEST', 'REAL'],
@@ -810,7 +886,7 @@ class Match(BaseModel):
             assert value.type == ModifiableValueTypes.COST, (
                 'Only cost can be modified in test mode.'
             )
-        object_list = self.get_object_lists()
+        object_list = self.get_object_list()
         modifier_name = f'value_modifier_{value.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
@@ -988,8 +1064,11 @@ class Match(BaseModel):
     """
 
     def _respond_switch_card(self, response: SwitchCardResponse):
+        """
+        TODO: generate a event frame with action queues.
+        """
         # restore cards
-        event_args: List[EventArgumentsBase] = []
+        event_args: List[EventArguments] = []
         event_args += self._act(RestoreCardAction(
             player_idx = response.player_idx,
             card_idxs = response.card_idxs
@@ -1002,11 +1081,11 @@ class Match(BaseModel):
                 draw_if_filtered_not_enough = True
             )
         )
-        triggered_actions = self._trigger_events(event_args)
-        if triggered_actions:
-            self._set_match_state(MatchState.ERROR)  # pragma no cover
-            raise AssertionError(
-                'Initial Switch card should not trigger actions.')
+        event_frame = self._stack_events(event_args)
+        self.empty_frame_assertion(
+            event_frame,
+            'Switch card should not trigger actions now.'
+        )
         # remove related requests
         self.requests = [
             req for req in self.requests
@@ -1017,10 +1096,11 @@ class Match(BaseModel):
         event_args = self._act(
             ChooseCharactorAction.from_response(response)
         )
-        triggered_actions = self._trigger_events(event_args)
-        if len(triggered_actions) > 0:
-            raise NotImplementedError('Not tested part')
-            self.action_queues.append(triggered_actions)
+        event_frame = self._stack_events(event_args)
+        self.empty_frame_assertion(
+            event_frame,
+            'Choose charactor should not trigger actions now.'
+        )
         # remove related requests
         self.requests = [
             req for req in self.requests
@@ -1032,29 +1112,30 @@ class Match(BaseModel):
         Deal with reroll dice response. If there are still reroll times left,
         keep request and only substrat reroll times. If there are no reroll
         times left, remove request.
+        TODO: generate a event frame with action queues.
         """
         event_args = self._action_remove_dice(RemoveDiceAction.from_response(
             response
         ))
-        triggered_actions: List[ActionBase] = []
-        for event_arg in event_args:
-            actions = self._trigger_event(event_arg)
-            triggered_actions.extend(actions)
-        if len(triggered_actions) > 0:
-            self._set_match_state(MatchState.ERROR)  # pragma no cover
-            raise AssertionError('Removing dice in Reroll Dice should not '
-                                 'trigger actions.')
+        event_frame = self._stack_events(list(event_args))
+        while len(event_frame.events):
+            self._trigger_event(event_frame)
+            if len(event_frame.triggered_objects) != 0:
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError('Removing dice in Reroll Dice should not '
+                                     'trigger actions.')
         event_args = self._action_create_dice(CreateDiceAction(
             player_idx = response.player_idx,
             number = len(response.reroll_dice_idxs),
             random = True,
         ))
-        for event_arg in event_args:
-            actions = self._trigger_event(event_arg)
-            triggered_actions.extend(actions)
-        if len(triggered_actions) > 0:
-            raise NotImplementedError('Not tested part')
-            self.action_queues.append(triggered_actions)
+        event_frame = self._stack_events(list(event_args))
+        while len(event_frame.events):
+            self._trigger_event(event_frame)
+            if len(event_frame.triggered_objects) != 0:
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError('Creating dice in Reroll Dice should not '
+                                     'trigger actions.')
         # modify request
         for num, req in enumerate(self.requests):  # pragma: no cover
             if isinstance(req, RerollDiceRequest):
@@ -1105,7 +1186,11 @@ class Match(BaseModel):
                     response.request.active_charactor_idx].id,
             ),
         ))
-        self.action_queues.append(actions)
+        event_frame = EventFrame(
+            events = [],
+            triggered_actions = actions
+        )
+        self.event_frames.append(event_frame)
         self.requests = [x for x in self.requests
                          if x.player_idx != response.player_idx]
 
@@ -1137,7 +1222,11 @@ class Match(BaseModel):
             number = 1,
             color = ELEMENT_TO_DIE_COLOR[active_charactor.element]
         ))
-        self.action_queues.append(actions)
+        event_frame = EventFrame(
+            events = [],
+            triggered_actions = actions
+        )
+        self.event_frames.append(event_frame)
         self.requests = [x for x in self.requests
                          if x.player_idx != response.player_idx]
 
@@ -1156,7 +1245,11 @@ class Match(BaseModel):
                 id = 0
             ),
         ))
-        self.action_queues.append(actions)
+        event_frame = EventFrame(
+            events = [],
+            triggered_actions = actions
+        )
+        self.event_frames.append(event_frame)
         self.requests = [x for x in self.requests
                          if x.player_idx != response.player_idx]
 
@@ -1192,7 +1285,11 @@ class Match(BaseModel):
             action_type = 'SKILL',
             position = skill.position.copy(deep = True),
         ))
-        self.action_queues.append(actions)
+        event_frame = EventFrame(
+            events = [],
+            triggered_actions = actions
+        )
+        self.event_frames.append(event_frame)
         self.requests = [x for x in self.requests
                          if x.player_idx != response.player_idx]
 
@@ -1231,7 +1328,11 @@ class Match(BaseModel):
             target = response.target,
             match = self,
         )
-        self.action_queues.append(actions)
+        event_frame = EventFrame(
+            events = [],
+            triggered_actions = actions
+        )
+        self.event_frames.append(event_frame)
         self.requests = [x for x in self.requests
                          if x.player_idx != response.player_idx]
 
@@ -1239,7 +1340,7 @@ class Match(BaseModel):
     Action Functions
     """
 
-    def _act(self, action: ActionBase) -> List[EventArgumentsBase]:
+    def _act(self, action: ActionBase) -> List[EventArguments]:
         """
         Act an action. It will call corresponding action function based on
         the type of the action.
@@ -1385,7 +1486,6 @@ class Match(BaseModel):
             f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
         )
         event_arg = DrawCardEventArguments(
-            match = self,
             action = action,
             hand_size = len(table.hands),
             max_hand_size = self.config.max_hand_size,
@@ -1419,7 +1519,6 @@ class Match(BaseModel):
             f'deck size {len(table.table_deck)}, hand size {len(table.hands)}'
         )
         event_arg = RestoreCardEventArguments(
-            match = self,
             action = action,
             card_names = card_names
         )
@@ -1446,7 +1545,6 @@ class Match(BaseModel):
             f'remove type {remove_type}.'
         )
         event_arg = RemoveCardEventArguments(
-            match = self,
             action = action,
             card_name = card.name
         )
@@ -1470,7 +1568,6 @@ class Match(BaseModel):
         original_charactor_idx = table.active_charactor_idx
         table.active_charactor_idx = charactor_idx
         event_arg = ChooseCharactorEventArguments(
-            match = self,
             action = action,
             original_charactor_idx = original_charactor_idx
         )
@@ -1531,7 +1628,6 @@ class Match(BaseModel):
             f'current dice on table {table.dice}'
         )
         return [CreateDiceEventArguments(
-            match = self,
             action = action,
             colors_generated = dice[:max_obtainable_dice],
             colors_over_maximum = dice[max_obtainable_dice:]
@@ -1555,7 +1651,6 @@ class Match(BaseModel):
             f'current dice on table {table.dice}'
         )
         return [RemoveDiceEventArguments(
-            match = self,
             action = action,
             colors_removed = removed_dice
         )]
@@ -1569,7 +1664,6 @@ class Match(BaseModel):
         )
         table.has_round_ended = True
         return [DeclareRoundEndEventArguments(
-            match = self,
             action = action
         )]
 
@@ -1592,7 +1686,6 @@ class Match(BaseModel):
                 f'is {self.current_player}.'
             )
             return [CombatActionEventArguments(
-                match = self,
                 action = action,
                 do_combat_action = False
             )]
@@ -1612,7 +1705,6 @@ class Match(BaseModel):
             f'is {self.current_player}.'
         )
         return [CombatActionEventArguments(
-            match = self,
             action = action,
             do_combat_action = True
         )]
@@ -1637,7 +1729,6 @@ class Match(BaseModel):
         )
         table.active_charactor_idx = charactor_idx
         return [SwitchCharactorEventArguments(
-            match = self,
             action = action,
             last_active_charactor_idx = current_active_idx,
         )]
@@ -1756,7 +1847,6 @@ class Match(BaseModel):
                 charactor.hp = 0
             charactor.element_application = applied_elements
             infos.append(ReceiveDamageEventArguments(
-                match = self,
                 action = action,
                 original_damage = damage_original,
                 final_damage = damage,
@@ -1766,7 +1856,6 @@ class Match(BaseModel):
                 reacted_elements = reacted_elements,
             ))
         make_damage_event = MakeDamageEventArguments(
-            match = self,
             action = action,
             damages = infos,
             charactor_hps = [[c.hp for c in table.charactors] 
@@ -1804,7 +1893,6 @@ class Match(BaseModel):
         if charactor.charge > charactor.max_charge:
             charactor.charge = charactor.max_charge
         return [ChargeEventArguments(
-            match = self,
             action = action,
             charge_before = old_charge,
             charge_after = charactor.charge,
@@ -1840,7 +1928,6 @@ class Match(BaseModel):
             table.active_charactor_idx = -1  # reset active charactor
             need_switch = True
         return [CharactorDefeatedEventArguments(
-            match = self,
             action = action,
             need_switch = need_switch,
         )]
@@ -1893,7 +1980,6 @@ class Match(BaseModel):
                     f'renew {target_name} {action.object_name}.'
                 )
                 return [CreateObjectEventArguments(
-                    match = self,
                     action = action,
                     create_result = 'RENEW',
                     create_idx = csnum,
@@ -1904,7 +1990,6 @@ class Match(BaseModel):
         )
         target_list.append(target_object)  # type: ignore
         return [CreateObjectEventArguments(
-            match = self,
             action = action,
             create_result = 'NEW',
             create_idx = len(target_list) - 1,
@@ -1967,7 +2052,6 @@ class Match(BaseModel):
                     f'{action.object_position.id}.'
                 )
             return [RemoveObjectEventArguments(
-                match = self,
                 action = action,
                 object_name = removed_equip.name,
             )]
@@ -1985,7 +2069,6 @@ class Match(BaseModel):
                     f'removed {target_name} {current_object.name}.'
                 )
                 return [RemoveObjectEventArguments(
-                    match = self,
                     action = action,
                     object_name = current_object.name,
                 )]
@@ -2041,7 +2124,6 @@ class Match(BaseModel):
                     f'usage to {new_usage}.'
                 )
                 return [ChangeObjectUsageEventArguments(
-                    match = self,
                     action = action,
                     object_name = current_object.name,
                     usage_before = old_usage,
@@ -2125,7 +2207,6 @@ class Match(BaseModel):
                         f':{target_name}.'
                     )
                     return [MoveObjectEventArguments(
-                        match = self,
                         action = action,
                         object_name = current_object.name,
                     )]
@@ -2143,7 +2224,6 @@ class Match(BaseModel):
                     f'to {target_name}.'
                 )
                 return [MoveObjectEventArguments(
-                    match = self,
                     action = action,
                     object_name = current_object.name,
                 )]
@@ -2171,7 +2251,6 @@ class Match(BaseModel):
             f'player {player_idx} consumed arcane legend.'
         )
         return [ConsumeArcaneLegendEventArguments(
-            match = self,
             action = action,
         )]
 
@@ -2190,7 +2269,6 @@ class Match(BaseModel):
             f'skill ended.'
         )
         return [SkillEndEventArguments(
-            match = self,
             action = action,
         )]
 

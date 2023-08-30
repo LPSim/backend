@@ -58,6 +58,9 @@ class Mob(CharactorBase):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)  # type: ignore
+        self.desc = self.desc.replace('_NAME_', self.name)
+
+    def _init_skills(self):
         if self.element == ElementType.NONE:
             # set element by name
             element_name = self.name[:-3].upper()
@@ -81,4 +84,3 @@ class Mob(CharactorBase):
             damage = 5,
         )
         self.skills = [normal_attack, elemental_skill, elemental_burst]
-        self.desc = self.desc.replace('_NAME_', self.name)

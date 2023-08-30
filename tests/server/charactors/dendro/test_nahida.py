@@ -830,5 +830,7 @@ def test_talent_enemy_has_other_charactor_status():
 
 
 if __name__ == '__main__':
+    test_fischl_mona_nahida()
     test_seed_not_first_status()
     test_talent_enemy_has_other_charactor_status()
+    test_nahida_talents()

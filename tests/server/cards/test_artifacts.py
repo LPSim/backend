@@ -395,5 +395,5 @@ def test_gambler():
 if __name__ == '__main__':
     # test_small_elemental_artifacts()
     # test_create_small_element_artifacts()
-    # test_old_version_artifacts()
+    test_old_version_artifacts()
     test_gambler()

@@ -1,6 +1,6 @@
 
 
-from typing import List, Literal
+from typing import Any, List, Literal
 
 from server.action import ChangeObjectUsageAction
 from server.event import CreateObjectEventArguments
@@ -22,7 +22,7 @@ class ShrineOfMaya(RoundTeamStatus):
     max_usage: int = 2
 
     def event_handler_CREATE_OBJECT(
-        self, event: CreateObjectEventArguments
+        self, event: CreateObjectEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction]:
         """
         When self is created, check whether to increase the usage of Seed of
@@ -31,7 +31,6 @@ class ShrineOfMaya(RoundTeamStatus):
         if event.action.object_name != 'Shrine of Maya':
             # not creating Shrine of Maya, do nothing.
             return []
-        match = event.match
         active_charactor = match.player_tables[
             self.position.player_idx].get_active_charactor()
         assert active_charactor is not None

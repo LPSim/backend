@@ -72,7 +72,7 @@ class ArtifactBase(CardBase):
         return ret
 
     def event_handler_MOVE_OBJECT(
-        self, event: MoveObjectEventArguments
+        self, event: MoveObjectEventArguments, match: Any
     ) -> list[Actions]:
         """
         When this artifact is moved from hand to charactor, it is considered
@@ -85,5 +85,5 @@ class ArtifactBase(CardBase):
             == ObjectPositionType.CHARACTOR
         ):
             # this artifact equipped from hand to charactor
-            return self.equip(event.match)
+            return self.equip(match)
         return []

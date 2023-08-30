@@ -1,5 +1,6 @@
+from .struct import ObjectPosition
 from utils import BaseModel
-from typing import Literal, List, Any
+from typing import Literal, List
 from .consts import DieColor, ElementalReactionType, ElementType
 from .action import (
     ActionTypes, 
@@ -32,19 +33,9 @@ class EventArgumentsBase(BaseModel):
     Base class of event arguments. event arguments are generated when new
     Action is triggered by events. It is a superset of Action arguments, and
     will record nesessary information about the event.
-
-    If new cards need more information about the event (e.g. Chinju Forest
-    need to know which player goes first, which is not needed before version
-    3.7), the information can be added to the event arguments.
-
-    self.match is passed to dig information for handlers,
-    but it is not recommended to dig information from self.match directly,
-    better to add a new attribute for a event when some information is used.
-    Only use it when adding some information is very difficult.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
     action: ActionBase
-    match: Any
 
 
 class DrawCardEventArguments(EventArgumentsBase):
@@ -205,7 +196,6 @@ class AfterMakeDamageEventArguments(MakeDamageEventArguments):
         event_arguments: MakeDamageEventArguments
     ) -> 'AfterMakeDamageEventArguments':
         return AfterMakeDamageEventArguments(
-            match = event_arguments.match,
             action = event_arguments.action,
             damages = event_arguments.damages,
             charactor_hps = event_arguments.charactor_hps,
@@ -307,7 +297,8 @@ class RoundEndEventArguments(EventArgumentsBase):
 
 
 EventArguments = (
-    DrawCardEventArguments | RestoreCardEventArguments
+    EventArgumentsBase
+    | DrawCardEventArguments | RestoreCardEventArguments
     | RemoveCardEventArguments | ChooseCharactorEventArguments
     | CreateDiceEventArguments | RemoveDiceEventArguments
     | RoundPrepareEventArguments | DeclareRoundEndEventArguments
@@ -323,10 +314,20 @@ EventArguments = (
 
 class EventFrame(BaseModel):
     """
-    Event frame is a frame of event, contains the event arguments, the
+    Event frame is a frame of events, contains events with their arguments, the
     object lists that will be triggered by the event arguments, and the
     action lists that has triggered.
+
+    When one action is done, it will generate a new event frame, with various
+    number of events, and append it to the event frame list. When there are
+    events and no processing objects and actions, the first event will 
+    trigger objects. When there are triggered objects, the first object 
+    position will be popped and trigger actions. When there are triggered
+    actions, the first action will be popped and trigger events, then add
+    a new event frame. If an event frame has no events, no triggered objects
+    and no triggered actions, it will be removed from the list.
     """
-    event_arguments: EventArguments
-    triggered_objects: List[str]
-    triggered_actions: List[Actions]
+    events: List[EventArguments]
+    processing_event: EventArguments | None = None
+    triggered_objects: List[ObjectPosition] = []
+    triggered_actions: List[Actions] = []

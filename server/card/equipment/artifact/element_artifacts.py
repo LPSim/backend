@@ -1,13 +1,11 @@
 from typing import Any, Literal
 
-from server.action import Actions
-
 from .base import ArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue
 from ....consts import ElementType, ObjectPositionType, CostLabels
 from ....event import RoundPrepareEventArguments
-from ....action import ActionBase
+from ....action import Actions
 
 
 class SmallElementalArtifact(ArtifactBase):
@@ -62,8 +60,9 @@ class SmallElementalArtifact(ArtifactBase):
         self.usage = 1
         return []
 
-    def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
-            -> list[ActionBase]:
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> list[Actions]:
         """
         When in round prepare, reset usage
         """
@@ -99,7 +98,7 @@ class SmallElementalArtifact(ArtifactBase):
                 return value
             position = value.position
             assert self.position.charactor_idx != -1
-            if position.area == ObjectPositionType.CHARACTOR:
+            if position.area == ObjectPositionType.SKILL:
                 # cost from charactor
                 if position.charactor_idx != self.position.charactor_idx:
                     # not same charactor

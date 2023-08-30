@@ -1,4 +1,4 @@
-from typing import Literal, List
+from typing import Any, Literal, List
 from ...consts import ObjectType
 from ..base import StatusBase
 from ...action import RemoveObjectAction, Actions
@@ -41,7 +41,8 @@ class UsageCharactorStatus(CharactorStatusBase):
         return []
 
     def event_handler_MAKE_DAMAGE(
-            self, event: MakeDamageEventArguments) -> List[Actions]:
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
         """
         When damage made, check whether the team status should be removed.
         """
@@ -69,8 +70,9 @@ class RoundCharactorStatus(CharactorStatusBase):
             )]
         return []
 
-    def event_handler_ROUND_END(self, event: RoundEndEventArguments) \
-            -> List[Actions]:
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[Actions]:
         """
         After round ending, check whether the round status should be removed.
         """

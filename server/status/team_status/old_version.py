@@ -3,7 +3,7 @@ Team status that with old version. Note the version should not be initialized
 by default to avoid using it accidently.
 """
 
-from typing import List, Literal
+from typing import Any, List, Literal
 from .base import UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
 from ...consts import DamageElementalType
@@ -51,7 +51,8 @@ class CatalyzingField(UsageTeamStatus):
         return value
 
     def event_handler_MAKE_DAMAGE(
-            self, event: AfterMakeDamageEventArguments) -> List[Actions]:
+        self, event: AfterMakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
         """
         When damage made, check whether the round status should be removed.
         Not trigger on AFTER_MAKE_DAMAGE because when damage made, run out

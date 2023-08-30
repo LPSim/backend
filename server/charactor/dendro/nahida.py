@@ -175,7 +175,7 @@ class TheSeedOfStoredKnowledge(SkillTalent):
     skill: IllusoryHeart = IllusoryHeart()
 
     def event_handler_CREATE_OBJECT(
-        self, event: CreateObjectEventArguments
+        self, event: CreateObjectEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction]:
         """
         when Shrine of Maya is summoned, if this card is equipped, add one
@@ -185,13 +185,12 @@ class TheSeedOfStoredKnowledge(SkillTalent):
             # not creating Shrine of Maya, do nothing.
             return []
         if not self.position.check_position_valid(
-            event.action.object_position, event.match, player_idx_same = True,
+            event.action.object_position, match, player_idx_same = True,
             source_area = ObjectPositionType.CHARACTOR,
             source_is_active_charactor = True,
         ):
             # not self, or not equipped, or not active charactor, do nothing.
             return []
-        match = event.match
         table = match.player_tables[self.position.player_idx]
         has_hydro_charactor = False
         for charactor in table.charactors:
@@ -231,8 +230,7 @@ class Nahida(CharactorBase):
     ]
     weapon_type: WeaponType = WeaponType.CATALYST
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)  # type: ignore
+    def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Akara',

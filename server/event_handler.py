@@ -1,7 +1,7 @@
 """
 Event handlers to implement system controls and special rules 
 """
-from typing import List, Literal
+from typing import List, Literal, Any
 from .object_base import ObjectBase
 from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor
@@ -40,7 +40,7 @@ class SystemEventHandler(SystemEventHandlerBase):
     version: Literal['3.3', '3.4'] = '3.4'
 
     def event_handler_DRAW_CARD(
-            self, event: DrawCardEventArguments) -> List[Actions]:
+            self, event: DrawCardEventArguments, match: Any) -> List[Actions]:
         """
         After draw card, check whether max card number is exceeded.
         """
@@ -48,7 +48,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         hand_size = event.hand_size
         max_hand_size = event.max_hand_size
         actions = []
-        hands = event.match.player_tables[player_idx].hands
+        hands = match.player_tables[player_idx].hands
         if hand_size > max_hand_size:
             for i in range(hand_size, max_hand_size, -1):
                 # remove the last card in hand repeatedly until hand size
@@ -65,7 +65,8 @@ class SystemEventHandler(SystemEventHandlerBase):
         return actions
 
     def event_handler_RECEIVE_DAMAGE(
-            self, event: ReceiveDamageEventArguments) -> List[Actions]:
+        self, event: ReceiveDamageEventArguments, match: Any
+    ) -> List[Actions]:
         """
         After receive damage, generate side effects of elemental reaction.
         """
@@ -81,7 +82,8 @@ class SystemEventHandler(SystemEventHandlerBase):
         return []
 
     def event_handler_AFTER_MAKE_DAMAGE(
-            self, event: AfterMakeDamageEventArguments) -> List[Actions]:
+        self, event: AfterMakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
         """
         After damage made, check whether anyone has defeated.
         """
@@ -97,7 +99,8 @@ class SystemEventHandler(SystemEventHandlerBase):
         return actions
 
     def event_handler_CHARACTOR_DEFEATED(
-            self, event: CharactorDefeatedEventArguments) -> List[Actions]:
+        self, event: CharactorDefeatedEventArguments, match: Any
+    ) -> List[Actions]:
         """
         After charactor defeated, check whether need to switch charactor.
         """
@@ -108,7 +111,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         return []
 
     def event_handler_ROUND_END(
-            self, event: RoundEndEventArguments) -> List[Actions]:
+            self, event: RoundEndEventArguments, match: Any) -> List[Actions]:
         """
         After round end, draw card for each player.
         """

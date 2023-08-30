@@ -44,10 +44,9 @@ class SkillBase(ObjectBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        # set id to 0, as skills are not real objects
-        self.id = self.position.id = 0
         # set cost label into cost
         self.cost.label = self.cost_label
+        # based on charactor id, calculate skill id.
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -335,6 +334,24 @@ class CharactorBase(ObjectBase):
     element_application: List[ElementType] = []
     is_alive: bool = True
 
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        old_skill_ids = [x.id for x in self.skills]
+        self._init_skills()
+        if len(old_skill_ids):
+            new_skill_ids = [x.id for x in self.skills]
+            if len(new_skill_ids) != len(old_skill_ids):
+                raise AssertionError('Skill number changed after init')
+            for id, skill in zip(old_skill_ids, self.skills):
+                skill.id = id
+                skill.position.id = id
+
+    def _init_skills(self) -> None:
+        """
+        Initialize skills. It will be called in __init__.
+        """
+        raise NotImplementedError
+
     @property
     def is_defeated(self) -> bool:
         return not self.is_alive
@@ -374,3 +391,32 @@ class CharactorBase(ObjectBase):
             result.append(self.talent)
         result += self.status
         return result
+
+    def get_object(self, position: ObjectPosition) -> ObjectBase | None:
+        """
+        Get object by its position. If obect not exist, return None.
+        """
+        if position.area == ObjectPositionType.CHARACTOR_STATUS:
+            for status in self.status:
+                if status.id == position.id:
+                    return status
+            return None
+        elif position.area == ObjectPositionType.SKILL:
+            for skill in self.skills:
+                if skill.id == position.id:
+                    return skill
+            raise AssertionError('Skill not found')
+        else:
+            assert position.area == ObjectPositionType.CHARACTOR
+            if self.id == position.id:
+                raise NotImplementedError('Not tested part')
+                return self
+            elif self.talent is not None and self.talent.id == position.id:
+                return self.talent
+            elif self.weapon is not None and self.weapon.id == position.id:
+                raise NotImplementedError('Not tested part')
+                return self.weapon
+            elif self.artifact is not None and self.artifact.id == position.id:
+                return self.artifact
+            raise NotImplementedError('Not tested part')
+            return None

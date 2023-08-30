@@ -97,7 +97,7 @@ class SupportBase(CardBase):
         return ret
 
     def event_handler_MOVE_OBJECT(
-        self, event: MoveObjectEventArguments
+        self, event: MoveObjectEventArguments, match: Any
     ) -> list[Actions]:
         """
         When this support is moved from hand to support, it is considered
@@ -110,5 +110,5 @@ class SupportBase(CardBase):
             == ObjectPositionType.SUPPORT
         ):
             # this artifact equipped from hand to charactor
-            return self.play(event.match)
+            return self.play(match)
         return []
