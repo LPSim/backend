@@ -1,7 +1,7 @@
 """
 Base classes of objects in the game table. They are all subclasses of
-ObjectBase. Base class of complex objects (e.g. cards and charactors) should 
-be defined in their own files.
+ObjectBase. CardBase are defined here because like ObjectBase, they are used 
+in many other places. Other objects are defined in their own files.
 """
 
 
@@ -10,7 +10,7 @@ import random
 from utils import BaseModel
 from typing import List, Literal, Any
 from .action import ActionBase, ActionTypes
-from .consts import ObjectType, WeaponType, ObjectPositionType, DiceCostLabels
+from .consts import ObjectType, WeaponType, ObjectPositionType, CostLabels
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
     ObjectPosition, Cost, CardActionTarget
@@ -72,7 +72,7 @@ class CardBase(ObjectBase):
         area = ObjectPositionType.INVALID
     )
     cost: Cost
-    cost_label: int = DiceCostLabels.CARD.value
+    cost_label: int = CostLabels.CARD.value
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -113,5 +113,5 @@ class WeaponBase(CardBase):
     """
     name: str
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.WEAPON.value
+    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
     weapon_type: WeaponType

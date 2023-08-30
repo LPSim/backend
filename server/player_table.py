@@ -1,6 +1,6 @@
 from .struct import ObjectPosition
 from utils import BaseModel
-from typing import Literal, List
+from typing import Literal, List, Tuple
 from resources.consts import CharactorIcons
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
@@ -56,6 +56,7 @@ class PlayerTable(BaseModel):
     supports: List[Supports] = []
     hands: List[Cards] = []
     table_deck: List[Cards] = []
+    arcane_legend: bool = True
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -199,3 +200,10 @@ class PlayerTable(BaseModel):
             if self.charactors[target].is_alive:
                 return target
         return None
+
+    def get_charge_and_arcane_legend(self) -> Tuple[int, bool]:
+        """
+        Get charge of active charactor and arcane legend mark together.
+        """
+        charge = self.get_active_charactor().charge
+        return charge, self.arcane_legend

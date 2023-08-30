@@ -21,6 +21,7 @@ from .action import (
     RemoveObjectAction,
     ChangeObjectUsageAction,
     MoveObjectAction,
+    ConsumeArcaneLegendAction,
 )
 from .modifiable_values import DamageIncreaseValue, FinalDamageValue
 
@@ -277,6 +278,15 @@ class MoveObjectEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.MOVE_OBJECT] = ActionTypes.MOVE_OBJECT
     action: MoveObjectAction
     object_name: str
+
+
+class ConsumeArcaneLegendEventArguments(EventArgumentsBase):
+    """
+    Event arguments for consume arcane legend event.
+    """
+    type: Literal[ActionTypes.CONSUME_ARCANE_LEGEND] = \
+        ActionTypes.CONSUME_ARCANE_LEGEND
+    action: ConsumeArcaneLegendAction
 
 
 class RoundEndEventArguments(EventArgumentsBase):

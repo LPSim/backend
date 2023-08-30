@@ -31,6 +31,7 @@ class ActionTypes(str, Enum):
     OBJECT_REMOVED = 'OBJECT_REMOVED'
     CHANGE_OBJECT_USAGE = 'CHANGE_OBJECT_USAGE'
     MOVE_OBJECT = 'MOVE_OBJECT'
+    CONSUME_ARCANE_LEGEND = 'CONSUME_ARCANE_LEGEND'
 
     # system phase actions
     ROUND_PREPARE = 'ROUND_PREPARE'
@@ -307,6 +308,15 @@ class MoveObjectAction(ActionBase):
     target_position: ObjectPosition
 
 
+class ConsumeArcaneLegendAction(ActionBase):
+    """
+    Action for consuming arcane legend.
+    """
+    type: Literal[ActionTypes.CONSUME_ARCANE_LEGEND] = \
+        ActionTypes.CONSUME_ARCANE_LEGEND
+    player_id: int
+
+
 class GenerateChooseCharactorRequestAction(ActionBase):
     """
     Action for generating choose charactor action.
@@ -322,4 +332,6 @@ Actions = (
     | DeclareRoundEndAction | CombatActionAction | SwitchCharactorAction
     | MakeDamageAction | ChargeAction | SkillEndAction 
     | CharactorDefeatedAction | GenerateChooseCharactorRequestAction
+    | CreateObjectAction | RemoveObjectAction | ChangeObjectUsageAction
+    | MoveObjectAction | ConsumeArcaneLegendAction
 )

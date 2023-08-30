@@ -1,6 +1,6 @@
 from typing import Literal, List, Any
 from ...object_base import CardBase
-from ...consts import ObjectType, ObjectPositionType, DiceCostLabels
+from ...consts import ObjectType, ObjectPositionType, CostLabels
 from ...struct import Cost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
 from ...struct import ObjectPosition, CardActionTarget
@@ -17,7 +17,7 @@ class SupportBase(CardBase):
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     version: str
     cost: Cost
-    cost_label: int = DiceCostLabels.CARD.value
+    cost_label: int = CostLabels.CARD.value
     usage: int
 
     def check_remove_triggered(self) -> List[Actions]:

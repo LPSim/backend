@@ -123,10 +123,11 @@ class Cost(BaseModel):
     any_dice_number: int = 0
     omni_dice_number: int = 0
     charge: int = 0
+    arcane_legend: bool = False
     original_value: Any = None
 
     def is_valid(self, dice_colors: List[DieColor], charge: int, 
-                 strict = True) -> bool:
+                 arcane_legend: bool, strict = True) -> bool:
         """
         Check if dice colors matches the dice cost value.
 
@@ -139,6 +140,9 @@ class Cost(BaseModel):
         """
         # first charge check
         if charge < self.charge:
+            return False
+        # then arcane legend check
+        if self.arcane_legend and not arcane_legend:
             return False
 
         # then dice check

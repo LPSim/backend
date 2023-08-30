@@ -171,7 +171,7 @@ class SwitchCharactorResponse(ResponseBase):
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        return self.request.cost.is_valid(cost_colors, 0)
+        return self.request.cost.is_valid(cost_colors, 0, False)
 
 
 class ElementalTuningResponse(ResponseBase):
@@ -212,8 +212,9 @@ class UseSkillResponse(ResponseBase):
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        return self.request.cost.is_valid(cost_colors, 
-                                          self.request.cost.charge)
+        table = match.player_tables[self.request.player_id]
+        charge, arcane_legend = table.get_charge_and_arcane_legend()
+        return self.request.cost.is_valid(cost_colors, charge, arcane_legend)
 
 
 class UseCardResponse(ResponseBase):
@@ -232,8 +233,9 @@ class UseCardResponse(ResponseBase):
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.cost_ids]
-        if not self.request.cost.is_valid(cost_colors, 
-                                          self.request.cost.charge):
+        table = match.player_tables[self.request.player_id]
+        charge, arcane_legend = table.get_charge_and_arcane_legend()
+        if not self.request.cost.is_valid(cost_colors, charge, arcane_legend):
             return False
         # if has targets, response target should not be None
         if self.target is None and len(self.request.targets) > 0:

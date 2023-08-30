@@ -162,6 +162,7 @@ class ObjectType(str, Enum):
     TALENT = 'TALENT'
     CHARACTOR_STATUS = 'CHARACTOR_STATUS'
     TEAM_STATUS = 'TEAM_STATUS'
+    ARCANE = 'ARCANE'
 
     def __str__(self) -> str:
         return self.value
@@ -292,7 +293,7 @@ class ElementalReactionType(str, Enum):
         return self.value
 
 
-class DiceCostLabels(int, Enum):
+class CostLabels(int, Enum):
     SWITCH_CHARACTOR = 0x1
     CARD = 0x2
     COMPANION = 0x4

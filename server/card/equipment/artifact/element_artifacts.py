@@ -3,7 +3,7 @@ from typing import Literal
 from .base import ArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue
-from ....consts import ElementType, ObjectPositionType, DiceCostLabels
+from ....consts import ElementType, ObjectPositionType, CostLabels
 from ....event import RoundPrepareEventArguments
 from ....action import ActionBase
 
@@ -82,10 +82,10 @@ class SmallElementalArtifact(ArtifactBase):
                 return value
             label = value.cost.label
             if label & (
-                DiceCostLabels.NORMAL_ATTACK.value
-                | DiceCostLabels.ELEMENTAL_SKILL.value
-                | DiceCostLabels.ELEMENTAL_BURST.value
-                | DiceCostLabels.TALENT.value
+                CostLabels.NORMAL_ATTACK.value
+                | CostLabels.ELEMENTAL_SKILL.value
+                | CostLabels.ELEMENTAL_BURST.value
+                | CostLabels.TALENT.value
             ) == 0:  # no label match
                 return value
             position = value.position

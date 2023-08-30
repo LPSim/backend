@@ -1,7 +1,7 @@
 from typing import Literal, List
 from .support_base import SupportBase
 from ...consts import (
-    DiceCostLabels, DieColor, ElementType, ELEMENT_TO_DIE_COLOR, 
+    CostLabels, DieColor, ElementType, ELEMENT_TO_DIE_COLOR, 
     ObjectPositionType, SkillType
 )
 from ...struct import Cost
@@ -12,8 +12,8 @@ from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 
 class CompanionBase(SupportBase):
-    cost_label: int = (DiceCostLabels.CARD.value 
-                       | DiceCostLabels.COMPANION.value)
+    cost_label: int = (CostLabels.CARD.value 
+                       | CostLabels.COMPANION.value)
 
 
 class Timmie(CompanionBase):

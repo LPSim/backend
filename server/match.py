@@ -9,7 +9,7 @@ from utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    ActionBase, Actions,
+    ActionBase, Actions, ConsumeArcaneLegendAction,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -48,6 +48,7 @@ from .consts import (
     ObjectType,
 )
 from .event import (
+    ConsumeArcaneLegendEventArguments,
     EventArgumentsBase,
     DrawCardEventArguments, 
     RestoreCardEventArguments, 
@@ -218,7 +219,7 @@ class Match(BaseModel):
 
     # random state
     random_state: List[Any] = []
-    _random_state: np.random.RandomState = np.random.RandomState()
+    _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
 
     # event handlers to implement special rules.
     event_handlers: List[SystemEventHandlers] = [
@@ -262,6 +263,9 @@ class Match(BaseModel):
             random_state[1] = np.array(random_state[1], dtype = 'uint32')
             self._random_state.set_state(random_state)  # type: ignore
         else:
+            # random state not set, re-new self._random_state to avoid
+            # affecting other matches.
+            self._random_state = np.random.RandomState()
             self._save_random_state()
 
     def set_deck(self, decks: List[Deck]):
@@ -857,9 +861,11 @@ class Match(BaseModel):
             id = 0
         )
         self._modify_value(dice_cost_value, mode = 'TEST')
+        charge, arcane_legend = table.get_charge_and_arcane_legend()
         if not dice_cost_value.cost.is_valid(
             dice_colors = table.dice.colors,
-            charge = table.charactors[table.active_charactor_id].charge,
+            charge = charge,
+            arcane_legend = arcane_legend,
             strict = False,
         ):
             return
@@ -925,6 +931,7 @@ class Match(BaseModel):
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
                     charge = front_charactor.charge,
+                    arcane_legend = table.arcane_legend,
                     strict = False
                 ):
                     self.requests.append(UseSkillRequest(
@@ -958,10 +965,11 @@ class Match(BaseModel):
                 )
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = table.dice.colors
+                charge, arcane_legend = table.get_charge_and_arcane_legend()
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
-                    charge = table.charactors[
-                        table.active_charactor_id].charge,
+                    charge = charge,
+                    arcane_legend = arcane_legend,
                     strict = False
                 ):
                     self.requests.append(UseCardRequest(
@@ -1217,8 +1225,8 @@ class Match(BaseModel):
                 dice_ids = response.cost_ids,
             ),
         ]
-        if card.type == ObjectType.CARD:
-            # only card type will be removed from hand.
+        if card.type in [ObjectType.CARD, ObjectType.ARCANE]:
+            # only card and arcane type will be removed from hand.
             actions.append(RemoveCardAction(
                 position = ObjectPosition(
                     player_id = response.player_id,
@@ -1287,6 +1295,8 @@ class Match(BaseModel):
             return list(self._action_change_object_usage(action))
         elif isinstance(action, MoveObjectAction):
             return list(self._action_move_object(action))
+        elif isinstance(action, ConsumeArcaneLegendAction):
+            return list(self._action_consume_arcane_legend(action))
         elif isinstance(action, GenerateChooseCharactorRequestAction):
             return list(self._action_generate_choose_charactor_request(action))
         else:
@@ -1500,10 +1510,9 @@ class Match(BaseModel):
                                                 * len(candidates))]
                 dice.append(selected_color)
         elif is_different:
-            raise NotImplementedError('Not tested part')
             if number > len(candidates):
                 self._set_match_state(MatchState.ERROR)  # pragma no cover
-                raise AssertionError('Not enough dice colors.')
+                raise ValueError('Not enough dice colors.')
             self._random_shuffle(candidates)
             candidates = candidates[:number]
             for selected_color in candidates:
@@ -2146,6 +2155,26 @@ class Match(BaseModel):
             f'{action.object_id}.'
         )
         return []
+
+    def _action_consume_arcane_legend(
+        self, action: ConsumeArcaneLegendAction
+    ) -> List[ConsumeArcaneLegendEventArguments]:
+        """
+        Action for consuming arcane legend.
+        """
+        player_id = action.player_id
+        table = self.player_tables[player_id]
+        assert table.arcane_legend, (
+            f'Arcane legend of player {player_id} is consumed'
+        )
+        table.arcane_legend = False
+        logging.info(
+            f'player {player_id} consumed arcane legend.'
+        )
+        return [ConsumeArcaneLegendEventArguments(
+            match = self,
+            action = action,
+        )]
 
     """
     Action funtions that only used to trigger specific event

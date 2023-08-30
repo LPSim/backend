@@ -2,7 +2,7 @@ from typing import Literal, List, Any
 
 from ....object_base import CardBase
 from ....struct import Cost
-from ....consts import ObjectType, DiceCostLabels, ObjectPositionType
+from ....consts import ObjectType, CostLabels, ObjectPositionType
 from ....action import MoveObjectAction, RemoveObjectAction
 from ....struct import CardActionTarget
 
@@ -13,7 +13,7 @@ class ArtifactBase(CardBase):
     """
     name: str
     type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
-    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.ARTIFACT.value
+    cost_label: int = CostLabels.CARD.value | CostLabels.ARTIFACT.value
 
     version: str
     cost: Cost

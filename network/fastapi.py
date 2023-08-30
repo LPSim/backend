@@ -33,12 +33,13 @@ def get_new_match(seed: Any = None, rich: bool = False):
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
-        Wine-Stained Tricorne*2
-        Timmie*2
-        Rana*2
-        Strategize*2
-        The Bestest Travel Companion!*2
-        The Bestest Travel Companion!*20
+        # Wine-Stained Tricorne*2
+        # Timmie*2
+        # Rana*2
+        # Strategize*2
+        # The Bestest Travel Companion!*2
+        # Covenant of Rock
+        Covenant of Rock*30
         '''
     )
     # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}

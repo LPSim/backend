@@ -10,7 +10,7 @@ from typing import List, Literal, Any
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
     SkillType, WeaponType, ElementType, FactionType, 
-    ObjectPositionType, DiceCostLabels
+    ObjectPositionType, CostLabels
 )
 from ..object_base import (
     ObjectBase, WeaponBase, CardBase
@@ -97,7 +97,7 @@ class PhysicalNormalAttackBase(SkillBase):
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
-    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
+    cost_label: int = CostLabels.NORMAL_ATTACK.value
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:
@@ -116,7 +116,7 @@ class ElementalNormalAttackBase(SkillBase):
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
-    cost_label: int = DiceCostLabels.NORMAL_ATTACK.value
+    cost_label: int = CostLabels.NORMAL_ATTACK.value
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -140,7 +140,7 @@ class ElementalSkillBase(SkillBase):
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
-    cost_label: int = DiceCostLabels.ELEMENTAL_SKILL.value
+    cost_label: int = CostLabels.ELEMENTAL_SKILL.value
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -162,7 +162,7 @@ class ElementalBurstBase(SkillBase):
     desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
-    cost_label: int = DiceCostLabels.ELEMENTAL_BURST.value
+    cost_label: int = CostLabels.ELEMENTAL_BURST.value
 
     @staticmethod
     def get_cost(element: ElementType, number: int, charge: int) -> Cost:
@@ -224,7 +224,7 @@ class TalentBase(CardBase):
     name: str
     charactor_name: str
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
-    cost_label: int = DiceCostLabels.CARD.value | DiceCostLabels.TALENT.value
+    cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
 
     def is_valid(self, match: Any) -> bool:
         """
