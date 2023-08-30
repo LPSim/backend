@@ -498,7 +498,7 @@ class Match(BaseModel):
                 return True
         return False
 
-    def respond(self, response: Responses) -> bool:
+    def respond(self, response: Responses) -> None:
         """
         Deal with the response. After start, the match will simulate 
         until it needs response from player, and `self.requests` will have
@@ -507,22 +507,16 @@ class Match(BaseModel):
         different respond function to deal with, and remove requests that do
         not need to respond or have responded. If all requests have been
         removed, call `self.step()` manually to continue simulation. 
-
-        Returns:
-            bool: True if success, False if error occurs.
         """
         logging.info(f'Response received: {response}')
         if len(self.requests) == 0:
-            logging.error('Match is not waiting for response.')
-            return False
+            raise ValueError('Match is not waiting for response.')
         # check if the response is valid
         if not response.is_valid(self):
-            logging.error('Response is not valid.')
-            return False
+            raise ValueError('Response is not valid.')
         # check if the request exist
         if not self.check_request_exist(response.request):
-            logging.error('Request does not exist.')
-            return False
+            raise ValueError('Request does not exist.')
         # call different respond functions based on the type of response
         if isinstance(response, SwitchCharactorResponse):
             self._respond_switch_charactor(response)
@@ -543,8 +537,6 @@ class Match(BaseModel):
         else:
             raise AssertionError(
                 f'Response type {type(response)} not recognized.')
-            return False
-        return True
 
     def is_game_end(self) -> bool:
         """
@@ -1358,8 +1350,8 @@ class Match(BaseModel):
                 or len(action.blacklist_types) > 0
             ):
                 self._set_match_state(MatchState.ERROR)  # pragma no cover
-                logging.error('Whitelist and blacklist cannot be both '
-                              'specified.')
+                raise AssertionError('Whitelist and blacklist cannot be both '
+                                     'specified.')
             # whitelist set
             while len(table.table_deck) > 0 and len(draw_cards) < number:
                 card = table.table_deck.pop(0)

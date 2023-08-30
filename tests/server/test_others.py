@@ -167,7 +167,8 @@ def test_match_config_and_match_errors():
             assert not match.need_respond(0)
             assert not match.need_respond(1)
             assert resp is not None
-            assert not match.respond(resp)
+            with pytest.raises(ValueError):
+                match.respond(resp)
         if match.need_respond(0):
             if not non_exist_tested:
                 assert match.need_respond(1)
@@ -176,10 +177,12 @@ def test_match_config_and_match_errors():
                 assert match.check_request_exist(req)
                 resp = SwitchCardResponse(
                     request = req, card_ids = [-1])  # type: ignore
-                assert not match.respond(resp)
+                with pytest.raises(ValueError):
+                    match.respond(resp)
                 resp.card_ids = []
                 resp.request.player_id = 2
-                assert not match.respond(resp)
+                with pytest.raises(ValueError):
+                    match.respond(resp)
             resp = agent_0.generate_response(match)
             assert resp is not None
             match.respond(resp)
@@ -241,5 +244,5 @@ def test_create_dice():
 if __name__ == '__main__':
     # test_object_position_validation()
     # test_object_position_validation()
-    # test_match_config_and_match_errors()
-    test_create_dice()
+    test_match_config_and_match_errors()
+    # test_create_dice()
