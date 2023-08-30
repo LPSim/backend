@@ -47,13 +47,17 @@ class ObjectBase(BaseModel):
                     raise ValueError(f'Invalid value modifier name: {k}')
         # if id is zero, generate a new id
         if self.id == 0:
-            while True:
-                self.id = (
-                    int(time.time() % 86400 * 1000000) 
-                    * 1024 + random.randint(0, 1023)
-                )
-                if self.id not in used_object_ids:
-                    break
+            self.renew_id()
+        used_object_ids.add(self.id)
+
+    def renew_id(self):
+        """
+        Renew the id of the object.
+        """
+        self.id = (
+            int(time.time() % 86400 * 1000000) 
+            * 1024 + random.randint(0, 1023)
+        )
         used_object_ids.add(self.id)
 
 

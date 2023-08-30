@@ -42,6 +42,10 @@ class ArtifactBase(CardBase):
                 ))
         return ret
 
+    def is_valid(self, match: Any) -> bool:
+        # can only be used when in hand
+        return self.position.area == ObjectPositionType.HAND
+
     def get_actions(
         self, target: CardActionTarget | None, match: Any
     ) -> List[MoveObjectAction | RemoveObjectAction]:

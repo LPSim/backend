@@ -375,6 +375,7 @@ class Match(BaseModel):
                 charactor_copy.position.player_idx = pnum
                 charactor_copy.position.charactor_idx = cnum
                 charactor_copy.position.area = ObjectPositionType.CHARACTOR
+                charactor_copy.renew_id()
                 for skill in charactor_copy.skills:
                     skill.position = charactor_copy.position.copy(deep = True)
                 player_table.charactors.append(charactor_copy)
@@ -384,6 +385,7 @@ class Match(BaseModel):
                 card_copy = card.copy(deep = True)
                 card_copy.position.player_idx = pnum
                 card_copy.position.area = ObjectPositionType.DECK
+                card_copy.renew_id()
                 if card_copy.type == ObjectType.ARCANE:
                     arcane_legend_cards.append(card_copy)
                 else:
@@ -2012,6 +2014,9 @@ class Match(BaseModel):
             target_list = table.charactors[
                 action.object_position.charactor_idx].status
             target_name = 'charactor status'
+        elif action.object_position.area == ObjectPositionType.SUPPORT:
+            target_list = table.supports
+            target_name = 'support'
         # elif action.object_position.area == ObjectPositionType.SUMMON:
         #     target_list = table.summons
         #     target_name = 'summon'

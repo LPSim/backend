@@ -1,14 +1,19 @@
-from typing import Literal, List
-from .support_base import SupportBase
+from typing import Any, Literal, List
+
+from .base import SupportBase
 from ...consts import (
     CostLabels, DieColor, ElementType, ELEMENT_TO_DIE_COLOR, 
     ObjectPositionType, SkillType
 )
 from ...struct import Cost
 from ...action import (
-    ActionBase, Actions, CreateDiceAction, DrawCardAction, RemoveObjectAction
+    Actions, ChangeObjectUsageAction, CreateDiceAction, DrawCardAction, 
+    RemoveObjectAction
 )
-from ...event import RoundPrepareEventArguments, SkillEndEventArguments
+from ...event import (
+    ChangeObjectUsageEventArguments, RoundPrepareEventArguments, 
+    SkillEndEventArguments
+)
 
 
 class CompanionBase(SupportBase):
@@ -25,19 +30,50 @@ class Timmie(CompanionBase):
     )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
-    usage: int = 1
+    usage: int = 0
+    max_usage: int = 3
+
+    def play(self, match: Any) -> List[ChangeObjectUsageAction]:
+        """
+        When played, first reset usage to 0, then increase usage.
+        """
+        return [ChangeObjectUsageAction(
+            object_position = self.position.copy(deep = True),
+            object_id = self.id,
+            change_type = 'DELTA',
+            change_usage = 1
+        )]
 
     def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
             -> List[Actions]:
         """
-        When in round prepare, increase usage. If usage is 3, remove self,
-        draw a card and create a dice.
+        When in round prepare, increase usage. 
+        If usage is 3, remove self, draw a card and create a dice.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        ret: List[Actions] = []
-        self.usage += 1
+        return [ChangeObjectUsageAction(
+            object_position = self.position.copy(deep = True),
+            object_id = self.id,
+            change_type = 'DELTA',
+            change_usage = 1
+        )]
+
+    def event_handler_CHANGE_OBJECT_USAGE(
+        self, event: ChangeObjectUsageEventArguments
+    ) -> List[RemoveObjectAction | DrawCardAction | CreateDiceAction]:
+        """
+        when self usage changed to 3, remove self, draw a card and create a 
+        dice.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if event.action.object_id != self.id:
+            # not self
+            return []
+        ret: List[RemoveObjectAction | DrawCardAction | CreateDiceAction] = []
         if self.usage == 3:
             ret += [
                 RemoveObjectAction(
@@ -69,8 +105,15 @@ class Rana(CompanionBase):
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 1
 
+    def play(self, match: Any) -> List[Actions]:
+        """
+        When played, reset usage.
+        """
+        self.usage = 1
+        return super().play(match)
+
     def event_handler_ROUND_PREPARE(self, event: RoundPrepareEventArguments) \
-            -> list[ActionBase]:
+            -> list[Actions]:
         """
         When in round prepare, reset usage
         """

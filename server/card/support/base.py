@@ -1,4 +1,6 @@
 from typing import Literal, List, Any
+
+from ...event import MoveObjectEventArguments
 from ...object_base import CardBase
 from ...consts import ObjectType, ObjectPositionType, CostLabels
 from ...struct import Cost
@@ -35,6 +37,12 @@ class SupportBase(CardBase):
                 object_position = self.position,
                 object_id = self.id,
             )]
+        return []
+
+    def play(self, match: Any) -> List[Actions]:
+        """
+        Triggered when the support is played from hand to support area.
+        """
         return []
 
     def is_valid(self, match: Any) -> bool:
@@ -87,3 +95,20 @@ class SupportBase(CardBase):
             ),
         ))
         return ret
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments
+    ) -> list[Actions]:
+        """
+        When this support is moved from hand to support, it is considered
+        as played, and will call `self.play`.
+        """
+        if (
+            event.action.object_id == self.id
+            and event.action.object_position.area == ObjectPositionType.HAND
+            and event.action.target_position.area 
+            == ObjectPositionType.SUPPORT
+        ):
+            # this artifact equipped from hand to charactor
+            return self.play(event.match)
+        return []
