@@ -16,11 +16,13 @@ def test_object_position_validation():
         player_idx = 0,
         charactor_idx = 1,
         area = ObjectPositionType.CHARACTOR_STATUS,
+        id = 345,
     )
     p2 = ObjectPosition(
         player_idx = 1,
         charactor_idx = 0,
         area = ObjectPositionType.CHARACTOR,
+        id = 123
     )
     match = Match()
     match.player_tables[0].active_charactor_idx = 1
@@ -31,7 +33,9 @@ def test_object_position_validation():
     assert not p1.check_position_valid(p2, match, player_idx_same = True, 
                                        charactor_idx_same = True)
     assert not p1.check_position_valid(p2, match, area_same = True)
+    assert not p1.check_position_valid(p2, match, id_same = True)
     assert p1.check_position_valid(p2, match, area_same = False)
+    assert p1.check_position_valid(p2, match, id_same = False)
     assert p1.check_position_valid(
         p2, match, source_area = ObjectPositionType.CHARACTOR_STATUS)
     assert p1.check_position_valid(
@@ -63,6 +67,7 @@ def test_objectbase_wrong_handler_name():
         position: ObjectPosition = ObjectPosition(
             player_idx = -1,
             area = ObjectPositionType.INVALID,
+            id = -1,
         )
 
         def event_handler_NOT_EXIST(self, event):
@@ -75,6 +80,7 @@ def test_objectbase_wrong_handler_name():
         position: ObjectPosition = ObjectPosition(
             player_idx = -1,
             area = ObjectPositionType.INVALID,
+            id = -1,
         )
 
         def value_modifier_NOT_EXIST(self, value, match, mode):
@@ -242,7 +248,7 @@ def test_create_dice():
 
 
 if __name__ == '__main__':
-    # test_object_position_validation()
-    # test_object_position_validation()
+    test_object_position_validation()
     test_match_config_and_match_errors()
+    test_objectbase_wrong_handler_name()
     # test_create_dice()

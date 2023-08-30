@@ -291,11 +291,11 @@ def apply_elemental_reaction(
                 res.append(DamageIncreaseValue(
                     match = damage.match,
                     position = damage.position,
-                    id = damage.id,
                     target_position = ObjectPosition(
                         player_idx = damage.target_position.player_idx,
                         charactor_idx = cnum,
-                        area = damage.target_position.area
+                        area = damage.target_position.area,
+                        id = c.id,
                     ),
                     damage = 1,
                     damage_type = DamageType.DAMAGE,
@@ -318,11 +318,11 @@ def apply_elemental_reaction(
                     res.append(DamageIncreaseValue(
                         match = damage.match,
                         position = damage.position,
-                        id = damage.id,
                         target_position = ObjectPosition(
                             player_idx = damage.target_position.player_idx,
                             charactor_idx = cnum,
-                            area = damage.target_position.area
+                            area = damage.target_position.area,
+                            id = c.id,
                         ),
                         damage = 1,
                         damage_type = DamageType.DAMAGE,
@@ -342,7 +342,8 @@ def elemental_reaction_side_effect_ver_3_4(
         position = ObjectPosition(
             player_idx = player_idx,
             charactor_idx = charator_idx,
-            area = ObjectPositionType.CHARACTOR_STATUS
+            area = ObjectPositionType.CHARACTOR_STATUS,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,
@@ -352,7 +353,8 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.CRYSTALLIZE:
         position = ObjectPosition(
             player_idx = 1 - player_idx,
-            area = ObjectPositionType.TEAM_STATUS
+            area = ObjectPositionType.TEAM_STATUS,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,
@@ -362,7 +364,8 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.BURNING:
         position = ObjectPosition(
             player_idx = 1 - player_idx,
-            area = ObjectPositionType.SUMMON
+            area = ObjectPositionType.SUMMON,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,
@@ -372,7 +375,8 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.BLOOM:
         position = ObjectPosition(
             player_idx = 1 - player_idx,
-            area = ObjectPositionType.TEAM_STATUS
+            area = ObjectPositionType.TEAM_STATUS,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,
@@ -382,7 +386,8 @@ def elemental_reaction_side_effect_ver_3_4(
     elif reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
             player_idx = 1 - player_idx,
-            area = ObjectPositionType.TEAM_STATUS
+            area = ObjectPositionType.TEAM_STATUS,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,
@@ -401,7 +406,8 @@ def elemental_reaction_side_effect_ver_3_3(
     if reaction == ElementalReactionType.QUICKEN:
         position = ObjectPosition(
             player_idx = 1 - player_idx,
-            area = ObjectPositionType.TEAM_STATUS
+            area = ObjectPositionType.TEAM_STATUS,
+            id = -1,
         )
         return CreateObjectAction(
             object_position = position,

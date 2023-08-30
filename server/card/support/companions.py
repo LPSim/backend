@@ -39,7 +39,6 @@ class Timmie(CompanionBase):
         """
         return [ChangeObjectUsageAction(
             object_position = self.position.copy(deep = True),
-            object_id = self.id,
             change_type = 'DELTA',
             change_usage = 1
         )]
@@ -55,7 +54,6 @@ class Timmie(CompanionBase):
             return []
         return [ChangeObjectUsageAction(
             object_position = self.position.copy(deep = True),
-            object_id = self.id,
             change_type = 'DELTA',
             change_usage = 1
         )]
@@ -70,7 +68,7 @@ class Timmie(CompanionBase):
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        if event.action.object_id != self.id:
+        if event.action.object_position.id != self.id:
             # not self
             return []
         ret: List[RemoveObjectAction | DrawCardAction | CreateDiceAction] = []
@@ -78,7 +76,6 @@ class Timmie(CompanionBase):
             ret += [
                 RemoveObjectAction(
                     object_position = self.position,
-                    object_id = self.id,
                 ),
                 DrawCardAction(
                     player_idx = self.position.player_idx,

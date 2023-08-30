@@ -30,7 +30,8 @@ class SystemEventHandlerBase(ObjectBase):
 
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
-        area = ObjectPositionType.SYSTEM
+        area = ObjectPositionType.SYSTEM,
+        id = -1,
     )
 
 
@@ -47,6 +48,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         hand_size = event.hand_size
         max_hand_size = event.max_hand_size
         actions = []
+        hands = event.match.player_tables[player_idx].hands
         if hand_size > max_hand_size:
             for i in range(hand_size, max_hand_size, -1):
                 # remove the last card in hand repeatedly until hand size
@@ -54,7 +56,8 @@ class SystemEventHandler(SystemEventHandlerBase):
                 actions.append(RemoveCardAction(
                     position = ObjectPosition(
                         player_idx = player_idx,
-                        area = ObjectPositionType.HAND
+                        area = ObjectPositionType.HAND,
+                        id = hands[i - 1].id
                     ),
                     card_idx = i - 1,
                     remove_type = 'BURNED'

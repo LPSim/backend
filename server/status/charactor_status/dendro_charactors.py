@@ -73,7 +73,6 @@ class SeedOfSkandha(UsageCharactorStatus):
                     # change usage first, so no need to claim new trigger
                     actions.append(ChangeObjectUsageAction(
                         object_position = status.position,
-                        object_id = status.id,
                         change_type = 'DELTA',
                         change_usage = -1,
                     ))
@@ -83,7 +82,6 @@ class SeedOfSkandha(UsageCharactorStatus):
                         damage_value_list = [
                             DamageValue(
                                 position = status.position,
-                                id = status.id,
                                 damage = 1,
                                 damage_type = DamageType.DAMAGE,
                                 charge_cost = 0,

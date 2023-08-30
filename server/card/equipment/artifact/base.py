@@ -6,7 +6,7 @@ from ....object_base import CardBase
 from ....struct import Cost
 from ....consts import ObjectType, CostLabels, ObjectPositionType
 from ....action import Actions, MoveObjectAction, RemoveObjectAction
-from ....struct import CardActionTarget
+from ....struct import ObjectPosition
 
 
 class ArtifactBase(CardBase):
@@ -30,16 +30,13 @@ class ArtifactBase(CardBase):
         raise NotImplementedError('Not tested part')
         return []
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         # can quip on all self alive charactors
-        ret: List[CardActionTarget] = []
+        ret: List[ObjectPosition] = []
         for charactor in match.player_tables[
                 self.position.player_idx].charactors:
             if charactor.is_alive:
-                ret.append(CardActionTarget(
-                    target_position = charactor.position.copy(deep = True),
-                    target_id = charactor.id,
-                ))
+                ret.append(charactor.position.copy(deep = True))
         return ret
 
     def is_valid(self, match: Any) -> bool:
@@ -47,7 +44,7 @@ class ArtifactBase(CardBase):
         return self.position.area == ObjectPositionType.HAND
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[MoveObjectAction | RemoveObjectAction]:
         """
         Act the artifact. will place it into artifact area.
@@ -55,23 +52,22 @@ class ArtifactBase(CardBase):
         """
         assert target is not None
         ret: List[MoveObjectAction | RemoveObjectAction] = []
-        position = target.target_position
-        id = target.target_id
+        position = target.copy(deep = True)
+        position.id = self.position.id
+        charactor_id = target.id
         assert position.area == ObjectPositionType.CHARACTOR
         assert position.player_idx == self.position.player_idx
         charactors = match.player_tables[position.player_idx].charactors
         for charactor in charactors:
-            if charactor.id == id:
+            if charactor.id == charactor_id:
                 # check if need to remove current artifact
                 if charactor.artifact is not None:
                     ret.append(RemoveObjectAction(
                         object_position = charactor.artifact.position,
-                        object_id = charactor.artifact.id,
                     ))
         ret.append(MoveObjectAction(
             object_position = self.position,
-            object_id = self.id,
-            target_position = position.copy(deep = True),
+            target_position = position,
         ))
         return ret
 
@@ -83,7 +79,7 @@ class ArtifactBase(CardBase):
         as equipped, and will call `self.equip`.
         """
         if (
-            event.action.object_id == self.id
+            event.action.object_position.id == self.id
             and event.action.object_position.area == ObjectPositionType.HAND
             and event.action.target_position.area 
             == ObjectPositionType.CHARACTOR

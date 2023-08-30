@@ -4,6 +4,7 @@ from .consts import DieColor, ElementalReactionType, ElementType
 from .action import (
     ActionTypes, 
     ActionBase,
+    Actions,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -303,3 +304,29 @@ class RoundEndEventArguments(EventArgumentsBase):
     player_go_first: int
     round: int
     initial_card_draw: int
+
+
+EventArguments = (
+    DrawCardEventArguments | RestoreCardEventArguments
+    | RemoveCardEventArguments | ChooseCharactorEventArguments
+    | CreateDiceEventArguments | RemoveDiceEventArguments
+    | RoundPrepareEventArguments | DeclareRoundEndEventArguments
+    | CombatActionEventArguments | SwitchCharactorEventArguments
+    | ReceiveDamageEventArguments | AfterMakeDamageEventArguments
+    | MakeDamageEventArguments | ChargeEventArguments
+    | SkillEndEventArguments | CharactorDefeatedEventArguments
+    | CreateObjectEventArguments | RemoveObjectEventArguments
+    | ChangeObjectUsageEventArguments | MoveObjectEventArguments
+    | ConsumeArcaneLegendEventArguments | RoundEndEventArguments
+)
+
+
+class EventFrame(BaseModel):
+    """
+    Event frame is a frame of event, contains the event arguments, the
+    object lists that will be triggered by the event arguments, and the
+    action lists that has triggered.
+    """
+    event_arguments: EventArguments
+    triggered_objects: List[str]
+    triggered_actions: List[Actions]

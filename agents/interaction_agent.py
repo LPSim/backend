@@ -29,13 +29,13 @@ class InteractionAgent_V1_0(AgentBase):
     Command format and sample:
         sw_card: used to switch cards, with variable length of card indices.
             sample: sw_card 0 1 2
-        choose: used to choose charactor, with one charactor id.
+        choose: used to choose charactor, with one charactor idx.
             sample: choose 0
         reroll: used to reroll dice, with variable length of dice indices.
             sample: reroll 0 1 2
         end: used to declare round end, with no args.
             sample: end
-        tune: used to elemental tuning, with one dice color and one card id.
+        tune: used to elemental tuning, with one dice color and one card idx.
             sample: tune pyro 0
         sw_char: used to switch charactor, with one charactor idx and variable
                 length of cost colors.
@@ -167,6 +167,8 @@ class InteractionAgent_V1_0(AgentBase):
             reqs = [x for x in self.available_reqs if x.name == req_name]
             if len(reqs) == 0:
                 print(f'no such request: {req_name}')
+                if self.only_use_command:
+                    raise AssertionError()
                 return self.generate_response(match)
             if req_name == 'SwitchCardRequest':
                 return self.resp_switch_card(args, reqs)  # type: ignore
@@ -205,7 +207,7 @@ class InteractionAgent_V1_0(AgentBase):
             self, args: List[str], 
             reqs: List[ChooseCharactorRequest]) -> ChooseCharactorResponse:
         """
-        args: one charactor id.
+        args: one charactor idx.
         """
         assert len(reqs) == 1
         return ChooseCharactorResponse(
@@ -227,7 +229,7 @@ class InteractionAgent_V1_0(AgentBase):
             self, args: List[str],
             reqs: List[ElementalTuningRequest]) -> ElementalTuningResponse:
         """
-        args: one dice color and one card id.
+        args: one dice color and one card idx.
         """
         assert len(reqs) == 1
         dice_idx = self._colors_to_idx(args[:1], reqs[0].dice_colors)[0]
@@ -324,7 +326,7 @@ class InteractionAgent_V2_0(InteractionAgent_V1_0):
     Unchanged commands (but can use idx of dice):
         sw_card: used to switch cards, with variable length of card indices.
             sample: sw_card 0 1 2
-        choose: used to choose charactor, with one charactor id.
+        choose: used to choose charactor, with one charactor idx.
             sample: choose 0
         reroll: used to reroll dice, with variable length of dice indices or 
             dice colors.

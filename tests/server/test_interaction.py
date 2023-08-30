@@ -8,7 +8,7 @@ from server.interaction import (
     UseSkillRequest, UseSkillResponse,
 )
 from server.match import Match
-from server.struct import CardActionTarget, Cost, ObjectPosition
+from server.struct import Cost, ObjectPosition
 
 
 def test_response_is_valid():
@@ -107,12 +107,10 @@ def test_response_is_valid():
     resp.dice_idxs = [1, 2, 3]
     assert not resp.is_valid(match)
     resp.dice_idxs = [1, 2]
-    target = CardActionTarget(
-        target_position = ObjectPosition(
-            player_idx = 0,
-            area = ObjectPositionType.HAND
-        ),
-        target_id = 123,
+    target = ObjectPosition(
+        player_idx = 0,
+        area = ObjectPositionType.HAND,
+        id = -1,
     )
     req.targets.append(target.copy(deep = True))
     assert not resp.is_valid(match)
@@ -121,7 +119,7 @@ def test_response_is_valid():
     assert not resp.is_valid(match)
     req.targets.append(target.copy(deep = True))
     assert resp.is_valid(match)
-    resp.target.target_id = 321
+    resp.target.id = 321
     assert not resp.is_valid(match)
     req = UseSkillRequest(
         player_idx = 0,

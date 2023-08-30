@@ -417,6 +417,6 @@ def test_support_over_maximum_and_error_tests():
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
-    # test_random_same_after_load()
+    test_random_same_after_load()
     # test_use_card()
-    test_support_over_maximum_and_error_tests()
+    # test_support_over_maximum_and_error_tests()

@@ -831,4 +831,4 @@ def test_talent_enemy_has_other_charactor_status():
 
 if __name__ == '__main__':
     test_seed_not_first_status()
-    # test_talent_enemy_has_other_charactor_status()
+    test_talent_enemy_has_other_charactor_status()

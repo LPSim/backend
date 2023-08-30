@@ -5,7 +5,7 @@ from ...object_base import CardBase
 from ...consts import ObjectType, ObjectPositionType, CostLabels
 from ...struct import Cost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
-from ...struct import ObjectPosition, CardActionTarget
+from ...struct import ObjectPosition
 
 
 class SupportBase(CardBase):
@@ -51,7 +51,11 @@ class SupportBase(CardBase):
         """
         return self.position.area == ObjectPositionType.HAND
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        When support field is full, should choose one target to remove.
+        Otherwise, return empty.
+        """
         max_support_number = match.config.max_support_number
         supports = (
             match.player_tables[self.position.player_idx].supports
@@ -59,17 +63,14 @@ class SupportBase(CardBase):
         assert max_support_number >= len(supports)
         if len(supports) == max_support_number:
             # choose one support to remove
-            ret: List[CardActionTarget] = []
+            ret: List[ObjectPosition] = []
             for support in supports:
-                ret.append(CardActionTarget(
-                    target_position = support.position.copy(deep = True),
-                    target_id = support.id,
-                ))
+                ret.append(support.position.copy(deep = True))
             return ret
         return []
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[RemoveObjectAction | MoveObjectAction]:
         """
         Act the support. will place it into support area.
@@ -83,15 +84,14 @@ class SupportBase(CardBase):
         if len(supports) == max_support_number:
             assert target is not None
             ret.append(RemoveObjectAction(
-                object_position = target.target_position,
-                object_id = target.target_id,
+                object_position = target
             ))
         ret.append(MoveObjectAction(
             object_position = self.position,
-            object_id = self.id,
             target_position = ObjectPosition(
                 player_idx = self.position.player_idx,
                 area = ObjectPositionType.SUPPORT,
+                id = self.position.id
             ),
         ))
         return ret
@@ -104,7 +104,7 @@ class SupportBase(CardBase):
         as played, and will call `self.play`.
         """
         if (
-            event.action.object_id == self.id
+            event.action.object_position.id == self.id
             and event.action.object_position.area == ObjectPositionType.HAND
             and event.action.target_position.area 
             == ObjectPositionType.SUPPORT

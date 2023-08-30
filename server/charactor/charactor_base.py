@@ -15,7 +15,7 @@ from ..consts import (
 from ..object_base import (
     ObjectBase, WeaponBase, CardBase
 )
-from ..struct import Cost, DamageValue, ObjectPosition, CardActionTarget
+from ..struct import Cost, DamageValue, ObjectPosition
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
 from ..action import (
@@ -38,13 +38,14 @@ class SkillBase(ObjectBase):
     cost_label: int
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
-        area = ObjectPositionType.INVALID
+        area = ObjectPositionType.INVALID,
+        id = -1,
     )
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         # set id to 0, as skills are not real objects
-        self.id = 0
+        self.id = self.position.id = 0
         # set cost label into cost
         self.cost.label = self.cost_label
 
@@ -75,7 +76,6 @@ class SkillBase(ObjectBase):
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        id = self.id,
                         damage_type = DamageType.DAMAGE,
                         damage = self.damage,
                         damage_elemental_type = self.damage_type,
@@ -237,7 +237,7 @@ class TalentBase(CardBase):
         return (table.charactors[table.active_charactor_idx].name
                 == self.charactor_name)
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
         For most talent cards, can quip only on active charactor, so no need
         to specify targets.
@@ -245,7 +245,7 @@ class TalentBase(CardBase):
         return []
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[Actions]:
         """
         Act the talent. will place it into talent area.
@@ -261,12 +261,12 @@ class TalentBase(CardBase):
         if charactor.talent is not None:
             ret.append(RemoveObjectAction(
                 object_position = charactor.talent.position,
-                object_id = charactor.talent.id,
             ))
+        new_position: ObjectPosition = charactor.position.copy(deep = True)
+        new_position.id = self.position.id
         ret.append(MoveObjectAction(
             object_position = self.position,
-            object_id = self.id,
-            target_position = charactor.position.copy(deep = True),
+            target_position = new_position
         ))
         return ret
 
@@ -286,7 +286,7 @@ class SkillTalent(TalentBase):
         return super().is_valid(match) and self.skill.is_valid(match)
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[Actions]:
         ret = super().get_actions(target, match)
         assert len(ret) > 0
@@ -312,7 +312,8 @@ class CharactorBase(ObjectBase):
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
-        area = ObjectPositionType.INVALID
+        area = ObjectPositionType.INVALID,
+        id = -1,
     )
 
     element: ElementType

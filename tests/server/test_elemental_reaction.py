@@ -1299,7 +1299,11 @@ def test_pure_elemental_reaction():
 
 
 if __name__ == '__main__':
-    # test_swirl_with_catalyzing_field()
-    # test_pure_elemental_reaction()
-    # test_swirl_with_catalyzing_field_and_dendro_core()
+    test_burning_flame()
+    test_crystallize()
+    test_dendro_core_catalyzing_field()
+    test_frozen()
+    test_swirl_with_catalyzing_field()
+    test_pure_elemental_reaction()
+    test_swirl_with_catalyzing_field_and_dendro_core()
     test_background_overloaded()

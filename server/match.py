@@ -601,9 +601,9 @@ class Match(BaseModel):
                 match = self,
                 position = ObjectPosition(
                     player_idx = pnum,
-                    area = ObjectPositionType.SYSTEM
+                    area = ObjectPositionType.SYSTEM,
+                    id = 0,
                 ),
-                id = 0,
             )
             self._modify_value(initial_color_value, 'REAL')
             initial_color_value.dice_colors = initial_color_value.dice_colors[
@@ -640,9 +640,9 @@ class Match(BaseModel):
                 match = self,
                 position = ObjectPosition(
                     player_idx = pnum,
-                    area = ObjectPositionType.SYSTEM
+                    area = ObjectPositionType.SYSTEM,
+                    id = 0,
                 ),
-                id = 0,
                 value = reroll_times,
                 player_idx = pnum,
             )
@@ -870,9 +870,9 @@ class Match(BaseModel):
             match = self,
             position = ObjectPosition(
                 player_idx = player_idx,
-                area = ObjectPositionType.SYSTEM
+                area = ObjectPositionType.SYSTEM,
+                id = 0
             ),
-            id = 0
         )
         self._modify_value(dice_cost_value, mode = 'TEST')
         charge, arcane_legend = table.get_charge_and_arcane_legend()
@@ -938,7 +938,6 @@ class Match(BaseModel):
                     cost = cost,
                     match = self,
                     position = skill.position,
-                    id = skill.id
                 )
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = table.dice.colors
@@ -966,7 +965,6 @@ class Match(BaseModel):
                     cost = cost,
                     match = self,
                     position = card.position,
-                    id = card.id
                 )
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = table.dice.colors
@@ -1087,9 +1085,9 @@ class Match(BaseModel):
             match = self,
             position = ObjectPosition(
                 player_idx = response.player_idx,
-                area = ObjectPositionType.SYSTEM
+                area = ObjectPositionType.SYSTEM,
+                id = 0,
             ),
-            id = 0,
             cost = cost,
         )
         self._modify_value(
@@ -1102,7 +1100,9 @@ class Match(BaseModel):
             position = ObjectPosition(
                 player_idx = response.player_idx,
                 charactor_idx = response.request.active_charactor_idx,
-                area = ObjectPositionType.CHARACTOR
+                area = ObjectPositionType.CHARACTOR,
+                id = self.player_tables[response.player_idx].charactors[
+                    response.request.active_charactor_idx].id,
             ),
         ))
         self.action_queues.append(actions)
@@ -1120,7 +1120,8 @@ class Match(BaseModel):
         actions.append(RemoveCardAction(
             position = ObjectPosition(
                 player_idx = response.player_idx,
-                area = ObjectPositionType.HAND
+                area = ObjectPositionType.HAND,
+                id = table.hands[response.card_idx].id,
             ),
             card_idx = response.card_idx,
             remove_type = 'BURNED'
@@ -1151,7 +1152,8 @@ class Match(BaseModel):
             action_type = 'END',
             position = ObjectPosition(
                 player_idx = response.player_idx,
-                area = ObjectPositionType.SYSTEM
+                area = ObjectPositionType.SYSTEM,
+                id = 0
             ),
         ))
         self.action_queues.append(actions)
@@ -1166,7 +1168,6 @@ class Match(BaseModel):
         cost_value = CostValue(
             match = self,
             position = skill.position,
-            id = skill.id,
             cost = cost,
         )
         self._modify_value(
@@ -1182,7 +1183,8 @@ class Match(BaseModel):
             position = ObjectPosition(
                 player_idx = request.player_idx,
                 charactor_idx = request.charactor_idx,
-                area = ObjectPositionType.CHARACTOR
+                area = ObjectPositionType.CHARACTOR,
+                id = skill.id,
             ),
             skill_type = skill.skill_type,
         ))
@@ -1202,7 +1204,6 @@ class Match(BaseModel):
         cost_value = CostValue(
             match = self,
             position = card.position,
-            id = card.id,
             cost = cost,
         )
         self._modify_value(
@@ -1220,7 +1221,8 @@ class Match(BaseModel):
             actions.append(RemoveCardAction(
                 position = ObjectPosition(
                     player_idx = response.player_idx,
-                    area = ObjectPositionType.HAND
+                    area = ObjectPositionType.HAND,
+                    id = card.id,
                 ),
                 card_idx = request.card_idx,
                 remove_type = 'USED',
@@ -1431,6 +1433,7 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         if card_position == ObjectPositionType.HAND:
             card = table.hands.pop(action.card_idx)
+            assert card.id == action.position.id
         # elif card_position == ObjectPositionType.DECK:
         #     card = table.table_deck.pop(action.card_idx)
         else:
@@ -1576,7 +1579,6 @@ class Match(BaseModel):
         combat_action_value = CombatActionValue(
             match = self,
             position = action.position,
-            id = 0,
             action_type = action.action_type
         )
         self._modify_value(
@@ -1690,10 +1692,6 @@ class Match(BaseModel):
             damages = DamageIncreaseValue.from_damage_value(
                 match = self,
                 damage_value = damage,
-                is_charactors_defeated = [[c.is_defeated for c in t.charactors] 
-                                          for t in self.player_tables],
-                active_charactors_idx = [t.active_charactor_idx
-                                         for t in self.player_tables],
             )
             damage_increase_value_lists += damages
         while len(damage_increase_value_lists) > 0:
@@ -1947,18 +1945,18 @@ class Match(BaseModel):
             )
             removed_equip = None
             if charactor.weapon is not None and charactor.weapon.id == \
-                    action.object_id:
+                    action.object_position.id:
                 raise NotImplementedError('Not tested part')
                 removed_equip = charactor.weapon
                 charactor.weapon = None
                 target_name = 'weapon'
             elif charactor.artifact is not None and charactor.artifact.id == \
-                    action.object_id:
+                    action.object_position.id:
                 removed_equip = charactor.artifact
                 charactor.artifact = None
                 target_name = 'artifact'
             elif charactor.talent is not None and charactor.talent.id == \
-                    action.object_id:
+                    action.object_position.id:
                 removed_equip = charactor.talent
                 charactor.talent = None
                 target_name = 'talent'
@@ -1966,7 +1964,7 @@ class Match(BaseModel):
                 raise AssertionError(
                     f'player {player_idx} tried to remove non-exist equipment '
                     f'from charactor {charactor.name} with id '
-                    f'{action.object_id}.'
+                    f'{action.object_position.id}.'
                 )
             return [RemoveObjectEventArguments(
                 match = self,
@@ -1975,11 +1973,11 @@ class Match(BaseModel):
             )]
         else:
             raise NotImplementedError(
-                f'Remove object action for area {action.object_position.area} '
-                'is not implemented.'
+                f'Remove object action for area '
+                f'{action.object_position.area} is not implemented.'
             )
         for csnum, current_object in enumerate(target_list):
-            if current_object.id == action.object_id:
+            if current_object.id == action.object_position.id:
                 # have same status, only update status usage
                 target_list.pop(csnum)
                 logging.info(
@@ -1995,7 +1993,7 @@ class Match(BaseModel):
         raise AssertionError(
             f'player {player_idx} '
             f'tried to remove non-exist {target_name} with id '
-            f'{action.object_id}.'
+            f'{action.object_position.id}.'
         )
 
     def _action_change_object_usage(self, action: ChangeObjectUsageAction) \
@@ -2026,7 +2024,7 @@ class Match(BaseModel):
                 f'{action.object_position.area} is not implemented.'
             )
         for csnum, current_object in enumerate(target_list):
-            if current_object.id == action.object_id:
+            if current_object.id == action.object_position.id:
                 # have same status, only update status usage
                 old_usage = current_object.usage
                 new_usage = action.change_usage
@@ -2053,7 +2051,7 @@ class Match(BaseModel):
         raise AssertionError(
             f'player {player_idx} '
             f'tried to change non-exist {target_list} with id '
-            f'{action.object_id}.'
+            f'{action.object_position.id}.'
         )
         return []
 
@@ -2064,6 +2062,12 @@ class Match(BaseModel):
         """
         player_idx = action.object_position.player_idx
         table = self.player_tables[player_idx]
+        assert (
+            action.object_position.id == action.target_position.id
+        ), (
+            'Move object action should have same object id in both '
+            'object position and target position.'
+        )
         # charactor_idx = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.HAND:
             current_list = table.hands
@@ -2077,7 +2081,7 @@ class Match(BaseModel):
                 f'{action.object_position.area} is not implemented.'
             )
         for csnum, current_object in enumerate(current_list):
-            if current_object.id == action.object_id:
+            if current_object.id == action.object_position.id:
                 if action.target_position.area == ObjectPositionType.HAND:
                     raise NotImplementedError('Not tested part')
                     target_list = table.hands
@@ -2147,7 +2151,7 @@ class Match(BaseModel):
         raise AssertionError(
             f'player {player_idx} '
             f'tried to move non-exist {current_name} with id '
-            f'{action.object_id}.'
+            f'{action.object_position.id}.'
         )
         return []
 

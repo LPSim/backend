@@ -37,7 +37,6 @@ class UsageTeamStatus(TeamStatusBase):
         if self.usage <= 0:
             return [RemoveObjectAction(
                 object_position = self.position,
-                object_id = self.id,
             )]
         return []
 
@@ -67,7 +66,6 @@ class RoundTeamStatus(TeamStatusBase):
         if self.usage <= 0:
             return [RemoveObjectAction(
                 object_position = self.position,
-                object_id = self.id,
             )]
         return []
 

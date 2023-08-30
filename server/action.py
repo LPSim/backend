@@ -276,13 +276,12 @@ class RemoveObjectAction(ActionBase):
     Action for removing objects. 
 
     Args:
-        object_position (ObjectPosition): The position of the object to remove.
-        object_id (int): The ID of the object to remove.
+        object_position (ObjectPosition): The ID and position of the 
+            object to remove.
     """
     type: Literal[ActionTypes.REMOVE_OBJECT] = \
         ActionTypes.REMOVE_OBJECT
     object_position: ObjectPosition
-    object_id: int
 
 
 class ChangeObjectUsageAction(ActionBase):
@@ -292,7 +291,6 @@ class ChangeObjectUsageAction(ActionBase):
     type: Literal[ActionTypes.CHANGE_OBJECT_USAGE] = \
         ActionTypes.CHANGE_OBJECT_USAGE
     object_position: ObjectPosition
-    object_id: int
     change_type: Literal['DELTA', 'SET']
     change_usage: int
     min_usage: int = 0
@@ -306,7 +304,6 @@ class MoveObjectAction(ActionBase):
     type: Literal[ActionTypes.MOVE_OBJECT] = \
         ActionTypes.MOVE_OBJECT
     object_position: ObjectPosition
-    object_id: int
     target_position: ObjectPosition
 
 

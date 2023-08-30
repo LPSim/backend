@@ -42,6 +42,7 @@ class GamblersEarrings(ArtifactBase):
             player_idx = event.action.player_idx,
             charactor_idx = self.position.charactor_idx,
             area = ObjectPositionType.CHARACTOR,
+            id = -1,  # id is not used to check, no need to find real id
         )
         if not self.position.check_position_valid(
             target_position, event.match, 

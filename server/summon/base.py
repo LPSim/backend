@@ -67,7 +67,6 @@ class AttackerSummonBase(SummonBase):
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        id = self.id,
                         damage_type = DamageType.DAMAGE,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
@@ -87,7 +86,6 @@ class AttackerSummonBase(SummonBase):
         return [
             RemoveObjectAction(
                 object_position = self.position,
-                object_id = self.id,
             )
         ]
 
@@ -162,7 +160,6 @@ class ShieldSummonBase(SummonBase):
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        id = self.id,
                         damage_type = DamageType.DAMAGE,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
@@ -182,7 +179,6 @@ class ShieldSummonBase(SummonBase):
         return [
             RemoveObjectAction(
                 object_position = self.position,
-                object_id = self.id,
             )
         ]
 

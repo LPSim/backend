@@ -112,7 +112,7 @@ class SmallElementalArtifact(ArtifactBase):
                 ].charactors[self.position.charactor_idx]
                 for card in value.match.player_tables[
                         self.position.player_idx].hands:
-                    if card.id == value.id:
+                    if card.id == value.position.id:
                         if card.charactor_name != equipped_charactor.name:
                             # talent card not for this charactor
                             return value

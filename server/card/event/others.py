@@ -8,7 +8,7 @@ from ...consts import DieColor
 
 from ...object_base import CardBase
 from ...action import CreateDiceAction, DrawCardAction
-from ...struct import Cost, CardActionTarget
+from ...struct import Cost, ObjectPosition
 
 
 class Strategize(CardBase):
@@ -19,12 +19,12 @@ class Strategize(CardBase):
         same_dice_number = 1
     )
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
         return []
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> list[DrawCardAction]:
         """
         Act the card. Draw two cards.
@@ -45,12 +45,12 @@ class TheBestestTravelCompanion(CardBase):
         any_dice_number = 2
     )
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
         return []
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> list[CreateDiceAction]:
         """
         Act the card. Convert the Elemental Dice spent to Omni Element x2.

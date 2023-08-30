@@ -60,7 +60,6 @@ class ShrineOfMaya(RoundTeamStatus):
                             ret.append(
                                 ChangeObjectUsageAction(
                                     object_position = position,
-                                    object_id = status.id,
                                     change_usage = 1,
                                     change_type = 'DELTA',
                                 )

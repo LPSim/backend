@@ -14,7 +14,8 @@ class Dice(ObjectBase):
     """
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
-        area = ObjectPositionType.INVALID
+        area = ObjectPositionType.INVALID,
+        id = -1,
     )
     type: Literal[ObjectType.DICE] = ObjectType.DICE
     colors: list[DieColor] = []

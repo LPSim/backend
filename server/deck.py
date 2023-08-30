@@ -18,7 +18,7 @@ class Deck(BaseModel):
         check whether the deck is legal.
         1. the number of charactors
         2. the number of cards
-        3. the number of cards with the same id
+        3. the number of cards with the same name
         4. cards with special carrying rules  # TODO
         """
         if charactor_number is not None:

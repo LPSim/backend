@@ -4,10 +4,9 @@ Arcane legend cards.
 
 from typing import Any, List, Literal
 
-from server.action import ConsumeArcaneLegendAction, CreateDiceAction
-from server.struct import CardActionTarget
+from ...action import ConsumeArcaneLegendAction, CreateDiceAction
 
-from ...struct import Cost
+from ...struct import Cost, ObjectPosition
 from ...consts import CostLabels, ObjectType
 from ...object_base import CardBase
 
@@ -17,7 +16,7 @@ class ArcaneLegendBase(CardBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.ARCANE.value
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[ConsumeArcaneLegendAction]:
         """
         Consume arcane legend.
@@ -44,14 +43,14 @@ class CovenantOfRock(ArcaneLegendBase):
         return len(match.player_tables[
             self.position.player_idx].dice.colors) == 0
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
         No targets.
         """
         return []
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[ConsumeArcaneLegendAction | CreateDiceAction]:
         """
         Generate 2 different Elemental Dice.

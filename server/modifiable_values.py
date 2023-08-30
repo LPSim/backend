@@ -39,7 +39,6 @@ class ModifiableValueBase(BaseModel):
     original_value: Any = None
     match: Any
     position: ObjectPosition
-    id: int
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -98,8 +97,6 @@ class DamageIncreaseValue(ModifiableValueBase):
     @staticmethod
     def from_damage_value(
         damage_value: DamageValue,
-        is_charactors_defeated: List[List[bool]],
-        active_charactors_idx: List[int],
         match: Any,
     ) -> List['DamageIncreaseValue']:
         """
@@ -111,30 +108,31 @@ class DamageIncreaseValue(ModifiableValueBase):
         target_player = damage_value.position.player_idx
         if damage_value.target_player == 'ENEMY':
             target_player = 1 - target_player
-        charactors = is_charactors_defeated[target_player]
-        active_idx = active_charactors_idx[target_player]
+        table = match.player_tables[target_player]
+        alive = [x.is_alive for x in table.charactors]
+        active_idx = table.active_charactor_idx
         target_charactor = []
         if damage_value.target_charactor == 'ACTIVE':
-            assert not charactors[active_idx], 'Active charactor is defeated.'
+            assert alive[active_idx], 'Active charactor is defeated.'
             target_charactor = [active_idx]
         elif damage_value.target_charactor == 'BACK':
-            target_charactor = [x for x in range(len(charactors))
-                                if not charactors[x] and x != active_idx]
+            target_charactor = [x for x in range(len(alive))
+                                if alive[x] and x != active_idx]
         elif damage_value.target_charactor == 'NEXT':
             raise NotImplementedError('Not tested part')
-            for i in range(1, len(charactors)):
-                if not charactors[(active_idx + i) % len(charactors)]:
-                    target_charactor.append((active_idx + i) % len(charactors))
+            for i in range(1, len(alive)):
+                if alive[(active_idx + i) % len(alive)]:
+                    target_charactor.append((active_idx + i) % len(alive))
                     break
         elif damage_value.target_charactor == 'PREV':
             raise NotImplementedError('Not tested part')
-            for i in range(1, len(charactors)):
-                idx = (active_idx - i + len(charactors)) % len(charactors)
-                if not charactors[idx]:
+            for i in range(1, len(alive)):
+                idx = (active_idx - i + len(alive)) % len(alive)
+                if alive[idx]:
                     target_charactor.append(idx)
                     break
         elif damage_value.target_charactor == 'ABSOLUTE':
-            assert not charactors[damage_value.target_charactor_idx], \
+            assert alive[damage_value.target_charactor_idx], \
                 'Target charactor is defeated.'
             target_charactor = [damage_value.target_charactor_idx]
         else:
@@ -144,16 +142,16 @@ class DamageIncreaseValue(ModifiableValueBase):
             )
         result: List[DamageIncreaseValue] = []
         for target in target_charactor:
-            assert not charactors[target], 'Target charactor is defeated.'
+            assert alive[target], 'Target charactor is defeated.'
             value = DamageIncreaseValue(
                 match = match,
                 position = damage_value.position,
-                id = damage_value.id,
                 damage_type = damage_value.damage_type,
                 target_position = ObjectPosition(
                     player_idx = target_player,
                     charactor_idx = target,
-                    area = ObjectPositionType.CHARACTOR
+                    area = ObjectPositionType.CHARACTOR,
+                    id = table.charactors[target].id,
                 ),
                 damage = damage_value.damage,
                 damage_elemental_type = damage_value.damage_elemental_type,
@@ -173,7 +171,6 @@ class DamageMultiplyValue(DamageIncreaseValue):
         return DamageMultiplyValue(
             match = increase_value.match,
             position = increase_value.position,
-            id = increase_value.id,
             damage_type = increase_value.damage_type,
             target_position = increase_value.target_position,
             damage = increase_value.damage,
@@ -194,7 +191,6 @@ class DamageDecreaseValue(DamageIncreaseValue):
         return DamageDecreaseValue(
             match = multiply_value.match,
             position = multiply_value.position,
-            id = multiply_value.id,
             damage_type = multiply_value.damage_type,
             target_position = multiply_value.target_position,
             damage = multiply_value.damage,

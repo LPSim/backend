@@ -59,7 +59,6 @@ class MidnightPhantasmagoria(ElementalBurstBase):
         ret[-1].damage_value_list.append(
             DamageValue(
                 position = self.position.copy(deep = True),
-                id = self.id,
                 damage_type = DamageType.DAMAGE,
                 damage = 2,
                 damage_elemental_type = DamageElementalType.PIERCING,
@@ -133,7 +132,6 @@ class Oz(AttackerSummonBase):
                     damage_value_list = [
                         DamageValue(
                             position = self.position,
-                            id = self.id,
                             damage_type = DamageType.DAMAGE,
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,

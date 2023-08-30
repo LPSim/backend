@@ -64,7 +64,8 @@ class PlayerTable(BaseModel):
             # not initialized, do initialize.
             self.dice = Dice(position = ObjectPosition(
                 player_idx = kwargs['player_idx'],
-                area = ObjectPositionType.DICE
+                area = ObjectPositionType.DICE,
+                id = -1,
             ))
 
     def dice_color_order_0_0_1(self) -> List[DieColor]:

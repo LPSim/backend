@@ -350,5 +350,5 @@ def test_timmie():
 
 
 if __name__ == '__main__':
-    # test_rana()
+    test_rana()
     test_timmie()

@@ -1,7 +1,7 @@
 from utils import BaseModel, list_unique_range_right
 from typing import Literal, List, Any
 from .consts import DieColor
-from .struct import Cost, CardActionTarget
+from .struct import Cost, ObjectPosition
 
 
 class RequestBase(BaseModel):
@@ -84,7 +84,7 @@ class UseCardRequest(RequestBase):
     name: Literal['UseCardRequest'] = 'UseCardRequest'
     card_idx: int
     dice_colors: List[DieColor]
-    targets: List[CardActionTarget]
+    targets: List[ObjectPosition]
     cost: Cost
 
 
@@ -222,7 +222,7 @@ class UseCardResponse(ResponseBase):
     name: Literal['UseCardResponse'] = 'UseCardResponse'
     request: UseCardRequest
     dice_idxs: List[int]
-    target: CardActionTarget | None
+    target: ObjectPosition | None
 
     def is_valid(self, match: Any) -> bool:
         """

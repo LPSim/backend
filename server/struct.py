@@ -12,22 +12,35 @@ class ObjectPosition(BaseModel):
     Position of an object in the game table, which will be set at initializing
     or updated when its position changes. Current change event: card go from
     deck to hand, from hand to deck, from hand to charactor, from charactor to
-    hand, from hand to support, from support to support.
+    hand, from charactor to charactor, from hand to support, from support to 
+    support.
+
     Note the index of the object is not included (n-th summon from player 1's
     sommon lists) as it will change when some action triggered, for example
     RemoveSummonAction. For these actions, we will use the id of the object
-    to identify. Position is used for objects to decide whether to respond
-    events.
+    to identify.
+
+    Position is mainly used for objects to decide whether to respond events.
+
+    Args:
+        player_idx (int): The player index of the object.
+        charactor_idx (int): The charactor index of the object. If it is not
+            on charactor, set to -1.
+        area (ObjectPositionType): The area of the object.
+        id (int): The id of the object. If it is not on table, set to -1.
+            If it represents SYSTEM, set to 0.
     """
     player_idx: int
     charactor_idx: int = -1
     area: ObjectPositionType
+    id: int
 
     def check_position_valid(
         self, target_position: 'ObjectPosition', match: Any,
         player_idx_same: bool | None = None,
         charactor_idx_same: bool | None = None,
         area_same: bool | None = None,
+        id_same: bool | None = None,
         source_area: ObjectPositionType | None = None,
         target_area: ObjectPositionType | None = None,
         source_is_active_charactor: bool | None = None,
@@ -48,6 +61,9 @@ class ObjectPosition(BaseModel):
                 return False
         if area_same is not None:
             if area_same != (self.area == target_position.area):
+                return False
+        if id_same is not None:
+            if id_same != (self.id == target_position.id):
                 return False
         if source_area is not None:
             if self.area != source_area:
@@ -74,8 +90,6 @@ class DamageValue(BaseModel):
     Args:
         position (ObjectPosition): The position of the object who makes the
             damage.
-        id (int): The id of the object who makes the damage, e.g. Skill,
-            Summon, Status.
         damage_type (DamageType): The type of the damage, damage, heal, or
             element application (zero damage).
         damage (int): The damage value.
@@ -93,7 +107,6 @@ class DamageValue(BaseModel):
     """
 
     position: ObjectPosition
-    id: int
     damage_type: DamageType
     damage: int
     damage_elemental_type: DamageElementalType
@@ -103,14 +116,6 @@ class DamageValue(BaseModel):
     target_player: Literal['CURRENT', 'ENEMY']
     target_charactor: Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 'ABSOLUTE']
     target_charactor_idx: int = -1
-
-
-class CardActionTarget(BaseModel):
-    """
-    The target of a card action.
-    """
-    target_position: ObjectPosition
-    target_id: int = 0
 
 
 class Cost(BaseModel):

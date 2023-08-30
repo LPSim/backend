@@ -207,7 +207,6 @@ class TheSeedOfStoredKnowledge(SkillTalent):
                 # has Shrine Of Maya, add one usage.
                 return [ChangeObjectUsageAction(
                     object_position = status.position.copy(deep = True),
-                    object_id = status.id,
                     change_usage = 1,
                     change_type = 'DELTA',
                 )]

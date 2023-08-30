@@ -13,7 +13,7 @@ from .action import ActionBase, ActionTypes
 from .consts import ObjectType, WeaponType, ObjectPositionType, CostLabels
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
-    ObjectPosition, Cost, CardActionTarget
+    ObjectPosition, Cost
 )
 
 
@@ -27,7 +27,7 @@ class ObjectBase(BaseModel):
     """
     type: ObjectType = ObjectType.EMPTY
     position: ObjectPosition
-    id: int = 0
+    id: int = -1
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -45,10 +45,12 @@ class ObjectBase(BaseModel):
                     k = ModifiableValueTypes(k)
                 except ValueError:
                     raise ValueError(f'Invalid value modifier name: {k}')
-        # if id is zero, generate a new id
-        if self.id == 0:
+        # if id is -1, generate a new id
+        if self.id == -1:
             self.renew_id()
         used_object_ids.add(self.id)
+        # set id in position
+        self.position.id = self.id
 
     def renew_id(self):
         """
@@ -59,6 +61,7 @@ class ObjectBase(BaseModel):
             * 1024 + random.randint(0, 1023)
         )
         used_object_ids.add(self.id)
+        self.position.id = self.id
 
 
 class CardBase(ObjectBase):
@@ -73,7 +76,8 @@ class CardBase(ObjectBase):
     version: str
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
-        area = ObjectPositionType.INVALID
+        area = ObjectPositionType.INVALID,
+        id = -1,
     )
     cost: Cost
     cost_label: int = CostLabels.CARD.value
@@ -84,21 +88,24 @@ class CardBase(ObjectBase):
         self.cost.label = self.cost_label
         assert self.cost.original_value is None
 
-    def get_targets(self, match: Any) -> List[CardActionTarget]:
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
         Get the targets of the card.
         """
         raise NotImplementedError
 
     def get_actions(
-        self, target: CardActionTarget | None, match: Any
+        self, target: ObjectPosition | None, match: Any
     ) -> List[ActionBase]:
         """
         Act the card. It will return a list of actions.
 
         Arguments:
-            args (CardActionArguments | None): The arguments of the action.
-                for cards that do not need to specify target, args is None.
+            target (ObjectPosition | None): The target of the action.
+                for cards that do not need to specify target, target is None.
+                Note: the ID of the target may not be the same as the ID of the
+                card, e.g. equipping artifact. Reconstruct correct 
+                ObjectPosition if needed.
             match (Any): The match object.
         """
         raise NotImplementedError()
