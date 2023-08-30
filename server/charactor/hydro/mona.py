@@ -103,7 +103,9 @@ class IllusoryTorrent(PassiveSkillBase):
         return []
 
     def value_modifier_COMBAT_ACTION(
-        self, value: CombatActionValue, mode: Literal['TEST', 'REAL'],
+        self, value: CombatActionValue, 
+        match: Any,
+        mode: Literal['TEST', 'REAL'],
     ) -> CombatActionValue:
         """
         When combat action is switch, player index is self, switch from mona to
@@ -113,7 +115,7 @@ class IllusoryTorrent(PassiveSkillBase):
         if value.action_type != 'SWITCH':
             return value
         if not self.position.check_position_valid(
-            value.position, value.match, player_idx_same = True,
+            value.position, match, player_idx_same = True,
             charactor_idx_same = True,
         ):
             return value
@@ -145,14 +147,16 @@ class ProphecyOfSubmersion(SkillTalent):
     skill: StellarisPhantasm = StellarisPhantasm()
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, mode: Literal['TEST', 'REAL'],
+        self, value: DamageIncreaseValue, 
+        match: Any,
+        mode: Literal['TEST', 'REAL'],
     ) -> DamageIncreaseValue:
         """
         If mona is active charactor, and damage triggered hydro reaction,
         which is made by self, increase damage by 2.
         """
         if not self.position.check_position_valid(
-            value.position, value.match,
+            value.position, match,
             source_area = ObjectPositionType.CHARACTOR,  # quipped
             source_is_active_charactor = True,  # active charactor
             player_idx_same = True,  # self damage

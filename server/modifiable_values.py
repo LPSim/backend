@@ -37,17 +37,12 @@ class ModifiableValueBase(BaseModel):
     """
     type: ModifiableValueTypes
     original_value: Any = None
-    match: Any
     position: ObjectPosition
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.original_value = None
-        # set match to None to avoid deepcopy
-        match = self.match
-        self.match = None
         self.original_value = self.copy(deep = True)
-        self.original_value.match = self.match = match
 
 
 class InitialDiceColorValue(ModifiableValueBase):
@@ -144,7 +139,6 @@ class DamageIncreaseValue(ModifiableValueBase):
         for target in target_charactor:
             assert alive[target], 'Target charactor is defeated.'
             value = DamageIncreaseValue(
-                match = match,
                 position = damage_value.position,
                 damage_type = damage_value.damage_type,
                 target_position = ObjectPosition(
@@ -169,7 +163,6 @@ class DamageMultiplyValue(DamageIncreaseValue):
         increase_value: DamageIncreaseValue
     ) -> 'DamageMultiplyValue':
         return DamageMultiplyValue(
-            match = increase_value.match,
             position = increase_value.position,
             damage_type = increase_value.damage_type,
             target_position = increase_value.target_position,
@@ -189,7 +182,6 @@ class DamageDecreaseValue(DamageIncreaseValue):
         multiply_value: DamageMultiplyValue
     ) -> 'DamageDecreaseValue':
         return DamageDecreaseValue(
-            match = multiply_value.match,
             position = multiply_value.position,
             damage_type = multiply_value.damage_type,
             target_position = multiply_value.target_position,

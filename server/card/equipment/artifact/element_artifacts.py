@@ -72,6 +72,7 @@ class SmallElementalArtifact(ArtifactBase):
     def value_modifier_COST(
         self, 
         value: CostValue, 
+        match: Any,
         mode: Literal['TEST', 'REAL'],
     ) -> CostValue:
         """
@@ -82,7 +83,7 @@ class SmallElementalArtifact(ArtifactBase):
         if self.usage > 0:  
             # has usage
             if not self.position.check_position_valid(
-                value.position, value.match,
+                value.position, match,
                 player_idx_same = True, 
                 source_area = ObjectPositionType.CHARACTOR,
             ):
@@ -106,10 +107,10 @@ class SmallElementalArtifact(ArtifactBase):
             else:
                 assert position.area == ObjectPositionType.HAND
                 # cost from hand card, is a talent card
-                equipped_charactor = value.match.player_tables[
+                equipped_charactor = match.player_tables[
                     self.position.player_idx
                 ].charactors[self.position.charactor_idx]
-                for card in value.match.player_tables[
+                for card in match.player_tables[
                         self.position.player_idx].hands:
                     if card.id == value.position.id:
                         if card.charactor_name != equipped_charactor.name:

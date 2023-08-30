@@ -135,6 +135,7 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
 
     def value_modifier_INITIAL_DICE_COLOR(
             self, value: InitialDiceColorValue, 
+            match: Any,
             mode: Literal['REAL', 'TEST']) -> InitialDiceColorValue:
         """
         remove current dice color and add 100 omni dice color
@@ -144,6 +145,7 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
 
     def value_modifier_REROLL(
             self, value: RerollValue, 
+            match: Any,
             mode: Literal['REAL', 'TEST']) -> RerollValue:
         """
         reroll set to 0

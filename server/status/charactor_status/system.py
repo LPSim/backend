@@ -25,14 +25,14 @@ class Frozen(RoundCharactorStatus):
     max_usage: int = 1
 
     def value_modifier_DAMAGE_INCREASE(
-            self, value: DamageIncreaseValue,
+            self, value: DamageIncreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
         """
         Increase damage for pyro and physical damages to self by 2, and 
         decrease usage.
         """
         if not self.position.check_position_valid(
-            value.target_position, value.match,
+            value.target_position, match,
             player_idx_same = True, charactor_idx_same = True,
         ):
             # not attack self, not activate

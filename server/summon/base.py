@@ -187,7 +187,7 @@ class ShieldSummonBase(SummonBase):
         ]
 
     def value_modifier_DAMAGE_DECREASE(
-            self, value: DamageDecreaseValue,
+            self, value: DamageDecreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
         """
         Decrease damage.

@@ -67,7 +67,7 @@ class ShrineOfMaya(RoundTeamStatus):
         return []
 
     def value_modifier_DAMAGE_INCREASE(
-            self, value: DamageIncreaseValue,
+            self, value: DamageIncreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
         """
         +1 on self elemental reaction damage.

@@ -25,18 +25,18 @@ class CatalyzingField(UsageTeamStatus):
     max_usage: int = 3
 
     def value_modifier_DAMAGE_INCREASE(
-            self, value: DamageIncreaseValue,
+            self, value: DamageIncreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
         """
         Increase damage for dendro or electro damages, and decrease usage.
         """
         if not self.position.check_position_valid(
-            value.position, value.match, player_idx_same = True,
+            value.position, match, player_idx_same = True,
         ):
             # source not self, not activate
             return value
         if not self.position.check_position_valid(
-            value.target_position, value.match, 
+            value.target_position, match, 
             player_idx_same = False, target_is_active_charactor = True,
         ):
             # target not enemy, or target not active charactor, not activate

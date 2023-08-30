@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from ...consts import ObjectPositionType
 
@@ -20,13 +20,14 @@ class IllusoryBubble(UsageTeamStatus):
     max_usage: int = 1
 
     def value_modifier_DAMAGE_MULTIPLY(
-        self, value: DamageMultiplyValue, mode: Literal['TEST', 'REAL']
+        self, value: DamageMultiplyValue, match: Any,
+        mode: Literal['TEST', 'REAL']
     ) -> DamageMultiplyValue:
         """
         Double damage when skill damage made.
         """
         if not self.position.check_position_valid(
-            value.position, value.match,
+            value.position, match,
             player_idx_same = True, target_area = ObjectPositionType.CHARACTOR,
         ):
             # not from self position or not charactor skill

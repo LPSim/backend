@@ -646,7 +646,6 @@ class Match(BaseModel):
         for pnum, player_table in enumerate(self.player_tables):
             initial_color_value = InitialDiceColorValue(
                 player_idx = pnum,
-                match = self,
                 position = ObjectPosition(
                     player_idx = pnum,
                     area = ObjectPositionType.SYSTEM,
@@ -689,7 +688,6 @@ class Match(BaseModel):
         for pnum, player_table in enumerate(self.player_tables):
             reroll_times = self.config.initial_dice_reroll_times
             reroll_value = RerollValue(
-                match = self,
                 position = ObjectPosition(
                     player_idx = pnum,
                     area = ObjectPositionType.SYSTEM,
@@ -895,7 +893,7 @@ class Match(BaseModel):
             func = getattr(obj, modifier_name, None)
             if func is not None:
                 logging.debug(f'Modify value {value.type.name} for {name}.')
-                value = func(value, mode)
+                value = func(value, self, mode)
 
     """
     Request functions. To generate specific requests.
@@ -943,7 +941,6 @@ class Match(BaseModel):
         dice_cost = Cost(any_dice_number = 1)
         dice_cost_value = CostValue(
             cost = dice_cost,
-            match = self,
             position = ObjectPosition(
                 player_idx = player_idx,
                 area = ObjectPositionType.SYSTEM,
@@ -1012,7 +1009,6 @@ class Match(BaseModel):
                 cost = skill.cost.copy(deep = True)
                 cost_value = CostValue(
                     cost = cost,
-                    match = self,
                     position = skill.position,
                 )
                 self._modify_value(cost_value, mode = 'TEST')
@@ -1039,7 +1035,6 @@ class Match(BaseModel):
                 cost = card.cost.copy(deep = True)
                 cost_value = CostValue(
                     cost = cost,
-                    match = self,
                     position = card.position,
                 )
                 self._modify_value(cost_value, mode = 'TEST')
@@ -1163,7 +1158,6 @@ class Match(BaseModel):
             raise NotImplementedError('Not tested part')
         cost = response.request.cost.original_value
         cost_value = CostValue(
-            match = self,
             position = ObjectPosition(
                 player_idx = response.player_idx,
                 area = ObjectPositionType.SYSTEM,
@@ -1259,7 +1253,6 @@ class Match(BaseModel):
             request.charactor_idx].skills[request.skill_idx]
         cost = response.request.cost.original_value
         cost_value = CostValue(
-            match = self,
             position = skill.position,
             cost = cost,
         )
@@ -1299,7 +1292,6 @@ class Match(BaseModel):
         card = table.hands[request.card_idx]
         cost = response.request.cost.original_value
         cost_value = CostValue(
-            match = self,
             position = card.position,
             cost = cost,
         )
@@ -1671,7 +1663,6 @@ class Match(BaseModel):
             -> List[CombatActionEventArguments]:
         player_idx = self.current_player   
         combat_action_value = CombatActionValue(
-            match = self,
             position = action.position,
             action_type = action.action_type
         )
