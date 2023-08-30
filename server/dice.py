@@ -24,9 +24,8 @@ class Dice(ObjectBase):
         Convert colors to idx.
         """
         res: List[int] = []
-        selected = [DieColor[x.upper()] for x in colors]
         all_c: List[DieColor | None] = list(self.colors)
-        for x in selected:
+        for x in colors:
             res.append(all_c.index(x))
             all_c[all_c.index(x)] = None
         return res
