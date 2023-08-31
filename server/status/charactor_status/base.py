@@ -2,7 +2,7 @@ from typing import Any, Literal, List
 from ...consts import ObjectType
 from ..base import StatusBase
 from ...action import RemoveObjectAction, Actions
-from ...event import MakeDamageEventArguments, RoundEndEventArguments
+from ...event import MakeDamageEventArguments, RoundPrepareEventArguments
 
 
 class CharactorStatusBase(StatusBase):
@@ -52,7 +52,7 @@ class UsageCharactorStatus(CharactorStatusBase):
 class RoundCharactorStatus(CharactorStatusBase):
     """
     Base class of team status that based on rounds.  It will implement the 
-    event trigger on ROUND_END to check if run out of usages; when run out
+    event trigger on ROUND_PREPARE to check if run out of usages; when run out
     of usages, it will remove itself.
     """
     name: Literal['RoundCharactorStatus'] = 'RoundCharactorStatus'
@@ -70,11 +70,12 @@ class RoundCharactorStatus(CharactorStatusBase):
             )]
         return []
 
-    def event_handler_ROUND_END(
-        self, event: RoundEndEventArguments, match: Any
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
     ) -> List[Actions]:
         """
-        After round ending, check whether the round status should be removed.
+        When reaching prepare, decrease usage and check whether the team 
+        status should be removed.
         """
         self.usage -= 1
         return list(self.check_should_remove())

@@ -92,4 +92,25 @@ class AdeptusTemptation(FoodCardBase):
         return ret
 
 
-FoodCards = AdeptusTemptation | AdeptusTemptation
+class LotusFlowerCrisp(FoodCardBase):
+    name: Literal['Lotus Flower Crisp']
+    desc: str = (
+        "During this Round, the target character takes -3 DMG the next time."
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    can_eat_only_if_damaged: bool = False
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        ret = super().get_actions(target, match)
+        assert len(ret) == 1
+        action_2 = ret[0].copy(deep = True)
+        action_2.object_name = self.name
+        ret.append(action_2)
+        return ret
+
+
+FoodCards = AdeptusTemptation | LotusFlowerCrisp

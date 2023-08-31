@@ -110,6 +110,10 @@ class Crystallize(UsageTeamStatus):
         if value.target_position.player_idx != self.position.player_idx:
             # attack enemy, not activate
             return value
+        if value.damage_elemental_type == DamageElementalType.PIERCING:
+            # piercing damage, not activate
+            raise NotImplementedError('Not tested part')
+            return value
         assert self.usage > 0
         decrease = min(self.usage, value.damage)
         value.damage -= decrease

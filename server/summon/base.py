@@ -197,7 +197,6 @@ class ShieldSummonBase(SummonBase):
             return value
         if self.usage > 0:
             if value.damage < self.min_damage_to_trigger:
-                raise NotImplementedError('Not tested part')
                 # damage too small to trigger
                 return value
             if self.decrease_usage_type != 'ONE':
