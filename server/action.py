@@ -44,6 +44,7 @@ class ActionTypes(str, Enum):
 
     # generate request actions
     GENERATE_CHOOSE_CHARACTOR = 'GENERATE_CHOOSE_CHARACTOR'
+    GENERATE_REROLL_DICE = 'GENERATE_REROLL_DICE'
 
 
 class ActionBase(BaseModel):
@@ -323,6 +324,16 @@ class GenerateChooseCharactorRequestAction(ActionBase):
     type: Literal[ActionTypes.GENERATE_CHOOSE_CHARACTOR] = \
         ActionTypes.GENERATE_CHOOSE_CHARACTOR
     player_idx: int
+
+
+class GenerateRerollDiceRequestAction(ActionBase):
+    """
+    Action for generating reroll dice request.
+    """
+    type: Literal[ActionTypes.GENERATE_REROLL_DICE] = \
+        ActionTypes.GENERATE_REROLL_DICE
+    player_idx: int
+    reroll_times: int
 
 
 Actions = (

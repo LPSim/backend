@@ -7,34 +7,11 @@ from typing import Any, List, Literal
 from ...consts import DieColor, ObjectPositionType
 
 from ...object_base import CardBase
-from ...action import CreateDiceAction, CreateObjectAction, DrawCardAction
+from ...action import (
+    CreateDiceAction, CreateObjectAction, DrawCardAction, 
+    GenerateRerollDiceRequestAction
+)
 from ...struct import Cost, ObjectPosition
-
-
-class Strategize(CardBase):
-    name: Literal['Strategize']
-    desc: str = '''Draw 2 cards.'''
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(
-        same_dice_number = 1
-    )
-
-    def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # no targets
-        return []
-
-    def get_actions(
-        self, target: ObjectPosition | None, match: Any
-    ) -> list[DrawCardAction]:
-        """
-        Act the card. Draw two cards.
-        """
-        assert target is None  # no targets
-        return [DrawCardAction(
-            player_idx = self.position.player_idx, 
-            number = 2,
-            draw_if_filtered_not_enough = True
-        )]
 
 
 class TheBestestTravelCompanion(CardBase):
@@ -94,4 +71,52 @@ class ChangingShifts(CardBase):
         )]
 
 
-OtherEventCards = Strategize | TheBestestTravelCompanion | ChangingShifts
+class TossUp(CardBase):
+    name: Literal['Toss-Up'] = 'Toss-Up'
+    desc: str = '''Select any Elemental Dice to reroll. Can reroll 2 times.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> list[GenerateRerollDiceRequestAction]:
+        assert target is None
+        return [GenerateRerollDiceRequestAction(
+            player_idx = self.position.player_idx,
+            reroll_times = 2,
+        )]
+
+
+class Strategize(CardBase):
+    name: Literal['Strategize']
+    desc: str = '''Draw 2 cards.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        same_dice_number = 1
+    )
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> list[DrawCardAction]:
+        """
+        Act the card. Draw two cards.
+        """
+        assert target is None  # no targets
+        return [DrawCardAction(
+            player_idx = self.position.player_idx, 
+            number = 2,
+            draw_if_filtered_not_enough = True
+        )]
+
+
+OtherEventCards = (
+    TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
+)

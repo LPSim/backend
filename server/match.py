@@ -28,6 +28,7 @@ from .action import (
     MoveObjectAction,
     CharactorDefeatedAction,
     GenerateChooseCharactorRequestAction,
+    GenerateRerollDiceRequestAction,
 )
 from .interaction import (
     Requests, Responses, 
@@ -1137,7 +1138,6 @@ class Match(BaseModel):
             if isinstance(req, RerollDiceRequest):
                 if req.player_idx == response.player_idx:
                     if req.reroll_times > 1:
-                        raise NotImplementedError('Not tested part')
                         req.reroll_times -= 1
                     else:
                         self.requests.pop(num)
@@ -1383,6 +1383,8 @@ class Match(BaseModel):
             return list(self._action_consume_arcane_legend(action))
         elif isinstance(action, GenerateChooseCharactorRequestAction):
             return list(self._action_generate_choose_charactor_request(action))
+        elif isinstance(action, GenerateRerollDiceRequestAction):
+            return list(self._action_generate_reroll_dice_request(action))
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f'Unknown action {action}.')
@@ -2272,4 +2274,10 @@ class Match(BaseModel):
         self, action: GenerateChooseCharactorRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_choose_charactor(action.player_idx)
+        return []
+
+    def _action_generate_reroll_dice_request(
+        self, action: GenerateRerollDiceRequestAction
+    ) -> List[EventArgumentsBase]:
+        self._request_reroll_dice(action.player_idx, action.reroll_times)
         return []
