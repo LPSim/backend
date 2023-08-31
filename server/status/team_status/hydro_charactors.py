@@ -28,7 +28,6 @@ class IllusoryBubble(UsageTeamStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.position, match,
@@ -38,7 +37,6 @@ class IllusoryBubble(UsageTeamStatus):
             return value
         if value.target_position.player_idx == self.position.player_idx:
             # attack self, not activate
-            raise NotImplementedError('Not tested part')
             return value
         if self.usage > 0:
             value.damage *= 2

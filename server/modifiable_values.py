@@ -96,7 +96,6 @@ class DamageIncreaseValue(ModifiableValueBase):
         elif self.damage_type == DamageType.DAMAGE:
             assert self.damage >= 0, 'Damage should be non-negative'
         else:
-            raise NotImplementedError('Not tested part')
             assert self.damage_type == DamageType.ELEMENT_APPLICATION
             assert self.damage == 0, 'Element application should be 0'
 

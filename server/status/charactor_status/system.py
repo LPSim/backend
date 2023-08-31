@@ -33,7 +33,6 @@ class Frozen(RoundCharactorStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.target_position, match,

@@ -267,10 +267,6 @@ def apply_elemental_reaction(
     res: List[DamageIncreaseValue] = [damage]
     if reaction == ElementalReactionType.NONE:
         return res
-    if damage.damage_type != DamageType.DAMAGE:
-        # heal or no-damage element application, no need to change damage
-        raise NotImplementedError('Not tested part')
-        return res
     damage.element_reaction = reaction
     damage.reacted_elements = reacted_elements
     if reaction in [ElementalReactionType.MELT,

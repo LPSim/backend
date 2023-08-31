@@ -29,7 +29,6 @@ class CatalyzingField(UsageTeamStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
@@ -73,7 +72,6 @@ class DendroCore(UsageTeamStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
@@ -117,14 +115,12 @@ class Crystallize(UsageTeamStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if value.target_position.player_idx != self.position.player_idx:
             # attack enemy, not activate
             return value
         if value.damage_elemental_type == DamageElementalType.PIERCING:
             # piercing damage, not activate
-            raise NotImplementedError('Not tested part')
             return value
         assert self.usage > 0
         decrease = min(self.usage, value.damage)

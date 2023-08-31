@@ -99,7 +99,6 @@ class AttackerSummonBase(SummonBase):
         When usage is 0, remove the summon.
         """
         if self.usage <= 0:
-            raise AssertionError('Not tested part')
             return self._remove()
         return []
 
@@ -156,7 +155,6 @@ class ShieldSummonBase(SummonBase):
         player_idx = self.position.player_idx
         if self.usage > 0 and self.attack_until_run_out_of_usage:
             # attack until run out of usage
-            raise AssertionError('Not tested part')
             return []
         target_table = match.player_tables[1 - player_idx]
         target_charactor = target_table.get_active_charactor()
@@ -196,7 +194,6 @@ class ShieldSummonBase(SummonBase):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if value.target_position.player_idx != self.position.player_idx:
             # attack enemy, not activate

@@ -159,7 +159,6 @@ class ProphecyOfSubmersion(SkillTalent):
         which is made by self, increase damage by 2.
         """
         if value.damage_type != DamageType.DAMAGE:
-            raise NotImplementedError('Not tested part')
             # not damage, not modify
             return value
         if not self.position.check_position_valid(

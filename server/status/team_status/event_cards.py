@@ -39,7 +39,6 @@ class ChangingShifts(UsageTeamStatus):
             return value
         if value.cost.any_dice_number <= 0:
             # no need dice, do nothing
-            raise NotImplementedError('Not tested part')
             return value
         # self switch charactor, reduce cost by 1
         value.cost.any_dice_number -= 1
@@ -105,9 +104,8 @@ class WindAndFreedom(RoundTeamStatus):
         if value.do_combat_action:
             value.do_combat_action = False
             self.usage -= 1
-        else:
-            # Mona + Kaeya may trigger
-            raise NotImplementedError('Not tested part')
+        # else:
+        #     # Mona + Kaeya may trigger
         return value
 
     def event_handler_COMBAT_ACTION(

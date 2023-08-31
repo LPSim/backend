@@ -122,9 +122,13 @@ class RandomAgent(AgentBase):
         """
         Randomly choose a charactor.
         """
+        assert req.cost.any_dice_number <= 1
+        idxs = []
+        if req.cost.any_dice_number == 1:
+            idxs = [int(self.random() * len(req.dice_colors))]
         return SwitchCharactorResponse(
             request = req, 
-            dice_idxs = [int(self.random() * len(req.dice_colors))],
+            dice_idxs = idxs,
             charactor_idx = req.candidate_charactor_idxs[
                 int(self.random() * len(req.candidate_charactor_idxs))
             ],

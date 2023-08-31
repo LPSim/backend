@@ -36,7 +36,6 @@ class SeedOfSkandha(UsageCharactorStatus):
         damage_value = event.final_damage
         if damage_value.damage_type != DamageType.DAMAGE:
             # not damage, not trigger
-            raise NotImplementedError('Not tested part')
             return []
         if damage_value.element_reaction == ElementalReactionType.NONE:
             # not elemental reaction, not trigger

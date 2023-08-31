@@ -27,7 +27,6 @@ class ArtifactBase(CardBase):
         of artifact, and if it has actions when equipped, return the actions.
         """
         # should be used by small qianyan
-        raise NotImplementedError('Not tested part')
         return []
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:

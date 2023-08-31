@@ -44,7 +44,6 @@ class AdeptusTemptation(RoundCharactorStatus):
         assert mode == 'REAL'
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
@@ -87,7 +86,6 @@ class LotusFlowerCrisp(RoundCharactorStatus):
         assert mode == 'REAL'
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.target_position, match, player_idx_same = True,
@@ -137,7 +135,6 @@ class TandooriRoastChicken(RoundCharactorStatus):
         assert mode == 'REAL'
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
@@ -153,7 +150,6 @@ class TandooriRoastChicken(RoundCharactorStatus):
             return value
         if self.usage <= 0:
             # no usage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         # elemental burst, modify
         value.damage += 2

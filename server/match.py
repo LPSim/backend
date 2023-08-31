@@ -621,7 +621,7 @@ class Match(BaseModel):
                     object_name = object.name  # type: ignore
                 if object is None:
                     logging.warning(
-                        f'Object {object_position} does not exist.'
+                        f'Object {object_position} does not exist. '
                         'Is it be removed before triggering or a bug?'
                     )
                 else:
@@ -2028,7 +2028,6 @@ class Match(BaseModel):
             removed_equip = None
             if charactor.weapon is not None and charactor.weapon.id == \
                     action.object_position.id:
-                raise NotImplementedError('Not tested part')
                 removed_equip = charactor.weapon
                 charactor.weapon = None
                 target_name = 'weapon'
@@ -2108,10 +2107,9 @@ class Match(BaseModel):
                 # have same status, only update status usage
                 old_usage = current_object.usage
                 new_usage = action.change_usage
-                if action.change_type == 'DELTA':
-                    new_usage += old_usage
-                else:
-                    raise NotImplementedError('Not tested part')
+                assert action.change_type == 'DELTA', (
+                    'Currently only support delta change type.')
+                new_usage += old_usage
                 new_usage = min(max(new_usage, action.min_usage),
                                 action.max_usage)
                 current_object.usage = new_usage
@@ -2162,7 +2160,6 @@ class Match(BaseModel):
         for csnum, current_object in enumerate(current_list):
             if current_object.id == action.object_position.id:
                 if action.target_position.area == ObjectPositionType.HAND:
-                    raise NotImplementedError('Not tested part')
                     target_list = table.hands
                     target_name = 'hand'
                 elif action.target_position.area == ObjectPositionType.SUPPORT:

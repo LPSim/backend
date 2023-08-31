@@ -406,7 +406,6 @@ class CharactorBase(ObjectBase):
             if skill.skill_type == SkillType.PASSIVE:
                 result.append(skill)
         if self.weapon is not None:
-            raise NotImplementedError('Not tested part')
             result.append(self.weapon)
         if self.artifact is not None:
             result.append(self.artifact)
@@ -432,12 +431,10 @@ class CharactorBase(ObjectBase):
         else:
             assert position.area == ObjectPositionType.CHARACTOR
             if self.id == position.id:
-                raise NotImplementedError('Not tested part')
                 return self
             elif self.talent is not None and self.talent.id == position.id:
                 return self.talent
             elif self.weapon is not None and self.weapon.id == position.id:
-                raise NotImplementedError('Not tested part')
                 return self.weapon
             elif self.artifact is not None and self.artifact.id == position.id:
                 return self.artifact

@@ -75,7 +75,6 @@ class ShrineOfMaya(RoundTeamStatus):
         """
         if value.damage_type != DamageType.DAMAGE:
             # not damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         if value.target_position.player_idx == self.position.player_idx:
             # attack self, not activate
