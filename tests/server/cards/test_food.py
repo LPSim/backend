@@ -533,8 +533,150 @@ def test_mond_hash():
     assert match.state != MatchState.ERROR
 
 
+def test_tandoori():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 1 2 card can use",
+            "sw_char 2 0",
+            "TEST 2 5 card can use",
+            "card 0 0 0",
+            "card 1 0 0 1",
+            "TEST 3 p0c0c1 2 status p0c2 1 no card can use",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "TEST 4 not consumed",
+            "TEST 5 10 10 10 10 10 8",
+            "skill 1 0 1 2",
+            "TEST 5 10 10 10 7 10 8",
+            "sw_char 1 0",
+            "skill 1 0 1 2",
+            "TEST 5 10 8 10 7 10 5",
+            "end",
+            "TEST 6 p0 only c1 status seed",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "sw_char 0 0",
+            "sw_char 2 0",
+            "skill 1 0 1 2",
+            "end",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        # Leave It to Me!
+        # Clax's Arts*2
+        # Adeptus' Temptation*2
+        # Lotus Flower Crisp*2
+        # Mondstadt Hash Brown*2
+        # Tandoori Roast Chicken
+        Tandoori Roast Chicken*15
+        Mondstadt Hash Brown*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 1:
+                count = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        count += 1
+                        assert len(req.targets) == 0
+                assert count == 2
+            elif test_id == 2:
+                count = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        count += 1
+                assert count == 5
+            elif test_id == 3:
+                charactors = match.player_tables[0].charactors
+                assert len(charactors[0].status) == 2
+                assert len(charactors[1].status) == 2
+                assert len(charactors[2].status) == 1
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 4:
+                charactors = match.player_tables[0].charactors
+                assert len(charactors[0].status) == 2
+                assert len(charactors[1].status) == 2
+                assert len(charactors[2].status) == 1
+            elif test_id == 5:
+                hps = [int(x) for x in cmd.strip().split()[2:]]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 6:
+                charactors = match.player_tables[0].charactors
+                assert len(charactors[0].status) == 0
+                assert len(charactors[1].status) == 1
+                assert charactors[1].status[0].name == "Seed of Skandha"
+                assert len(charactors[2].status) == 0
+            else:
+                break
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_adeptus_temptation()
     test_lotus_flower_crisp()
     test_lotus_flower_crisp_and_reflection()
     test_mond_hash()
+    test_tandoori()
