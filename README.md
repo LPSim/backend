@@ -118,6 +118,11 @@ produce lists of actions in response. Value modifiers is used on edit
 mutable values and updating internal states if is necessary. Modifiable values
 applies to attributes like initial dice color, damage, and cost.
 
+# Progress
+
+[Charactors](docs/charactors.md)
+[Cards](docs/cards.md)
+
 ## Contribution
 
 Contributions are welcomed, however, currently there is no detailed guide for
