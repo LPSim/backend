@@ -38,25 +38,36 @@ def get_new_match(seed: Any = None, rich: bool = False):
         # Vanarana
         # Timmie*2
         # Rana*2
-        # Strategize*2
-        # The Bestest Travel Companion!*2
         # Covenant of Rock
-        Vanarana*30
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        # Leave It to Me!
+        # Clax's Arts*2
+        # Adeptus' Temptation*2
+        Adeptus' Temptation*30
         '''
     )
-    # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
+    # use old version cards
+    # old = {'name': 'I Haven\'t Lost Yet!', 'version': '3.3'}
     # deck_dict = deck.dict()
-    # deck_dict['cards'] += [old_wine] * 12
+    # deck_dict['cards'] += [old] * 30
     # deck = Deck(**deck_dict)
+    # change HP
     # for charactor in deck.charactors:
-    #     charactor.hp = 1
-    #     charactor.max_hp = 1
+    #     charactor.hp = 2
+    #     charactor.max_hp = 2
     if seed:
         match: Match = Match(random_state = seed)
     else:
         match: Match = Match()
     match.set_deck([deck, deck])
-    match.config.max_same_card_number = 30
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
     match.config.random_first_player = False
     if rich:
         set_16_omni(match)
@@ -76,7 +87,7 @@ agent_1 = InteractionAgent(player_idx = 1, only_use_command = True)
 @app.on_event('startup')
 async def startup_event():
     global match
-    match = get_new_match(seed = get_random_state(), rich = False)
+    match = get_new_match(seed = get_random_state(), rich = True)
 
 
 @app.post('reset')

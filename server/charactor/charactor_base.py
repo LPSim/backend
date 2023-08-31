@@ -372,6 +372,13 @@ class CharactorBase(ObjectBase):
                 return True
         return False
 
+    @property
+    def damage_taken(self) -> int:
+        """
+        Get damage taken by the charactor.
+        """
+        return self.max_hp - self.hp
+
     def get_object_lists(self) -> List[ObjectBase]:
         """
         Get all objects of the charactor, order is passive skill, weapon, 
