@@ -1,4 +1,3 @@
-
 from agents.interaction_agent import InteractionAgent
 from agents.nothing_agent import NothingAgent
 from server.match import Match, MatchState
@@ -560,9 +559,125 @@ def test_leave_it_to_me():
     assert match.state != MatchState.ERROR
 
 
+def test_claxs_art():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 1 no card can use",
+            "skill 0 0 1 2",
+            "TEST 1 no card can use",
+            "sw_char 1 0",
+            "TEST 3 card can use",
+            "card 0 0 0",
+            "TEST 2 0 1",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "card 0 0 0",
+            "TEST 2 0 0 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "end",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+            "sw_char 3 0",
+            "card 0 0 0",
+            "TEST 2 0 0 2 2",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "card 0 0 0",
+            "TEST 2 2 0 1 1",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        # charactor:Fischl
+        # charactor:Mona
+        charactor:Nahida*10
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        # Leave It to Me!
+        # Clax's Arts*2
+        Clax's Arts*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            agent = agent_1
+            while True:
+                cmd = agent.commands[0]
+                test_id = get_test_id_from_command(agent)
+                if test_id == 1:
+                    for req in match.requests:
+                        assert req.name != 'UseCardRequest'
+                elif test_id == 2:
+                    charges = [int(x) for x in cmd.strip().split()[2:]]
+                    for c, cc in zip(match.player_tables[1].charactors,
+                                     charges):
+                        assert c.charge == cc
+                elif test_id == 3:
+                    card_req = 0
+                    for req in match.requests:
+                        if req.name == 'UseCardRequest':
+                            card_req += 1
+                    assert card_req == len(match.player_tables[1].hands)
+                else:
+                    break
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
     # test_toss_up()
     # test_old_i_havent_lost_yet()
-    test_leave_it_to_me()
+    # test_leave_it_to_me()
+    test_claxs_art()
