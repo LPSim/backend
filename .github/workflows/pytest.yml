@@ -24,11 +24,11 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        python -m pytest --cov --cov-report=html
-        tar czf htmlcov.tar.gz htmlcov/
+        python -m pytest --cov
+    #    tar czf htmlcov.tar.gz htmlcov/
 
-    - name: Upload coverage report
-      uses: actions/upload-artifact@v2
-      with:
-        name: htmlcov
-        path: htmlcov.tar.gz
+    # - name: Upload coverage report
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: htmlcov
+    #     path: htmlcov.tar.gz
