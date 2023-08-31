@@ -1737,7 +1737,8 @@ class Match(BaseModel):
                     | AfterMakeDamageEventArguments 
                     | SwitchCharactorEventArguments]:
         """
-        Make damage action. It will return two types of events:
+        Make damage action. It contains make damage, heal and element 
+        application. It will return two types of events:
         1. MakeDamageEventArguments: All damage information dealt by this 
             action.
         2. SwitchCharactorEventArguments: If this damage action contains
@@ -1837,6 +1838,8 @@ class Match(BaseModel):
             charactor.hp -= damage.damage
             if charactor.hp < 0:
                 charactor.hp = 0
+            if charactor.hp > charactor.max_hp:
+                charactor.hp = charactor.max_hp
             charactor.element_application = applied_elements
             infos.append(ReceiveDamageEventArguments(
                 action = action,

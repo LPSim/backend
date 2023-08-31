@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from ...consts import ObjectPositionType
+from ...consts import DamageType, ObjectPositionType
 
 from ...modifiable_values import DamageMultiplyValue
 from .base import UsageTeamStatus
@@ -26,6 +26,10 @@ class IllusoryBubble(UsageTeamStatus):
         """
         Double damage when skill damage made.
         """
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
         if not self.position.check_position_valid(
             value.position, match,
             player_idx_same = True, target_area = ObjectPositionType.CHARACTOR,

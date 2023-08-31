@@ -49,7 +49,8 @@ def get_new_match(seed: Any = None, rich: bool = False):
         # Clax's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
-        Lotus Flower Crisp*30
+        # Mondstadt Hash Brown*2
+        Mondstadt Hash Brown*30
         '''
     )
     # use old version cards

@@ -9,7 +9,7 @@ from ...action import Actions, CreateObjectAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
+    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
     ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
@@ -158,6 +158,10 @@ class ProphecyOfSubmersion(SkillTalent):
         If mona is active charactor, and damage triggered hydro reaction,
         which is made by self, increase damage by 2.
         """
+        if value.damage_type != DamageType.DAMAGE:
+            raise NotImplementedError('Not tested part')
+            # not damage, not modify
+            return value
         if not self.position.check_position_valid(
             value.position, match,
             source_area = ObjectPositionType.CHARACTOR,  # quipped

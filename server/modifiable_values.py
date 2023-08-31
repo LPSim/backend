@@ -89,6 +89,17 @@ class DamageIncreaseValue(ModifiableValueBase):
     element_reaction: ElementalReactionType = ElementalReactionType.NONE
     reacted_elements: List[ElementType] = []
 
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        if self.damage_type == DamageType.HEAL:
+            assert self.damage < 0, 'Heal should be negative'
+        elif self.damage_type == DamageType.DAMAGE:
+            assert self.damage >= 0, 'Damage should be non-negative'
+        else:
+            raise NotImplementedError('Not tested part')
+            assert self.damage_type == DamageType.ELEMENT_APPLICATION
+            assert self.damage == 0, 'Element application should be 0'
+
 
 class DamageMultiplyValue(DamageIncreaseValue):
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_MULTIPLY

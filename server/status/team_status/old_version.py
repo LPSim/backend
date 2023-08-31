@@ -6,9 +6,9 @@ by default to avoid using it accidently.
 from typing import Any, List, Literal
 from .base import UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
-from ...consts import DamageElementalType
+from ...consts import DamageElementalType, DamageType
 from ...event import AfterMakeDamageEventArguments
-from ...action import Actions
+from ...action import RemoveObjectAction
 
 
 class CatalyzingField(UsageTeamStatus):
@@ -30,6 +30,10 @@ class CatalyzingField(UsageTeamStatus):
         """
         Increase damage for dendro or electro damages, and decrease usage.
         """
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
         ):
@@ -52,7 +56,7 @@ class CatalyzingField(UsageTeamStatus):
 
     def event_handler_MAKE_DAMAGE(
         self, event: AfterMakeDamageEventArguments, match: Any
-    ) -> List[Actions]:
+    ) -> List[RemoveObjectAction]:
         """
         When damage made, check whether the round status should be removed.
         Not trigger on AFTER_MAKE_DAMAGE because when damage made, run out

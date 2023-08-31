@@ -1,8 +1,11 @@
 from typing import Any, List, Literal
 
-from ...action import CreateObjectAction
+from ...action import CreateObjectAction, MakeDamageAction
 from ...struct import Cost, ObjectPosition
-from ...consts import CostLabels, ObjectPositionType
+from ...modifiable_values import DamageValue
+from ...consts import (
+    CostLabels, DamageElementalType, DamageType, ObjectPositionType
+)
 from ...object_base import CardBase
 
 
@@ -45,13 +48,9 @@ class FoodCardBase(CardBase):
         Get targets of this card.
         """
         ret: List[ObjectPosition] = []
+        charactors = match.player_tables[self.position.player_idx].charactors
         for idx in self.eat_target(match):
-            ret.append(ObjectPosition(
-                player_idx = self.position.player_idx,
-                charactor_idx = idx,
-                area = ObjectPositionType.CHARACTOR,
-                id = -1,
-            ))
+            ret.append(charactors[idx].position)
         return ret
 
     def get_actions(
@@ -112,4 +111,37 @@ class LotusFlowerCrisp(FoodCardBase):
         return ret
 
 
-FoodCards = AdeptusTemptation | LotusFlowerCrisp
+class MondstadtHashBrown(FoodCardBase):
+    name: Literal['Mondstadt Hash Brown']
+    desc: str = '''Heal target character for 2 HP.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    can_eat_only_if_damaged: bool = True
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction | MakeDamageAction]:
+        ret: List[CreateObjectAction | MakeDamageAction] = []
+        ret = list(super().get_actions(target, match))
+        assert len(ret) == 1
+        assert target is not None
+        ret.append(MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            charactor_change_rule = 'NONE',
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = target,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    charge_cost = 0,
+                )
+            ],
+        ))
+        return ret
+
+
+FoodCards = AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown

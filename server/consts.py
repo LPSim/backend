@@ -100,6 +100,7 @@ class DamageElementalType(str, Enum):
     # other damage
     PHYSICAL = 'PHYSICAL'
     PIERCING = 'PIERCING'
+    HEAL = 'HEAL'
 
     def __str__(self):
         return self.value
@@ -128,6 +129,7 @@ DAMAGE_TYPE_TO_ELEMENT = {
     DamageElementalType.ANEMO: ElementType.ANEMO,
     DamageElementalType.PHYSICAL: ElementType.NONE,
     DamageElementalType.PIERCING: ElementType.NONE,
+    DamageElementalType.HEAL: ElementType.NONE,
 }
 
 

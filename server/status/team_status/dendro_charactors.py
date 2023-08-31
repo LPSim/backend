@@ -5,7 +5,9 @@ from typing import Any, List, Literal
 from server.action import ChangeObjectUsageAction
 from server.event import CreateObjectEventArguments
 
-from ...consts import ElementType, ElementalReactionType, ObjectPositionType
+from ...consts import (
+    DamageType, ElementType, ElementalReactionType, ObjectPositionType
+)
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundTeamStatus
@@ -71,6 +73,10 @@ class ShrineOfMaya(RoundTeamStatus):
         """
         +1 on self elemental reaction damage.
         """
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
         if value.target_position.player_idx == self.position.player_idx:
             # attack self, not activate
             return value

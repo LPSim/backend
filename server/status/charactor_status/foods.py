@@ -42,6 +42,10 @@ class AdeptusTemptation(RoundCharactorStatus):
         charactor receives damage, and we do not need to check it.
         """
         assert mode == 'REAL'
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
             charactor_idx_same = True,
