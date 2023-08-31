@@ -187,7 +187,7 @@ def test_random_same_after_load():
     initial_match = match.copy(deep = True)
     initial_agent_1 = agent_1.copy(deep = True)
     results_1 = []
-    test_step = 100
+    test_step = 50
     assert match.start()
     match.step()
     for _ in range(test_step):

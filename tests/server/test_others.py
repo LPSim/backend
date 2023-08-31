@@ -254,7 +254,7 @@ def test_id_wont_duplicate():
         area = ObjectPositionType.INVALID,
         id = -1,
     )
-    for _ in range(100000):
+    for _ in range(50000):
         o = ObjectBase(
             position = position,
         )

@@ -233,7 +233,242 @@ def test_toss_up():
     assert match.state != MatchState.ERROR
 
 
+def test_i_havent_lost_yet():
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "TEST 1 no card can use",
+            "skill 0 0 1 2",
+            "choose 1",
+            "TEST 2 cards can use",
+            "end",
+            "TEST 1 card cannot use",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "choose 1",
+            "TEST 2 card can use",
+            "end",
+            "TEST 1 no status cannot use card",
+            "end",
+            "skill 1 0 1 2",
+            "choose 3",
+            "card 0 0",
+            "TEST 3 dice 14",
+            "end",
+            "sw_char 4 0",
+            "choose 3",
+            "skill 1 0 1 2",
+            "end"
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "end",
+            "choose 1",
+            "card 2 0",
+            "TEST 1 charge 1 status cannot use card",
+            "sw_char 2 0",
+            "skill 1 0 1 2",
+            "end",
+            "end",
+            "choose 1",
+            "skill 1 0 1 2",
+            "end",
+            "skill 3 0 1 2",
+            "choose 3",
+            "card 0 0",
+            "TEST 2",
+            "end"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        # charactor:Fischl
+        # charactor:Mona
+        charactor:Nahida*10
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        I Haven't Lost Yet!*30
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = 2
+        charactor.max_hp = 2
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 10
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            while True:
+                test_id = get_test_id_from_command(agent_0)
+                if test_id == 1:
+                    assert len(match.player_tables[0].team_status) == 0
+                    for req in match.requests:
+                        assert req.name != 'UseCardRequest'
+                elif test_id == 2:
+                    use_card_req = 0
+                    for req in match.requests:
+                        if req.name == 'UseCardRequest':
+                            use_card_req += 1
+                    assert use_card_req > 0
+                elif test_id == 3:
+                    assert len(match.player_tables[0].dice.colors) == 14
+                else:
+                    break
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    table = match.player_tables[1]
+                    active = table.get_active_charactor()
+                    assert active.charge == 1
+                    assert len(table.team_status) == 1
+                    assert table.team_status[0].name == "I Haven't Lost Yet!"
+                    for req in match.requests:
+                        assert req.name != 'UseCardRequest'
+                elif test_id == 2:
+                    table = match.player_tables[1]
+                    active = table.get_active_charactor()
+                    assert active.charge == 1
+                    assert len(table.team_status) == 2
+                    assert table.team_status[1].name == "I Haven't Lost Yet!"
+                    for req in match.requests:
+                        assert req.name != 'UseCardRequest'
+                else:
+                    break
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
+def test_old_i_havent_lost_yet():
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 0 0 1 2",
+            "choose 1",
+            "end",
+            "skill 1 0 1 2",
+            "choose 3",
+            "end"
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "end",
+            "choose 1",
+            "card 2 0",
+            "TEST 1 charge 0 status",
+            "card 0 0",
+            "skill 3 0 1 2",
+            "end"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        # charactor:Fischl
+        # charactor:Mona
+        charactor:Nahida*10
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        '''
+    )
+    old = {'name': 'I Haven\'t Lost Yet!', 'version': '3.3'}
+    deck_dict = deck.dict()
+    deck_dict['cards'] += [old] * 30
+    deck = Deck(**deck_dict)
+    for charactor in deck.charactors:
+        charactor.hp = 2
+        charactor.max_hp = 2
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 10
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    table = match.player_tables[1]
+                    active = table.get_active_charactor()
+                    assert active.charge == 1
+                    assert len(table.team_status) == 0
+                    use_card_req = 0
+                    for req in match.requests:
+                        if req.name == 'UseCardRequest':
+                            use_card_req += 1
+                    assert use_card_req > 0
+                else:
+                    break
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
-    test_toss_up()
+    # test_toss_up()
+    test_old_i_havent_lost_yet()
