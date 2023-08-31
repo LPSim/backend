@@ -33,24 +33,24 @@ def get_new_match(seed: Any = None, rich: bool = False):
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
-        # Gambler's Earrings*2
-        # Wine-Stained Tricorne*2
-        # Vanarana
-        # Timmie*2
-        # Rana*2
-        # Covenant of Rock
-        # Wind and Freedom
-        # The Bestest Travel Companion!*2
-        # Changing Shifts*2
-        # Toss-Up
-        # Strategize*2
-        # I Haven't Lost Yet!*2
-        # Leave It to Me!
-        # Clax's Arts*2
-        # Adeptus' Temptation*2
-        # Lotus Flower Crisp*2
-        # Mondstadt Hash Brown*2
-        Mondstadt Hash Brown*30
+        Gambler's Earrings*2
+        Wine-Stained Tricorne*2
+        Vanarana
+        Timmie*2
+        Rana*2
+        Covenant of Rock
+        Wind and Freedom
+        The Bestest Travel Companion!*2
+        Changing Shifts*2
+        Toss-Up
+        Strategize*2
+        I Haven't Lost Yet!*2
+        Leave It to Me!
+        Clax's Arts*2
+        Adeptus' Temptation*2
+        Lotus Flower Crisp*2
+        Mondstadt Hash Brown*2
+        Tandoori Roast Chicken
         '''
     )
     # use old version cards

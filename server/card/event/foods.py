@@ -144,4 +144,51 @@ class MondstadtHashBrown(FoodCardBase):
         return ret
 
 
-FoodCards = AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown
+class TandooriRoastChicken(FoodCardBase):
+    name: Literal['Tandoori Roast Chicken']
+    desc: str = (
+        "During this Round, all your characters' next Elemental Skills "
+        "deal +2 DMG."
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(any_dice_number = 2)
+
+    can_eat_only_if_damaged: bool = False
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        As it fulfills all charactors, no need to specify target.
+        """
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        It will add Tandoori Roast Chicken status to all possible charactors.
+        """
+        ret: List[CreateObjectAction] = []
+        targets = self.eat_target(match)
+        assert len(targets) > 0
+        charactors = match.player_tables[self.position.player_idx].charactors
+        for t in targets:
+            charactor = charactors[t]
+            pos = charactor.position.set_area(
+                ObjectPositionType.CHARACTOR_STATUS)
+            ret.append(CreateObjectAction(
+                object_name = 'Satiated',
+                object_position = pos,
+                object_arguments = {}
+            ))
+            ret.append(CreateObjectAction(
+                object_name = self.name,
+                object_position = pos,
+                object_arguments = {}
+            ))
+        return ret
+
+
+FoodCards = (
+    AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown 
+    | TandooriRoastChicken
+)

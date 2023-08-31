@@ -115,4 +115,57 @@ class LotusFlowerCrisp(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-FoodStatus = Satiated | AdeptusTemptation | LotusFlowerCrisp
+class TandooriRoastChicken(RoundCharactorStatus):
+    name: Literal['Tandoori Roast Chicken']
+    desc: str = (
+        "During this Round, all your characters' next Elemental Skills "
+        "deal +2 DMG."
+    )
+    version: Literal['3.7'] = '3.7'
+
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        When this charactor use Elemental Skill, add 2 damage.
+        Logic same as AdeptusTemptation.
+        """
+        assert mode == 'REAL'
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+            charactor_idx_same = True,
+            target_area = ObjectPositionType.SKILL,
+        ):
+            # not this charactor use skill, not modify
+            return value
+        skill = match.get_object(value.position)
+        skill_type: SkillType = skill.skill_type
+        if skill_type != SkillType.ELEMENTAL_SKILL:
+            # not elemental skill, not modify
+            return value
+        if self.usage <= 0:
+            # no usage, not modify
+            raise NotImplementedError('Not tested part')
+            return value
+        # elemental burst, modify
+        value.damage += 2
+        self.usage -= 1
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        return self.check_should_remove()
+
+
+FoodStatus = (
+    Satiated | AdeptusTemptation | LotusFlowerCrisp | TandooriRoastChicken
+)
