@@ -209,9 +209,9 @@ class MakeDamageAction(ActionBase):
     applies to the charactor (e.g. Kokomi) treats as zero damage.
 
     Args:
-        player_idx (int): The index of the player to make damage from.
+        source_player_idx (int): The index of the player to make damage from.
         damage_value_list (List[DamageValue]): The damage values to make.
-        target_idx (int): The index of the player to make damage to.
+        target_player_idx (int): The index of the player to make damage to.
         charactor_change_rule (Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE']):
             The rule of charactor change. 
         charactor_change_idx (int): The charactor index of the charactor who 
@@ -219,6 +219,8 @@ class MakeDamageAction(ActionBase):
             'ABSOLUTE'. If it is defeated, select by default order. (e.g.
             absolute choose charactor 2, but it is defeated, then choose
             0, 1, ...)
+        TODO: is these two player idx necessary? Can a damage made to both
+        players? (e.g. Kokomi's elemental burst)
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     source_player_idx: int
