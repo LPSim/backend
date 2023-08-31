@@ -9,7 +9,7 @@ import time
 import random
 from utils import BaseModel
 from typing import List, Literal, Any
-from .action import ActionBase, ActionTypes
+from .action import Actions, ActionTypes
 from .consts import ObjectType, WeaponType, ObjectPositionType, CostLabels
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
@@ -104,7 +104,7 @@ class CardBase(ObjectBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[ActionBase]:
+    ) -> List[Actions]:
         """
         Act the card. It will return a list of actions.
 

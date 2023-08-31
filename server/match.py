@@ -1914,6 +1914,7 @@ class Match(BaseModel):
         charactor.status = []
         charactor.element_application = []
         charactor.is_alive = False
+        charactor.charge = 0
         need_switch = False
         if table.active_charactor_idx == charactor_idx:
             table.active_charactor_idx = -1  # reset active charactor
