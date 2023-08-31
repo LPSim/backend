@@ -1,4 +1,5 @@
 from agents.interaction_agent import InteractionAgent
+from agents.nothing_agent import NothingAgent
 from server.deck import Deck
 from server.match import Match, MatchState
 from tests.utils_for_test import (
@@ -118,6 +119,74 @@ def test_wind_and_freedom():
                     )
                 elif test_id == 3:
                     assert cmd_record_0 != len(agent_0.commands) + 1
+                else:
+                    break
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
+def test_wind_and_freedom_one_round():
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "card 0 0 0",
+            "card 0 0 0",
+            "TEST 1 one team status",
+            "end",
+            "TEST 2 no status",
+            "end"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        # charactor:Fischl
+        # charactor:Mona
+        charactor:Nahida*10
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Strategize*2
+        Wind and Freedom*30
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = 2
+        charactor.max_hp = 2
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.charactor_number = 10
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    assert len(match.player_tables[1].team_status) == 1
+                    assert match.player_tables[1].team_status[0].usage == 1
+                elif test_id == 2:
+                    assert len(match.player_tables[1].team_status) == 0
                 else:
                     break
             make_respond(agent_1, match)
