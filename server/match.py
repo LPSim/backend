@@ -1749,7 +1749,7 @@ class Match(BaseModel):
         handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list
-        target_idx = action.target_idx
+        target_idx = action.target_player_idx
         next_charactor: int = self.player_tables[
             target_idx].active_charactor_idx
         if action.charactor_change_rule == 'PREV':

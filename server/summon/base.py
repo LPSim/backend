@@ -64,8 +64,8 @@ class AttackerSummonBase(SummonBase):
         self.usage -= 1
         return [
             MakeDamageAction(
-                player_idx = player_idx,
-                target_idx = 1 - player_idx,
+                source_player_idx = player_idx,
+                target_player_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -159,8 +159,8 @@ class ShieldSummonBase(SummonBase):
             return []
         return [
             MakeDamageAction(
-                player_idx = player_idx,
-                target_idx = 1 - player_idx,
+                source_player_idx = player_idx,
+                target_player_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,

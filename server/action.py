@@ -221,9 +221,9 @@ class MakeDamageAction(ActionBase):
             0, 1, ...)
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
-    player_idx: int
+    source_player_idx: int
     damage_value_list: List[DamageValue]
-    target_idx: int
+    target_player_idx: int
 
     # charactor change
     charactor_change_rule: Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE'] = 'NONE'
