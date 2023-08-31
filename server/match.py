@@ -159,9 +159,9 @@ class MatchConfig(BaseModel):
     initial_card_draw: int = 2
     initial_dice_number: int = 8
     initial_dice_reroll_times: int = 1
-    card_number: int = 30
-    max_same_card_number: int = 2
-    charactor_number: int = 3
+    card_number: int | None = 30
+    max_same_card_number: int | None = 2
+    charactor_number: int | None = 3
     max_round_number: int = 15
     max_hand_size: int = 10
     max_dice_number: int = 16
@@ -173,13 +173,15 @@ class MatchConfig(BaseModel):
         Check whether the config is legal.
         """
         if (
-            self.initial_hand_size < 0 
+            self.initial_hand_size < 0
             or self.initial_card_draw < 0
             or self.initial_dice_number < 0
             or self.initial_dice_reroll_times < 0
-            or self.card_number < 0
-            or self.max_same_card_number < 0
-            or self.charactor_number < 0
+            or (self.card_number is not None and self.card_number < 0)
+            or (self.max_same_card_number is not None
+                and self.max_same_card_number < 0)
+            or (self.charactor_number is not None
+                and self.charactor_number < 0)
             or self.max_round_number <= 0
             or self.max_hand_size < 0
             or self.max_dice_number < 0
@@ -195,7 +197,11 @@ class MatchConfig(BaseModel):
             logging.error('initial card draw should not be greater than '
                           'max hand size')
             return False
-        if self.initial_card_draw > self.card_number:
+
+        if (
+            self.card_number is not None
+            and self.initial_card_draw > self.card_number
+        ):
             logging.error('initial card draw should not be greater than '
                           'card number')
             return False
@@ -1874,7 +1880,7 @@ class Match(BaseModel):
             -> List[ChargeEventArguments]:
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[table.active_charactor_idx]
+        charactor = table.charactors[action.charactor_idx]
         logging.info(
             f'player {player_idx} '
             f'charactor {charactor.name}:{table.active_charactor_idx} '
