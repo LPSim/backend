@@ -1884,6 +1884,7 @@ class Match(BaseModel):
         charactor.charge += action.charge
         if charactor.charge > charactor.max_charge:
             charactor.charge = charactor.max_charge
+        assert charactor.charge >= 0
         return [ChargeEventArguments(
             action = action,
             charge_before = old_charge,

@@ -56,6 +56,14 @@ class ChangingShifts(UsageTeamStatus):
         return self.check_remove_triggered()
 
 
+class IHaventLostYet(RoundTeamStatus):
+    name: Literal["I Haven't Lost Yet!"] = "I Haven't Lost Yet!"
+    desc: str = '''You cannot play "I Haven't Lost Yet!" again this round.'''
+    version: Literal['4.0'] = '4.0'
+    usage: int = 1
+    max_usage: int = 1
+
+
 class WindAndFreedom(RoundTeamStatus):
     name: Literal['Wind and Freedom'] = 'Wind and Freedom'
     desc: str = (
@@ -111,4 +119,4 @@ class WindAndFreedom(RoundTeamStatus):
         return self.check_should_remove()
 
 
-EventCardTeamStatus = WindAndFreedom | ChangingShifts
+EventCardTeamStatus = WindAndFreedom | ChangingShifts | IHaventLostYet
