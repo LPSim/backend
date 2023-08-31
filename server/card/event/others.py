@@ -2,7 +2,7 @@
 Event cards that not belong to any other categories.
 """
 
-from typing import Any, List, Literal
+from typing import Any, List, Literal, Tuple
 
 from ...event import RoundPrepareEventArguments
 
@@ -225,7 +225,61 @@ class LeaveItToMe(CardBase):
         )]
 
 
+class ClaxsArts(CardBase):
+    name: Literal["Clax's Arts"]
+    desc: str = (
+        'Shift 1 Energy from at most 2 of your characters on standby to '
+        'your active character.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    def _get_charge_source_and_targets(
+            self, match: Any) -> Tuple[int, List[int]]:
+        """
+        Get charge source and targets.
+        """
+        table = match.player_tables[self.position.player_idx]
+        source = table.active_charactor_idx
+        assert source >= 0 and source < len(table.charactors)
+        targets = []
+        for idx, charactor in enumerate(table.charactors):
+            if idx != source and charactor.charge > 0:
+                targets.append(idx)
+        if len(targets) > 2:
+            targets = targets[:2]
+        return source, targets
+
+    def is_valid(self, match: Any) -> bool:
+        source, targets = self._get_charge_source_and_targets(match)
+        return len(targets) > 0
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChargeAction]:
+        assert target is None
+        source, targets = self._get_charge_source_and_targets(match)
+        assert len(targets) > 0
+        ret: List[ChargeAction] = []
+        ret.append(ChargeAction(
+            player_idx = self.position.player_idx,
+            charactor_idx = source,
+            charge = len(targets),
+        ))
+        for t in targets:
+            ret.append(ChargeAction(
+                player_idx = self.position.player_idx,
+                charactor_idx = t,
+                charge = -1,
+            ))
+        return ret
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe
+    | IHaventLostYet | LeaveItToMe | ClaxsArts
 )
