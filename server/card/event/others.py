@@ -59,7 +59,7 @@ class ChangingShifts(CardBase):
         self, target: ObjectPosition | None, match: Any
     ) -> list[CreateObjectAction]:
         """
-        Act the card. Convert the Omni Element Dice spent to Elemental Dice x2.
+        Act the card. Create team status.
         """
         assert target is None  # no targets
         return [CreateObjectAction(
@@ -193,7 +193,39 @@ class IHaventLostYet(CardBase):
         return []
 
 
+class LeaveItToMe(CardBase):
+    name: Literal['Leave It to Me!']
+    desc: str = (
+        'The next time you perform "Switch Character": '
+        'The switch will be considered a Fast Action instead of a '
+        'Combat Action.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> list[CreateObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is None  # no targets
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {}
+        )]
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet
+    | IHaventLostYet | LeaveItToMe
 )

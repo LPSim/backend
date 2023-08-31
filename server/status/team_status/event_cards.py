@@ -119,4 +119,48 @@ class WindAndFreedom(RoundTeamStatus):
         return self.check_should_remove()
 
 
-EventCardTeamStatus = WindAndFreedom | ChangingShifts | IHaventLostYet
+class LeaveItToMe(UsageTeamStatus):
+    name: Literal['Leave It to Me!']
+    desc: str = (
+        'The next time you perform "Switch Character": '
+        'The switch will be considered a Fast Action instead of a '
+        'Combat Action.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COMBAT_ACTION(
+        self, value: CombatActionValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> CombatActionValue:
+        assert self.usage > 0
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+        ):
+            # not self switch charactor, do nothing
+            return value
+        if value.action_type != 'SWITCH':
+            # not switch charactor, do nothing
+            return value
+        if not value.do_combat_action:
+            # already quick action, do nothing
+            return value
+        # self switch charactor, change to quick action
+        value.do_combat_action = False
+        assert mode == 'REAL'
+        self.usage -= 1
+        return value
+
+    def event_handler_COMBAT_ACTION(
+        self, event: CombatActionEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When combat action event, check whether to remove.
+        """
+        return self.check_remove_triggered()
+
+
+EventCardTeamStatus = (
+    WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe
+)
