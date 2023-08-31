@@ -59,7 +59,7 @@ class CatalyzingField(UsageTeamStatus):
         of usage, but new one is generated, should remove first then generate
         new one, otherwise newly updated status will be removed.
         """
-        return self.check_remove_triggered()
+        return self.check_should_remove()
 
 
 OldVersionTeamStatus = CatalyzingField | CatalyzingField

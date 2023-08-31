@@ -28,7 +28,7 @@ class UsageTeamStatus(TeamStatusBase):
     """
     name: Literal['UsageTeamStatus'] = 'UsageTeamStatus'
 
-    def check_remove_triggered(self) -> List[RemoveObjectAction]:
+    def check_should_remove(self) -> List[RemoveObjectAction]:
         """
         Check if the status should be removed.
         when usage has changed, call this function to check if the status
@@ -46,7 +46,7 @@ class UsageTeamStatus(TeamStatusBase):
         """
         When damage made, check whether the team status should be removed.
         """
-        return self.check_remove_triggered()
+        return self.check_should_remove()
 
 
 class RoundTeamStatus(TeamStatusBase):

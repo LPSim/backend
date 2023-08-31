@@ -53,7 +53,7 @@ class ChangingShifts(UsageTeamStatus):
         """
         When switch charactor end, check whether to remove.
         """
-        return self.check_remove_triggered()
+        return self.check_should_remove()
 
 
 class IHaventLostYet(RoundTeamStatus):
@@ -158,7 +158,7 @@ class LeaveItToMe(UsageTeamStatus):
         """
         When combat action event, check whether to remove.
         """
-        return self.check_remove_triggered()
+        return self.check_should_remove()
 
 
 EventCardTeamStatus = (

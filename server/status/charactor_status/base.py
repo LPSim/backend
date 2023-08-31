@@ -28,7 +28,7 @@ class UsageCharactorStatus(CharactorStatusBase):
     """
     name: Literal['UsageCharactorStatus'] = 'UsageCharactorStatus'
 
-    def check_remove_triggered(self) -> List[Actions]:
+    def check_should_remove(self) -> List[Actions]:
         """
         Check if the status should be removed.
         when usage has changed, call this function to check if the status
@@ -46,7 +46,7 @@ class UsageCharactorStatus(CharactorStatusBase):
         """
         When damage made, check whether the team status should be removed.
         """
-        return self.check_remove_triggered()
+        return self.check_should_remove()
 
 
 class RoundCharactorStatus(CharactorStatusBase):
