@@ -381,22 +381,23 @@ class Match(BaseModel):
             for cnum, charactor in enumerate(
                     player_table.player_deck_information.charactors):
                 charactor_copy = charactor.copy(deep = True)
-                charactor_copy.position.player_idx = pnum
-                charactor_copy.position.charactor_idx = cnum
-                charactor_copy.position.area = ObjectPositionType.CHARACTOR
+                charactor_copy.position = ObjectPosition(
+                    player_idx = pnum,
+                    charactor_idx = cnum,
+                    area = ObjectPositionType.CHARACTOR,
+                    id = charactor_copy.id
+                )
                 charactor_copy.renew_id()
-                charactor_position = charactor_copy.position.copy(deep = True)
-                charactor_position.area = ObjectPositionType.SKILL
-                for skill in charactor_copy.skills:
-                    charactor_position.id = skill.id
-                    skill.position = charactor_position.copy(deep = True)
                 player_table.charactors.append(charactor_copy)
             # copy cards
             arcane_legend_cards = []
             for card in player_table.player_deck_information.cards:
                 card_copy = card.copy(deep = True)
-                card_copy.position.player_idx = pnum
-                card_copy.position.area = ObjectPositionType.DECK
+                card_copy.position = ObjectPosition(
+                    player_idx = pnum,
+                    area = ObjectPositionType.DECK,
+                    id = card_copy.id
+                )
                 card_copy.renew_id()
                 if card_copy.type == ObjectType.ARCANE:
                     arcane_legend_cards.append(card_copy)
@@ -1281,7 +1282,7 @@ class Match(BaseModel):
         ))
         actions.append(CombatActionAction(
             action_type = 'SKILL',
-            position = skill.position.copy(deep = True),
+            position = skill.position,
         ))
         event_frame = EventFrame(
             events = [],
@@ -1477,7 +1478,7 @@ class Match(BaseModel):
             self._random_shuffle(table.table_deck)
         names = [x.name for x in table.table_deck[:number]]
         for card in draw_cards:
-            card.position.area = ObjectPositionType.HAND
+            card.position = card.position.set_area(ObjectPositionType.HAND)
         table.hands.extend(draw_cards)
         logging.info(
             f'Draw card action, player {player_idx}, number {number}, '
@@ -1507,7 +1508,7 @@ class Match(BaseModel):
             restore_cards.append(table.hands[cidx])
             table.hands = table.hands[:cidx] + table.hands[cidx + 1:]
         for card in restore_cards:
-            card.position.area = ObjectPositionType.DECK
+            card.position = card.position.set_area(ObjectPositionType.DECK)
         table.table_deck.extend(restore_cards)
         if self.version >= '0.0.2':
             # after 0.0.2, deck is shuffled after restore cards

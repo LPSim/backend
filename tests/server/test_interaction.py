@@ -112,14 +112,14 @@ def test_response_is_valid():
         area = ObjectPositionType.HAND,
         id = -1,
     )
-    req.targets.append(target.copy(deep = True))
+    req.targets.append(target)
     assert not resp.is_valid(match)
     req.targets.clear()
-    resp.target = target.copy(deep = True)
+    resp.target = target
     assert not resp.is_valid(match)
-    req.targets.append(target.copy(deep = True))
+    req.targets.append(target)
     assert resp.is_valid(match)
-    resp.target.id = 321
+    resp.target = resp.target.set_id(321)
     assert not resp.is_valid(match)
     req = UseSkillRequest(
         player_idx = 0,

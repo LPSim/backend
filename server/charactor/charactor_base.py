@@ -80,8 +80,7 @@ class SkillBase(ObjectBase):
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.DAMAGE,
-                        target_position = target_charactor.position.copy(
-                            deep = True),
+                        target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_type,
                         charge_cost = 0,
@@ -265,8 +264,7 @@ class TalentBase(CardBase):
             ret.append(RemoveObjectAction(
                 object_position = charactor.talent.position,
             ))
-        new_position: ObjectPosition = charactor.position.copy(deep = True)
-        new_position.id = self.position.id
+        new_position = charactor.position.set_id(self.position.id)
         ret.append(MoveObjectAction(
             object_position = self.position,
             target_position = new_position
@@ -300,7 +298,7 @@ class SkillTalent(TalentBase):
         # so should add CombatActionAction.
         ret.append(CombatActionAction(
             action_type = 'SKILL',
-            position = self.skill.position.copy(deep = True)
+            position = self.skill.position
         ))
         return ret
 
@@ -348,7 +346,21 @@ class CharactorBase(ObjectBase):
                 raise AssertionError('Skill number changed after init')
             for id, skill in zip(old_skill_ids, self.skills):
                 skill.id = id
-                skill.position.id = id
+                skill.position = skill.position.set_id(id)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """
+        When position is edited, update skill positions.
+        """
+        super().__setattr__(name, value)
+        if name == 'position':
+            for skill in self.skills:
+                skill.position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    charactor_idx = self.position.charactor_idx,
+                    area = ObjectPositionType.SKILL,
+                    id = skill.id,
+                )
 
     def _init_skills(self) -> None:
         """

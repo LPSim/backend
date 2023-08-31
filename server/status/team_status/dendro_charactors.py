@@ -53,9 +53,8 @@ class ShrineOfMaya(RoundTeamStatus):
                         1 - self.position.player_idx].charactors:
                     for status in charactor.status:
                         if status.name == 'Seed of Skandha':
-                            position = status.position.copy(deep = True)
-                            position.area = \
-                                ObjectPositionType.CHARACTOR_STATUS
+                            position = status.position.set_area(
+                                ObjectPositionType.CHARACTOR_STATUS)
                             ret.append(
                                 ChangeObjectUsageAction(
                                     object_position = position,

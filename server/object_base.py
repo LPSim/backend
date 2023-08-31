@@ -53,7 +53,7 @@ class ObjectBase(BaseModel):
             self.renew_id()
         used_object_ids.add(self.id)
         # set id in position
-        self.position.id = self.id
+        self.position = self.position.set_id(self.id)
 
     def renew_id(self):
         """
@@ -68,7 +68,7 @@ class ObjectBase(BaseModel):
                 continue
             self.id = new_id
             used_object_ids.add(self.id)
-            self.position.id = self.id
+            self.position = self.position.set_id(self.id)
             break
 
 

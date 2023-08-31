@@ -36,7 +36,7 @@ class ArtifactBase(CardBase):
         for charactor in match.player_tables[
                 self.position.player_idx].charactors:
             if charactor.is_alive:
-                ret.append(charactor.position.copy(deep = True))
+                ret.append(charactor.position)
         return ret
 
     def is_valid(self, match: Any) -> bool:
@@ -52,8 +52,7 @@ class ArtifactBase(CardBase):
         """
         assert target is not None
         ret: List[MoveObjectAction | RemoveObjectAction] = []
-        position = target.copy(deep = True)
-        position.id = self.position.id
+        position = target.set_id(self.id)
         charactor_id = target.id
         assert position.area == ObjectPositionType.CHARACTOR
         assert position.player_idx == self.position.player_idx

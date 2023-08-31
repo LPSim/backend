@@ -41,8 +41,8 @@ class AllSchemesToKnow(ElementalSkillBase):
         target_active_charactor = target_charactors[
             target_table.active_charactor_idx]
         # default set status to active charactor
-        position = target_active_charactor.position.copy(deep = True)
-        position.area = ObjectPositionType.CHARACTOR_STATUS
+        position = target_active_charactor.position.set_area(
+            ObjectPositionType.CHARACTOR_STATUS)
         ret.append(
             CreateObjectAction(
                 object_name = 'Seed of Skandha',
@@ -60,8 +60,8 @@ class AllSchemesToKnow(ElementalSkillBase):
                 if charactor.is_defeated:
                     continue
                 if charactor.id != target_active_charactor.id:
-                    position = charactor.position.copy(deep = True)
-                    position.area = ObjectPositionType.CHARACTOR_STATUS
+                    position = charactor.position.set_area(
+                        ObjectPositionType.CHARACTOR_STATUS)
                     ret.append(
                         CreateObjectAction(
                             object_name = 'Seed of Skandha',
@@ -100,8 +100,8 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
         for charactor in target_charactors:
             if charactor.is_defeated:
                 continue
-            position = charactor.position.copy(deep = True)
-            position.area = ObjectPositionType.CHARACTOR_STATUS
+            position = charactor.position.set_area(
+                ObjectPositionType.CHARACTOR_STATUS)
             ret.append(
                 CreateObjectAction(
                     object_name = 'Seed of Skandha',
@@ -126,8 +126,8 @@ class IllusoryHeart(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        team_status_position = self.position.copy(deep = True)
-        team_status_position.area = ObjectPositionType.TEAM_STATUS
+        team_status_position = self.position.set_area(
+            ObjectPositionType.TEAM_STATUS)
         ret.append(
             CreateObjectAction(
                 object_name = 'Shrine of Maya',
@@ -205,7 +205,7 @@ class TheSeedOfStoredKnowledge(SkillTalent):
             if status.name == 'Shrine of Maya':
                 # has Shrine Of Maya, add one usage.
                 return [ChangeObjectUsageAction(
-                    object_position = status.position.copy(deep = True),
+                    object_position = status.position,
                     change_usage = 1,
                     change_type = 'DELTA',
                 )]

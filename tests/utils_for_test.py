@@ -4,6 +4,7 @@ from agents.interaction_agent import InteractionAgent, InteractionAgent_V1_0
 from server.match import Match
 from server.event_handler import OmnipotentGuideEventHandler
 from agents.agent_base import AgentBase
+from server.struct import ObjectPosition
 from utils import BaseModel
 from tests.default_random_state import get_default_random_state
 
@@ -51,11 +52,14 @@ def remove_ids(model: BaseModel) -> BaseModel:
     """
     for key in model.__fields__.keys():
         value = getattr(model, key)
-        if isinstance(value, BaseModel):
+        if isinstance(value, ObjectPosition):
+            model.__setattr__(key, value.set_id(0))
+        elif isinstance(value, BaseModel):
             remove_ids(value)
         elif isinstance(value, list) or isinstance(value, tuple):
             for v in value:
                 if isinstance(v, BaseModel):
+                    assert not isinstance(v, ObjectPosition)
                     remove_ids(v)
     if 'id' in model.__fields__.keys():
         model.id = 0

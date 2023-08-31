@@ -432,6 +432,6 @@ def test_lotus_flower_crisp_and_reflection():
 
 
 if __name__ == '__main__':
-    # test_adeptus_temptation()
+    test_adeptus_temptation()
     test_lotus_flower_crisp()
     test_lotus_flower_crisp_and_reflection()

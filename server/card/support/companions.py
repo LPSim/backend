@@ -38,7 +38,7 @@ class Timmie(CompanionBase):
         When played, first reset usage to 0, then increase usage.
         """
         return [ChangeObjectUsageAction(
-            object_position = self.position.copy(deep = True),
+            object_position = self.position,
             change_type = 'DELTA',
             change_usage = 1
         )]
@@ -54,7 +54,7 @@ class Timmie(CompanionBase):
             # not in support area, do nothing
             return []
         return [ChangeObjectUsageAction(
-            object_position = self.position.copy(deep = True),
+            object_position = self.position,
             change_type = 'DELTA',
             change_usage = 1
         )]

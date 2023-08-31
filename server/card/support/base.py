@@ -65,7 +65,7 @@ class SupportBase(CardBase):
             # choose one support to remove
             ret: List[ObjectPosition] = []
             for support in supports:
-                ret.append(support.position.copy(deep = True))
+                ret.append(support.position)
             return ret
         return []
 

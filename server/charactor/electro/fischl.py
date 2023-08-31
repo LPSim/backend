@@ -11,7 +11,7 @@ from ..charactor_base import (
     PhysicalNormalAttackBase, ElementalSkillBase, ElementalBurstBase, 
     CharactorBase, SkillTalent
 )
-from ...struct import Cost
+from ...struct import Cost, ObjectPosition
 from ...modifiable_values import DamageValue
 from ...summon.base import AttackerSummonBase
 
@@ -27,8 +27,11 @@ class Nightrider(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        position = self.position.copy(deep = True)
-        position.area = ObjectPositionType.SUMMON
+        position = ObjectPosition(
+            player_idx = self.position.player_idx,
+            area = ObjectPositionType.SUMMON,
+            id = -1
+        )
         return super().get_actions(match) + [
             CreateObjectAction(
                 object_name = 'Oz',
@@ -65,9 +68,9 @@ class MidnightPhantasmagoria(ElementalBurstBase):
                 continue
             ret[-1].damage_value_list.append(
                 DamageValue(
-                    position = self.position.copy(deep = True),
+                    position = self.position,
                     damage_type = DamageType.DAMAGE,
-                    target_position = charactor.position.copy(deep = True),
+                    target_position = charactor.position,
                     damage = 2,
                     damage_elemental_type = DamageElementalType.PIERCING,
                     charge_cost = self.cost.charge,
@@ -142,8 +145,7 @@ class Oz(AttackerSummonBase):
                         DamageValue(
                             position = self.position,
                             damage_type = DamageType.DAMAGE,
-                            target_position = target_charactor.position.copy(
-                                deep = True),
+                            target_position = target_charactor.position,
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,
                             charge_cost = 0,

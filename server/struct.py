@@ -19,6 +19,8 @@ class ObjectPosition(BaseModel):
 
     Position is mainly used for objects to decide whether to respond events.
 
+    It is immutable.
+
     Args:
         player_idx (int): The player index of the object.
         charactor_idx (int): The charactor index of the object. If it is not
@@ -31,6 +33,46 @@ class ObjectPosition(BaseModel):
     charactor_idx: int = -1
     area: ObjectPositionType
     id: int
+
+    def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
+        """
+        Override __setattr__ to make it immutable.
+        """
+        raise AttributeError('ObjectPosition is immutable.')
+
+    def __delattr__(self, name: str) -> None:  # pragma: no cover
+        """
+        Override __delattr__ to make it immutable.
+        """
+        raise AttributeError('ObjectPosition is immutable.')
+
+    def set_id(self, id: int) -> 'ObjectPosition':
+        """
+        Return a new ObjectPosition with the id set.
+        """
+        return ObjectPosition(
+            player_idx = self.player_idx,
+            charactor_idx = self.charactor_idx,
+            area = self.area,
+            id = id,
+        )
+
+    def set_area(self, area: ObjectPositionType) -> 'ObjectPosition':
+        """
+        Return a new ObjectPosition with the area set.
+        """
+        return ObjectPosition(
+            player_idx = self.player_idx,
+            charactor_idx = self.charactor_idx,
+            area = area,
+            id = self.id,
+        )
+
+    def copy(self) -> 'ObjectPosition':
+        """
+        As it is a immutable object, it is no need to copy.
+        """
+        raise AssertionError('ObjectPosition is immutable.')
 
     def check_position_valid(
         self, target_position: 'ObjectPosition', match: Any,

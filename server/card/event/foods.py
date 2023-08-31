@@ -61,8 +61,7 @@ class FoodCardBase(CardBase):
         Add Satiated status to target charactor.
         """
         assert target is not None
-        pos = target.copy()
-        pos.area = ObjectPositionType.CHARACTOR_STATUS
+        pos = target.set_area(ObjectPositionType.CHARACTOR_STATUS)
         return [CreateObjectAction(
             object_name = 'Satiated',
             object_position = pos,
