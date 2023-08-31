@@ -431,7 +431,110 @@ def test_lotus_flower_crisp_and_reflection():
     assert match.state != MatchState.ERROR
 
 
+def test_mond_hash():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 1 no card can use",
+            "sw_char 2 0",
+            "TEST 2 card can use one target",
+            "card 0 0 0",
+            "TEST 1 no use card",
+            "TEST 3 10 10 10 10 10 10",
+            "end",
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 1 no card can use",
+            "skill 1 0 1 2"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        # Leave It to Me!
+        # Clax's Arts*2
+        # Adeptus' Temptation*2
+        # Lotus Flower Crisp*2
+        # Mondstadt Hash Brown*2
+        Mondstadt Hash Brown*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 1:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 2:
+                count = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        count += 1
+                        assert len(req.targets) == 1
+                assert count > 0
+            elif test_id == 3:
+                hps = [int(x) for x in cmd.strip().split()[2:]]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                break
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_adeptus_temptation()
     test_lotus_flower_crisp()
     test_lotus_flower_crisp_and_reflection()
+    test_mond_hash()
