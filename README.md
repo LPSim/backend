@@ -75,7 +75,6 @@ deck0 = Deck.from_str(deck_string)
 deck1 = Deck.from_str(deck_string)
 match = Match()
 match.set_deck([deck0, deck1])
-match.config.max_same_card_number = 30  # disable deck limit
 match.start()
 match.step()
 
