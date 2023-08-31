@@ -2,7 +2,7 @@
 
 from typing import Any, Literal
 
-from ...struct import DamageValue
+from ...modifiable_values import DamageValue
 
 from ...consts import (
     DamageElementalType, DamageType, ElementType, ElementalReactionType
@@ -83,14 +83,10 @@ class SeedOfSkandha(UsageCharactorStatus):
                             DamageValue(
                                 position = status.position,
                                 damage = 1,
+                                target_position = charactor.position,
                                 damage_type = DamageType.DAMAGE,
                                 charge_cost = 0,
-                                target_player = 'CURRENT',
-                                target_charactor = 'ABSOLUTE',
                                 damage_elemental_type = d_ele_type,
-
-                                target_charactor_idx = 
-                                status.position.charactor_idx,
                             )
                         ],
                     ))

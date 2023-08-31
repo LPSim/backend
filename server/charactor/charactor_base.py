@@ -15,7 +15,8 @@ from ..consts import (
 from ..object_base import (
     ObjectBase, WeaponBase, CardBase
 )
-from ..struct import Cost, DamageValue, ObjectPosition
+from ..struct import Cost, ObjectPosition
+from ..modifiable_values import DamageValue
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
 from ..action import (
@@ -63,6 +64,9 @@ class SkillBase(ObjectBase):
         2. ChargeAction to charge the active charactor by 1.
         3. SkillEndAction to declare skill end, and trigger the event.
         """
+        target_table = match.player_tables[1 - self.position.player_idx]
+        target_charactor_idx = target_table.active_charactor_idx
+        target_charactor = target_table.charactors[target_charactor_idx]
         return [
             ChargeAction(
                 player_idx = self.position.player_idx,
@@ -76,11 +80,11 @@ class SkillBase(ObjectBase):
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.DAMAGE,
+                        target_position = target_charactor.position.copy(
+                            deep = True),
                         damage = self.damage,
                         damage_elemental_type = self.damage_type,
                         charge_cost = 0,
-                        target_player = 'ENEMY',
-                        target_charactor = 'ACTIVE',
                     )
                 ],
                 charactor_change_rule = 'NONE'

@@ -62,6 +62,8 @@ class AttackerSummonBase(SummonBase):
         player_idx = self.position.player_idx
         assert self.usage > 0
         self.usage -= 1
+        target_table = match.player_tables[1 - player_idx]
+        target_charactor = target_table.get_active_charactor()
         return [
             MakeDamageAction(
                 source_player_idx = player_idx,
@@ -70,11 +72,10 @@ class AttackerSummonBase(SummonBase):
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.DAMAGE,
+                        target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
                         charge_cost = 0,
-                        target_player = 'ENEMY',
-                        target_charactor = 'ACTIVE'
                     )
                 ],
                 charactor_change_rule = 'NONE',
@@ -157,6 +158,8 @@ class ShieldSummonBase(SummonBase):
             # attack until run out of usage
             raise AssertionError('Not tested part')
             return []
+        target_table = match.player_tables[1 - player_idx]
+        target_charactor = target_table.get_active_charactor()
         return [
             MakeDamageAction(
                 source_player_idx = player_idx,
@@ -165,11 +168,10 @@ class ShieldSummonBase(SummonBase):
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.DAMAGE,
+                        target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
                         charge_cost = 0,
-                        target_player = 'ENEMY',
-                        target_charactor = 'ACTIVE'
                     )
                 ],
                 charactor_change_rule = 'NONE',

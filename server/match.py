@@ -81,7 +81,7 @@ from .modifiable_values import (
     ModifiableValueBase,
     InitialDiceColorValue,
     ModifiableValueTypes, RerollValue, CostValue,
-    DamageIncreaseValue, DamageMultiplyValue, DamageDecreaseValue,
+    DamageMultiplyValue, DamageDecreaseValue,
 )
 from .struct import (
     ObjectPosition, Cost
@@ -1776,15 +1776,8 @@ class Match(BaseModel):
                      | AfterMakeDamageEventArguments
                      | SwitchCharactorEventArguments] = []
         infos: List[ReceiveDamageEventArguments] = []
-        damage_increase_value_lists: List[DamageIncreaseValue] = []
-        for damage in damage_lists:
-            damages = DamageIncreaseValue.from_damage_value(
-                match = self,
-                damage_value = damage,
-            )
-            damage_increase_value_lists += damages
-        while len(damage_increase_value_lists) > 0:
-            damage = damage_increase_value_lists.pop(0)
+        while len(damage_lists) > 0:
+            damage = damage_lists.pop(0)
             damage_original = damage.copy(deep = True)
             assert (
                 damage.target_position.area == ObjectPositionType.CHARACTOR
@@ -1831,7 +1824,7 @@ class Match(BaseModel):
                     reacted_elements,
                 )
             damage = damages_after_elemental_reaction.pop(0)
-            damage_increase_value_lists += damages_after_elemental_reaction
+            damage_lists += damages_after_elemental_reaction
             # apply 3-step damage modification
             self._modify_value(damage, 'REAL')
             damage = DamageMultiplyValue.from_increase_value(damage)

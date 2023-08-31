@@ -1,10 +1,7 @@
-from typing import List, Literal, Any
+from typing import List, Any
 
 from utils import BaseModel
-from .consts import (
-    ObjectPositionType, DamageType, DamageElementalType,
-    DieColor
-)
+from .consts import ObjectPositionType, DieColor
 
 
 class ObjectPosition(BaseModel):
@@ -80,42 +77,6 @@ class ObjectPosition(BaseModel):
             return target_is_active_charactor == (
                 target_position.charactor_idx == cidx)
         return True
-
-
-class DamageValue(BaseModel):
-    """
-    It declares a damage, i.e. damge is received by active/back charactor,
-    it will change active charactor with what rule.
-
-    Args:
-        position (ObjectPosition): The position of the object who makes the
-            damage.
-        damage_type (DamageType): The type of the damage, damage, heal, or
-            element application (zero damage).
-        damage (int): The damage value.
-        damage_elemental_type (DamageElementalType): The elemental type of the
-            damage.
-        charge_cost (int): The charge cost of the damage.
-        target_player (Literal['CURRENT', 'ENEMY']): The player who will
-            receive the damage.
-        target_charactor (Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 
-            'ABSOLUTE']): The charactor who will receive the damage.
-            If it is defeated, this damage will be ignored.
-        target_charactor_idx (int): The charactor index of the charactor who 
-            will receive the damage. Only used when target_charactor is 
-            'ABSOLUTE'.
-    """
-
-    position: ObjectPosition
-    damage_type: DamageType
-    damage: int
-    damage_elemental_type: DamageElementalType
-    charge_cost: int
-
-    # damage which player
-    target_player: Literal['CURRENT', 'ENEMY']
-    target_charactor: Literal['ACTIVE', 'BACK', 'NEXT', 'PREV', 'ABSOLUTE']
-    target_charactor_idx: int = -1
 
 
 class Cost(BaseModel):

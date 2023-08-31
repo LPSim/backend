@@ -11,7 +11,8 @@ from ..charactor_base import (
     PhysicalNormalAttackBase, ElementalSkillBase, ElementalBurstBase, 
     CharactorBase, SkillTalent
 )
-from ...struct import DamageValue, Cost
+from ...struct import Cost
+from ...modifiable_values import DamageValue
 from ...summon.base import AttackerSummonBase
 
 
@@ -55,17 +56,23 @@ class MidnightPhantasmagoria(ElementalBurstBase):
         ret = super().get_actions(match)
         assert len(ret) > 0
         assert ret[-1].type == 'MAKE_DAMAGE'
-        ret[-1].damage_value_list.append(
-            DamageValue(
-                position = self.position.copy(deep = True),
-                damage_type = DamageType.DAMAGE,
-                damage = 2,
-                damage_elemental_type = DamageElementalType.PIERCING,
-                charge_cost = self.cost.charge,
-                target_player = 'ENEMY',
-                target_charactor = 'BACK',
+        target_table = match.player_tables[1 - self.position.player_idx]
+        charactors = target_table.charactors
+        for cid, charactor in enumerate(charactors):
+            if cid == target_table.active_charactor_idx:
+                continue
+            if charactor.is_defeated:
+                continue
+            ret[-1].damage_value_list.append(
+                DamageValue(
+                    position = self.position.copy(deep = True),
+                    damage_type = DamageType.DAMAGE,
+                    target_position = charactor.position.copy(deep = True),
+                    damage = 2,
+                    damage_elemental_type = DamageElementalType.PIERCING,
+                    charge_cost = self.cost.charge,
+                )
             )
-        )
         return ret
 
 
@@ -123,6 +130,10 @@ class Oz(AttackerSummonBase):
             # add RemoveObjectAction here.
             assert self.usage > 0
             self.usage -= 1
+            target_table = match.player_tables[1 - self.position.player_idx]
+            target_charactor = target_table.charactors[
+                target_table.active_charactor_idx
+            ]
             return [
                 MakeDamageAction(
                     source_player_idx = self.position.player_idx,
@@ -131,11 +142,11 @@ class Oz(AttackerSummonBase):
                         DamageValue(
                             position = self.position,
                             damage_type = DamageType.DAMAGE,
+                            target_position = target_charactor.position.copy(
+                                deep = True),
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,
                             charge_cost = 0,
-                            target_player = 'ENEMY',
-                            target_charactor = 'ACTIVE'
                         )
                     ],
                     charactor_change_rule = 'NONE',
