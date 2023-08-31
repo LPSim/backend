@@ -467,8 +467,102 @@ def test_old_i_havent_lost_yet():
     assert match.state != MatchState.ERROR
 
 
+def test_leave_it_to_me():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 1",
+            "card 0 0",
+            "card 0 0",
+            "TEST 1 status 1",
+            "skill 0 0 1 2",
+            "TEST 1 status 1",
+            "sw_char 0 0",
+            "TEST 1 status 1",
+            "sw_char 1 0",
+            "TEST 2 status 0",
+            "sw_char 2 0",
+            "TEST 3 opponent ended",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "sw_char 0 0",
+            "sw_char 1 0",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        # Gambler's Earrings*2
+        # Wine-Stained Tricorne*2
+        # Vanarana
+        # Timmie*2
+        # Rana*2
+        # Covenant of Rock
+        # Wind and Freedom
+        # The Bestest Travel Companion!*2
+        # Changing Shifts*2
+        # Toss-Up
+        # Strategize*2
+        # I Haven't Lost Yet!*2
+        # Leave It to Me!
+        Leave It to Me!*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            while True:
+                test_id = get_test_id_from_command(agent_0)
+                if test_id == 1:
+                    table = match.player_tables[0]
+                    assert len(table.team_status) == 1
+                    assert table.team_status[0].name == 'Leave It to Me!'
+                elif test_id == 2:
+                    table = match.player_tables[0]
+                    assert len(table.team_status) == 0
+                elif test_id == 3:
+                    assert match.player_tables[1].has_round_ended
+                else:
+                    break
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
     # test_toss_up()
-    test_old_i_havent_lost_yet()
+    # test_old_i_havent_lost_yet()
+    test_leave_it_to_me()
