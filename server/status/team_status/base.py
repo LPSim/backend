@@ -28,7 +28,7 @@ class UsageTeamStatus(TeamStatusBase):
     """
     name: Literal['UsageTeamStatus'] = 'UsageTeamStatus'
 
-    def check_remove_triggered(self) -> List[Actions]:
+    def check_remove_triggered(self) -> List[RemoveObjectAction]:
         """
         Check if the status should be removed.
         when usage has changed, call this function to check if the status
@@ -42,7 +42,7 @@ class UsageTeamStatus(TeamStatusBase):
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any
-    ) -> List[Actions]:
+    ) -> List[RemoveObjectAction]:
         """
         When damage made, check whether the team status should be removed.
         """

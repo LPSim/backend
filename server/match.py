@@ -41,7 +41,7 @@ from .interaction import (
     UseCardRequest, UseCardResponse,
 )
 from .consts import (
-    DieColor, ELEMENT_TO_DIE_COLOR,
+    CostLabels, DieColor, ELEMENT_TO_DIE_COLOR,
     DAMAGE_TYPE_TO_ELEMENT,
     ElementalReactionType,
     ObjectPositionType,
@@ -939,6 +939,7 @@ class Match(BaseModel):
         """
         table = self.player_tables[player_idx]
         dice_cost = Cost(any_dice_number = 1)
+        dice_cost.label = CostLabels.SWITCH_CHARACTOR
         dice_cost_value = CostValue(
             cost = dice_cost,
             position = ObjectPosition(
@@ -1154,8 +1155,6 @@ class Match(BaseModel):
                 player_idx = response.player_idx,
                 dice_idxs = dice_idxs,
             ))
-        else:
-            raise NotImplementedError('Not tested part')
         cost = response.request.cost.original_value
         cost_value = CostValue(
             position = ObjectPosition(

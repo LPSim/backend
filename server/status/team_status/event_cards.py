@@ -2,14 +2,58 @@
 
 from typing import Any, Literal, List
 
+from ...consts import CostLabels
+
 from ...action import Actions, RemoveObjectAction
 
 from ...event import (
     CharactorDefeatedEventArguments, CombatActionEventArguments
 )
 
-from ...modifiable_values import CombatActionValue
-from .base import RoundTeamStatus
+from ...modifiable_values import CombatActionValue, CostValue
+from .base import RoundTeamStatus, UsageTeamStatus
+
+
+class ChangingShifts(UsageTeamStatus):
+    name: Literal['Changing Shifts'] = 'Changing Shifts'
+    desc: str = (
+        'The next time you perform "Switch Character": '
+        'Spend 1 less Elemental Die.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        assert self.usage > 0
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+        ):
+            # not self switch charactor, do nothing
+            return value
+        if not (value.cost.label & CostLabels.SWITCH_CHARACTOR.value):
+            # not switch charactor, do nothing
+            return value
+        if value.cost.any_dice_number <= 0:
+            # no need dice, do nothing
+            raise NotImplementedError('Not tested part')
+            return value
+        # self switch charactor, reduce cost by 1
+        value.cost.any_dice_number -= 1
+        if mode == 'REAL':
+            self.usage -= 1
+        return value
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: CombatActionEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When switch charactor end, check whether to remove.
+        """
+        return self.check_remove_triggered()
 
 
 class WindAndFreedom(RoundTeamStatus):
@@ -67,4 +111,4 @@ class WindAndFreedom(RoundTeamStatus):
         return self.check_should_remove()
 
 
-EventCardTeamStatus = WindAndFreedom | WindAndFreedom
+EventCardTeamStatus = WindAndFreedom | ChangingShifts

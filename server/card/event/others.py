@@ -4,10 +4,10 @@ Event cards that not belong to any other categories.
 
 from typing import Any, List, Literal
 
-from ...consts import DieColor
+from ...consts import DieColor, ObjectPositionType
 
 from ...object_base import CardBase
-from ...action import CreateDiceAction, DrawCardAction
+from ...action import CreateDiceAction, CreateObjectAction, DrawCardAction
 from ...struct import Cost, ObjectPosition
 
 
@@ -63,4 +63,35 @@ class TheBestestTravelCompanion(CardBase):
         )]
 
 
-OtherEventCards = Strategize | TheBestestTravelCompanion
+class ChangingShifts(CardBase):
+    name: Literal['Changing Shifts']
+    desc: str = (
+        'The next time you perform "Switch Character": '
+        'Spend 1 less Elemental Die.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> list[CreateObjectAction]:
+        """
+        Act the card. Convert the Omni Element Dice spent to Elemental Dice x2.
+        """
+        assert target is None  # no targets
+        return [CreateObjectAction(
+            object_name = 'Changing Shifts',
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {}
+        )]
+
+
+OtherEventCards = Strategize | TheBestestTravelCompanion | ChangingShifts
