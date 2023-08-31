@@ -204,7 +204,7 @@ class RandomAgent(AgentBase):
                 other_dice_idxs = []
                 ele_dice_idxs = []
                 for i, color in enumerate(req.dice_colors):
-                    if color == k:
+                    if color == k or color == DieColor.OMNI:
                         if len(selected) < cost.same_dice_number:
                             selected.append(i)
                         else:
