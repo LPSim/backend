@@ -30,7 +30,7 @@ class TheBestestTravelCompanion(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> list[CreateDiceAction]:
+    ) -> List[CreateDiceAction]:
         """
         Act the card. Convert the Elemental Dice spent to Omni Element x2.
         """
@@ -57,7 +57,7 @@ class ChangingShifts(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> list[CreateObjectAction]:
+    ) -> List[CreateObjectAction]:
         """
         Act the card. Create team status.
         """
@@ -85,7 +85,7 @@ class TossUp(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> list[GenerateRerollDiceRequestAction]:
+    ) -> List[GenerateRerollDiceRequestAction]:
         assert target is None
         return [GenerateRerollDiceRequestAction(
             player_idx = self.position.player_idx,
@@ -107,7 +107,7 @@ class Strategize(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> list[DrawCardAction]:
+    ) -> List[DrawCardAction]:
         """
         Act the card. Draw two cards.
         """
@@ -209,7 +209,7 @@ class LeaveItToMe(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> list[CreateObjectAction]:
+    ) -> List[CreateObjectAction]:
         """
         Act the card. Create team status.
         """

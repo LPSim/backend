@@ -1,4 +1,4 @@
-from typing import Literal, Any
+from typing import List, Literal, Any
 from ..object_base import CardBase
 from ..consts import (
     ObjectType, DamageElementalType, DamageType
@@ -48,14 +48,15 @@ class SummonBase(CardBase):
 class AttackerSummonBase(SummonBase):
     """
     Attacker summons, e.g. Guoba, Oz. They do attack on round end, and 
-    disappears when run out of usage.
+    disappears when run out of usage. Specially, Melody Loop can also be a
+    Attacker Summon, as it also makes damage with type HEAL.
     """
     damage_elemental_type: DamageElementalType
     damage: int
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> list[MakeDamageAction]:
+    ) -> List[MakeDamageAction]:
         """
         When round end, make damage to the opponent.
         """
@@ -82,7 +83,7 @@ class AttackerSummonBase(SummonBase):
             )
         ]
 
-    def _remove(self) -> list[RemoveObjectAction]:
+    def _remove(self) -> List[RemoveObjectAction]:
         """
         Remove the summon.
         """
@@ -94,7 +95,7 @@ class AttackerSummonBase(SummonBase):
 
     def event_handler_CHANGE_OBJECT_USAGE(
             self, event: ChangeObjectUsageEventArguments, match: Any) \
-            -> list[RemoveObjectAction]:
+            -> List[RemoveObjectAction]:
         """
         When usage is 0, remove the summon.
         """
@@ -104,7 +105,7 @@ class AttackerSummonBase(SummonBase):
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any
-    ) -> list[RemoveObjectAction]:
+    ) -> List[RemoveObjectAction]:
         """
         When usage is 0, remove the summon.
         """
@@ -147,7 +148,7 @@ class ShieldSummonBase(SummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> list[MakeDamageAction | RemoveObjectAction]:
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
         """
         When round end, make damage to the opponent if is needed and remove
         itself.
@@ -176,7 +177,7 @@ class ShieldSummonBase(SummonBase):
             )
         ] + self._remove()
 
-    def _remove(self) -> list[RemoveObjectAction]:
+    def _remove(self) -> List[RemoveObjectAction]:
         """
         Remove the summon.
         """

@@ -217,15 +217,13 @@ class Nahida(CharactorBase):
     version: Literal['3.7'] = '3.7'
     desc: str = '''"Physic of Purity" Nahida'''
     element: ElementType = ElementType.DENDRO
-    hp: int = 10
     max_hp: int = 10
-    charge: int = 0
     max_charge: int = 2
-    skills: list[
+    skills: List[
         ElementalNormalAttackBase | AllSchemesToKnow | AllSchemesToKnowTathata
         | IllusoryHeart
     ] = []
-    faction: list[FactionType] = [
+    faction: List[FactionType] = [
         FactionType.SUMERU,
     ]
     weapon_type: WeaponType = WeaponType.CATALYST

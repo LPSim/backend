@@ -96,7 +96,7 @@ class SupportBase(CardBase):
 
     def event_handler_MOVE_OBJECT(
         self, event: MoveObjectEventArguments, match: Any
-    ) -> list[Actions]:
+    ) -> List[Actions]:
         """
         When this support is moved from hand to support, it is considered
         as played, and will call `self.play`.

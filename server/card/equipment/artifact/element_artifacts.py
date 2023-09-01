@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, List, Literal
 
 from .base import ArtifactBase
 from ....struct import Cost
@@ -53,7 +53,7 @@ class SmallElementalArtifact(ArtifactBase):
             "XXX", self.element.value.capitalize()
         )
 
-    def equip(self, match: Any) -> list[Actions]:
+    def equip(self, match: Any) -> List[Actions]:
         """
         Equip this artifact. Reset usage.
         """
@@ -62,7 +62,7 @@ class SmallElementalArtifact(ArtifactBase):
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
-    ) -> list[Actions]:
+    ) -> List[Actions]:
         """
         When in round prepare, reset usage
         """

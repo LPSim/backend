@@ -109,7 +109,7 @@ class Oz(AttackerSummonBase):
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
-    ) -> list[MakeDamageAction]:
+    ) -> List[MakeDamageAction]:
         """
         If Fischl made normal attack and with talent, make 2 electro damage 
         to front.
@@ -162,14 +162,12 @@ class Fischl(CharactorBase):
     version: Literal['3.3'] = '3.3'
     desc: str = '''"Fischl, Prinzessin der Verurteilung!" Fischl'''
     element: ElementType = ElementType.ELECTRO
-    hp: int = 10
     max_hp: int = 10
-    charge: int = 0
     max_charge: int = 3
-    skills: list[
+    skills: List[
         PhysicalNormalAttackBase | Nightrider | MidnightPhantasmagoria
     ] = []
-    faction: list[FactionType] = [
+    faction: List[FactionType] = [
         FactionType.MONDSTADT,
     ]
     weapon_type: WeaponType = WeaponType.BOW

@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import List, Literal
 from pydantic import validator
 from ..consts import (
     ElementType, FactionType, WeaponType, DamageElementalType,
@@ -30,14 +30,12 @@ class Mob(CharactorBase):
     desc: str = 'A _NAME_.'
     version = '1.0.0'
     element: ElementType = ElementType.NONE
-    hp: int = 10
     max_hp: int = 10
-    charge: int = 0
     max_charge: int = 2
-    skills: list[
+    skills: List[
         PhysicalNormalAttackBase | ElementalSkillBase | ElementalBurstBase
     ] = []
-    faction: list[FactionType] = []
+    faction: List[FactionType] = []
     weapon_type: WeaponType = WeaponType.OTHER
 
     @validator('element')

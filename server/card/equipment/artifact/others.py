@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, List, Literal
 
 from server.action import Actions
 
@@ -23,7 +23,7 @@ class GamblersEarrings(ArtifactBase):
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
 
-    def equip(self, match: Any) -> list[Actions]:
+    def equip(self, match: Any) -> List[Actions]:
         """
         Equip this artifact. Reset usage.
         """
@@ -32,7 +32,7 @@ class GamblersEarrings(ArtifactBase):
 
     def event_handler_CHARACTOR_DEFEATED(
         self, event: CharactorDefeatedEventArguments, match: Any
-    ) -> list[CreateDiceAction]:
+    ) -> List[CreateDiceAction]:
         """
         When an opposing character is defeated, check if the character this 
         card is attached to is the active character. If so, create Omni 

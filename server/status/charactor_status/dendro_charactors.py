@@ -1,6 +1,6 @@
 
 
-from typing import Any, Literal
+from typing import Any, List, Literal
 
 from ...modifiable_values import DamageValue
 
@@ -28,7 +28,7 @@ class SeedOfSkandha(UsageCharactorStatus):
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Any
-    ) -> list[MakeDamageAction | ChangeObjectUsageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         """
         Only seed of charactor received the damage will trigger event, it will
         check all charactor status and trigger them and call ChangeObjectUsage.
@@ -48,7 +48,7 @@ class SeedOfSkandha(UsageCharactorStatus):
             return []
         assert self.usage > 0
         # trigger, check all seed on the same side
-        actions: list[MakeDamageAction | ChangeObjectUsageAction] = []
+        actions: List[MakeDamageAction | ChangeObjectUsageAction] = []
         table = match.player_tables[self.position.player_idx]
         has_pyro_charactor = False
         has_talent = False

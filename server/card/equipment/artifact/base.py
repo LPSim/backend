@@ -21,7 +21,7 @@ class ArtifactBase(CardBase):
     cost: Cost
     usage: int
 
-    def equip(self, match: Any) -> list[Actions]:
+    def equip(self, match: Any) -> List[Actions]:
         """
         The artifact is equipped, i.e. from hand to charactor. Set the status
         of artifact, and if it has actions when equipped, return the actions.
@@ -71,7 +71,7 @@ class ArtifactBase(CardBase):
 
     def event_handler_MOVE_OBJECT(
         self, event: MoveObjectEventArguments, match: Any
-    ) -> list[Actions]:
+    ) -> List[Actions]:
         """
         When this artifact is moved from hand to charactor, it is considered
         as equipped, and will call `self.equip`.

@@ -39,7 +39,6 @@ class Reflection(ShieldSummonBase):
 class MirrorReflectionOfDoom(ElementalSkillBase):
     name: Literal['Mirror Reflection of Doom'] = 'Mirror Reflection of Doom'
     desc: str = '''Deals 1 Hydro DMG, summons 1 Reflection.'''
-    element: ElementType = ElementType.HYDRO
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -98,7 +97,7 @@ class IllusoryTorrent(PassiveSkillBase):
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
-    ) -> list[Actions]:
+    ) -> List[Actions]:
         """
         When in round prepare, reset usage
         """
@@ -180,15 +179,13 @@ class Mona(CharactorBase):
     version: Literal['3.3'] = '3.3'
     desc: str = '''"Astral Reflection" Mona'''
     element: ElementType = ElementType.HYDRO
-    hp: int = 10
     max_hp: int = 10
-    charge: int = 0
     max_charge: int = 3
-    skills: list[
+    skills: List[
         ElementalNormalAttackBase | MirrorReflectionOfDoom | StellarisPhantasm
         | IllusoryTorrent
     ] = []
-    faction: list[FactionType] = [
+    faction: List[FactionType] = [
         FactionType.MONDSTADT,
     ]
     weapon_type: WeaponType = WeaponType.CATALYST

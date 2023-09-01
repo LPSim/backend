@@ -318,9 +318,7 @@ class CharactorBase(ObjectBase):
     )
 
     element: ElementType
-    hp: int
     max_hp: int
-    charge: int
     max_charge: int
     skills: List[SkillBase]
 
@@ -329,6 +327,8 @@ class CharactorBase(ObjectBase):
     weapon_type: WeaponType
 
     # charactor status
+    hp: int = 0
+    charge: int = 0
     weapon: WeaponBase | None = None
     artifact: Artifacts | None = None
     talent: TalentBase | None = None
@@ -338,6 +338,7 @@ class CharactorBase(ObjectBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
+        self.hp = self.max_hp
         old_skill_ids = [x.id for x in self.skills]
         self._init_skills()
         if len(old_skill_ids):

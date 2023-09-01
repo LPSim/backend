@@ -18,7 +18,7 @@ class Dice(ObjectBase):
         id = -1,
     )
     type: Literal[ObjectType.DICE] = ObjectType.DICE
-    colors: list[DieColor] = []
+    colors: List[DieColor] = []
 
     def colors_to_idx(self, colors: List[DieColor]) -> List[int]:
         """

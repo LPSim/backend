@@ -112,7 +112,7 @@ class Rana(CompanionBase):
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
-    ) -> list[Actions]:
+    ) -> List[Actions]:
         """
         When in round prepare, reset usage
         """
@@ -121,7 +121,7 @@ class Rana(CompanionBase):
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
-    ) -> list[CreateDiceAction]:
+    ) -> List[CreateDiceAction]:
         """
         if it is in support are, and self player used a elemental skill,
         and have usage, and have next charactor, generate a die with color 

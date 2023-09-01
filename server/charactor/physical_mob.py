@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import List, Literal
 from ..consts import (
     ElementType, FactionType, WeaponType, DamageElementalType,
 )
@@ -19,14 +19,12 @@ class PhysicalMob(CharactorBase):
     desc: str = 'A PhysicalMob.'
     version = '1.0.0'
     element: ElementType
-    hp: int = 10
     max_hp: int = 10
-    charge: int = 0
     max_charge: int = 2
-    skills: list[
+    skills: List[
         PhysicalNormalAttackBase | ElementalSkillBase | ElementalBurstBase
     ] = []
-    faction: list[FactionType] = []
+    faction: List[FactionType] = []
     weapon_type: WeaponType = WeaponType.OTHER
 
     def __init__(self, **kwargs):
