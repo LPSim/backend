@@ -2,6 +2,8 @@
 
 from typing import Any, List, Literal
 
+from ...struct import Cost
+
 from ...modifiable_values import DamageValue
 
 from ...consts import (
@@ -84,7 +86,7 @@ class SeedOfSkandha(UsageCharactorStatus):
                                 damage = 1,
                                 target_position = charactor.position,
                                 damage_type = DamageType.DAMAGE,
-                                charge_cost = 0,
+                                cost = Cost(),
                                 damage_elemental_type = d_ele_type,
                             )
                         ],

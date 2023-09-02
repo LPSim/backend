@@ -137,7 +137,7 @@ class MondstadtHashBrown(FoodCardBase):
                     target_position = target,
                     damage = -2,
                     damage_elemental_type = DamageElementalType.HEAL,
-                    charge_cost = 0,
+                    cost = self.cost.copy()
                 )
             ],
         ))

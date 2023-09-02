@@ -85,7 +85,7 @@ class DamageIncreaseValue(ModifiableValueBase):
     target_position: ObjectPosition
     damage: int
     damage_elemental_type: DamageElementalType
-    charge_cost: int
+    cost: Cost  # original cost of source
     element_reaction: ElementalReactionType = ElementalReactionType.NONE
     reacted_elements: List[ElementType] = []
 
@@ -212,7 +212,7 @@ class DamageMultiplyValue(DamageIncreaseValue):
             target_position = increase_value.target_position,
             damage = increase_value.damage,
             damage_elemental_type = increase_value.damage_elemental_type,
-            charge_cost = increase_value.charge_cost,
+            cost = increase_value.cost,
             element_reaction = increase_value.element_reaction,
             reacted_elements = increase_value.reacted_elements,
         )
@@ -231,7 +231,7 @@ class DamageDecreaseValue(DamageIncreaseValue):
             target_position = multiply_value.target_position,
             damage = multiply_value.damage,
             damage_elemental_type = multiply_value.damage_elemental_type,
-            charge_cost = multiply_value.charge_cost,
+            cost = multiply_value.cost,
             element_reaction = multiply_value.element_reaction,
             reacted_elements = multiply_value.reacted_elements,
         )

@@ -296,7 +296,7 @@ def apply_elemental_reaction(
                     damage_type = DamageType.DAMAGE,
                     damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[
                         element_type],
-                    charge_cost = 0,
+                    cost = damage.cost.copy(),
                 ))
     else:
         # all others are +1 damage types
@@ -321,7 +321,7 @@ def apply_elemental_reaction(
                         damage = 1,
                         damage_type = DamageType.DAMAGE,
                         damage_elemental_type = damage_type,
-                        charge_cost = 0,
+                        cost = damage.cost.copy(),
                     ))
     return res
 

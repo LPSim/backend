@@ -83,7 +83,7 @@ class SkillBase(ObjectBase):
                         target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_type,
-                        charge_cost = 0,
+                        cost = self.cost.copy(),
                     )
                 ],
                 charactor_change_rule = 'NONE'

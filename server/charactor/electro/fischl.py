@@ -73,7 +73,7 @@ class MidnightPhantasmagoria(ElementalBurstBase):
                     target_position = charactor.position,
                     damage = 2,
                     damage_elemental_type = DamageElementalType.PIERCING,
-                    charge_cost = self.cost.charge,
+                    cost = self.cost.copy(),
                 )
             )
         return ret
@@ -148,7 +148,7 @@ class Oz(AttackerSummonBase):
                             target_position = target_charactor.position,
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,
-                            charge_cost = 0,
+                            cost = self.cost.copy(),
                         )
                     ],
                     charactor_change_rule = 'NONE',
