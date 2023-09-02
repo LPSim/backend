@@ -22,7 +22,7 @@ class CompanionBase(SupportBase):
 
 
 class Timmie(CompanionBase):
-    name: Literal['Timmie'] = 'Timmie'
+    name: Literal['Timmie']
     desc: str = (
         'Triggers automatically once per Round: This card gains 1 Pigeon. '
         'When this card gains 3 Pigeons, discard this card, then draw 1 card '
@@ -93,7 +93,7 @@ class Timmie(CompanionBase):
 
 
 class Rana(CompanionBase):
-    name: Literal['Rana'] = 'Rana'
+    name: Literal['Rana']
     desc: str = (
         'After your character uses an Elemental Skill: '
         'Create 1 Elemental Die of the same Type as your next off-field '

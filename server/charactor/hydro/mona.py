@@ -131,7 +131,7 @@ class IllusoryTorrent(PassiveSkillBase):
 
 
 class ProphecyOfSubmersion(SkillTalent):
-    name: Literal['Prophecy of Submersion'] = 'Prophecy of Submersion'
+    name: Literal['Prophecy of Submersion']
     desc: str = (
         'Combat Action: When your active character is Mona, equip this card. '
         'When Mona equips this card, immediately use Stellaris Phantasm once. '
