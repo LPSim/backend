@@ -146,6 +146,39 @@ class Cost(BaseModel):
             + self.any_dice_number + self.omni_dice_number
         )
 
+    def decrease_cost(self, dice_color: DieColor | None) -> bool:
+        """
+        Decrease the cost by 1 dice of the given color in-place.
+
+        Return True if decrease successfully, False if not.
+
+        Args:
+            dice_color (DieColor | None): The dice color to be decreased.
+                If None, decrease same or any dice; Otherwise, decrease
+                elemental or any dice.
+        """
+        assert dice_color != DieColor.OMNI, 'Omni dice is not supported yet.'
+        if dice_color is None:
+            # decrease same or any dice
+            if self.same_dice_number > 0:
+                self.same_dice_number -= 1
+                return True
+            if self.any_dice_number > 0:
+                self.any_dice_number -= 1
+                return True
+            return False
+        # decrease elemental or any dice
+        if (
+            self.elemental_dice_color == dice_color
+            and self.elemental_dice_number > 0
+        ):
+            self.elemental_dice_number -= 1
+            return True
+        if self.any_dice_number > 0:
+            self.any_dice_number -= 1
+            return True
+        return False
+
     def is_valid(self, dice_colors: List[DieColor], charge: int, 
                  arcane_legend: bool, strict = True) -> bool:
         """

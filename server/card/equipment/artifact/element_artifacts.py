@@ -3,7 +3,9 @@ from typing import Any, List, Literal
 from .base import ArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue
-from ....consts import ElementType, ObjectPositionType, CostLabels
+from ....consts import (
+    ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, CostLabels
+)
 from ....event import RoundPrepareEventArguments
 from ....action import Actions
 
@@ -117,16 +119,10 @@ class SmallElementalArtifact(ArtifactBase):
                             # talent card not for this charactor
                             return value
             # can decrease cost
-            used = 0
-            if (value.cost.elemental_dice_color == self.element
-                    and value.cost.elemental_dice_number > 0):
-                value.cost.elemental_dice_number -= 1
-                used += 1
-            elif value.cost.any_dice_number > 0:
-                value.cost.any_dice_number -= 1
-                used += 1
-            if mode == 'REAL':
-                self.usage -= used
+            if value.cost.decrease_cost(ELEMENT_TO_DIE_COLOR[self.element]):
+                # decrease cost success
+                if mode == 'REAL':
+                    self.usage -= 1
         return value
 
 

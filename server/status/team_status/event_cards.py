@@ -37,13 +37,11 @@ class ChangingShifts(UsageTeamStatus):
         if not (value.cost.label & CostLabels.SWITCH_CHARACTOR.value):
             # not switch charactor, do nothing
             return value
-        if value.cost.any_dice_number <= 0:
-            # no need dice, do nothing
-            return value
-        # self switch charactor, reduce cost by 1
-        value.cost.any_dice_number -= 1
-        if mode == 'REAL':
-            self.usage -= 1
+        # decrease 1 any cost
+        if value.cost.decrease_cost(None):
+            # decrease success
+            if mode == 'REAL':
+                self.usage -= 1
         return value
 
     def event_handler_SWITCH_CHARACTOR(
