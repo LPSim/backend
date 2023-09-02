@@ -365,6 +365,9 @@ class CharactorBase(ObjectBase):
         """
         super().__setattr__(name, value)
         if name == 'position':
+            if self.position.player_idx < 0:
+                # invalid position, do not update skill positions
+                return
             for skill in self.skills:
                 skill.position = ObjectPosition(
                     player_idx = self.position.player_idx,

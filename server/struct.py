@@ -34,6 +34,25 @@ class ObjectPosition(BaseModel):
     area: ObjectPositionType
     id: int
 
+    def __init__(self, *argv, **kwargs) -> None:
+        super().__init__(*argv, **kwargs)
+        if self.area in [
+            ObjectPositionType.INVALID,
+            ObjectPositionType.SYSTEM
+        ]:
+            # invalid or system position, do not check other attributes
+            return
+        # check player_idx is propoerly set
+        assert self.player_idx >= 0, 'player_idx should be non-negative.'
+        # check charactor_idx is properly set
+        if self.area in [
+            ObjectPositionType.CHARACTOR_STATUS,
+            ObjectPositionType.SKILL,
+            ObjectPositionType.CHARACTOR,
+        ]:  # pragma: no cover
+            assert self.charactor_idx >= 0, \
+                'charactor_idx should be non-negative.'
+
     def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
         """
         Override __setattr__ to make it immutable.

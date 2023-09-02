@@ -25,7 +25,7 @@ from .action import (
     MoveObjectAction,
     ConsumeArcaneLegendAction,
 )
-from .modifiable_values import DamageIncreaseValue, FinalDamageValue
+from .modifiable_values import DamageValue, FinalDamageValue
 
 
 class EventArgumentsBase(BaseModel):
@@ -159,7 +159,7 @@ class ReceiveDamageEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.RECEIVE_DAMAGE] = ActionTypes.RECEIVE_DAMAGE
     action: MakeDamageAction
-    original_damage: DamageIncreaseValue
+    original_damage: DamageValue
     final_damage: FinalDamageValue
     hp_before: int
     hp_after: int

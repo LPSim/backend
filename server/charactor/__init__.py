@@ -10,13 +10,17 @@ from .hydro import (
 from .dendro import (
     DendroCharactorTalents, DendroCharactors,  # SummonsOfDendroCharactors
 )
+from .geo import (
+    GeoCharactorTalents, GeoCharactors,  # SummonsOfGeoCharactors
+)
 
 
 Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
-    | DendroCharactors
+    | DendroCharactors | GeoCharactors
 )
 SummonsOfCharactors = SummonsOfElectroCharactors | SummonsOfHydroCharactors
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
+    | GeoCharactorTalents
 )

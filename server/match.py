@@ -1272,12 +1272,7 @@ class Match(BaseModel):
         )]
         actions += skill.get_actions(self)
         actions.append(SkillEndAction(
-            position = ObjectPosition(
-                player_idx = request.player_idx,
-                charactor_idx = request.charactor_idx,
-                area = ObjectPositionType.CHARACTOR,
-                id = skill.id,
-            ),
+            position = skill.position,
             skill_type = skill.skill_type,
         ))
         actions.append(CombatActionAction(
@@ -1791,6 +1786,7 @@ class Match(BaseModel):
             assert charactor.is_alive, (
                 'Damage target charactor should be alive.'
             )
+            self._modify_value(damage, 'REAL')
             damage_element_type = DAMAGE_TYPE_TO_ELEMENT[
                 damage.damage_elemental_type]
             target_element_application = charactor.element_application
@@ -1818,15 +1814,13 @@ class Match(BaseModel):
                 if nci is not None:
                     next_charactor = nci
             # apply elemental reaction, update damage and append new damages
-            damages_after_elemental_reaction = \
-                apply_elemental_reaction(
-                    table.charactors,
-                    damage, 
-                    elemental_reaction, 
-                    reacted_elements,
-                )
-            damage = damages_after_elemental_reaction.pop(0)
-            damage_lists += damages_after_elemental_reaction
+            damage, new_damages = apply_elemental_reaction(
+                table.charactors,
+                damage, 
+                elemental_reaction, 
+                reacted_elements,
+            )
+            damage_lists += new_damages
             # apply 3-step damage modification
             self._modify_value(damage, 'REAL')
             damage = DamageMultiplyValue.from_increase_value(damage)

@@ -18,7 +18,7 @@ class PhysicalMob(CharactorBase):
     name: Literal['PhysicalMob']
     desc: str = 'A PhysicalMob.'
     version = '1.0.0'
-    element: ElementType
+    element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[

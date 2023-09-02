@@ -18,13 +18,10 @@ class ModifiableValueTypes(str, Enum):
     COMBAT_ACTION = 'COMBAT_ACTION'
     COST = 'COST'
 
-    # declare a damage. When processing damage, the damage will be change to
-    # a damage increase value, based on the declaration and current charactor
-    # status.
-    DAMAGE = 'DAMAGE'
-    # damage calculation is split into 3 parts: increase, multiply and 
+    # damage calculation is split into 4 parts: increase, multiply and 
     # decrease. damage will be first increased, then multiplied, 
     # then decreased.
+    DAMAGE_ELEMENT_ENHANCE = 'DAMAGE_ELEMENT_ENHANCE'
     DAMAGE_INCREASE = 'DAMAGE_INCREASE'
     DAMAGE_MULTIPLY = 'DAMAGE_MULTIPLY'
     DAMAGE_DECREASE = 'DAMAGE_DECREASE'
@@ -75,19 +72,21 @@ class CombatActionValue(ModifiableValueBase):
     do_combat_action: bool = True
 
 
-class DamageIncreaseValue(ModifiableValueBase):
+class DamageElementEnhanceValue(ModifiableValueBase):
     """
     It describes a detailed damage, i.e. charactor X will receive the damage.
-    """
-    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
+    It contains all information that a damage is needed, except element
+    reaction, as it is not decided yet.
 
+    It is the initial stage of damage calculation.
+    In this stage, buffs will modify the damage elemental type.
+    """
+    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_ELEMENT_ENHANCE
     damage_type: DamageType
     target_position: ObjectPosition
     damage: int
     damage_elemental_type: DamageElementalType
     cost: Cost  # original cost of source
-    element_reaction: ElementalReactionType = ElementalReactionType.NONE
-    reacted_elements: List[ElementType] = []
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -199,7 +198,43 @@ class DamageIncreaseValue(ModifiableValueBase):
         return True
 
 
+class DamageIncreaseValue(DamageElementEnhanceValue):
+    """
+    It inherits DamageElementEnhanceValue, and add two information about
+    elemental reaction.
+
+    In this stage, damage elemental type has been decided, and all add-type
+    damage buffs will modify the damage, including elemental reaction.
+    """
+    type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_INCREASE
+
+    element_reaction: ElementalReactionType
+    reacted_elements: List[ElementType]
+
+    @staticmethod
+    def from_element_enhance_value(
+        value: DamageElementEnhanceValue,
+        element_reaction: ElementalReactionType,
+        reacted_elements: List[ElementType],
+    ) -> 'DamageIncreaseValue':
+        return DamageIncreaseValue(
+            position = value.position,
+            damage_type = value.damage_type,
+            target_position = value.target_position,
+            damage = value.damage,
+            damage_elemental_type = value.damage_elemental_type,
+            cost = value.cost,
+            element_reaction = element_reaction,
+            reacted_elements = reacted_elements,
+        )
+
+
 class DamageMultiplyValue(DamageIncreaseValue):
+    """
+    In this stage, damage increase has been decided, and all multiply-type
+    buffs will modify the damage, e.g. Mona elemental burst, Noelle elemental
+    skill.
+    """
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_MULTIPLY
 
     @staticmethod
@@ -219,6 +254,10 @@ class DamageMultiplyValue(DamageIncreaseValue):
 
 
 class DamageDecreaseValue(DamageIncreaseValue):
+    """
+    In this stage, damage multiply has been decided, and all decrease-type
+    buffs will modify the damage, i.e. various types of shields.
+    """
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_DECREASE
 
     @staticmethod
@@ -268,5 +307,5 @@ class DamageDecreaseValue(DamageIncreaseValue):
         return shield_usage
 
 
-DamageValue = DamageIncreaseValue
+DamageValue = DamageElementEnhanceValue
 FinalDamageValue = DamageDecreaseValue  # alias
