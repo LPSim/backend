@@ -1,8 +1,6 @@
 from typing import Any, List, Literal
 
-from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
-)
+from ...consts import SkillType
 
 from ...modifiable_values import DamageDecreaseValue, DamageIncreaseValue
 
@@ -42,20 +40,10 @@ class AdeptusTemptation(RoundCharactorStatus):
         charactor receives damage, and we do not need to check it.
         """
         assert mode == 'REAL'
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage, not modify
-            return value
-        if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            charactor_idx_same = True,
-            target_area = ObjectPositionType.SKILL,
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.ELEMENTAL_BURST
         ):
-            # not this charactor use skill, not modify
-            return value
-        skill = match.get_object(value.position)
-        skill_type: SkillType = skill.skill_type
-        if skill_type != SkillType.ELEMENTAL_BURST:
-            # not elemental burst, not modify
+            # not this charactor use elemental burst, not modify
             return value
         if self.usage <= 0:
             # no usage, not modify
@@ -84,21 +72,13 @@ class LotusFlowerCrisp(RoundCharactorStatus):
             self, value: DamageDecreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
         assert mode == 'REAL'
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage, not modify
-            return value
-        if not self.position.check_position_valid(
-            value.target_position, match, player_idx_same = True,
-            charactor_idx_same = True,
+        if not value.is_corresponding_charactor_receive_damage(
+            self.position, match
         ):
             # not this charactor receive damage, not modify
             return value
-        if value.damage_elemental_type == DamageElementalType.PIERCING:
-            # piercing damage, not modify
-            return value
         if value.damage == 0:
             # no damage, not modify
-            raise NotImplementedError('Not tested part')
             return value
         assert self.usage > 0
         decrease = min(3, value.damage)
@@ -133,20 +113,10 @@ class TandooriRoastChicken(RoundCharactorStatus):
         Logic same as AdeptusTemptation.
         """
         assert mode == 'REAL'
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage, not modify
-            return value
-        if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            charactor_idx_same = True,
-            target_area = ObjectPositionType.SKILL,
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.ELEMENTAL_SKILL
         ):
-            # not this charactor use skill, not modify
-            return value
-        skill = match.get_object(value.position)
-        skill_type: SkillType = skill.skill_type
-        if skill_type != SkillType.ELEMENTAL_SKILL:
-            # not elemental skill, not modify
+            # not this charactor use elemental skill, not modify
             return value
         if self.usage <= 0:
             # no usage, not modify

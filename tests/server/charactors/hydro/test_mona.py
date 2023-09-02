@@ -82,6 +82,7 @@ def test_mona():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.enable_history = True
     assert match.start()
     match.step()
 

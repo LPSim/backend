@@ -292,7 +292,17 @@ class SkillTalent(TalentBase):
         ret = super().get_actions(target, match)
         assert len(ret) > 0
         assert ret[-1].type == 'MOVE_OBJECT'
-        self.skill.position = ret[-1].target_position
+        target_position = ret[-1].target_position
+        target_charactor = match.player_tables[
+            target_position.player_idx
+        ].charactors[target_position.charactor_idx]
+        skills: List[SkillBase] = target_charactor.skills
+        for s in skills:
+            if s.name == self.skill.name:
+                self.skill.position = s.position
+                break
+        else:
+            raise AssertionError('Skill not found')
         ret += self.skill.get_actions(match)
         # use cards are quick actions, but equip talent card will use skills,
         # so should add CombatActionAction.

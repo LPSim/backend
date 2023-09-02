@@ -136,6 +136,16 @@ class Cost(BaseModel):
     arcane_legend: bool = False
     original_value: Any = None
 
+    @property
+    def total_dice_cost(self) -> int:
+        """
+        Return the total dice cost.
+        """
+        return (
+            self.elemental_dice_number + self.same_dice_number
+            + self.any_dice_number + self.omni_dice_number
+        )
+
     def is_valid(self, dice_colors: List[DieColor], charge: int, 
                  arcane_legend: bool, strict = True) -> bool:
         """
@@ -154,6 +164,12 @@ class Cost(BaseModel):
         # then arcane legend check
         if self.arcane_legend and not arcane_legend:
             return False
+
+        # then dice number check, no minus
+        assert self.elemental_dice_number >= 0
+        assert self.same_dice_number >= 0
+        assert self.any_dice_number >= 0
+        assert self.omni_dice_number >= 0
 
         # then dice check
         assert self.omni_dice_number == 0, 'Omni dice is not supported yet.'

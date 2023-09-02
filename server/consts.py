@@ -318,3 +318,39 @@ class CostLabels(int, Enum):
 
     def __repr__(self):
         return self.name
+
+
+class IconType(str, Enum):
+    """
+    Icon types of objects. Used for display, and also for some effects, e.g.
+    Vortex Vanquisher will increase 1 damage when any status, summons or 
+    supports has shield icon.
+    """
+
+    # e.g. Changing Shifts
+    BUFF = 'BUFF'
+    # e.g. I Haven't lost yet used
+    DEBUFF = 'DEBUFF'
+
+    # e.g. Tandoori Chicken
+    ATTACK = 'ATTACK'
+    # e.g. Lotus Flower Crisp, Ushi
+    DEFEND = 'DEFEND'
+    # e.g. Crystallize, Unmovable Mountain
+    SHIELD = 'SHIELD'
+
+    # food card used for charactor, or egg used for team.
+    SATIATED = 'SATIATED'
+
+    # e.g. most of summons
+    SANDGLASS = 'SANDGLASS'
+    # e.g. Timmie, Liben
+    STOPWATCH = 'STOPWATCH'
+
+    # e.g. Rana, Sumeru City
+    AVAILABLE = 'AVAILABLE'
+    # e.g. Jade Chamber, Traveler's Handy Sword
+    NONE = 'NONE'
+
+    # with others, the status has its special icon.
+    OTHERS = 'OTHERS'

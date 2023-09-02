@@ -3,7 +3,7 @@ from typing import List, Any, Literal
 from utils import BaseModel
 from .consts import (
     DieColor, DamageType, DamageElementalType,
-    ElementalReactionType, ElementType
+    ElementalReactionType, ElementType, ObjectPositionType, SkillType
 )
 from .struct import ObjectPosition, Cost
 
@@ -99,6 +99,105 @@ class DamageIncreaseValue(ModifiableValueBase):
             assert self.damage_type == DamageType.ELEMENT_APPLICATION
             assert self.damage == 0, 'Element application should be 0'
 
+    def is_corresponding_charactor_use_damage_skill(
+        self,
+        object_position: ObjectPosition,
+        match: Any,
+        skill_type: SkillType | None
+    ) -> bool:
+        """
+        Most objects modifying damage when current charactor
+        makes damages by using skills. This function checks if the object
+        with given object_position is the corresponding charactor using skill.
+
+        If object position is on certain charactor, i.e. equipments or 
+        charactor status, the charactor should match damage source. Otherwise,
+        the active charactor should be the damage source.
+
+        Args:
+            object_position: The position of the object to check.
+            match: The match object.
+            skill_type: If not None, the skill type should match.
+        """
+        if self.damage_type != DamageType.DAMAGE:
+            # not damage
+            return False
+        if self.position.area != ObjectPositionType.SKILL:
+            # not skill
+            return False
+        if self.position.player_idx != object_position.player_idx:
+            # not same player
+            return False
+        if (
+            object_position.area == ObjectPositionType.CHARACTOR
+            or object_position.area == ObjectPositionType.CHARACTOR_STATUS
+        ):
+            # object on charactor, get idx
+            charactor_idx = object_position.charactor_idx
+        else:
+            # not on charactor, get active charactor idx
+            charactor_idx = match.player_tables[
+                object_position.player_idx].active_charactor_idx
+        if self.position.charactor_idx != charactor_idx:
+            # not same charactor
+            return False
+        if skill_type is not None:
+            skill = match.get_object(self.position)
+            if skill.skill_type != skill_type:
+                # skill type not match
+                return False
+        return True
+
+    def is_corresponding_charactor_receive_damage(
+        self,
+        object_position: ObjectPosition,
+        match: Any,
+        ignore_piercing: bool = True
+    ) -> bool:
+        """
+        Most objects modifing damage only when current charactor
+        receives damages. This function checks if the object with given
+        object_position is the corresponding charactor receiving damage.
+
+        If object position is on certain charactor, i.e. equipments or 
+        charactor status, the charactor should match damage target. Otherwise,
+        the active charactor should be the damage target.
+
+        Args:
+            object_position: The position of the object to check.
+            match: The match object.
+            ignore_piercing: If True, piercing damage will result in False.
+        """
+        if self.damage_type != DamageType.DAMAGE:
+            # not damage
+            return False
+        if (
+            ignore_piercing 
+            and self.damage_elemental_type == DamageElementalType.PIERCING
+        ):
+            # piercing damage
+            return False
+        if self.target_position.area != ObjectPositionType.CHARACTOR:
+            # not on charactor
+            return False
+        if self.target_position.player_idx != object_position.player_idx:
+            # not same player
+            return False
+        if (
+            object_position.area == ObjectPositionType.CHARACTOR
+            or object_position.area == ObjectPositionType.CHARACTOR_STATUS
+        ):
+            # object on charactor, get idx
+            charactor_idx = object_position.charactor_idx
+        else:
+            # not on charactor, get active charactor idx
+            charactor_idx = match.player_tables[
+                object_position.player_idx].active_charactor_idx
+        if self.target_position.charactor_idx != charactor_idx:
+            # not same charactor
+            return False
+        return True
+
 
 class DamageMultiplyValue(DamageIncreaseValue):
     type: ModifiableValueTypes = ModifiableValueTypes.DAMAGE_MULTIPLY
@@ -136,6 +235,37 @@ class DamageDecreaseValue(DamageIncreaseValue):
             element_reaction = multiply_value.element_reaction,
             reacted_elements = multiply_value.reacted_elements,
         )
+
+    def apply_shield(
+        self, shield_usage: int, min_damage_to_trigger: int, 
+        max_in_one_time: int, decrease_usage_by_damage: bool
+    ) -> int:
+        """
+        Apply shield to damage, and return the shield usage after applying.
+
+        Args:
+            shield_usage: Current shield usage.
+            decrease_usage_by_damage: If True, decrease usage by damage,
+                and the following two parameters are ignored.
+            min_damage_to_trigger: Minimum damage to trigger shield.
+            max_in_one_time: Maximum damage to decrease in one time.
+        """
+        if shield_usage <= 0:
+            # no usage, return
+            return shield_usage
+        if decrease_usage_by_damage:
+            # decrease usage by damage
+            decrease = min(shield_usage, self.damage)
+            self.damage -= decrease
+            shield_usage -= decrease
+        else:
+            if self.damage < min_damage_to_trigger:
+                # damage too small to trigger
+                return shield_usage
+            decrease = min(max_in_one_time, self.damage)
+            self.damage -= decrease
+            shield_usage -= 1
+        return shield_usage
 
 
 DamageValue = DamageIncreaseValue

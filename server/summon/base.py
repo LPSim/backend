@@ -19,6 +19,8 @@ class SummonBase(CardBase):
     type: Literal[ObjectType.SUMMON] = ObjectType.SUMMON
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'RESET_WITH_MAX'
     name: str
+    desc: str
+    version: str
     usage: int
     max_usage: int
     cost: Cost = Cost()
@@ -51,6 +53,11 @@ class AttackerSummonBase(SummonBase):
     disappears when run out of usage. Specially, Melody Loop can also be a
     Attacker Summon, as it also makes damage with type HEAL.
     """
+    name: str
+    desc: str
+    version: str
+    usage: int
+    max_usage: int
     damage_elemental_type: DamageElementalType
     damage: int
 
@@ -114,37 +121,44 @@ class AttackerSummonBase(SummonBase):
         return []
 
 
-class ShieldSummonBase(SummonBase):
+class DefendSummonBase(SummonBase):
     """
-    Temporary shield summons, e.g. Ushi, Frog, Baron Bunny. They gives shield 
-    which can decrease damage, and will do one-time damage in round end.
+    Defend summons, e.g. Ushi, Frog, Baron Bunny. decrease damage with its rule
+    when receive damage, and decrease usage by 1, and will do one-time damage 
+    in round end.
 
     Args:
+        name: The name of the summon.
+        desc: The description of the summon.
+        usage: The usage of the summon, which is shown on top right when it is
+            summoned, represents the number of times it can decrease damage.
+        max_usage: The maximum usage of the summon.
         damage_elemental_type: The elemental type when attack.
         damage: The damage when attack.
-        usage: The usage of the shield, which is shown on top right when it is
-            summoned.
-        max_usage: The maximum usage of the shield.
-        min_damage_to_trigger: The minimum damage to trigger the damage 
-            decrease.
-        max_in_one_time: the maximum damage decrease in one time.
-        decrease_usage_type: The type of decrease usage. 'ONE' means decrease
-            one usage when damage decreased, regardless of how many. 
-            'DAMAGE' means decrease usage by the damage decreased. Currently
-            only 'ONE' is supported.
         attack_until_run_out_of_usage: Whether attack until run out of usage.
             If true, when usage is not zero, it will remain on the summon area
             and do nothing in round end. If false, when usage is not zero, it
             will do damage in round end and disappear.
+        min_damage_to_trigger: The minimum damage to trigger the damage 
+            decrease.
+        max_in_one_time: the maximum damage decrease in one time.
+        decrease_usage_by_damage: Always be false for defend summons.
     """
-    damage_elemental_type: DamageElementalType
-    damage: int
+    name: str
+    desc: str
+    version: str
     usage: int
     max_usage: int
+
+    # attack params
+    damage_elemental_type: DamageElementalType
+    damage: int
+
+    # defend params
+    attack_until_run_out_of_usage: bool
     min_damage_to_trigger: int
     max_in_one_time: int
-    decrease_usage_type: Literal['ONE', 'DAMAGE']
-    attack_until_run_out_of_usage: bool
+    decrease_usage_by_damage: bool = False
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -191,22 +205,54 @@ class ShieldSummonBase(SummonBase):
             self, value: DamageDecreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
         """
-        Decrease damage.
+        Decrease damage with its rule, and decrease usage.
         """
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage, not modify
+        if not value.is_corresponding_charactor_receive_damage(
+            self.position, match,
+        ):
+            # not this charactor receive damage, not modify
             return value
-        if value.target_position.player_idx != self.position.player_idx:
-            # attack enemy, not activate
-            return value
-        if self.usage > 0:
-            if value.damage < self.min_damage_to_trigger:
-                # damage too small to trigger
-                return value
-            if self.decrease_usage_type != 'ONE':
-                raise NotImplementedError('Only ONE is supported')
-            decrease = min(self.max_in_one_time, value.damage)
-            value.damage -= decrease
-            assert mode == 'REAL'
-            self.usage -= 1
+        new_usage = value.apply_shield(
+            self.usage, self.min_damage_to_trigger, self.max_in_one_time,
+            self.decrease_usage_by_damage
+        )
+        assert mode == 'REAL'
+        self.usage = new_usage
         return value
+
+
+class ShieldSummonBase(DefendSummonBase):
+    """
+    Shield summons, which decrease damage like yellow shield, decrease damage 
+    by its usage and decrease corresponding usage. Currently no such summon.
+
+    Args:
+        name: The name of the summon.
+        desc: The description of the summon.
+        usage: The usage of the summon, which is shown on top right when it is
+            summoned, represents the number of times it can decrease damage.
+        max_usage: The maximum usage of the summon.
+        damage_elemental_type: The elemental type when attack.
+        damage: The damage when attack.
+        attack_until_run_out_of_usage: Whether attack until run out of usage.
+            If true, when usage is not zero, it will remain on the summon area
+            and do nothing in round end. If false, when usage is not zero, it
+            will do damage in round end and disappear.
+
+        decrease_usage_by_damage: Always be true for shield summons.
+        min_damage_to_trigger: Not used, always be 0 for shield summons.
+        max_in_one_time: Not used, always be 0 for shield summons.
+    """
+    name: str
+    desc: str
+    version: str
+    usage: int
+    max_usage: int
+    damage_elemental_type: DamageElementalType
+    damage: int
+    attack_until_run_out_of_usage: bool
+
+    # papams passing to apply_shield is fixed
+    min_damage_to_trigger: int = 0
+    max_in_one_time: int = 0
+    decrease_usage_by_damage: bool = True

@@ -1,6 +1,6 @@
 from typing import Any, List, Literal
 
-from ...summon.base import ShieldSummonBase
+from ...summon.base import DefendSummonBase
 
 from ...modifiable_values import CombatActionValue, DamageIncreaseValue
 from ...event import RoundPrepareEventArguments
@@ -18,7 +18,7 @@ from ..charactor_base import (
 )
 
 
-class Reflection(ShieldSummonBase):
+class Reflection(DefendSummonBase):
     name: Literal['Reflection'] = 'Reflection'
     desc: str = (
         'When your active character receives DMG: Decrease DMG taken by 1. '
@@ -26,13 +26,12 @@ class Reflection(ShieldSummonBase):
         'discarded. End Phase: Discard this card, deal 1 Hydro DMG.'
     )
     version: Literal['3.3'] = '3.3'
-    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
-    damage: int = 1
     usage: int = 1
     max_usage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+    damage: int = 1
     min_damage_to_trigger: int = 1
     max_in_one_time: int = 1
-    decrease_usage_type: Literal['ONE', 'DAMAGE'] = 'ONE'
     attack_until_run_out_of_usage: bool = False
 
 
