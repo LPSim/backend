@@ -140,7 +140,8 @@ applies to attributes like initial dice color, damage, and cost.
 ## Contribution
 
 Contributions are welcomed, however, currently there is no detailed guide for
-contribution. To add a new charactor, please refer to
+contribution. To add new charactor related objects (Charactor, Skill, Talent,
+Summon, Status), please refer to `server/charactor/template.py` and implemented
 `server/charactor/electro/fischl.py` `server/charactor/hydro/mona.py`
 and `server/charactor/dendro/nahida.py`. To add a new card, please refer to
-existing card implementations.
+existing card implementations in `server/card`.
