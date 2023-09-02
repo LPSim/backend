@@ -2,12 +2,12 @@ from typing import Any, List, Literal
 
 from ...consts import SkillType
 
-from ...modifiable_values import DamageDecreaseValue, DamageIncreaseValue
+from ...modifiable_values import DamageIncreaseValue
 
 from ...action import RemoveObjectAction
 
 from ...event import MakeDamageEventArguments
-from .base import RoundCharactorStatus
+from .base import DefendCharactorStatus, RoundCharactorStatus
 
 
 class Satiated(RoundCharactorStatus):
@@ -59,7 +59,7 @@ class AdeptusTemptation(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class LotusFlowerCrisp(RoundCharactorStatus):
+class LotusFlowerCrisp(RoundCharactorStatus, DefendCharactorStatus):
     name: Literal['Lotus Flower Crisp']
     desc: str = (
         "During this Round, the target character takes -3 DMG the next time."
@@ -67,30 +67,8 @@ class LotusFlowerCrisp(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
-
-    def value_modifier_DAMAGE_DECREASE(
-            self, value: DamageDecreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
-        assert mode == 'REAL'
-        if not value.is_corresponding_charactor_receive_damage(
-            self.position, match
-        ):
-            # not this charactor receive damage, not modify
-            return value
-        if value.damage == 0:
-            # no damage, not modify
-            return value
-        assert self.usage > 0
-        decrease = min(3, value.damage)
-        value.damage -= decrease
-        assert mode == 'REAL'
-        self.usage -= 1
-        return value
-
-    def event_handler_MAKE_DAMAGE(
-        self, event: MakeDamageEventArguments, match: Any
-    ) -> List[RemoveObjectAction]:
-        return self.check_should_remove()
+    min_damage_to_trigger: int = 1
+    max_in_one_time: int = 3
 
 
 class TandooriRoastChicken(RoundCharactorStatus):
