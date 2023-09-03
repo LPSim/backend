@@ -91,7 +91,7 @@ class EnduringRock(ElementalResonanceCardBase):
         Create status
         """
         return [CreateObjectAction(
-            object_name = 'Elemental Resonance: Enduring Rock',
+            object_name = self.name,
             object_position = ObjectPosition(
                 player_idx = self.position.player_idx,
                 area = ObjectPositionType.TEAM_STATUS,
@@ -128,7 +128,7 @@ class WindAndFreedom(NationResonanceCardBase):
         """
         assert target is None
         return [CreateObjectAction(
-            object_name = 'Wind and Freedom',
+            object_name = self.name,
             object_position = ObjectPosition(
                 player_idx = self.position.player_idx,
                 area = ObjectPositionType.TEAM_STATUS,

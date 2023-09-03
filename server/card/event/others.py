@@ -279,7 +279,39 @@ class ClaxsArts(CardBase):
         return ret
 
 
+class HeavyStrike(CardBase):
+    name: Literal['Heavy Strike']
+    desc: str = (
+        "During this round, your current active character's next "
+        'Normal Attack deals +1 DMG. '
+        'When this Normal Attack is a Charged Attack: Deal +1 additional DMG.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Act the card. Create charactor status.
+        """
+        assert target is None  # no targets
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        position = active_charactor.position.set_area(
+            ObjectPositionType.CHARACTOR_STATUS)
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = position,
+            object_arguments = {}
+        )]
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts
+    | IHaventLostYet | LeaveItToMe | ClaxsArts | HeavyStrike
 )
