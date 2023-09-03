@@ -39,6 +39,7 @@ class Timmie(CompanionBase):
         """
         When played, first reset usage to 0, then increase usage.
         """
+        self.usage = 0
         return [ChangeObjectUsageAction(
             object_position = self.position,
             change_type = 'DELTA',
@@ -107,6 +108,10 @@ class Liben(CompanionBase):
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
+
+    def play(self, match: Any) -> List[Actions]:
+        self.usage = 0
+        return []
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
