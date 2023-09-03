@@ -3,8 +3,119 @@ from server.match import Match, MatchState
 from server.deck import Deck
 from tests.utils_for_test import (
     get_test_id_from_command, make_respond, 
-    get_random_state
+    get_random_state, set_16_omni
 )
+
+
+def test_liyue_harbor():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 0 1",
+            "card 0 0 0 1",
+            "card 0 0 0 1",
+            "card 0 0 0 1",
+            "card 0 0 0 1",
+            "end",
+            "TEST 1 hand 10 8",
+            "card 0 0 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "card 0 3 0 1",
+            "end",
+            "TEST 1 hand 10 10",
+            "TEST 2 deck 5 17",
+            "TEST 3 support 1 0",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 0 1",
+            "end",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:Noelle
+        Liyue Harbor Wharf*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id != 0:
+                data = [int(x) for x in cmd.strip().split()[-2:]]
+                assert len(data) == 2
+            else:
+                data = []
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # hand
+                for table, d in zip(match.player_tables, data):
+                    assert len(table.hands) == d
+            elif test_id == 2:
+                # deck
+                for table, d in zip(match.player_tables, data):
+                    assert len(table.table_deck) == d
+            elif test_id == 3:
+                # support
+                for table, d in zip(match.player_tables, data):
+                    assert len(table.supports) == d
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
 
 
 def test_vanarana():
@@ -216,4 +327,5 @@ def test_vanarana():
 
 
 if __name__ == '__main__':
+    test_liyue_harbor()
     test_vanarana()
