@@ -2193,6 +2193,10 @@ class Match(BaseModel):
                         assert charactor.talent is None
                         charactor.talent = current_object  # type: ignore
                         target_name = 'talent'
+                    elif current_object.type == ObjectType.WEAPON:
+                        assert charactor.weapon is None
+                        charactor.weapon = current_object  # type: ignore
+                        target_name = 'weapon'
                     else:
                         raise NotImplementedError(
                             f'Move object action as eqipment with type '

@@ -10,7 +10,7 @@ import random
 from utils import BaseModel
 from typing import List, Literal, Any
 from .action import Actions, ActionTypes
-from .consts import ObjectType, WeaponType, ObjectPositionType, CostLabels
+from .consts import ObjectType, ObjectPositionType, CostLabels
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
     ObjectPosition, Cost
@@ -124,13 +124,3 @@ class CardBase(ObjectBase):
         the cost of the card.
         """
         return True
-
-
-class WeaponBase(CardBase):
-    """
-    Base class of weapons.
-    """
-    name: str
-    type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
-    weapon_type: WeaponType

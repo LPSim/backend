@@ -13,12 +13,13 @@ from ..consts import (
     ObjectPositionType, CostLabels
 )
 from ..object_base import (
-    ObjectBase, WeaponBase, CardBase
+    ObjectBase, CardBase
 )
 from ..struct import Cost, ObjectPosition
 from ..modifiable_values import DamageValue
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
+from ..card.equipment.weapon import Weapons
 from ..action import (
     ChargeAction, CombatActionAction, MakeDamageAction, MoveObjectAction, 
     RemoveObjectAction, Actions
@@ -339,7 +340,7 @@ class CharactorBase(ObjectBase):
     # charactor status
     hp: int = 0
     charge: int = 0
-    weapon: WeaponBase | None = None
+    weapon: Weapons | None = None
     artifact: Artifacts | None = None
     talent: TalentBase | None = None
     status: List[CharactorStatus] = []
