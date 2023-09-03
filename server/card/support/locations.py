@@ -1,7 +1,10 @@
 from typing import Any, List, Literal
 from server.dice import Dice
 
-from server.action import Actions, CreateDiceAction, RemoveDiceAction
+from server.action import (
+    Actions, CreateDiceAction, DrawCardAction, RemoveDiceAction, 
+    RemoveObjectAction
+)
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
@@ -13,6 +16,32 @@ from .base import SupportBase
 
 class LocationBase(SupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
+
+
+class LiyueHarborWharf(LocationBase):
+    name: Literal['Liyue Harbor Wharf']
+    desc: str = '''End Phase: Draw 2 cards.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[DrawCardAction | RemoveObjectAction]:
+        """
+        When in round end, draw 2 cards, and check if should remove.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return []
+        self.usage -= 1
+        return [
+            DrawCardAction(
+                player_idx = self.position.player_idx,
+                number = 2,
+                draw_if_filtered_not_enough = True
+            ),
+        ] + self.check_remove_triggered()
 
 
 class Vanarana(LocationBase):
@@ -109,4 +138,4 @@ class Vanarana(LocationBase):
         )]
 
 
-Locations = Vanarana | Vanarana
+Locations = LiyueHarborWharf | Vanarana

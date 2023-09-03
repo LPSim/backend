@@ -22,10 +22,9 @@ class SupportBase(CardBase):
     cost_label: int = CostLabels.CARD.value
     usage: int
 
-    def check_remove_triggered(self) -> List[Actions]:
+    def check_remove_triggered(self) -> List[RemoveObjectAction]:
         """
-        Check if the support should be removed, if it is not in support area, 
-        return empty list.
+        Check if the support should be removed.
         when usage has changed, call this function to check if the support
         should be removed.
         """
