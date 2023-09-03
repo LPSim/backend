@@ -7,7 +7,7 @@ from tests.utils_for_test import (
 )
 
 
-def test_template():
+def test_noelle():
     cmd_records = [
         [
             "sw_card",
@@ -179,4 +179,4 @@ def test_template():
 
 
 if __name__ == '__main__':
-    test_template()
+    test_noelle()

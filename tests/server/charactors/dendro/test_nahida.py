@@ -372,6 +372,8 @@ def test_nahida_talents():
 
     assert match.state != MatchState.ERROR
 
+
+def test_nahida_talents_2():
     """
     second: with pyro electro (hydro tested above)
     """

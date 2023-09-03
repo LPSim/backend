@@ -1,3 +1,4 @@
+# type: ignore
 """
 This file contains a template for writing tests. You can copy this file to
 tests/folder/test_xxx.py and modify it to write your own tests.
@@ -11,7 +12,7 @@ from tests.utils_for_test import (
 )
 
 
-def test_template():
+def test_...():
     # use frontend and FastAPI server to perform commands, and test commands 
     # that start with TEST. NO NOT put TEST at the end of command list!
     # If a command is succesfully performed, frontend will print history 

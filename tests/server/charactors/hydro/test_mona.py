@@ -82,7 +82,6 @@ def test_mona():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.enable_history = True
     assert match.start()
     match.step()
 
@@ -134,6 +133,8 @@ def test_mona():
 
     assert match.state != MatchState.ERROR
 
+
+def test_mona_2():
     """
     when shield of Reflection becomes 0, will not disappear; summon twice
     will recover shield; artifact can effect talent card; attack that 

@@ -138,6 +138,8 @@ def test_fischl():
 
     assert match.state != MatchState.ERROR
 
+
+def test_fischl_2():
     """
     second: when no talent or talent on other Fischl, cannot trigger Oz attack.
     re-summon Oz will refresh usage. Can equip talent multiple times.
