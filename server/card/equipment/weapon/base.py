@@ -2,7 +2,7 @@ from typing import Literal, List, Any
 
 from ....modifiable_values import DamageIncreaseValue
 
-from ....event import MoveObjectEventArguments
+from ....event import MoveObjectEventArguments, RoundPrepareEventArguments
 
 from ....struct import ObjectPosition, Cost
 
@@ -116,3 +116,23 @@ class WeaponBase(CardBase):
         # modify damage
         value.damage += self.damage_increase
         return value
+
+
+class RoundEffectWeaponBase(WeaponBase):
+    """
+    Weapons that has round effects. Refresh their usage when equipped and
+    at round preparing stage.
+    Instead of setting usage, set max_usage_per_round.
+    """
+    usage: int = 0
+    max_usage_per_round: int 
+
+    def equip(self, match: Any) -> List[Actions]:
+        self.usage = self.max_usage_per_round
+        return []
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ):
+        self.usage = self.max_usage_per_round
+        return []

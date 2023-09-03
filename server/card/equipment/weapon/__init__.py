@@ -1,4 +1,5 @@
 from .vanilla import VanillaWeapon
+from .other_claymore import Claymores
 
 
-Weapons = VanillaWeapon | VanillaWeapon
+Weapons = VanillaWeapon | Claymores

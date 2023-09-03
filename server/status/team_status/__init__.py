@@ -3,13 +3,14 @@ from .hydro_charactors import HydroCharactorTeamStatus
 from .dendro_charactors import DendroTeamStatus
 from .geo_charactors import GeoTeamStatus
 from .event_cards import EventCardTeamStatus
+from .weapons import WeaponTeamStatus
 
 from .old_version import OldVersionTeamStatus
 
 
 TeamStatus = (
     SystemTeamStatus | HydroCharactorTeamStatus | DendroTeamStatus
-    | GeoTeamStatus | EventCardTeamStatus
+    | GeoTeamStatus | EventCardTeamStatus | WeaponTeamStatus
     # finally, old version status
     | OldVersionTeamStatus
 )
