@@ -18,12 +18,12 @@ class WeaponBase(CardBase):
     """
     name: str
     desc: str
-    type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    version: str
-    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
-    weapon_type: WeaponType
-
     cost: Cost
+    version: str
+    weapon_type: WeaponType
+    type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
+    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
+
     usage: int = 0
     damage_increase: int = 1  # Almost all weapons increase the damage by 1
 
@@ -124,8 +124,14 @@ class RoundEffectWeaponBase(WeaponBase):
     at round preparing stage.
     Instead of setting usage, set max_usage_per_round.
     """
-    usage: int = 0
+    name: str
+    desc: str
+    cost: Cost
+    version: str
+    weapon_type: WeaponType
     max_usage_per_round: int 
+
+    usage: int = 0
 
     def equip(self, match: Any) -> List[Actions]:
         self.usage = self.max_usage_per_round
@@ -133,6 +139,6 @@ class RoundEffectWeaponBase(WeaponBase):
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
-    ):
+    ) -> List[Actions]:
         self.usage = self.max_usage_per_round
         return []

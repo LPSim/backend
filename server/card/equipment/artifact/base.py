@@ -1,6 +1,6 @@
 from typing import Literal, List, Any
 
-from ....event import MoveObjectEventArguments
+from ....event import MoveObjectEventArguments, RoundPrepareEventArguments
 
 from ....object_base import CardBase
 from ....struct import Cost
@@ -14,12 +14,13 @@ class ArtifactBase(CardBase):
     Base class of artifacts.
     """
     name: str
-    type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
-    cost_label: int = CostLabels.CARD.value | CostLabels.ARTIFACT.value
-
+    desc: str
     version: str
     cost: Cost
     usage: int
+
+    type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
+    cost_label: int = CostLabels.CARD.value | CostLabels.ARTIFACT.value
 
     def equip(self, match: Any) -> List[Actions]:
         """
@@ -84,4 +85,29 @@ class ArtifactBase(CardBase):
         ):
             # this artifact equipped from hand to charactor
             return self.equip(match)
+        return []
+
+
+class RoundEffectArtifactBase(ArtifactBase):
+    """
+    Artifacts that has round effects. Refresh their usage when equipped and
+    at round preparing stage.
+    Instead of setting usage, set max_usage_per_round.
+    """
+    name: str
+    desc: str
+    version: str
+    cost: Cost
+    max_usage_per_round: int 
+
+    usage: int = 0
+
+    def equip(self, match: Any) -> List[Actions]:
+        self.usage = self.max_usage_per_round
+        return []
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.usage = self.max_usage_per_round
         return []
