@@ -30,7 +30,7 @@ class UsageTeamStatus(TeamStatusBase):
     Not using AFTER_MAKE_DAMAGE because we should remove the status before
     side effects of elemental reaction, which is triggered on RECEVIE_DAMAGE.
 
-    If it is not a damage related status, check_remove_triggered should be
+    If it is not a damage related status, check_should_remove should be
     called manually.
     """
     name: str

@@ -46,7 +46,7 @@ class LiyueHarborWharf(LocationBase):
                 number = 2,
                 draw_if_filtered_not_enough = True
             ),
-        ] + self.check_remove_triggered()
+        ] + self.check_should_remove()
 
 
 class Tenshukaku(LocationBase):

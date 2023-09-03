@@ -23,7 +23,7 @@ class SupportBase(CardBase):
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     cost_label: int = CostLabels.CARD.value
 
-    def check_remove_triggered(self) -> List[RemoveObjectAction]:
+    def check_should_remove(self) -> List[RemoveObjectAction]:
         """
         Check if the support should be removed.
         when usage has changed, call this function to check if the support

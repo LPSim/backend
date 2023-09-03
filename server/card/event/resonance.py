@@ -1,8 +1,11 @@
 
 
 from typing import Any, List, Literal
-from server.action import CreateDiceAction, CreateObjectAction
-from ...consts import ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType
+
+from ...action import CreateDiceAction, CreateObjectAction
+from ...consts import (
+    ELEMENT_TO_DIE_COLOR, DieColor, ElementType, ObjectPositionType
+)
 
 from server.struct import ObjectPosition
 from ...object_base import CardBase
@@ -10,7 +13,7 @@ from ...struct import Cost
 
 
 class ElementalResonanceCardBase(CardBase):
-    pass
+    element: ElementType
 
 
 name_to_element_type = {
@@ -37,7 +40,7 @@ class WovenCards(ElementalResonanceCardBase):
     desc: str = '''Create 1 XXX Die.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
-    element: ElementType = ElementType.NONE
+    element: ElementType = ElementType.NONE  # will update element in __init__
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -58,6 +61,43 @@ class WovenCards(ElementalResonanceCardBase):
             player_idx = self.position.player_idx,
             color = ELEMENT_TO_DIE_COLOR[self.element],
             number = 1,
+        )]
+
+
+class EnduringRock(ElementalResonanceCardBase):
+    name: Literal[
+        'Elemental Resonance: Enduring Rock'
+    ] = 'Elemental Resonance: Enduring Rock'
+    desc: str = (
+        'During this round, after your character deals Geo DMG next time: '
+        'Should there be any Combat Status on your side that provides Shield, '
+        'grant one such Status with 3 Shield points.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.GEO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.GEO
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Create status
+        """
+        return [CreateObjectAction(
+            object_name = 'Elemental Resonance: Enduring Rock',
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {}
         )]
 
 
@@ -98,5 +138,5 @@ class WindAndFreedom(NationResonanceCardBase):
         )]
 
 
-ElementResonanceCards = WovenCards | WovenCards
+ElementResonanceCards = WovenCards | EnduringRock
 NationResonanceCards = WindAndFreedom | WindAndFreedom
