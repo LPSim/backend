@@ -355,6 +355,123 @@ def test_timmie():
     assert match.state != MatchState.ERROR
 
 
+def test_liben():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll 1 7",
+            "card 0 0",
+            "card 0 0",
+            "sw_char 1 0",
+            "sw_char 0 0",
+            "sw_char 1 3",
+            "sw_char 0 3",
+            "end",
+            "TEST 1 p0 usage 2 1",
+            "TEST 1 p1 usage 3 3 2 0",
+            "reroll",
+            "sw_char 1 3",
+            "sw_char 0 3",
+            "sw_char 1 3",
+            "sw_char 0 3",
+            "sw_char 1 3",
+            "end",
+            "TEST 1 p0 usage 3 2",
+            "reroll"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "end",
+            "reroll",
+            "TEST 2 support all 2",
+            "TEST 3 hand 7 dice 12 omni 4",
+            "end",
+            "reroll"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:Noelle
+        Liben*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            # "TEST 2 support all 2",
+            # "TEST 3 hand 7 dice 12 omni 4",
+            elif test_id == 1:
+                cmd = cmd.strip().split()
+                pid = int(cmd[2][1])
+                usg = [int(x) for x in cmd[4:]]
+                for support, u in zip(match.player_tables[pid].supports, usg):
+                    assert support.usage == u
+            elif test_id == 2:
+                for table in match.player_tables:
+                    assert len(table.supports) == 2
+            elif test_id == 3:
+                table = match.player_tables[1]
+                assert len(table.hands) == 7
+                assert len(table.dice.colors) == 12
+                for color in table.dice.colors[:4]:
+                    assert color == 'OMNI'
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_rana()
     test_timmie()
+    test_liben()
