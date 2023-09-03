@@ -118,6 +118,112 @@ def test_liyue_harbor():
     assert match.state != MatchState.ERROR
 
 
+def test_tenshukaku():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "card 0 0 1 2",
+            "card 0 0 1 2",
+            "card 0 0 1 2",
+            "TEST 1 no card can use",
+            "end",
+            "reroll",
+            "TEST 2 dice number 11 8 over are omni",
+            "end",
+            "reroll 0 1 2 3 4 5 6 7",
+            "TEST 2 dice number 11 8 ...",
+            "end",
+            "reroll 2 5 6 7",
+            "TEST 2 dice number 11 11",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "reroll pyro dendro anemo",
+            "card 0 0 2 3",
+            "card 0 0 2 3",
+            "card 0 0 0 1",
+            "TEST 1 no card can use",
+            "end",
+            "reroll",
+            "end",
+            "reroll 0 1 2 3 4 5 6 7",
+            "end",
+            "reroll"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:Noelle
+        Tenshukaku*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 2:
+                cmd = cmd.strip().split()
+                dn = [int(cmd[4]), int(cmd[5])]
+                for table, d in zip(match.player_tables, dn):
+                    assert len(table.dice.colors) == d
+                    part = table.dice.colors[:-8]
+                    for c in part:
+                        assert c == 'OMNI'
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 def test_vanarana():
     """
     """
@@ -328,4 +434,5 @@ def test_vanarana():
 
 if __name__ == '__main__':
     test_liyue_harbor()
+    test_tenshukaku()
     test_vanarana()
