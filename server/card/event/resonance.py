@@ -1,8 +1,8 @@
 
 
 from typing import Any, List, Literal
-from server.action import CreateObjectAction
-from ...consts import ObjectPositionType
+from server.action import CreateDiceAction, CreateObjectAction
+from ...consts import ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType
 
 from server.struct import ObjectPosition
 from ...object_base import CardBase
@@ -10,7 +10,55 @@ from ...struct import Cost
 
 
 class ElementalResonanceCardBase(CardBase):
-    ...  # pragma: no cover
+    pass
+
+
+name_to_element_type = {
+    'Elemental Resonance: Woven Flames': ElementType.PYRO,
+    'Elemental Resonance: Woven Ice': ElementType.CRYO,
+    'Elemental Resonance: Woven Stone': ElementType.GEO,
+    'Elemental Resonance: Woven Thunder': ElementType.ELECTRO,
+    'Elemental Resonance: Woven Waters': ElementType.HYDRO,
+    'Elemental Resonance: Woven Weeds': ElementType.DENDRO,
+    'Elemental Resonance: Woven Winds': ElementType.ANEMO,
+}
+
+
+class WovenCards(ElementalResonanceCardBase):
+    name: Literal[
+        'Elemental Resonance: Woven Flames', 
+        'Elemental Resonance: Woven Ice',
+        'Elemental Resonance: Woven Stone', 
+        'Elemental Resonance: Woven Thunder',
+        'Elemental Resonance: Woven Waters',
+        'Elemental Resonance: Woven Weeds',
+        'Elemental Resonance: Woven Winds'
+    ]
+    desc: str = '''Create 1 XXX Die.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+    element: ElementType = ElementType.NONE
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.element = name_to_element_type[self.name]
+        self.desc = self.desc.replace('XXX', self.element.name.capitalize())
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateDiceAction]:
+        """
+        Create one corresponding element dice
+        """
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            color = ELEMENT_TO_DIE_COLOR[self.element],
+            number = 1,
+        )]
 
 
 class NationResonanceCardBase(CardBase):
@@ -50,4 +98,5 @@ class WindAndFreedom(NationResonanceCardBase):
         )]
 
 
+ElementResonanceCards = WovenCards | WovenCards
 NationResonanceCards = WindAndFreedom | WindAndFreedom
