@@ -1,12 +1,14 @@
 from typing import Any, List, Literal
 
-from ...consts import SkillType
+from ...struct import Cost
 
-from ...modifiable_values import DamageIncreaseValue
+from ...consts import DamageElementalType, DamageType, SkillType
 
-from ...action import RemoveObjectAction
+from ...modifiable_values import DamageIncreaseValue, DamageValue
 
-from ...event import MakeDamageEventArguments
+from ...action import MakeDamageAction, RemoveObjectAction
+
+from ...event import MakeDamageEventArguments, RoundEndEventArguments
 from .base import DefendCharactorStatus, RoundCharactorStatus
 
 
@@ -19,7 +21,7 @@ class Satiated(RoundCharactorStatus):
 
 
 class AdeptusTemptation(RoundCharactorStatus):
-    name: Literal["Adeptus' Temptation"]
+    name: Literal["Adeptus' Temptation"] = "Adeptus' Temptation"
     desc: str = (
         "During this Round, the target character's next Elemental Burst "
         "deals +3 DMG."
@@ -60,7 +62,7 @@ class AdeptusTemptation(RoundCharactorStatus):
 
 
 class LotusFlowerCrisp(RoundCharactorStatus, DefendCharactorStatus):
-    name: Literal['Lotus Flower Crisp']
+    name: Literal['Lotus Flower Crisp'] = 'Lotus Flower Crisp'
     desc: str = (
         "During this Round, the target character takes -3 DMG the next time."
     )
@@ -71,8 +73,40 @@ class LotusFlowerCrisp(RoundCharactorStatus, DefendCharactorStatus):
     max_in_one_time: int = 3
 
 
+class MushroomPizza(RoundCharactorStatus):
+    name: Literal['Mushroom Pizza'] = 'Mushroom Pizza'
+    desc: str = (
+        'End Phase: Heal this charactor for 1 HP. '
+        'Usage(s): 2'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        target_charactor = match.player_tables[
+            self.position.player_idx].charactors[self.position.charactor_idx]
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            charactor_change_rule = 'NONE',
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = target_charactor.position,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost(),
+                )
+            ],
+        )]
+
+
 class TandooriRoastChicken(RoundCharactorStatus):
-    name: Literal['Tandoori Roast Chicken']
+    name: Literal['Tandoori Roast Chicken'] = 'Tandoori Roast Chicken'
     desc: str = (
         "During this Round, all your characters' next Elemental Skills "
         "deal +2 DMG."
@@ -111,5 +145,6 @@ class TandooriRoastChicken(RoundCharactorStatus):
 
 
 FoodStatus = (
-    Satiated | AdeptusTemptation | LotusFlowerCrisp | TandooriRoastChicken
+    Satiated | AdeptusTemptation | LotusFlowerCrisp | MushroomPizza
+    | TandooriRoastChicken
 )

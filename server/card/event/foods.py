@@ -1,6 +1,6 @@
 from typing import Any, List, Literal
 
-from ...action import CreateObjectAction, MakeDamageAction
+from ...action import ActionTypes, CreateObjectAction, MakeDamageAction
 from ...struct import Cost, ObjectPosition
 from ...modifiable_values import DamageValue
 from ...consts import (
@@ -144,6 +144,49 @@ class MondstadtHashBrown(FoodCardBase):
         return ret
 
 
+class MushroomPizza(FoodCardBase):
+    name: Literal['Mushroom Pizza']
+    desc: str = (
+        'Heal target character for 1 HP. For the next two Rounds, heal this '
+        'character for 1 HP again at the End Phase.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    can_eat_only_if_damaged: bool = True
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction | MakeDamageAction]:
+        ret: List[CreateObjectAction | MakeDamageAction] = []
+        ret = list(super().get_actions(target, match))
+        assert len(ret) == 1
+        assert target is not None
+        ret.append(MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            charactor_change_rule = 'NONE',
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = target,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            ],
+        ))
+        create_1 = ret[0]
+        assert create_1.type == ActionTypes.CREATE_OBJECT
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = create_1.object_position,
+            object_arguments = {}
+        ))
+        return ret
+
+
 class TandooriRoastChicken(FoodCardBase):
     name: Literal['Tandoori Roast Chicken']
     desc: str = (
@@ -189,6 +232,6 @@ class TandooriRoastChicken(FoodCardBase):
 
 
 FoodCards = (
-    AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown 
+    AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown | MushroomPizza
     | TandooriRoastChicken
 )
