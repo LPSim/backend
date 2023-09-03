@@ -188,6 +188,7 @@ class Mona(CharactorBase):
         FactionType.MONDSTADT,
     ]
     weapon_type: WeaponType = WeaponType.CATALYST
+    talent: ProphecyOfSubmersion | None = None
 
     def _init_skills(self) -> None:
         self.skills = [

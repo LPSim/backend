@@ -133,7 +133,7 @@ class ...(ElementalSkillBase):
         )
         return super().get_actions(match) + [
             CreateObjectAction(
-                object_name = 'Reflection',
+                object_name = ...,
                 object_position = position,
                 object_arguments = {}
             )
@@ -218,6 +218,7 @@ class ...(CharactorBase):
         ...
     ]
     weapon_type: WeaponType = ...
+    talent: ... | None = None
 
     def _init_skills(self) -> None:
         self.skills = [

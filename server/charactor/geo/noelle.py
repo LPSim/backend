@@ -95,6 +95,7 @@ class Noelle(CharactorBase):
         FactionType.MONDSTADT
     ]
     weapon_type: WeaponType = WeaponType.CLAYMORE
+    talent: IGotYourBack | None = None
 
     def _init_skills(self) -> None:
         self.skills = [

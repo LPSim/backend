@@ -227,6 +227,7 @@ class Nahida(CharactorBase):
         FactionType.SUMERU,
     ]
     weapon_type: WeaponType = WeaponType.CATALYST
+    talent: TheSeedOfStoredKnowledge | None = None
 
     def _init_skills(self) -> None:
         self.skills = [

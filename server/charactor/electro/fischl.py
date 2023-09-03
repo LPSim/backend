@@ -171,6 +171,7 @@ class Fischl(CharactorBase):
         FactionType.MONDSTADT,
     ]
     weapon_type: WeaponType = WeaponType.BOW
+    talent: StellarPredator | None = None
 
     def _init_skills(self) -> None:
         self.skills = [

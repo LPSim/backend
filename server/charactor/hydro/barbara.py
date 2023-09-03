@@ -226,6 +226,7 @@ class Barbara(CharactorBase):
         FactionType.MONDSTADT
     ]
     weapon_type: WeaponType = WeaponType.CATALYST
+    talent: GloriousSeason | None = None
 
     def _init_skills(self) -> None:
         self.skills = [
