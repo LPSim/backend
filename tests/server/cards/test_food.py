@@ -674,9 +674,119 @@ def test_tandoori():
     assert match.state != MatchState.ERROR
 
 
+def test_pizza():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 2 no card can use",
+            "skill 1 0 1 2",
+            "end",
+            "TEST 3 p1c0 status 2 1",
+            "skill 1 0 1 2",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 4 all card can use",
+            "card 0 0 0",
+            "end",
+            "TEST 3 p1c0 status 1",
+            "card 0 0 0",
+            "end",
+            "end",
+            "TEST 1 10 10 10 9 10 10",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:ElectroMobMage
+        charactor:CryoMobMage
+        charactor:Noelle
+        Mushroom Pizza*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 3:
+                cmd = cmd.split()
+                status = match.player_tables[1].charactors[0].status
+                usages = [int(x) for x in cmd[4:]]
+                assert len(usages) == len(status)
+                for s, u in zip(status, usages):
+                    assert s.usage == u
+            elif test_id == 4:
+                count = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        count += 1
+                assert count == 5
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_adeptus_temptation()
     test_lotus_flower_crisp()
     test_lotus_flower_crisp_and_reflection()
     test_mond_hash()
     test_tandoori()
+    test_pizza()
