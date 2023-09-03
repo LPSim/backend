@@ -1,6 +1,6 @@
 from typing import Literal, List, Any
 
-from ...event import MoveObjectEventArguments
+from ...event import MoveObjectEventArguments, RoundPrepareEventArguments
 from ...object_base import CardBase
 from ...consts import ObjectType, ObjectPositionType, CostLabels
 from ...struct import Cost
@@ -16,11 +16,12 @@ class SupportBase(CardBase):
     event triggers will work and do supports.
     """
     name: str
-    type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
+    desc: str
     version: str
     cost: Cost
-    cost_label: int = CostLabels.CARD.value
     usage: int
+    type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
+    cost_label: int = CostLabels.CARD.value
 
     def check_remove_triggered(self) -> List[RemoveObjectAction]:
         """
@@ -108,4 +109,29 @@ class SupportBase(CardBase):
         ):
             # this artifact equipped from hand to charactor
             return self.play(match)
+        return []
+
+
+class RoundEffectSupportBase(SupportBase):
+    """
+    Supports that has round effects. Refresh their usage when played and
+    at round preparing stage.
+    Instead of setting usage, set max_usage_per_round.
+    """
+    name: str
+    desc: str
+    version: str
+    cost: Cost
+    max_usage_per_round: int 
+
+    usage: int = 0
+
+    def play(self, match: Any) -> List[Actions]:
+        self.usage = self.max_usage_per_round
+        return []
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.usage = self.max_usage_per_round
         return []

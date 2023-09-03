@@ -5,16 +5,21 @@ from server.action import (
     Actions, CreateDiceAction, DrawCardAction, RemoveDiceAction, 
     RemoveObjectAction
 )
+from ...modifiable_values import CostValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, DieColor
 )
-from .base import SupportBase
+from .base import RoundEffectSupportBase, SupportBase
 
 
 class LocationBase(SupportBase):
+    cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
+
+
+class RoundEffectLocationBase(RoundEffectSupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
 
 
@@ -82,6 +87,59 @@ class Tenshukaku(LocationBase):
         )]
 
 
+class SumeruCity(RoundEffectLocationBase):
+    name: Literal['Sumeru City']
+    desc: str = (
+        'When your character uses a Skill or equips a Talent: If you do not '
+        'have more Elemental Dice than cards in your hand, spend 1 less '
+        'Elemental Die. (Once per Round)'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+    max_usage_per_round: int = 1
+
+    def play(self, match: Any) -> List[Actions]:
+        """
+        When played, reset usage.
+        """
+        self.usage = 1
+        return super().play(match)
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        When self charactor use skills or equip talents, and have usage,
+        and have less or equal elemental dice than cards in hand, reduce cost.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return value
+        if self.usage == 0:
+            # no usage
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        label = (
+            CostLabels.NORMAL_ATTACK.value | CostLabels.ELEMENTAL_SKILL.value
+            | CostLabels.ELEMENTAL_BURST.value | CostLabels.TALENT.value
+        )
+        if value.cost.label & label == 0:
+            # not skill or talent
+            return value
+        table = match.player_tables[self.position.player_idx]
+        if len(table.dice.colors) > len(table.hands):
+            # more elemental dice than cards in hand
+            return value
+        # reduce cost
+        if value.cost.decrease_cost(value.cost.elemental_dice_color):
+            # success
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+
 class Vanarana(LocationBase):
     name: Literal['Vanarana']
     desc: str = (
@@ -93,9 +151,6 @@ class Vanarana(LocationBase):
     cost: Cost = Cost()
     usage: int = 0
     colors: List[DieColor] = []
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
 
     def play(self, match: Any) -> List[Actions]:
         self.usage = 0
@@ -176,4 +231,4 @@ class Vanarana(LocationBase):
         )]
 
 
-Locations = LiyueHarborWharf | Tenshukaku | Vanarana
+Locations = LiyueHarborWharf | Tenshukaku | SumeruCity | Vanarana
