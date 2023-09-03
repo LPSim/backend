@@ -224,6 +224,142 @@ def test_tenshukaku():
     assert match.state != MatchState.ERROR
 
 
+def test_sumeru_city():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "reroll 0 7",
+            "card 3 2 cryo electro",
+            "card 2 0 0 1",
+            "TEST 1 skill cost 2",
+            "card 2 0 0 1",
+            "TEST 1 skill cost 0",
+            "card 0 0",
+            "end",
+            "reroll 0 1 2 3 4 5 6 7",
+            "TEST 1 skill cost 2",
+            "card 1 0 6 7",
+            "sw_char 0 0",
+            "sw_char 1 0",
+            "sw_char 0 2",
+            "sw_char 2 2",
+            "TEST 1 skill cost 0",
+            "skill 0",
+            "TEST 1 skill cost 2",
+            "skill 1 0 1",
+            "end",
+            "reroll 0 1 2 3 4 6 7",
+            "end",
+            "reroll",
+            "end",
+            "reroll",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "reroll",
+            "card 0 0 1 2",
+            "card 0 0 2 3",
+            "TEST 1 skill cost 3",
+            "card 0 0 0 2",
+            "TEST 1 skill cost 0",
+            "tune 0 0",
+            "TEST 2 no skill",
+            "end",
+            "reroll 0 1 2 3 4 5 6 7",
+            "end",
+            "reroll",
+            "end",
+            "reroll",
+            "end",
+            "reroll 0 1 2 3 4 5 6 7",
+            "TEST 1 skill cost 0",
+            "card 3 0",
+            "card 0 0 0 1",
+            "card 0 0 1 2",
+            "TEST 1 skill cost 1",
+            "tune 1 0",
+            "tune 0 3",
+            "tune 0 3",
+            "TEST 1 skill cost 3",
+            "sw_char 1 0",
+            "sw_char 2 0",
+            "TEST 1 skill cost 1",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:Noelle
+        Sumeru City*15
+        I Got Your Back*10
+        # Archaic Petra
+        Mask of Solitude Basalt*5
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.strip().split()
+                cost = int(cmd[-1])
+                for req in match.requests:
+                    if req.name == 'UseSkillRequest':
+                        assert req.cost.total_dice_cost == cost
+            elif test_id == 2:
+                for req in match.requests:
+                    assert req.name != "UseSkillRequest"
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 def test_vanarana():
     """
     """
@@ -435,4 +571,5 @@ def test_vanarana():
 if __name__ == '__main__':
     test_liyue_harbor()
     test_tenshukaku()
+    test_sumeru_city()
     test_vanarana()
