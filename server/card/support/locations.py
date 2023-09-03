@@ -44,6 +44,44 @@ class LiyueHarborWharf(LocationBase):
         ] + self.check_remove_triggered()
 
 
+class Tenshukaku(LocationBase):
+    name: Literal['Tenshukaku']
+    desc: str = (
+        'When the Action Phase begins: If you have 5 different kinds of '
+        'Elemental Die, create 1 Omni Element.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 0
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateDiceAction]:
+        """
+        When in round prepare, if have 5 different kinds of elemental dice,
+        create 1 omni element.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return []
+        colors = match.player_tables[self.position.player_idx].dice.colors
+        omni_number = 0
+        color_set = set()
+        for color in colors:
+            if color == DieColor.OMNI:
+                omni_number += 1
+            else:
+                color_set.add(color)
+        if len(color_set) + omni_number < 5:
+            # not enough different kinds of elemental dice
+            return []
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            color = DieColor.OMNI
+        )]
+
+
 class Vanarana(LocationBase):
     name: Literal['Vanarana']
     desc: str = (
@@ -138,4 +176,4 @@ class Vanarana(LocationBase):
         )]
 
 
-Locations = LiyueHarborWharf | Vanarana
+Locations = LiyueHarborWharf | Tenshukaku | Vanarana
