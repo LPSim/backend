@@ -46,7 +46,7 @@ from .consts import (
     DAMAGE_TYPE_TO_ELEMENT,
     ElementalReactionType,
     ObjectPositionType,
-    ObjectType,
+    ObjectType, SkillType,
 )
 from .event import (
     ConsumeArcaneLegendEventArguments,
@@ -756,6 +756,10 @@ class Match(BaseModel):
             to declare the end of their Round will go first during the next 
             Round.
         """
+        # update charge condition
+        table = self.player_tables[self.current_player]
+        table.charge_satisfied = len(table.dice.colors) % 2 == 0
+        # generate requests
         self._request_switch_charactor(self.current_player)
         self._request_elemental_tuning(self.current_player)
         self._request_declare_round_end(self.current_player)
@@ -1016,6 +1020,12 @@ class Match(BaseModel):
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(self):
                 cost = skill.cost.copy(deep = True)
+                if (
+                    skill.skill_type == SkillType.NORMAL_ATTACK
+                    and table.charge_satisfied
+                ):
+                    # normal attack and satisfy charge, charge attack.
+                    cost.label |= CostLabels.CHARGED_ATTACK.value
                 cost_value = CostValue(
                     cost = cost,
                     position = skill.position,

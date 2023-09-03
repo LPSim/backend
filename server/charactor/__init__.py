@@ -11,7 +11,7 @@ from .dendro import (
     DendroCharactorTalents, DendroCharactors,  # SummonsOfDendroCharactors
 )
 from .geo import (
-    GeoCharactorTalents, GeoCharactors,  # SummonsOfGeoCharactors
+    GeoCharactorTalents, GeoCharactors, SummonsOfGeoCharactors
 )
 
 
@@ -19,7 +19,10 @@ Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
     | DendroCharactors | GeoCharactors
 )
-SummonsOfCharactors = SummonsOfElectroCharactors | SummonsOfHydroCharactors
+SummonsOfCharactors = (
+    SummonsOfElectroCharactors | SummonsOfHydroCharactors
+    | SummonsOfGeoCharactors
+)
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
     | GeoCharactorTalents

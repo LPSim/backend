@@ -58,6 +58,9 @@ class PlayerTable(BaseModel):
     table_deck: List[Cards] = []
     arcane_legend: bool = True
 
+    charge_satisfied: bool = False
+    plunge_satisfied: bool = False
+
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.dice.position.area == ObjectPositionType.INVALID:
