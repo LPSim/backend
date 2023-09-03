@@ -493,9 +493,139 @@ def test_old_gambler():
     assert match.state != MatchState.ERROR
 
 
+def test_millelith():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 2 0 0 1 2",
+            "TEST 3 p0c0 no status",
+            "skill 0 0 1 2",
+            "TEST 2 dice number 11 13",
+            "TEST 1 9 10 10 9 10 10",
+            "end",
+            "TEST 4 p0c0 p1c1 status",
+            "sw_char 1 0",
+            "sw_char 0 0",
+            "skill 0 0 1 2",
+            "TEST 1 7 10 10 9 10 10",
+            "TEST 2 dice number 11 11",
+            "sw_char 0 0",
+            "TEST 2 dice number 11 8",
+            "end",
+            "TEST 4 p0c0 p1c1 status 2 usage",
+            "end",
+            "TEST 4 p0c0 p1c1 status 2 usage",
+            "end"
+        ],
+        [
+            "sw_card 0 1 2",
+            "choose 0",
+            "TEST 2 dice number 10 16",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "TEST 2 dice number 11 10",
+            "TEST 1 8 10 10 9 10 10",
+            "sw_char 1 0",
+            "card 2 1 0 1",
+            "end",
+            "sw_char 0 0",
+            "sw_char 1 0",
+            "TEST 5 p1c1 status 1 usage 1",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "end",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:PyroMobMage
+        charactor:ElectroMobMage
+        charactor:Noelle
+        Tenacity of the Millelith*15
+        General's Ancient Helm*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.strip().split()
+                hps = [int(x) for x in cmd[2:]]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.strip().split()
+                number = [int(x) for x in cmd[-2:]]
+                assert number[0] == len(match.player_tables[0].dice.colors)
+                assert number[1] == len(match.player_tables[1].dice.colors)
+            elif test_id == 3:
+                assert len(match.player_tables[0].charactors[0].status) == 0
+            elif test_id == 4:
+                assert len(match.player_tables[0].charactors[0].status) == 1
+                assert match.player_tables[
+                    0].charactors[0].status[0].usage == 2
+                assert len(match.player_tables[1].charactors[1].status) == 1
+                assert match.player_tables[
+                    1].charactors[1].status[0].usage == 2
+            elif test_id == 5:
+                assert len(match.player_tables[1].charactors[1].status) == 1
+                assert match.player_tables[
+                    1].charactors[1].status[0].usage == 1
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_small_elemental_artifacts()
-    test_create_small_element_artifacts()
-    test_old_version_elemental_artifacts()
-    test_gambler()
-    test_old_gambler()
+    # test_small_elemental_artifacts()
+    # test_create_small_element_artifacts()
+    # test_old_version_elemental_artifacts()
+    # test_gambler()
+    # test_old_gambler()
+    test_millelith()
