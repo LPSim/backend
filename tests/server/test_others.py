@@ -293,6 +293,18 @@ def test_remove_non_exist_equip():
         )
 
 
+def test_immutable_position():
+    position = ObjectPosition(
+        player_idx = 0,
+        area = ObjectPositionType.SUMMON,
+        id = 0
+    )
+    with pytest.raises(AttributeError):
+        position.player_idx = 1
+    with pytest.raises(AttributeError):
+        del position.area
+
+
 if __name__ == '__main__':
     # test_object_position_validation()
     # test_match_config_and_match_errors()

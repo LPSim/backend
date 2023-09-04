@@ -306,7 +306,7 @@ def test_timmie():
                     assert tmcount == 1
                     tmcount = 0
                     for support in match.player_tables[1].supports:
-                        if support.name == 'Timmie':  # pragma: no cover
+                        if support.name == 'Timmie':  # pragma: no branch
                             assert support.usage == 2
                             tmcount += 1
                     assert tmcount == 3

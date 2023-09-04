@@ -172,7 +172,8 @@ def test_toss_up():
             "TEST 2 reroll req 2 time",
             "reroll 0 1 2 3 4 5 6 7",
             "TEST 1 reroll req 1 time",
-            "reroll 0 1 2 3 4 5 6 7"
+            "reroll 0 1 2 3 4 5 6 7",
+            "end",
         ],
         only_use_command = True
     )
@@ -181,7 +182,10 @@ def test_toss_up():
         verbose_level = 0,
         commands = [
             "sw_card",
-            "choose 0"
+            "choose 0",
+            "card 0 0",
+            "reroll 0 1 2 3 4 5 6 7",
+            "reroll 0 1 2 3 4 5 6 7",
         ],
         only_use_command = True
     )
@@ -1196,11 +1200,11 @@ def test_send_off_new_and_old():
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
-    # test_toss_up()
+    test_toss_up()
     # test_old_i_havent_lost_yet()
     # test_leave_it_to_me()
     # test_claxs_art()
     # test_heavy_strike_2()
     # test_friendship_eternal()
     # test_unseen_razor()
-    test_send_off_new_and_old()
+    # test_send_off_new_and_old()

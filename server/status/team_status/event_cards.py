@@ -251,7 +251,7 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
         # try decrease twice
         success = [value.cost.decrease_cost(None), 
                    value.cost.decrease_cost(None)]
-        if True in success:
+        if True in success:  # pragma: no branch
             # decrease success at least once
             if mode == 'REAL':
                 self.usage -= 1

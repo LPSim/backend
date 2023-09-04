@@ -1151,9 +1151,9 @@ class Match(BaseModel):
                 raise AssertionError('Creating dice in Reroll Dice should not '
                                      'trigger actions.')
         # modify request
-        for num, req in enumerate(self.requests):  # pragma: no cover
-            if isinstance(req, RerollDiceRequest):
-                if req.player_idx == response.player_idx:
+        for num, req in enumerate(self.requests):  # pragma: no branch
+            if isinstance(req, RerollDiceRequest):  # pragma: no branch
+                if req.player_idx == response.player_idx:  # pragma: no branch
                     if req.reroll_times > 1:
                         req.reroll_times -= 1
                     else:

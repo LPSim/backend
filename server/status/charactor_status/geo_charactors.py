@@ -62,7 +62,7 @@ class SweepingTime(RoundCharactorStatus):
             # not normal attack, not modify
             return value
         # decrease geo cost
-        if value.cost.decrease_cost(DieColor.GEO):
+        if value.cost.decrease_cost(DieColor.GEO):  # pragma: no branch
             # decrease success
             if mode == 'REAL':
                 self.cost_decrease_usage -= 1
@@ -79,7 +79,9 @@ class SweepingTime(RoundCharactorStatus):
             # not this charactor use normal attack, not modify
             return value
         # modify element
-        if value.damage_elemental_type == DamageElementalType.PHYSICAL:
+        if (  # pragma: no branch
+            value.damage_elemental_type == DamageElementalType.PHYSICAL
+        ):
             # physical, change to geo
             value.damage_elemental_type = DamageElementalType.GEO
         return value
@@ -137,7 +139,9 @@ class RagingOniKing(RoundCharactorStatus):
             # not this charactor use normal attack, not modify
             return value
         # modify element
-        if value.damage_elemental_type == DamageElementalType.PHYSICAL:
+        if (  # pragma: no branch
+            value.damage_elemental_type == DamageElementalType.PHYSICAL
+        ):
             # physical, change to geo
             value.damage_elemental_type = DamageElementalType.GEO
         return value

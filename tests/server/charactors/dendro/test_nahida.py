@@ -818,7 +818,7 @@ def test_talent_enemy_has_other_charactor_status():
                     status = match.player_tables[1].team_status
                     found = False
                     for s in status:
-                        if s.name == 'Shrine of Maya':  # pragma: no cover
+                        if s.name == 'Shrine of Maya':  # pragma: no branch
                             assert s.usage == 3
                             found = True
                     assert found

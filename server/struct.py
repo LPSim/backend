@@ -49,17 +49,17 @@ class ObjectPosition(BaseModel):
             ObjectPositionType.CHARACTOR_STATUS,
             ObjectPositionType.SKILL,
             ObjectPositionType.CHARACTOR,
-        ]:  # pragma: no cover
+        ]:
             assert self.charactor_idx >= 0, \
                 'charactor_idx should be non-negative.'
 
-    def __setattr__(self, name: str, value: Any) -> None:  # pragma: no cover
+    def __setattr__(self, name: str, value: Any) -> None:
         """
         Override __setattr__ to make it immutable.
         """
         raise AttributeError('ObjectPosition is immutable.')
 
-    def __delattr__(self, name: str) -> None:  # pragma: no cover
+    def __delattr__(self, name: str) -> None:
         """
         Override __delattr__ to make it immutable.
         """
