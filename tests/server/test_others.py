@@ -2,7 +2,7 @@ import pytest
 
 from agents.random_agent import RandomAgent
 from agents.nothing_agent import NothingAgent
-from server.action import CreateDiceAction
+from server.action import CreateDiceAction, MoveObjectAction
 from server.consts import ObjectPositionType
 from server.deck import Deck
 from server.interaction import SwitchCardResponse
@@ -262,9 +262,41 @@ def test_id_wont_duplicate():
         s.add(o.id)
 
 
+def test_remove_non_exist_equip():
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:GeoMob*3
+        Strategize*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    assert match.start()
+    with pytest.raises(AssertionError):
+        match._action_move_object(
+            MoveObjectAction(
+                object_position = ObjectPosition(
+                    player_idx = 0,
+                    charactor_idx = 0,
+                    area = ObjectPositionType.CHARACTOR,
+                    id = 0,
+                ),
+                target_position = ObjectPosition(
+                    player_idx = 0,
+                    area = ObjectPositionType.HAND,
+                    id = 0,
+                ),
+            )
+        )
+
+
 if __name__ == '__main__':
     # test_object_position_validation()
     # test_match_config_and_match_errors()
     # test_objectbase_wrong_handler_name()
     # test_create_dice()
-    test_id_wont_duplicate()
+    # test_id_wont_duplicate()
+    test_remove_non_exist_equip()

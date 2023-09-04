@@ -864,6 +864,223 @@ def test_heavy_strike_2():
     assert match.state != MatchState.ERROR
 
 
+def test_friendship_eternal():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "TEST 1 no card can use",
+            "tune 0 0",
+            "tune 0 0",
+            "TEST 2 card can use",
+            "card 0 0 0 1",
+            "TEST 3 card number 4 5",
+            "tune 0 0",
+            "tune 0 3",
+            "tune 0 4",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "TEST 2 can use card",
+            "card 0 0 0 1",
+            "TEST 2 can use card",
+            "card 0 0 2 3",
+            "TEST 3 card number 4 4",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Rhodeia of Loch
+        charactor:Nahida
+        Friendship Eternal*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 2:
+                found = False
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        found = True
+                assert found
+            elif test_id == 3:
+                cmd = cmd.split()
+                numbers = [int(cmd[-2]), int(cmd[-1])]
+                for table, num in zip(match.player_tables, numbers):
+                    assert len(table.hands) == num
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_unseen_razor():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "card 0 1 0 1 2",
+            "TEST 1 4 card can use",
+            "skill 1 0 1 2",
+            "card 1 0",
+            "TEST 3 p0c2 no equip",
+            "card 0 1 0",
+            "skill 0 0 1 2",
+            "TEST 2 p0 2+2 usage",
+            "card 1 0",
+            "end",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "TEST 1 0 card can use",
+            "end",
+            "TEST 4 p0 2 status",
+            "end",
+            "card 7 1 0 1 2",
+            "card 7 1 0 1 2",
+            "skill 1 0 1 2",
+            "card 0 0",
+            "card 6 1 0",
+            "skill 1 0 1 2",
+            "TEST 2 p1 2+2 usage",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Barbara
+        charactor:Arataki Itto
+        charactor:Noelle
+        Where Is the Unseen Razor?*15
+        The Bell*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                cnum = int(cmd[2])
+                counter = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        counter += 1
+                assert cnum == counter
+            elif test_id == 2:
+                cmd = cmd.split()
+                pnum = int(cmd[2][1])
+                status = match.player_tables[pnum].team_status
+                assert len(status) == 2
+                for s in status:
+                    assert s.usage == 2
+            elif test_id == 3:
+                assert match.player_tables[0].charactors[2].weapon is None
+            elif test_id == 4:
+                assert len(match.player_tables[0].team_status) == 2
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -871,4 +1088,6 @@ if __name__ == '__main__':
     # test_old_i_havent_lost_yet()
     # test_leave_it_to_me()
     # test_claxs_art()
-    test_heavy_strike_2()
+    # test_heavy_strike_2()
+    test_friendship_eternal()
+    test_unseen_razor()
