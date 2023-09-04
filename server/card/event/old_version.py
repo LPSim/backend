@@ -1,10 +1,12 @@
 from typing import Any, List, Literal
 
 from ...action import (
-    ActionTypes, ChargeAction, CreateDiceAction, CreateObjectAction
+    ActionTypes, ChargeAction, CreateDiceAction, CreateObjectAction, 
+    RemoveObjectAction
 )
 from ...struct import Cost, ObjectPosition
 from .others import IHaventLostYet as IHLY_4_0
+from .others import SendOff as SendOff_3_7
 
 
 class IHaventLostYet(IHLY_4_0):
@@ -27,4 +29,22 @@ class IHaventLostYet(IHLY_4_0):
         return ret
 
 
-OldVersionEventCards = IHaventLostYet | IHaventLostYet
+class SendOff(SendOff_3_7):
+    name: Literal['Send-Off']
+    desc: str = '''Choose one Summon on the opposing side and destroy it.'''
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is not None
+        return [RemoveObjectAction(
+            object_position = target,
+        )]
+
+
+OldVersionEventCards = IHaventLostYet | SendOff

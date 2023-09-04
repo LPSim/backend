@@ -111,6 +111,39 @@ class LotusFlowerCrisp(FoodCardBase):
         return ret
 
 
+class SweetMadame(FoodCardBase):
+    name: Literal['Sweet Madame']
+    desc: str = '''Heal target character for 1 HP.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+
+    can_eat_only_if_damaged: bool = True
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction | MakeDamageAction]:
+        ret: List[CreateObjectAction | MakeDamageAction] = []
+        ret = list(super().get_actions(target, match))
+        assert len(ret) == 1
+        assert target is not None
+        ret.append(MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            charactor_change_rule = 'NONE',
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = target,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            ],
+        ))
+        return ret
+
+
 class MondstadtHashBrown(FoodCardBase):
     name: Literal['Mondstadt Hash Brown']
     desc: str = '''Heal target character for 2 HP.'''
@@ -232,6 +265,6 @@ class TandooriRoastChicken(FoodCardBase):
 
 
 FoodCards = (
-    AdeptusTemptation | LotusFlowerCrisp | MondstadtHashBrown | MushroomPizza
-    | TandooriRoastChicken
+    AdeptusTemptation | LotusFlowerCrisp | SweetMadame | MondstadtHashBrown 
+    | MushroomPizza | TandooriRoastChicken
 )

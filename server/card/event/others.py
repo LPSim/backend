@@ -10,9 +10,9 @@ from ...consts import DieColor, ObjectPositionType
 
 from ...object_base import CardBase
 from ...action import (
-    Actions, CharactorDefeatedAction, ChargeAction, CreateDiceAction, 
-    CreateObjectAction, DrawCardAction, GenerateRerollDiceRequestAction, 
-    MoveObjectAction
+    Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
+    CreateDiceAction, CreateObjectAction, DrawCardAction, 
+    GenerateRerollDiceRequestAction, MoveObjectAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -280,6 +280,39 @@ class ClaxsArts(CardBase):
         return ret
 
 
+class SendOff(CardBase):
+    name: Literal['Send-Off']
+    desc: str = (
+        'Choose one Summon on the opposing side and cause it to lose '
+        '2 Usage(s).'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        Opposing summons
+        """
+        summons = match.player_tables[1 - self.position.player_idx].summons
+        return [x.position for x in summons]
+
+    def is_valid(self, match: Any) -> bool:
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChangeObjectUsageAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is not None
+        return [ChangeObjectUsageAction(
+            object_position = target,
+            change_type = 'DELTA',
+            change_usage = -2
+        )]
+
+
 class HeavyStrike(CardBase):
     name: Literal['Heavy Strike']
     desc: str = (
@@ -414,6 +447,6 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts | HeavyStrike 
+    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | HeavyStrike 
     | FriendshipEternal | WhereIstheUnseenRazor
 )
