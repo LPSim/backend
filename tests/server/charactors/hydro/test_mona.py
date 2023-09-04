@@ -267,12 +267,13 @@ def test_mona_q_enemy_attack():
         player_idx = 1,
         verbose_level = 0,
         commands = [
-            "sw_card",
+            "sw_card 0 1 2",
             "choose 0",
             "skill 1 0 1 2",
             "skill 1 0 1 2",
             "skill 1 0 1 2",
-            "skill 2 0 1 2",
+            "card 4 0 0 1 2",
+            "card 0 0",
             "end",
         ],
         only_use_command = True
@@ -282,9 +283,8 @@ def test_mona_q_enemy_attack():
         """
         charactor:Mona*2
         charactor:Fischl
-        Prophecy of Submersion*10
-        Stellar Predator*10
-        Wine-Stained Tricorne*10
+        Sweet Madame*15
+        Prophecy of Submersion*15
         """
     )
     match.set_deck([deck, deck])
@@ -308,7 +308,7 @@ def test_mona_q_enemy_attack():
     assert match.round_number == 2
     assert len(match.player_tables[1].team_status) == 1
     assert match.player_tables[1].team_status[0].name == 'Illusory Bubble'
-    check_hp(match, [[3, 10, 10], [8, 10, 10]])
+    check_hp(match, [[3, 10, 10], [9, 10, 10]])
 
     assert match.state != MatchState.ERROR
 

@@ -1081,6 +1081,118 @@ def test_unseen_razor():
     assert match.state != MatchState.ERROR
 
 
+def test_send_off_new_and_old():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 1 no card can use",
+            "skill 2 0 1 2 3 4",
+            "TEST 1 no card can use",
+            "sw_char 1 0",
+            "sw_char 0 0",
+            "sw_char 1 0",
+            "end",
+            "card 2 1 0 1",
+            "TEST 3 p1 usage 2",
+            "end"
+        ],
+        [
+            "sw_card 0 1 2",
+            "choose 0",
+            "TEST 2 card can use",
+            "sw_char 1 0",
+            "card 0 0 0 1",
+            "skill 0 0 1 2",
+            "skill 0 0 1 2",
+            "card 0 1 0 1",
+            "TEST 3 p0 usage 1 0",
+            "TEST 0 1 0 1",
+            "card 0 1 0 1",
+            "TEST 3 p0 usage 1",
+            "end",
+            "skill 2 0 1 2 3 4"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Rhodeia of Loch*3
+        Send-Off*15
+        '''
+    )
+    # use old version cards
+    old = {'name': 'Send-Off', 'version': '3.3'}
+    deck_dict = deck.dict()
+    deck_dict['cards'] += [old] * 15
+    deck = Deck(**deck_dict)
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            elif test_id == 2:
+                counter = 0
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        counter += 1
+                assert counter > 0
+            elif test_id == 3:
+                cmd = cmd.split()
+                pnum = int(cmd[2][1])
+                usage = [int(x) for x in cmd[4:]]
+                assert len(match.player_tables[pnum].summons) == len(usage)
+                for s, u in zip(match.player_tables[pnum].summons, usage):
+                    assert s.usage == u
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -1089,5 +1201,6 @@ if __name__ == '__main__':
     # test_leave_it_to_me()
     # test_claxs_art()
     # test_heavy_strike_2()
-    test_friendship_eternal()
-    test_unseen_razor()
+    # test_friendship_eternal()
+    # test_unseen_razor()
+    test_send_off_new_and_old()
