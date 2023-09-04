@@ -2098,9 +2098,9 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.SUPPORT:
             target_list = table.supports
             target_name = 'support'
-        # elif action.object_position.area == ObjectPositionType.SUMMON:
-        #     target_list = table.summons
-        #     target_name = 'summon'
+        elif action.object_position.area == ObjectPositionType.SUMMON:
+            target_list = table.summons
+            target_name = 'summon'
         else:
             raise NotImplementedError(
                 f'Change object usage action for area '

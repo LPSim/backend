@@ -22,7 +22,7 @@ from ..card.equipment.artifact import Artifacts
 from ..card.equipment.weapon import Weapons
 from ..action import (
     ChargeAction, CombatActionAction, MakeDamageAction, MoveObjectAction, 
-    RemoveObjectAction, Actions
+    RemoveObjectAction, Actions, SkillEndAction
 )
 
 
@@ -305,6 +305,11 @@ class SkillTalent(TalentBase):
         else:
             raise AssertionError('Skill not found')
         ret += self.skill.get_actions(match)
+        # skill used, add SkillEndAction
+        ret.append(SkillEndAction(
+            position = self.skill.position,
+            skill_type = self.skill.skill_type,
+        ))
         # use cards are quick actions, but equip talent card will use skills,
         # so should add CombatActionAction.
         ret.append(CombatActionAction(
