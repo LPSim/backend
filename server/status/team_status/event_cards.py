@@ -7,7 +7,8 @@ from ...consts import CostLabels, ElementType
 from ...action import Actions, ChangeObjectUsageAction, RemoveObjectAction
 
 from ...event import (
-    CharactorDefeatedEventArguments, CombatActionEventArguments
+    CharactorDefeatedEventArguments, CombatActionEventArguments, 
+    MoveObjectEventArguments
 )
 
 from ...modifiable_values import (
@@ -228,7 +229,45 @@ class EnduringRock(RoundTeamStatus):
         return list(self.check_should_remove())
 
 
+class WhereIstheUnseenRazor(RoundTeamStatus):
+    name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
+    desc: str = (
+        'During this Round, the next time you play a Weapon card: '
+        'Spend 2 less Elemental Dice.'
+    )
+    version: Literal['4.0'] = '4.0'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        decrease weapons cost by 2
+        """
+        if not value.cost.label & CostLabels.WEAPON.value:
+            # not weapon, do nothing
+            return value
+        # try decrease twice
+        success = [value.cost.decrease_cost(None), 
+                   value.cost.decrease_cost(None)]
+        if True in success:
+            # decrease success at least once
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        As it triggers on equipping weapon,
+        When move object end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
-    | EnduringRock
+    | EnduringRock | WhereIstheUnseenRazor
 )

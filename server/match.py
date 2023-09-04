@@ -2142,6 +2142,7 @@ class Match(BaseModel):
         Action for moving objects, e.g. equipments, supports.
         """
         player_idx = action.object_position.player_idx
+        charactor_idx = action.object_position.charactor_idx
         table = self.player_tables[player_idx]
         assert (
             action.object_position.id == action.target_position.id
@@ -2156,6 +2157,38 @@ class Match(BaseModel):
         # elif action.object_position.area == ObjectPositionType.SUPPORT:
         #     current_list = table.supports
         #     current_name = 'support'
+        elif action.object_position.area == ObjectPositionType.CHARACTOR:
+            # move equipments
+            charactor = table.charactors[charactor_idx]
+            weapon = charactor.weapon
+            artifact = charactor.artifact
+            talent = charactor.talent
+            if weapon is not None and weapon.id == action.object_position.id:
+                charactor.weapon = None
+                current_list = [weapon]
+                current_name = 'weapon'
+            elif artifact is not None and artifact.id == \
+                    action.object_position.id:
+                raise NotImplementedError(
+                    'Artifact cannot be moved now.'
+                )
+                charactor.artifact = None
+                current_list = [artifact]
+                current_name = 'artifact'
+            elif talent is not None and \
+                    talent.id == action.object_position.id:
+                raise NotImplementedError(
+                    'Talent cannot be moved now.'
+                )
+                charactor.talent = None
+                current_list = [talent]
+                current_name = 'talent'
+            else:
+                raise AssertionError(
+                    f'player {player_idx} tried to move non-exist equipment '
+                    f'from charactor {charactor_idx} with id '
+                    f'{action.object_position.id}.'
+                )
         else:
             raise NotImplementedError(
                 f'Move object action from area '

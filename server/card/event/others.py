@@ -11,7 +11,8 @@ from ...consts import DieColor, ObjectPositionType
 from ...object_base import CardBase
 from ...action import (
     Actions, CharactorDefeatedAction, ChargeAction, CreateDiceAction, 
-    CreateObjectAction, DrawCardAction, GenerateRerollDiceRequestAction
+    CreateObjectAction, DrawCardAction, GenerateRerollDiceRequestAction, 
+    MoveObjectAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -311,7 +312,108 @@ class HeavyStrike(CardBase):
         )]
 
 
+class FriendshipEternal(CardBase):
+    name: Literal['Friendship Eternal']
+    desc: str = (
+        'Players with less than 4 cards in their hand draw cards until their '
+        'hand has 4 cards in it.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(
+        same_dice_number = 2
+    )
+
+    def is_valid(self, match: Any) -> bool:
+        # if both player have 4 or more cards, cannot use this card.
+        for pidx, table in enumerate(match.player_tables):
+            if len(table.hands) < 4:
+                return True
+            if len(table.hands) == 4 and pidx == self.position.player_idx:
+                # for self, 4 card can use to draw one card
+                return True
+        return False
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[DrawCardAction]:
+        """
+        Act the card. Both player draw card until card number reach 4.
+        """
+        assert target is None  # no targets
+        ret: List[DrawCardAction] = []
+        for pidx, table in enumerate(match.player_tables):
+            target_number = 4
+            if pidx == self.position.player_idx:
+                # as for self, this card is still in hand, so target number
+                # should be 5
+                target_number += 1
+            if len(table.hands) >= target_number:
+                # already have enough cards, do nothing
+                continue
+            ret.append(DrawCardAction(
+                player_idx = pidx,
+                number = target_number - len(table.hands),
+                draw_if_filtered_not_enough = True
+            ))
+        return ret
+
+
+class WhereIstheUnseenRazor(CardBase):
+    name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
+    desc: str = (
+        'Return a Weapon card equipped by your character to your Hand. '
+        'During this Round, the next time you play a Weapon card: '
+        'Spend 2 less Elemental Dice.'
+    )
+    version: Literal['4.0'] = '4.0'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        Self charactors that have weapon.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        res: List[ObjectPosition] = []
+        for charactor in charactors:
+            if charactor.weapon is not None:
+                res.append(charactor.position)
+        return res
+
+    def is_valid(self, match: Any) -> bool:
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[MoveObjectAction | CreateObjectAction]:
+        assert target is not None
+        charactor = match.get_object(target)
+        assert charactor is not None
+        assert charactor.weapon is not None
+        target_position = charactor.weapon.position.set_area(
+            ObjectPositionType.HAND)
+        return [
+            MoveObjectAction(
+                object_position = charactor.weapon.position,
+                target_position = target_position
+            ),
+            CreateObjectAction(
+                object_name = self.name,
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = -1,
+                ),
+                object_arguments = {}
+            )
+        ]
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts | HeavyStrike
+    | IHaventLostYet | LeaveItToMe | ClaxsArts | HeavyStrike 
+    | FriendshipEternal | WhereIstheUnseenRazor
 )
