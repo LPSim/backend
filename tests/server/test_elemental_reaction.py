@@ -532,6 +532,65 @@ def test_dendro_core_catalyzing_field():
     assert match.state != MatchState.ERROR
 
 
+def test_catalyzing_field_old():
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = [
+            'sw_card',
+            'choose 2',
+            'skill 1 omni omni omni',
+            'sw_char 0 omni',
+            'skill 0 omni omni omni',
+            'skill 0 omni omni omni',
+            'skill 3 omni omni omni',
+            'card 0 0 omni',
+            'end',
+        ],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            'sw_card',
+            'choose 0',
+            'skill 1 0 1 2',
+            'end',
+        ],
+        only_use_command = True
+    )
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        charactor:Nahida*2
+        charactor:Fischl
+        Mondstadt Hash Brown*30
+        '''
+    )
+    deck.charactors[0].hp = 99
+    deck.charactors[0].max_hp = 99
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.event_handlers[0].version = '3.3'
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+
 def test_swirl():
     """
     first: swirl pyro and hydro
@@ -1327,11 +1386,12 @@ def test_pure_elemental_reaction():
 
 
 if __name__ == '__main__':
-    test_burning_flame()
-    test_crystallize()
-    test_dendro_core_catalyzing_field()
-    test_frozen()
-    test_swirl_with_catalyzing_field()
-    test_pure_elemental_reaction()
-    test_swirl_with_catalyzing_field_and_dendro_core()
-    test_background_overloaded()
+    # test_burning_flame()
+    # test_crystallize()
+    # test_dendro_core_catalyzing_field()
+    # test_frozen()
+    # test_swirl_with_catalyzing_field()
+    # test_pure_elemental_reaction()
+    # test_swirl_with_catalyzing_field_and_dendro_core()
+    # test_background_overloaded()
+    test_catalyzing_field_old()
