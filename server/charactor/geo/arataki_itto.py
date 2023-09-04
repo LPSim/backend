@@ -70,8 +70,9 @@ class Ushi(DefendSummonBase):
                     object_position = status_position,
                     object_arguments = {}
                 )]
-        # not found alive Itto, no effect
-        return []
+        else:  # pragma: no cover
+            # not found alive Itto, no effect
+            return []
 
 
 # Skills

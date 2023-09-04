@@ -176,7 +176,9 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         ):
             # piercing damage
             return False
-        if self.target_position.area != ObjectPositionType.CHARACTOR:
+        if (
+            self.target_position.area != ObjectPositionType.CHARACTOR
+        ):  # pragma: no cover
             # not on charactor
             return False
         if self.target_position.player_idx != object_position.player_idx:

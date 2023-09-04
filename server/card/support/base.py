@@ -29,7 +29,9 @@ class SupportBase(CardBase):
         when usage has changed, call this function to check if the support
         should be removed.
         """
-        if self.position.area != ObjectPositionType.SUPPORT:
+        if (
+            self.position.area != ObjectPositionType.SUPPORT
+        ):  # pragma: no cover
             return []
         if self.usage <= 0:
             return [RemoveObjectAction(
