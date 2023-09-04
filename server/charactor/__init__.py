@@ -8,10 +8,13 @@ from .hydro import (
     HydroCharactorTalents, HydroCharactors, SummonsOfHydroCharactors
 )
 from .dendro import (
-    DendroCharactorTalents, DendroCharactors,  # SummonsOfDendroCharactors
+    DendroCharactorTalents, DendroCharactors, SummonsOfDendroCharactors
 )
 from .geo import (
     GeoCharactorTalents, GeoCharactors, SummonsOfGeoCharactors
+)
+from .old_version import (
+    OldTalents
 )
 
 
@@ -21,9 +24,11 @@ Charactors = (
 )
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
-    | SummonsOfGeoCharactors
+    | SummonsOfDendroCharactors | SummonsOfGeoCharactors
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
     | GeoCharactorTalents
+    # finally old talents
+    | OldTalents
 )

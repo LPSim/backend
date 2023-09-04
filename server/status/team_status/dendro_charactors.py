@@ -1,15 +1,20 @@
-
-
 from typing import Any, List, Literal
 
-from server.action import ChangeObjectUsageAction
-from server.event import CreateObjectEventArguments
+from server.action import (
+    Actions, ChangeObjectUsageAction, MakeDamageAction, RemoveObjectAction
+)
+from server.event import (
+    CreateObjectEventArguments, ReceiveDamageEventArguments, 
+    SkillEndEventArguments
+)
+from ...struct import Cost
 
 from ...consts import (
-    DamageType, ElementType, ElementalReactionType, ObjectPositionType
+    DamageElementalType, DamageType, ElementType, ElementalReactionType, 
+    ObjectPositionType
 )
 
-from ...modifiable_values import DamageIncreaseValue
+from ...modifiable_values import DamageIncreaseValue, DamageValue
 from .base import RoundTeamStatus
 
 
@@ -87,4 +92,79 @@ class ShrineOfMaya(RoundTeamStatus):
         return value
 
 
-DendroTeamStatus = ShrineOfMaya | ShrineOfMaya
+class FloralSidewinder(RoundTeamStatus):
+    """
+    Damage made on skill end, but need to check whether dendro reaction made
+    before.
+    """
+    name: Literal['Floral Sidewinder'] = 'Floral Sidewinder'
+    desc: str = (
+        "during this Round, when your characters' Skills trigger "
+        "Dendro-Related Reactions: Deal 1 Dendro DMG. (Once per Round)"
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+    dendro_reaction_made: bool = False
+
+    def event_handler_RECEIVE_DAMAGE(
+        self, event: ReceiveDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Check whether dendro reaction made.
+        """
+        damage = event.final_damage
+        if not damage.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not self charactor made damage
+            return []
+        if ElementType.DENDRO not in damage.reacted_elements:
+            # not dendro reaction
+            return []
+        # mark dendro reaction made
+        self.dendro_reaction_made = True
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        if no dendro reaction made, return. otherwise, reset dendro reaction
+        made, and if our active charactor use skill, deal 1 dendro damage.
+        """
+        if not self.dendro_reaction_made:
+            # no dendro reaction made
+            return []
+        # regardless of the following conditions, reset dendro reaction made
+        self.dendro_reaction_made = False
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        if not event.action.position.check_position_valid(  # pragma: no cover
+            charactor.position, match, player_idx_same = True,
+            charactor_idx_same = True, source_area = ObjectPositionType.SKILL
+        ):
+            # not this charactor use skill
+            return []  # pragma: no cover
+        target = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        self.usage -= 1
+        return [
+            MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = 1 - self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.DAMAGE,
+                        target_position = target.position,
+                        damage = 1,
+                        damage_elemental_type = DamageElementalType.DENDRO,
+                        cost = Cost()
+                    )
+                ]
+            )
+        ] + self.check_should_remove()
+
+
+DendroTeamStatus = ShrineOfMaya | FloralSidewinder

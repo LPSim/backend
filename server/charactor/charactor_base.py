@@ -423,8 +423,7 @@ class CharactorBase(ObjectBase):
         """
         result: List[ObjectBase] = [self]
         for skill in self.skills:
-            if skill.skill_type == SkillType.PASSIVE:
-                result.append(skill)
+            result.append(skill)
         if self.weapon is not None:
             result.append(self.weapon)
         if self.artifact is not None:
