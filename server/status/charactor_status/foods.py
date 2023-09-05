@@ -2,9 +2,11 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...consts import DamageElementalType, DamageType, SkillType
+from ...consts import (
+    CostLabels, DamageElementalType, DamageType, ObjectPositionType, SkillType
+)
 
-from ...modifiable_values import DamageIncreaseValue, DamageValue
+from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 
 from ...action import MakeDamageAction, RemoveObjectAction
 
@@ -71,6 +73,47 @@ class LotusFlowerCrisp(RoundCharactorStatus, DefendCharactorStatus):
     max_usage: int = 1
     min_damage_to_trigger: int = 1
     max_in_one_time: int = 3
+
+
+class NorthernSmokedChicken(RoundCharactorStatus):
+    name: Literal['Northern Smoked Chicken']
+    desc: str = (
+        "During this Round, the target character's next Normal Attack cost "
+        "less 1 Unaligned Element."
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        If this charactor use normal attack, decrease one unaligned die cost.
+        """
+        if self.usage <= 0:  # pragma: no cover
+            # no usage, not modify
+            return value
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True, 
+            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
+        ):
+            # not charactor use skill, not modify
+            return value
+        if value.cost.label & CostLabels.NORMAL_ATTACK.value == 0:
+            # not normal attack, not modify
+            return value
+        # modify
+        if value.cost.decrease_cost(None):
+            # decrease success
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        return self.check_should_remove()
 
 
 class MushroomPizza(RoundCharactorStatus):
@@ -144,6 +187,6 @@ class TandooriRoastChicken(RoundCharactorStatus):
 
 
 FoodStatus = (
-    Satiated | AdeptusTemptation | LotusFlowerCrisp | MushroomPizza
-    | TandooriRoastChicken
+    Satiated | AdeptusTemptation | LotusFlowerCrisp | NorthernSmokedChicken
+    | MushroomPizza | TandooriRoastChicken
 )

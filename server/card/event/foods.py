@@ -111,6 +111,28 @@ class LotusFlowerCrisp(FoodCardBase):
         return ret
 
 
+class NorthernSmokedChicken(FoodCardBase):
+    name: Literal['Northern Smoked Chicken']
+    desc: str = (
+        "During this Round, the target character's next Normal Attack cost "
+        "less 1 Unaligned Element."
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+
+    can_eat_only_if_damaged: bool = False
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        ret = super().get_actions(target, match)
+        assert len(ret) == 1
+        action_2 = ret[0].copy(deep = True)
+        action_2.object_name = self.name
+        ret.append(action_2)
+        return ret
+
+
 class SweetMadame(FoodCardBase):
     name: Literal['Sweet Madame']
     desc: str = '''Heal target character for 1 HP.'''
@@ -262,6 +284,6 @@ class TandooriRoastChicken(FoodCardBase):
 
 
 FoodCards = (
-    AdeptusTemptation | LotusFlowerCrisp | SweetMadame | MondstadtHashBrown 
-    | MushroomPizza | TandooriRoastChicken
+    AdeptusTemptation | LotusFlowerCrisp | NorthernSmokedChicken | SweetMadame 
+    | MondstadtHashBrown | MushroomPizza | TandooriRoastChicken
 )
