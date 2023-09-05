@@ -88,7 +88,6 @@ class SkillBase(ObjectBase):
                         cost = self.cost.copy(),
                     )
                 ],
-                charactor_change_rule = 'NONE'
             ),
         ]
 

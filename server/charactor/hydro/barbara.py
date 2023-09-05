@@ -58,7 +58,6 @@ class MelodyLoop(AttackerSummonBase):
                                 cost = self.cost.copy(),
                             )
                         ],
-                        charactor_change_rule = 'NONE',
                     )
                 )
             if target_table.active_charactor_idx == cid:
@@ -78,7 +77,6 @@ class MelodyLoop(AttackerSummonBase):
                                 cost = self.cost.copy(),
                             )
                         ],
-                        charactor_change_rule = 'NONE',
                     )
                 )
         return ret
@@ -143,7 +141,6 @@ class ShiningMiracle(ElementalBurstBase):
                             cost = self.cost.copy(),
                         )
                     ],
-                    charactor_change_rule = 'NONE'
                 ))
         return ret
 

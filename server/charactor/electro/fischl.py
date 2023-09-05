@@ -151,7 +151,6 @@ class Oz(AttackerSummonBase):
                             cost = self.cost.copy(),
                         )
                     ],
-                    charactor_change_rule = 'NONE',
                 )
             ]
         return []

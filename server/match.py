@@ -1792,26 +1792,8 @@ class Match(BaseModel):
         target_idx = action.target_player_idx
         next_charactor: int = self.player_tables[
             target_idx].active_charactor_idx
-        if action.charactor_change_rule == 'PREV':
-            raise NotImplementedError('Not tested part')
-            nci = self.player_tables[target_idx].previous_charactor_id()
-            if nci is not None:
-                next_charactor = nci
-        elif action.charactor_change_rule == 'NEXT':
-            raise NotImplementedError('Not tested part')
-            nci = self.player_tables[target_idx].next_charactor_id()
-            if nci is not None:
-                next_charactor = nci
-        elif action.charactor_change_rule == 'ABSOLUTE':
-            raise NotImplementedError('Not tested part')
+        if action.do_charactor_change:
             next_charactor = action.charactor_change_idx
-            if self.player_tables[target_idx].charactors[
-                    next_charactor].is_defeated:
-                for cnum, c in enumerate(
-                        self.player_tables[target_idx].charactors):
-                    if not c.is_defeated:
-                        next_charactor = cnum
-                        break
         events: List[ReceiveDamageEventArguments | MakeDamageEventArguments 
                      | AfterMakeDamageEventArguments
                      | SwitchCharactorEventArguments] = []
@@ -1849,7 +1831,7 @@ class Match(BaseModel):
                         f'{damage.target_position.player_idx} '
                         f'does not match action target player {target_idx}.'
                     )
-                assert action.charactor_change_rule == 'NONE', (
+                assert not action.do_charactor_change, (
                     'When overloaded to switch charactor, it should not '
                     'contain charactor change rule.'
                 )

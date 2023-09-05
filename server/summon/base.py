@@ -86,7 +86,6 @@ class AttackerSummonBase(SummonBase):
                         cost = self.cost.copy(),
                     )
                 ],
-                charactor_change_rule = 'NONE',
             )
         ]
 
@@ -187,7 +186,6 @@ class DefendSummonBase(SummonBase):
                         cost = self.cost.copy(),
                     )
                 ],
-                charactor_change_rule = 'NONE',
             )
         ] + self._remove()
 

@@ -215,13 +215,10 @@ class MakeDamageAction(ActionBase):
         source_player_idx (int): The index of the player to make damage from.
         damage_value_list (List[DamageValue]): The damage values to make.
         target_player_idx (int): The index of the player to make damage to.
-        charactor_change_rule (Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE']):
-            The rule of charactor change. 
+        do_charactor_change (bool): Whether to change charactor after making
+            damage.
         charactor_change_idx (int): The charactor index of the charactor who 
-            will be changed to. Only used when charactor_change_rule is 
-            'ABSOLUTE'. If it is defeated, select by default order. (e.g.
-            absolute choose charactor 2, but it is defeated, then choose
-            0, 1, ...)
+            will be changed to. It should not be a defeated charactor.
         TODO: is these two player idx necessary? Can a damage made to both
         players? (e.g. Kokomi's elemental burst)
     """
@@ -231,7 +228,7 @@ class MakeDamageAction(ActionBase):
     target_player_idx: int
 
     # charactor change
-    charactor_change_rule: Literal['NONE', 'NEXT', 'PREV', 'ABSOLUTE'] = 'NONE'
+    do_charactor_change: bool = False
     charactor_change_idx: int = -1
 
 

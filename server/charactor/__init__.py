@@ -16,6 +16,9 @@ from .geo import (
 from .pyro import (
     PyroCharactorTalents, PyroCharactors,  # SummonsOfPyroCharactors
 )
+from .anemo import (
+    AnemoCharactorTalents, AnemoCharactors, SummonsOfAnemoCharactors
+)
 from .old_version import (
     OldTalents
 )
@@ -23,15 +26,16 @@ from .old_version import (
 
 Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
-    | DendroCharactors | GeoCharactors | PyroCharactors
+    | DendroCharactors | GeoCharactors | PyroCharactors | AnemoCharactors
 )
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
     | SummonsOfDendroCharactors | SummonsOfGeoCharactors
+    | SummonsOfAnemoCharactors
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
-    | GeoCharactorTalents | PyroCharactorTalents
+    | GeoCharactorTalents | PyroCharactorTalents | AnemoCharactorTalents
     # finally old talents
     | OldTalents
 )

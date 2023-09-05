@@ -129,7 +129,6 @@ class SweetMadame(FoodCardBase):
         ret.append(MakeDamageAction(
             source_player_idx = self.position.player_idx,
             target_player_idx = self.position.player_idx,
-            charactor_change_rule = 'NONE',
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -162,7 +161,6 @@ class MondstadtHashBrown(FoodCardBase):
         ret.append(MakeDamageAction(
             source_player_idx = self.position.player_idx,
             target_player_idx = self.position.player_idx,
-            charactor_change_rule = 'NONE',
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -198,7 +196,6 @@ class MushroomPizza(FoodCardBase):
         ret.append(MakeDamageAction(
             source_player_idx = self.position.player_idx,
             target_player_idx = self.position.player_idx,
-            charactor_change_rule = 'NONE',
             damage_value_list = [
                 DamageValue(
                     position = self.position,

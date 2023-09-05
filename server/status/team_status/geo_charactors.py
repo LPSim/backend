@@ -88,7 +88,6 @@ class FullPlate(ShieldTeamStatus):
                             cost = Cost(),
                         )
                     ],
-                    charactor_change_rule = 'NONE',
                 ))
         return ret
 
