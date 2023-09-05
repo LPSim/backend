@@ -24,6 +24,8 @@ class ActionTypes(str, Enum):
     COMBAT_ACTION = 'COMBAT_ACTION'
     SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
     CHARGE = 'CHARGE'
+    USE_SKILL = 'USE_SKILL'
+    USE_CARD = 'USE_CARD'
     SKILL_END = 'SKILL_END'
     CHARACTOR_DEFEATED = 'CHARACTOR_DEFEATED'
     CREATE_OBJECT = 'CREATE_OBJECT'
@@ -240,6 +242,22 @@ class ChargeAction(ActionBase):
     player_idx: int
     charactor_idx: int
     charge: int
+
+
+class UseSkillAction(ActionBase):
+    """
+    Action for using skill.
+    """
+    type: Literal[ActionTypes.USE_SKILL] = ActionTypes.USE_SKILL
+    skill_position: ObjectPosition
+
+
+class UseCardAction(ActionBase):
+    """
+    Action for using card.
+    """
+    type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
+    card_position: ObjectPosition
 
 
 class SkillEndAction(ActionBase):

@@ -21,6 +21,8 @@ from .action import (
     SwitchCharactorAction,
     MakeDamageAction,
     ChargeAction,
+    UseSkillAction,
+    # UseCardAction,
     SkillEndAction,
     CreateObjectAction,
     RemoveObjectAction,
@@ -74,6 +76,7 @@ from .event import (
     RemoveObjectEventArguments,
     ChangeObjectUsageEventArguments,
     MoveObjectEventArguments,
+    UseSkillEventArguments,
 )
 from .object_base import ObjectBase
 from .modifiable_values import (
@@ -1276,19 +1279,23 @@ class Match(BaseModel):
             value = cost_value,
             mode = 'REAL'
         )
-        actions: List[Actions] = [RemoveDiceAction(
-            player_idx = response.player_idx,
-            dice_idxs = response.dice_idxs,
-        )]
-        actions += skill.get_actions(self)
-        actions.append(SkillEndAction(
-            position = skill.position,
-            skill_type = skill.skill_type,
-        ))
-        actions.append(CombatActionAction(
-            action_type = 'SKILL',
-            position = skill.position,
-        ))
+        actions: List[Actions] = [
+            RemoveDiceAction(
+                player_idx = response.player_idx,
+                dice_idxs = response.dice_idxs,
+            ),
+            UseSkillAction(
+                skill_position = skill.position,
+            ),
+            SkillEndAction(
+                position = skill.position,
+                skill_type = skill.skill_type
+            ),
+            CombatActionAction(
+                action_type = 'SKILL',
+                position = skill.position,
+            )
+        ]
         event_frame = EventFrame(
             events = [],
             triggered_actions = actions
@@ -1315,6 +1322,9 @@ class Match(BaseModel):
                 player_idx = response.player_idx,
                 dice_idxs = response.dice_idxs,
             ),
+            # UseCardAction(
+            #     card_position = card.position,
+            # )
         ]
         if card.type in [ObjectType.CARD, ObjectType.ARCANE]:
             # only card and arcane type will be removed from hand.
@@ -1379,6 +1389,10 @@ class Match(BaseModel):
             return list(self._action_make_damage(action))
         elif isinstance(action, ChargeAction):
             return list(self._action_charge(action))
+        elif isinstance(action, UseSkillAction):
+            return list(self._action_use_skill(action))
+        # elif isinstance(action, UseCardAction):
+        #     return list(self._action_use_card(action))
         elif isinstance(action, SkillEndAction):
             return list(self._action_skill_end(action))
         elif isinstance(action, CharactorDefeatedAction):
@@ -2292,6 +2306,22 @@ class Match(BaseModel):
     """
     Action funtions that only used to trigger specific event
     """
+
+    def _action_use_skill(self, action: UseSkillAction) \
+            -> List[UseSkillEventArguments]:
+        player_idx = action.skill_position.player_idx
+        table = self.player_tables[player_idx]
+        charactor = table.charactors[table.active_charactor_idx]
+        skill = charactor.get_object(action.skill_position)
+        assert skill is not None and skill.type == ObjectType.SKILL
+        logging.info(
+            f'player {player_idx} '
+            f'charactor {charactor.name}:{table.active_charactor_idx} '
+            f'use skill {skill.name}.'  # type: ignore
+        )
+        return [UseSkillEventArguments(
+            action = action,
+        )]
 
     def _action_skill_end(self, action: SkillEndAction) \
             -> List[SkillEndEventArguments]:

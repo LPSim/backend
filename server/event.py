@@ -24,6 +24,7 @@ from .action import (
     ChangeObjectUsageAction,
     MoveObjectAction,
     ConsumeArcaneLegendAction,
+    UseSkillAction,
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -211,6 +212,14 @@ class ChargeEventArguments(EventArgumentsBase):
     action: ChargeAction
     charge_before: int
     charge_after: int
+
+
+class UseSkillEventArguments(EventArgumentsBase):
+    """
+    Event arguments for use skill.
+    """
+    type: Literal[ActionTypes.USE_SKILL] = ActionTypes.USE_SKILL
+    action: UseSkillAction
 
 
 class SkillEndEventArguments(EventArgumentsBase):

@@ -146,22 +146,6 @@ class FloralSidewinder(SkillTalent):
     )
     skill: FloralBrush = FloralBrush()
 
-    def get_actions(
-        self, target: ObjectPosition | None, match: Any
-    ) -> List[Actions]:
-        # When equip this card, as skill must be used, but currently talent
-        # is on hand, add one more action to create status.
-        ret = super().get_actions(target, match)
-        # create status before using skill
-        ret = [CreateObjectAction(
-            object_name = 'Floral Sidewinder',
-            object_position = self.position.set_area(
-                ObjectPositionType.TEAM_STATUS
-            ),
-            object_arguments = {}
-        )] + ret
-        return ret
-
 
 # charactor base
 

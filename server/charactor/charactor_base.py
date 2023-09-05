@@ -7,6 +7,8 @@ will break the import loop.
 
 
 from typing import List, Literal, Any
+
+from ..event import UseSkillEventArguments
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
     SkillType, WeaponType, ElementType, FactionType, 
@@ -22,7 +24,7 @@ from ..card.equipment.artifact import Artifacts
 from ..card.equipment.weapon import Weapons
 from ..action import (
     ChargeAction, CombatActionAction, MakeDamageAction, MoveObjectAction, 
-    RemoveObjectAction, Actions, SkillEndAction
+    RemoveObjectAction, Actions, SkillEndAction, UseSkillAction
 )
 
 
@@ -63,7 +65,6 @@ class SkillBase(ObjectBase):
         1. MakeDamageAction to attack the enemy active charactor with damage
             `self.damage` and damage type `self.damage_type`.
         2. ChargeAction to charge the active charactor by 1.
-        3. SkillEndAction to declare skill end, and trigger the event.
         """
         target_table = match.player_tables[1 - self.position.player_idx]
         target_charactor_idx = target_table.active_charactor_idx
@@ -90,6 +91,17 @@ class SkillBase(ObjectBase):
                 charactor_change_rule = 'NONE'
             ),
         ]
+
+    def event_handler_USE_SKILL(
+        self, event: UseSkillEventArguments, match: Any
+    ):
+        """
+        When use skill event triggered, check if this skill is used.
+        If so, return self.get_actions()
+        """
+        if event.action.skill_position == self.position:
+            return self.get_actions(match)
+        return []
 
 
 class PhysicalNormalAttackBase(SkillBase):
@@ -304,7 +316,9 @@ class SkillTalent(TalentBase):
                 break
         else:
             raise AssertionError('Skill not found')
-        ret += self.skill.get_actions(match)
+        ret.append(UseSkillAction(
+            skill_position = self.skill.position
+        ))
         # skill used, add SkillEndAction
         ret.append(SkillEndAction(
             position = self.skill.position,
