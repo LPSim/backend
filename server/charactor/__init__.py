@@ -13,6 +13,9 @@ from .dendro import (
 from .geo import (
     GeoCharactorTalents, GeoCharactors, SummonsOfGeoCharactors
 )
+from .pyro import (
+    PyroCharactorTalents, PyroCharactors,  # SummonsOfPyroCharactors
+)
 from .old_version import (
     OldTalents
 )
@@ -20,7 +23,7 @@ from .old_version import (
 
 Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
-    | DendroCharactors | GeoCharactors
+    | DendroCharactors | GeoCharactors | PyroCharactors
 )
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
@@ -28,7 +31,7 @@ SummonsOfCharactors = (
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
-    | GeoCharactorTalents
+    | GeoCharactorTalents | PyroCharactorTalents
     # finally old talents
     | OldTalents
 )
