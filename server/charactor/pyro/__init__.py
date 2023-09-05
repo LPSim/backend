@@ -1,6 +1,7 @@
 from .fatui_pyro_agent import FatuiPyroAgent, PaidinFull
+from .klee import Klee, PoundingSurprise
 
 
-PyroCharactors = FatuiPyroAgent | FatuiPyroAgent
+PyroCharactors = FatuiPyroAgent | Klee
 # SummonsOfPyroCharactors = 
-PyroCharactorTalents = PaidinFull | PaidinFull
+PyroCharactorTalents = PaidinFull | PoundingSurprise
