@@ -1133,10 +1133,7 @@ class Match(BaseModel):
             ChooseCharactorAction.from_response(response)
         )
         event_frame = self._stack_events(event_args)
-        self.empty_frame_assertion(
-            event_frame,
-            'Choose charactor should not trigger actions now.'
-        )
+        self.event_frames.append(event_frame)
         # remove related requests
         self.requests = [
             req for req in self.requests

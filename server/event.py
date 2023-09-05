@@ -190,6 +190,7 @@ class MakeDamageEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     action: MakeDamageAction
     damages: List[ReceiveDamageEventArguments]
+    # TODO remove these two attributes
     charactor_hps: List[List[int]]
     charactor_alive: List[List[bool]]
 

@@ -8,7 +8,7 @@ will break the import loop.
 
 from typing import List, Literal, Any
 
-from ..event import UseSkillEventArguments
+from ..event import MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
     SkillType, WeaponType, ElementType, FactionType, 
@@ -282,6 +282,26 @@ class TalentBase(CardBase):
             target_position = new_position
         ))
         return ret
+
+    def equip(self, match: Any) -> List[Actions]:
+        return []
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When this talent is moved from hand to charactor, it is considered
+        as equipped, and will call `self.equip`.
+        """
+        if (
+            event.action.object_position.id == self.id
+            and event.action.object_position.area == ObjectPositionType.HAND
+            and event.action.target_position.area 
+            == ObjectPositionType.CHARACTOR
+        ):
+            # this talent equipped from hand to charactor
+            return self.equip(match)
+        return []
 
 
 class SkillTalent(TalentBase):

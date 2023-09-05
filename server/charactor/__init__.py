@@ -19,6 +19,9 @@ from .pyro import (
 from .anemo import (
     AnemoCharactorTalents, AnemoCharactors, SummonsOfAnemoCharactors
 )
+from .cryo import (
+    CryoCharactorTalents, CryoCharactors,  # SummonsOfCryoCharactors
+)
 from .old_version import (
     OldTalents
 )
@@ -27,6 +30,7 @@ from .old_version import (
 Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
     | DendroCharactors | GeoCharactors | PyroCharactors | AnemoCharactors
+    | CryoCharactors
 )
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
@@ -36,6 +40,7 @@ SummonsOfCharactors = (
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
     | GeoCharactorTalents | PyroCharactorTalents | AnemoCharactorTalents
+    | CryoCharactorTalents
     # finally old talents
     | OldTalents
 )
