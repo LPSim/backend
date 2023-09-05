@@ -55,7 +55,8 @@ from .event import (
     EventArguments,
     EventArgumentsBase,
     DrawCardEventArguments,
-    EventFrame, 
+    EventFrame,
+    GameStartEventArguments, 
     RestoreCardEventArguments, 
     RemoveCardEventArguments,
     ChooseCharactorEventArguments,
@@ -114,6 +115,7 @@ class MatchState(str, Enum):
         STARTING_CARD_SWITCH (str): Waiting for players to switch cards.
         STARTING_CHOOSE_CHARACTOR (str): Waiting for players to choose
             charactors.
+        GAME_START: The game has started, trigger some passive skills.
         ROUND_START (str): A new round is starting.
         ROUND_ROLL_DICE (str): Waiting for players to re-roll dice.
         ROUND_PREPARING (str): Preparing phase starts.
@@ -133,6 +135,8 @@ class MatchState(str, Enum):
     STARTING = 'STARTING'
     STARTING_CARD_SWITCH = 'STARTING_CARD_SWITCH'
     STARTING_CHOOSE_CHARACTOR = 'STARTING_CHOOSE_CHARACTOR'
+
+    GAME_START = 'GAME_START'
 
     ROUND_START = 'ROUND_START'
     ROUND_ROLL_DICE = 'ROUND_ROLL_DICE'
@@ -486,6 +490,9 @@ class Match(BaseModel):
                 for player_idx in range(len(self.player_tables)):
                     self._request_choose_charactor(player_idx)
             elif self.state == MatchState.STARTING_CHOOSE_CHARACTOR:
+                self._set_match_state(MatchState.GAME_START)
+                self._game_start()
+            elif self.state == MatchState.GAME_START:
                 self._set_match_state(MatchState.ROUND_START)
                 self._round_start()
             elif self.state == MatchState.ROUND_ROLL_DICE:
@@ -642,6 +649,16 @@ class Match(BaseModel):
                 # pop event frame
                 self.event_frames.pop()
 
+    def _game_start(self):
+        """
+        Game started. Will send game start event.
+        """
+        event = GameStartEventArguments(
+            player_go_first = self.current_player,
+        )
+        event_frame = EventFrame(events = [event])
+        self.event_frames.append(event_frame)
+
     def _round_start(self):
         """
         Start a round. Will clear existing dice, generate new random dice
@@ -710,6 +727,8 @@ class Match(BaseModel):
             self._modify_value(reroll_value, mode = 'REAL')
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
+        # can use GenerateRerollDiceRequest to generate reroll dice request
+        # and add RoundStart event if needed
 
     def _round_prepare(self):
         """

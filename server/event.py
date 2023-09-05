@@ -105,6 +105,19 @@ class RemoveDiceEventArguments(EventArgumentsBase):
     colors_removed: List[DieColor]
 
 
+class GameStartEventArguments(EventArgumentsBase):
+    """
+    Event arguments for game start event. This event is triggered 
+    by the system when the game starts, so it does not have an action.
+
+    Args:
+        player_go_first (int): The index of the player who goes first.
+    """
+    type: Literal[ActionTypes.GAME_START] = ActionTypes.GAME_START
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
+    player_go_first: int
+
+
 class RoundPrepareEventArguments(EventArgumentsBase):
     """
     Event arguments for round prepare event. This event is triggered 
@@ -310,11 +323,13 @@ EventArguments = (
     | DrawCardEventArguments | RestoreCardEventArguments
     | RemoveCardEventArguments | ChooseCharactorEventArguments
     | CreateDiceEventArguments | RemoveDiceEventArguments
+    | GameStartEventArguments
     | RoundPrepareEventArguments | DeclareRoundEndEventArguments
     | CombatActionEventArguments | SwitchCharactorEventArguments
     | ReceiveDamageEventArguments | AfterMakeDamageEventArguments
     | MakeDamageEventArguments | ChargeEventArguments
-    | SkillEndEventArguments | CharactorDefeatedEventArguments
+    | UseSkillEventArguments | SkillEndEventArguments 
+    | CharactorDefeatedEventArguments
     | CreateObjectEventArguments | RemoveObjectEventArguments
     | ChangeObjectUsageEventArguments | MoveObjectEventArguments
     | ConsumeArcaneLegendEventArguments | RoundEndEventArguments

@@ -35,7 +35,8 @@ class ActionTypes(str, Enum):
     MOVE_OBJECT = 'MOVE_OBJECT'
     CONSUME_ARCANE_LEGEND = 'CONSUME_ARCANE_LEGEND'
 
-    # system phase actions
+    # system phase events
+    GAME_START = 'GAME_START'
     ROUND_PREPARE = 'ROUND_PREPARE'
     ROUND_END = 'ROUND_END'
 
