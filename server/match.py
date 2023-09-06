@@ -17,7 +17,7 @@ from .action import (
     CreateDiceAction,
     RemoveDiceAction,
     DeclareRoundEndAction,
-    ActionEndAction,
+    ActionEndAction, SkipPlayerActionAction,
     SwitchCharactorAction,
     MakeDamageAction,
     ChargeAction,
@@ -51,6 +51,7 @@ from .consts import (
     ObjectType, PlayerActionLabels, SkillType,
 )
 from .event import (
+    PlayerActionStartEventArguments,
     ConsumeArcaneLegendEventArguments,
     EventArguments,
     EventArgumentsBase,
@@ -120,10 +121,11 @@ class MatchState(str, Enum):
         ROUND_ROLL_DICE (str): Waiting for players to re-roll dice.
         ROUND_PREPARING (str): Preparing phase starts.
         PLAYER_ACTION_START (str): Player action phase start.
-        PLAYER_ACTION_REQUEST (str): Waiting for response from player.
-        PLAYER_ACTION_ACT (str): After player has decided its action, the 
-            action is being executed. Execution may be interrupted by requests,
-            e.g. someone is knocked out, need to re-roll dice.
+        PLAYER_ACTION_REQUEST (str): Waiting for response from player, and
+            after player has decided its action, the action is being executed. 
+            Execution may be interrupted by requests, e.g. someone is knocked 
+            out, need to re-roll dice. When all requests and actions are clear,
+            change to ROUND_ENDING.
         ROUND_ENDING (str): Ending phase starts.
         ROUND_ENDED (str): The round has ended.
         ENDED (str): The match has ended.
@@ -144,7 +146,6 @@ class MatchState(str, Enum):
 
     PLAYER_ACTION_START = 'PLAYER_ACTION_START'
     PLAYER_ACTION_REQUEST = 'PLAYER_ACTION_REQUEST'
-    PLAYER_ACTION_ACT = 'PLAYER_ACTION_ACT'
 
     ROUND_ENDING = 'ROUND_ENDING'
     ROUND_ENDED = 'ROUND_ENDED'
@@ -642,6 +643,12 @@ class Match(BaseModel):
                         f'{event_arg.type.name}.'
                     )
                     event_frame.triggered_actions = func(event_arg, self)
+                    if len(event_frame.triggered_actions) > 0:
+                        logging.info(
+                            f'Object {object_name} with event {event_arg.type}'
+                            f', triggered '
+                            f'{len(event_frame.triggered_actions)} actions '
+                        )
             elif len(event_frame.events):
                 # trigger objects
                 self._trigger_event(event_frame)
@@ -656,8 +663,7 @@ class Match(BaseModel):
         event = GameStartEventArguments(
             player_go_first = self.current_player,
         )
-        event_frame = EventFrame(events = [event])
-        self.event_frames.append(event_frame)
+        self._stack_event(event)
 
     def _round_start(self):
         """
@@ -749,17 +755,15 @@ class Match(BaseModel):
     def _player_action_start(self):
         """
         Start a player's action phase. Will generate action phase start event.  
-        TODO generate event
         """
         not_all_declare_end = False
         for table in self.player_tables:
             if not table.has_round_ended:
                 not_all_declare_end = True
         assert not_all_declare_end, 'All players have declared round end.'
-        # if not not_all_declare_end:
-        #     # all declare ended, go to round ending
-        #     self._set_match_state(MatchState.ROUND_ENDING)
-        #     return
+        event = PlayerActionStartEventArguments(
+            player_idx = self.current_player)
+        self._stack_event(event)
 
     def _player_action_request(self):
         """
@@ -893,8 +897,8 @@ class Match(BaseModel):
                 name = obj.name  # type: ignore
             func = getattr(obj, handler_name, None)
             if func is not None:
-                logging.info(f'Trigger event {event_arg.type.name} '
-                             f'for {name}.')
+                logging.debug(f'Trigger event {event_arg.type.name} '
+                              f'for {name}.')
                 event_frame.triggered_objects.append(obj.position)
         return event_arg
 
@@ -1132,8 +1136,7 @@ class Match(BaseModel):
         event_args = self._act(
             ChooseCharactorAction.from_response(response)
         )
-        event_frame = self._stack_events(event_args)
-        self.event_frames.append(event_frame)
+        self._stack_events(event_args)
         # remove related requests
         self.requests = [
             req for req in self.requests
@@ -1446,6 +1449,8 @@ class Match(BaseModel):
             return list(self._action_generate_choose_charactor_request(action))
         elif isinstance(action, GenerateRerollDiceRequestAction):
             return list(self._action_generate_reroll_dice_request(action))
+        elif isinstance(action, SkipPlayerActionAction):
+            return list(self._action_skip_player_action(action))
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f'Unknown action {action}.')
@@ -1889,10 +1894,6 @@ class Match(BaseModel):
         make_damage_event = MakeDamageEventArguments(
             action = action,
             damages = infos,
-            charactor_hps = [[c.hp for c in table.charactors] 
-                             for table in self.player_tables],
-            charactor_alive = [[c.is_alive for c in table.charactors] 
-                               for table in self.player_tables],
         )
         events.append(make_damage_event)
         events += infos
@@ -2377,4 +2378,24 @@ class Match(BaseModel):
         self, action: GenerateRerollDiceRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_reroll_dice(action.player_idx, action.reroll_times)
+        return []
+
+    """
+    Action functions the changes game state. Some skill will occupy multiple
+    action phase, so use this action to skip player action generation.
+    These actions should not trigger event, i.e. return empty list.
+    """
+
+    def _action_skip_player_action(
+        self, action: SkipPlayerActionAction
+    ) -> List[EventArgumentsBase]:
+        if self.state != MatchState.PLAYER_ACTION_START:
+            raise AssertionError(
+                f'Cannot skip player action when match state is '
+                f'{self.state}.'
+            )
+        self._set_match_state(MatchState.PLAYER_ACTION_REQUEST)
+        logging.info(
+            f'player {self.current_player} skipped player action.'
+        )
         return []

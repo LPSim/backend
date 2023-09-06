@@ -77,6 +77,9 @@ class ChooseCharactorEventArguments(EventArgumentsBase):
     original_charactor_idx: int
 
 
+# 5
+
+
 class CreateDiceEventArguments(EventArgumentsBase):
     """
     Event arguments for create dice event.
@@ -147,6 +150,9 @@ class DeclareRoundEndEventArguments(EventArgumentsBase):
     action: DeclareRoundEndAction
 
 
+# 10
+
+
 class ActionEndEventArguments(EventArgumentsBase):
     """
     Event arguments for action end event.
@@ -190,9 +196,6 @@ class MakeDamageEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     action: MakeDamageAction
     damages: List[ReceiveDamageEventArguments]
-    # TODO remove these two attributes
-    charactor_hps: List[List[int]]
-    charactor_alive: List[List[bool]]
 
 
 class AfterMakeDamageEventArguments(MakeDamageEventArguments):
@@ -213,9 +216,10 @@ class AfterMakeDamageEventArguments(MakeDamageEventArguments):
         return AfterMakeDamageEventArguments(
             action = event_arguments.action,
             damages = event_arguments.damages,
-            charactor_hps = event_arguments.charactor_hps,
-            charactor_alive = event_arguments.charactor_alive
         )
+
+
+# 15
 
 
 class ChargeEventArguments(EventArgumentsBase):
@@ -262,6 +266,9 @@ class CreateObjectEventArguments(EventArgumentsBase):
     action: CreateObjectAction
     create_result: Literal['NEW', 'RENEW']
     create_idx: int
+
+
+# 20
 
 
 class RemoveObjectEventArguments(EventArgumentsBase):
@@ -319,21 +326,51 @@ class RoundEndEventArguments(EventArgumentsBase):
     initial_card_draw: int
 
 
+# 25
+
+
+class PlayerActionStartEventArguments(EventArgumentsBase):
+    """
+    Event arguments for action start event.
+    """
+    type: Literal[ActionTypes.PLAYER_ACTION_START] = \
+        ActionTypes.PLAYER_ACTION_START
+    action: ActionBase = ActionBase(type = ActionTypes.EMPTY)
+    player_idx: int
+
+
 EventArguments = (
     EventArgumentsBase
-    | DrawCardEventArguments | RestoreCardEventArguments
-    | RemoveCardEventArguments | ChooseCharactorEventArguments
-    | CreateDiceEventArguments | RemoveDiceEventArguments
+    | DrawCardEventArguments
+    | RestoreCardEventArguments
+    | RemoveCardEventArguments
+    | ChooseCharactorEventArguments
+    # 5
+    | CreateDiceEventArguments
+    | RemoveDiceEventArguments
     | GameStartEventArguments
-    | RoundPrepareEventArguments | DeclareRoundEndEventArguments
-    | ActionEndEventArguments | SwitchCharactorEventArguments
-    | ReceiveDamageEventArguments | AfterMakeDamageEventArguments
-    | MakeDamageEventArguments | ChargeEventArguments
-    | UseSkillEventArguments | SkillEndEventArguments 
+    | RoundPrepareEventArguments
+    | DeclareRoundEndEventArguments
+    # 10
+    | ActionEndEventArguments
+    | SwitchCharactorEventArguments
+    | ReceiveDamageEventArguments
+    | MakeDamageEventArguments
+    | AfterMakeDamageEventArguments
+    # 15
+    | ChargeEventArguments
+    | UseSkillEventArguments
+    | SkillEndEventArguments
     | CharactorDefeatedEventArguments
-    | CreateObjectEventArguments | RemoveObjectEventArguments
-    | ChangeObjectUsageEventArguments | MoveObjectEventArguments
-    | ConsumeArcaneLegendEventArguments | RoundEndEventArguments
+    | CreateObjectEventArguments
+    # 20
+    | RemoveObjectEventArguments
+    | ChangeObjectUsageEventArguments
+    | MoveObjectEventArguments
+    | ConsumeArcaneLegendEventArguments
+    | RoundEndEventArguments
+    # 25
+    | PlayerActionStartEventArguments
 )
 
 

@@ -38,6 +38,7 @@ class ActionTypes(str, Enum):
     # system phase events
     GAME_START = 'GAME_START'
     ROUND_PREPARE = 'ROUND_PREPARE'
+    PLAYER_ACTION_START = 'PLAYER_ACTION_START'
     ROUND_END = 'ROUND_END'
 
     # make damage related events
@@ -48,6 +49,9 @@ class ActionTypes(str, Enum):
     # generate request actions
     GENERATE_CHOOSE_CHARACTOR = 'GENERATE_CHOOSE_CHARACTOR'
     GENERATE_REROLL_DICE = 'GENERATE_REROLL_DICE'
+
+    # change game state actions
+    SKIP_PLAYER_ACTION = 'SKIP_PLAYER_ACTION'
 
 
 class ActionBase(BaseModel):
@@ -115,6 +119,9 @@ class ChooseCharactorAction(ActionBase):
         )
 
 
+# 5
+
+
 class CreateDiceAction(ActionBase):
     """
     Action for creating dice.
@@ -179,7 +186,7 @@ class DeclareRoundEndAction(ActionBase):
 class ActionEndAction(ActionBase):
     """
     Action end, and if is a combat action, change current player.
-    the position means the action source, i.e. the charactor who use the skill,
+    the position means the action source, i.e. the skill,
     or the charactor who switch out.
     """
     type: Literal[ActionTypes.ACTION_END] = ActionTypes.ACTION_END
@@ -205,6 +212,9 @@ class SwitchCharactorAction(ActionBase):
             player_idx = response.player_idx,
             charactor_idx = response.charactor_idx,
         )
+
+
+# 10
 
 
 class MakeDamageAction(ActionBase):
@@ -268,6 +278,9 @@ class SkillEndAction(ActionBase):
     skill_type: SkillType
 
 
+# 15
+
+
 class CharactorDefeatedAction(ActionBase):
     """
     Action for charactor defeated.
@@ -327,6 +340,9 @@ class MoveObjectAction(ActionBase):
     target_position: ObjectPosition
 
 
+# 20
+
+
 class ConsumeArcaneLegendAction(ActionBase):
     """
     Action for consuming arcane legend.
@@ -355,12 +371,42 @@ class GenerateRerollDiceRequestAction(ActionBase):
     reroll_times: int
 
 
+class SkipPlayerActionAction(ActionBase):
+    """
+    Action for skipping current player action.
+    """
+    type: Literal[ActionTypes.SKIP_PLAYER_ACTION] = \
+        ActionTypes.SKIP_PLAYER_ACTION
+
+
 Actions = (
-    ActionBase | DrawCardAction | RestoreCardAction | RemoveCardAction 
-    | ChooseCharactorAction | CreateDiceAction | RemoveDiceAction
-    | DeclareRoundEndAction | ActionEndAction | SwitchCharactorAction
-    | MakeDamageAction | ChargeAction | SkillEndAction 
-    | CharactorDefeatedAction | GenerateChooseCharactorRequestAction
-    | CreateObjectAction | RemoveObjectAction | ChangeObjectUsageAction
-    | MoveObjectAction | ConsumeArcaneLegendAction
+    ActionBase 
+    | DrawCardAction 
+    | RestoreCardAction 
+    | RemoveCardAction
+    | ChooseCharactorAction
+    # 5
+    | CreateDiceAction
+    | RemoveDiceAction
+    | DeclareRoundEndAction
+    | ActionEndAction
+    | SwitchCharactorAction
+    # 10
+    | MakeDamageAction
+    | ChargeAction
+    | UseSkillAction
+    | UseCardAction
+    | SkillEndAction
+    # 15
+    | CharactorDefeatedAction
+    | CreateObjectAction
+    | RemoveObjectAction
+    | ChangeObjectUsageAction
+    | MoveObjectAction
+    # 20
+    | ConsumeArcaneLegendAction
+    | GenerateChooseCharactorRequestAction
+    | GenerateRerollDiceRequestAction
+    | SkipPlayerActionAction
+
 )

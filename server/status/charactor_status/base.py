@@ -1,10 +1,17 @@
 from typing import Any, Literal, List
 
 from ...modifiable_values import DamageDecreaseValue, DamageElementEnhanceValue
-from ...consts import DamageElementalType, ObjectType
+from ...consts import DamageElementalType, ObjectType, PlayerActionLabels
 from ..base import StatusBase
-from ...action import RemoveObjectAction, Actions
-from ...event import MakeDamageEventArguments, RoundPrepareEventArguments
+from ...action import (
+    ActionEndAction, MakeDamageAction, RemoveObjectAction, Actions, 
+    SkipPlayerActionAction, UseSkillAction
+)
+from ...event import (
+    ChooseCharactorEventArguments, MakeDamageEventArguments, 
+    PlayerActionStartEventArguments, RoundPrepareEventArguments, 
+    SwitchCharactorEventArguments
+)
 
 
 class CharactorStatusBase(StatusBase):
@@ -39,7 +46,7 @@ class UsageCharactorStatus(CharactorStatusBase):
     usage: int
     max_usage: int
 
-    def check_should_remove(self) -> List[Actions]:
+    def check_should_remove(self) -> List[RemoveObjectAction]:
         """
         Check if the status should be removed.
         when usage has changed, call this function to check if the status
@@ -53,7 +60,7 @@ class UsageCharactorStatus(CharactorStatusBase):
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any
-    ) -> List[Actions]:
+    ) -> List[RemoveObjectAction]:
         """
         When damage made, check whether the team status should be removed.
         """
@@ -201,3 +208,96 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
         if value.damage_elemental_type == DamageElementalType.PHYSICAL:
             value.damage_elemental_type = self.infused_elemental_type
         return value
+
+
+class PrepareCharactorStatus(CharactorStatusBase):
+    """
+    Prepare status will trigger when self player action start, and try to
+    use a specified skill, and skip next player action phase.
+    if this charactor is stunned, it will do nothing.
+
+    When this charactor is not active charactor, it will remove itself. 
+    """
+    name: str
+    desc: str
+    version: str
+    charactor_name: str
+    skill_name: str
+
+    usage: int = 1
+    max_usage: int = 1
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: SwitchCharactorEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        If self switch charactor, after switch if this charactor is not active
+        charactor, remove this status.
+        """
+        if event.action.player_idx != self.position.player_idx:
+            # not self switch charactor
+            return []
+        return [RemoveObjectAction(
+            object_position = self.position,
+        )]
+
+    def event_handler_CHOOSE_CHARACTOR(
+        self, event: ChooseCharactorEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        As choose charactor only happens on charactor defeated, it is not
+        possible.
+        """
+        if event.action.player_idx != self.position.player_idx:
+            # not self choose charactor
+            return []
+        raise NotImplementedError('Should not be called')
+        return [RemoveObjectAction(
+            object_position = self.position,
+        )]
+
+    def event_handler_PLAYER_ACTION_START(
+        self, event: PlayerActionStartEventArguments, match: Any
+    ) -> List[RemoveObjectAction | UseSkillAction 
+              | SkipPlayerActionAction | ActionEndAction]:
+        """
+        If self player action start, and this charactor is at front,
+        use skill, remove this status, and skip player action.
+        """
+        if event.player_idx != self.position.player_idx:
+            # not self player action start, do nothing
+            return []
+        table = match.player_tables[self.position.player_idx]
+        active_idx = table.active_charactor_idx
+        if active_idx != self.position.charactor_idx:  # pragma: no cover
+            # not active charactor, do nothing
+            return []
+        charactor = table.get_active_charactor()
+        if charactor.is_stunned:
+            # stunned, do nothing
+            return []
+        ret: List[
+            RemoveObjectAction | UseSkillAction | SkipPlayerActionAction
+            | ActionEndAction
+        ] = []
+        ret.append(RemoveObjectAction(
+            object_position = self.position,
+        ))
+        assert charactor.name == self.charactor_name
+        # use skill
+        for skill in charactor.skills:
+            if skill.name == self.skill_name:
+                ret.append(UseSkillAction(skill_position = skill.position))
+                # skip player action
+                ret.append(SkipPlayerActionAction())
+                # action end action to switch player
+                ret.append(ActionEndAction(
+                    action_label = PlayerActionLabels.SKILL,
+                    do_combat_action = True,
+                    position = skill.position,
+                ))
+                # note based on its description, no skill end action will be
+                # triggered.
+                return ret
+        else:
+            raise AssertionError('Skill not found')

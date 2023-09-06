@@ -88,10 +88,9 @@ class SystemEventHandler(SystemEventHandlerBase):
         After damage made, check whether anyone has defeated.
         """
         actions: List[Actions] = []
-        for pnum, [hps, lives] in enumerate(zip(event.charactor_hps, 
-                                                event.charactor_alive)):
-            for cnum, [hp, alive] in enumerate(zip(hps, lives)):
-                if hp == 0 and alive:
+        for pnum, table in enumerate(match.player_tables):
+            for cnum, charactor in enumerate(table.charactors):
+                if charactor.hp == 0 and charactor.is_alive:
                     actions.append(CharactorDefeatedAction(
                         player_idx = pnum,
                         charactor_idx = cnum,
