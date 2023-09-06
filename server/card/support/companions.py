@@ -13,8 +13,8 @@ from ...action import (
     RemoveDiceAction, RemoveObjectAction
 )
 from ...event import (
-    ChangeObjectUsageEventArguments, RoundEndEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments
+    ActionEndEventArguments, ChangeObjectUsageEventArguments, 
+    RoundEndEventArguments, RoundPrepareEventArguments, SkillEndEventArguments
 )
 
 
@@ -227,4 +227,35 @@ class Rana(CompanionBase):
         return []
 
 
-Companions = Timmie | Liben | Rana
+class Setaria(CompanionBase):
+    name: Literal['Setaria']
+    desc: str = (
+        'After you perform any action, if you have 0 cards in your hand: '
+        'Draw 1 card.'
+    )
+    version: Literal['4.0'] = '4.0'
+    cost: Cost = Cost(same_dice_number = 1)
+    usage: int = 3
+
+    def event_handler_ACTION_END(
+        self, event: ActionEndEventArguments, match: Any
+    ) -> List[DrawCardAction | RemoveObjectAction]:
+        """
+        If self action end and hand is empty, draw card.
+        """
+        if event.action.position.player_idx != self.position.player_idx:
+            # not self player
+            return []
+        if len(match.player_tables[self.position.player_idx].hands) != 0:
+            # not empty hand
+            return []
+        # draw a card
+        self.usage -= 1
+        return [DrawCardAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            draw_if_filtered_not_enough = True,
+        )] + self.check_should_remove()
+
+
+Companions = Timmie | Liben | Rana | Setaria
