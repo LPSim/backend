@@ -7,12 +7,12 @@ from .element_artifacts import SmallElementalArtifact as SEA_4_0
 from .others import GamblersEarrings as GE_3_8
 
 
-class SmallElementalArtifact(SEA_4_0):
+class SmallElementalArtifact_3_3(SEA_4_0):
     version: Literal['3.3']
     cost: Cost = Cost(same_dice_number = 2)
 
 
-class GamblersEarrings(GE_3_8):
+class GamblersEarrings_3_3(GE_3_8):
     version: Literal['3.3']
     usage: int = 999
 
@@ -24,4 +24,4 @@ class GamblersEarrings(GE_3_8):
         return []
 
 
-OldVersionArtifacts = SmallElementalArtifact | GamblersEarrings
+OldVersionArtifacts = SmallElementalArtifact_3_3 | GamblersEarrings_3_3

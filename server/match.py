@@ -1852,7 +1852,7 @@ class Match(BaseModel):
                     'When overloaded to switch charactor, it should not '
                     'contain charactor change rule.'
                 )
-                nci = table.next_charactor_id()
+                nci = table.next_charactor_idx()
                 if nci is not None:
                     next_charactor = nci
             # apply elemental reaction, update damage and append new damages

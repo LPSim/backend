@@ -208,7 +208,7 @@ class PlayerTable(BaseModel):
         )
         return self.charactors[self.active_charactor_idx]
 
-    def next_charactor_id(self, current_idx: int | None = None) -> int | None:
+    def next_charactor_idx(self, current_idx: int | None = None) -> int | None:
         """
         Returns the next charactor index. If `current_id` is not provided, the
         active charactor index will be used.
@@ -229,7 +229,7 @@ class PlayerTable(BaseModel):
                 return target
         return None
 
-    def previous_charactor_id(
+    def previous_charactor_idx(
             self, current_idx: int | None = None) -> int | None:
         """
         Returns the previous charactor ID. If `current_id` is not provided, the

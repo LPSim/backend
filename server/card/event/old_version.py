@@ -9,7 +9,7 @@ from .others import IHaventLostYet as IHLY_4_0
 from .others import SendOff as SendOff_3_7
 
 
-class IHaventLostYet(IHLY_4_0):
+class IHaventLostYet_3_3(IHLY_4_0):
     name: Literal["I Haven't Lost Yet!"]
     desc: str = (
         "Only playable if one of your characters is defeated this Round: "
@@ -29,7 +29,7 @@ class IHaventLostYet(IHLY_4_0):
         return ret
 
 
-class SendOff(SendOff_3_7):
+class SendOff_3_3(SendOff_3_7):
     name: Literal['Send-Off']
     desc: str = '''Choose one Summon on the opposing side and destroy it.'''
     version: Literal['3.3']
@@ -47,4 +47,4 @@ class SendOff(SendOff_3_7):
         )]
 
 
-OldVersionEventCards = IHaventLostYet | SendOff
+OldVersionEventCards = IHaventLostYet_3_3 | SendOff_3_3

@@ -11,7 +11,7 @@ from ...event import AfterMakeDamageEventArguments
 from ...action import RemoveObjectAction
 
 
-class CatalyzingField(UsageTeamStatus):
+class CatalyzingField_3_3(UsageTeamStatus):
     """
     Catalyzing field.
     """
@@ -65,4 +65,4 @@ class CatalyzingField(UsageTeamStatus):
         return self.check_should_remove()
 
 
-OldVersionTeamStatus = CatalyzingField | CatalyzingField
+OldVersionTeamStatus = CatalyzingField_3_3 | CatalyzingField_3_3

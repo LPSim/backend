@@ -214,7 +214,7 @@ class Rana(CompanionBase):
             and self.usage > 0
         ):
             table = match.player_tables[self.position.player_idx]
-            next_idx = table.next_charactor_id()
+            next_idx = table.next_charactor_idx()
             if next_idx is not None:
                 self.usage -= 1
                 ele_type: ElementType = table.charactors[next_idx].element

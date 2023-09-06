@@ -23,7 +23,7 @@ from .cryo import (
     CryoCharactorTalents, CryoCharactors,  # SummonsOfCryoCharactors
 )
 from .old_version import (
-    OldTalents
+    OldTalents, OldCharactors
 )
 
 
@@ -31,6 +31,8 @@ Charactors = (
     Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
     | DendroCharactors | GeoCharactors | PyroCharactors | AnemoCharactors
     | CryoCharactors
+    # finally old charactors
+    | OldCharactors
 )
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors

@@ -167,13 +167,13 @@ def test_fischl_mona_nahida_no_talent():
     assert match.round_number == 3
     check_hp(match, [[0, 0, 1], [10, 10, 10]])
     # maks small tests on getting id
-    assert match.player_tables[0].previous_charactor_id() is None
-    assert match.player_tables[0].next_charactor_id() is None
-    assert match.player_tables[1].previous_charactor_id() == 1
-    assert match.player_tables[1].next_charactor_id() == 0
+    assert match.player_tables[0].previous_charactor_idx() is None
+    assert match.player_tables[0].next_charactor_idx() is None
+    assert match.player_tables[1].previous_charactor_idx() == 1
+    assert match.player_tables[1].next_charactor_idx() == 0
     for i in range(3):
-        assert match.player_tables[1].previous_charactor_id(i) == (i + 2) % 3
-        assert match.player_tables[1].next_charactor_id(i) == (i + 1) % 3
+        assert match.player_tables[1].previous_charactor_idx(i) == (i + 2) % 3
+        assert match.player_tables[1].next_charactor_idx(i) == (i + 1) % 3
     assert len(match.player_tables[1].team_status) == 1
     assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
     assert match.player_tables[1].team_status[0].usage == 2
