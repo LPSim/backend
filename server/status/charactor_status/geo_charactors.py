@@ -11,10 +11,13 @@ from ...modifiable_values import (
 )
 
 from server.status.base import StatusBase
-from .base import RoundCharactorStatus, UsageCharactorStatus
+from .base import (
+    ElementalInfusionCharactorStatus, RoundCharactorStatus, 
+    UsageCharactorStatus
+)
 
 
-class SweepingTime(RoundCharactorStatus):
+class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Sweeping Time'] = 'Sweeping Time'
     desc: str = (
         'When your character uses a Normal Attack: Consume 1 less Geo Die. '
@@ -27,6 +30,7 @@ class SweepingTime(RoundCharactorStatus):
     usage: int = 2
     max_usage: int = 2
     cost_decrease_usage: int = 1
+    infused_elemental_type: DamageElementalType = DamageElementalType.GEO
 
     def renew(self, new_status: StatusBase) -> None:
         super().renew(new_status)
@@ -78,13 +82,9 @@ class SweepingTime(RoundCharactorStatus):
         ):
             # not this charactor use normal attack, not modify
             return value
-        # modify element
-        if (  # pragma: no branch
-            value.damage_elemental_type == DamageElementalType.PHYSICAL
-        ):
-            # physical, change to geo
-            value.damage_elemental_type = DamageElementalType.GEO
-        return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode
+        )
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -101,7 +101,7 @@ class SweepingTime(RoundCharactorStatus):
         return value
 
 
-class RagingOniKing(RoundCharactorStatus):
+class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Raging Oni King'] = 'Raging Oni King'
     desc: str = (
         'The character to which this is attached to has their Normal Attacks '
@@ -113,6 +113,8 @@ class RagingOniKing(RoundCharactorStatus):
     version: Literal['3.6'] = '3.6'
     usage: int = 2
     max_usage: int = 2
+
+    infused_elemental_type: DamageElementalType = DamageElementalType.GEO
 
     status_increase_usage: int = 1
 
@@ -138,13 +140,8 @@ class RagingOniKing(RoundCharactorStatus):
         ):
             # not this charactor use normal attack, not modify
             return value
-        # modify element
-        if (  # pragma: no branch
-            value.damage_elemental_type == DamageElementalType.PHYSICAL
-        ):
-            # physical, change to geo
-            value.damage_elemental_type = DamageElementalType.GEO
-        return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode)
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

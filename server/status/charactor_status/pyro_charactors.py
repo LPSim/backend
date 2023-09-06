@@ -7,10 +7,13 @@ from ...consts import (
 from ...modifiable_values import (
     CostValue, DamageElementEnhanceValue, DamageIncreaseValue
 )
-from .base import DefendCharactorStatus, UsageCharactorStatus
+from .base import (
+    DefendCharactorStatus, ElementalInfusionCharactorStatus, 
+    UsageCharactorStatus
+)
 
 
-class Stealth(DefendCharactorStatus):
+class Stealth(DefendCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Stealth'] = 'Stealth'
     desc: str = (
         'The character to which this is attached takes -1 DMG and '
@@ -21,6 +24,7 @@ class Stealth(DefendCharactorStatus):
     max_usage: int = 2
     min_damage_to_trigger: int = 1
     max_in_one_time: int = 1
+    infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
         self, value: DamageElementEnhanceValue, match: Any,
@@ -30,23 +34,14 @@ class Stealth(DefendCharactorStatus):
         When self use skill, and has talent, change physical to pyro
         """
         assert mode == 'REAL'
-        if not value.is_corresponding_charactor_use_damage_skill(
-            self.position, match, None
-        ):
-            # not corresponding charactor use skill, do nothing
-            return value
-        if self.usage <= 0:  # pragma: no cover
-            # no usage, do nothing
-            return value
         charactor = match.player_tables[
             self.position.player_idx].charactors[self.position.charactor_idx]
         if charactor.talent is None:
             # no talent, do nothing
             return value
-        # change physical to pyro
-        if value.damage_elemental_type == DamageElementalType.PHYSICAL:
-            value.damage_elemental_type = DamageElementalType.PYRO
-        return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode
+        )
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

@@ -1,7 +1,7 @@
 from typing import Any, Literal, List
 
-from ...modifiable_values import DamageDecreaseValue
-from ...consts import ObjectType
+from ...modifiable_values import DamageDecreaseValue, DamageElementEnhanceValue
+from ...consts import DamageElementalType, ObjectType
 from ..base import StatusBase
 from ...action import RemoveObjectAction, Actions
 from ...event import MakeDamageEventArguments, RoundPrepareEventArguments
@@ -145,3 +145,59 @@ class ShieldCharactorStatus(DefendCharactorStatus):
     min_damage_to_trigger: int = 0
     max_in_one_time: int = 0
     decrease_usage_by_damage: bool = True
+
+
+class ElementalInfusionCharactorStatus(CharactorStatusBase):
+    """
+    Base class of doing elemental infusion. It will infuse all physical damage
+    to corresponding elemental damage for this charactor. If there extra
+    conditions, filter the condition and call value modifier in subclasses.
+    """
+
+    name: Literal[
+        'Pyro Elemental Infusion',
+        'Hydro Elemental Infusion',
+        'Electro Elemental Infusion',
+        'Cryo Elemental Infusion',
+        'Anemo Elemental Infusion',
+        'Geo Elemental Infusion',
+        'Dendro Elemental Infusion',
+    ]
+    desc: str = (
+        'When the charactor to which it is attached to deals Physical Damage, '
+        'it will be turned into XXX DMG. '
+    )
+    infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.infused_elemental_type == DamageElementalType.PHYSICAL:
+            # not set elemental type manually, get it from name
+            element = self.name.split(' ')[0].upper()
+            assert element in ['PYRO', 'HYDRO', 'ELECTRO', 'CRYO', 'ANEMO',
+                               'GEO', 'DENDRO']
+            assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
+            self.infused_elemental_type = DamageElementalType(element)
+            self.desc = self.desc.replace('XXX', element)
+
+    def value_modifier_DAMAGE_ELEMENT_ENHANCE(
+        self, value: DamageElementEnhanceValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageElementEnhanceValue:
+        """
+        When self use skill, change physical to corresponding element.
+        NOTE: this function will not change the usage.
+        """
+        assert mode == 'REAL'
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not corresponding charactor use skill, do nothing
+            return value
+        if self.usage <= 0:  # pragma: no cover
+            # no usage, do nothing
+            return value
+        # change physical to other element
+        if value.damage_elemental_type == DamageElementalType.PHYSICAL:
+            value.damage_elemental_type = self.infused_elemental_type
+        return value
