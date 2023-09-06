@@ -2,12 +2,12 @@
 
 from typing import Any, Literal, List
 
-from ...consts import CostLabels, ElementType
+from ...consts import CostLabels, ElementType, PlayerActionLabels
 
 from ...action import Actions, ChangeObjectUsageAction, RemoveObjectAction
 
 from ...event import (
-    CharactorDefeatedEventArguments, CombatActionEventArguments, 
+    CharactorDefeatedEventArguments, ActionEndEventArguments, 
     MoveObjectEventArguments
 )
 
@@ -48,7 +48,7 @@ class ChangingShifts(UsageTeamStatus):
         return value
 
     def event_handler_SWITCH_CHARACTOR(
-        self, event: CombatActionEventArguments, match: Any
+        self, event: ActionEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
         When switch charactor end, check whether to remove.
@@ -94,6 +94,7 @@ class WindAndFreedom(RoundTeamStatus):
         """
         When enemy charactor defeated, 
         """
+        assert mode == 'REAL'
         if not self.activated:
             # not activated, do nothing
             return value
@@ -109,11 +110,11 @@ class WindAndFreedom(RoundTeamStatus):
         #     # Mona + Kaeya may trigger
         return value
 
-    def event_handler_COMBAT_ACTION(
-        self, event: CombatActionEventArguments, match: Any
+    def event_handler_ACTION_END(
+        self, event: ActionEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
-        When combat action end, check whether to remove.
+        When action end event, check whether to remove.
         """
         return self.check_should_remove()
 
@@ -139,7 +140,7 @@ class LeaveItToMe(UsageTeamStatus):
         ):
             # not self switch charactor, do nothing
             return value
-        if value.action_type != 'SWITCH':
+        if value.action_label & PlayerActionLabels.SWITCH.value == 0:
             # not switch charactor, do nothing
             return value
         if not value.do_combat_action:
@@ -151,11 +152,11 @@ class LeaveItToMe(UsageTeamStatus):
         self.usage -= 1
         return value
 
-    def event_handler_COMBAT_ACTION(
-        self, event: CombatActionEventArguments, match: Any
+    def event_handler_ACTION_END(
+        self, event: ActionEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
-        When combat action event, check whether to remove.
+        When action end event, check whether to remove.
         """
         return self.check_should_remove()
 
@@ -204,7 +205,7 @@ class EnduringRock(RoundTeamStatus):
         return value
 
     def event_handler_SKILL_END(
-        self, event: CombatActionEventArguments, match: Any
+        self, event: ActionEndEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction | RemoveObjectAction]:
         """
         if self charactor use skill, and did geo attack, check whether have

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Any, Literal
+from typing import List, Any
 from utils import BaseModel
 from .consts import (
     DieColor, DamageType, DamageElementalType,
@@ -68,8 +68,8 @@ class CostValue(ModifiableValueBase):
 
 class CombatActionValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.COMBAT_ACTION
-    action_type: Literal['SKILL', 'SWITCH', 'END']
-    do_combat_action: bool = True
+    action_label: int
+    do_combat_action: bool
 
 
 class DamageElementEnhanceValue(ModifiableValueBase):

@@ -21,7 +21,7 @@ class ActionTypes(str, Enum):
     CREATE_DICE = 'CREATE_DICE'
     REMOVE_DICE = 'REMOVE_DICE'
     DECLARE_ROUND_END = 'DECLARE_ROUND_END'
-    COMBAT_ACTION = 'COMBAT_ACTION'
+    ACTION_END = 'ACTION_END'
     SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
     CHARGE = 'CHARGE'
     USE_SKILL = 'USE_SKILL'
@@ -176,14 +176,15 @@ class DeclareRoundEndAction(ActionBase):
         )
 
 
-class CombatActionAction(ActionBase):
+class ActionEndAction(ActionBase):
     """
-    Do a combat action, i.e. skill, switch, end.
+    Action end, and if is a combat action, change current player.
     the position means the action source, i.e. the charactor who use the skill,
     or the charactor who switch out.
     """
-    type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
-    action_type: Literal['SKILL', 'SWITCH', 'END']
+    type: Literal[ActionTypes.ACTION_END] = ActionTypes.ACTION_END
+    action_label: int  # Refer to PlayerActionLabels
+    do_combat_action: bool
     position: ObjectPosition
 
 
@@ -357,7 +358,7 @@ class GenerateRerollDiceRequestAction(ActionBase):
 Actions = (
     ActionBase | DrawCardAction | RestoreCardAction | RemoveCardAction 
     | ChooseCharactorAction | CreateDiceAction | RemoveDiceAction
-    | DeclareRoundEndAction | CombatActionAction | SwitchCharactorAction
+    | DeclareRoundEndAction | ActionEndAction | SwitchCharactorAction
     | MakeDamageAction | ChargeAction | SkillEndAction 
     | CharactorDefeatedAction | GenerateChooseCharactorRequestAction
     | CreateObjectAction | RemoveObjectAction | ChangeObjectUsageAction

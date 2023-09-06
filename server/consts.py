@@ -354,3 +354,17 @@ class IconType(str, Enum):
 
     # with others, the status has its special icon.
     OTHERS = 'OTHERS'
+
+
+class PlayerActionLabels(int, Enum):
+    SKILL = 0x1
+    SWITCH = 0x2
+    CARD = 0x4
+    TUNE = 0x8
+    END = 0x10
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

@@ -17,7 +17,7 @@ from .action import (
     CreateDiceAction,
     RemoveDiceAction,
     DeclareRoundEndAction,
-    CombatActionAction,
+    ActionEndAction,
     SwitchCharactorAction,
     MakeDamageAction,
     ChargeAction,
@@ -48,7 +48,7 @@ from .consts import (
     DAMAGE_TYPE_TO_ELEMENT,
     ElementalReactionType,
     ObjectPositionType,
-    ObjectType, SkillType,
+    ObjectType, PlayerActionLabels, SkillType,
 )
 from .event import (
     ConsumeArcaneLegendEventArguments,
@@ -64,7 +64,7 @@ from .event import (
     RemoveDiceEventArguments,
     RoundPrepareEventArguments,
     DeclareRoundEndEventArguments,
-    CombatActionEventArguments,
+    ActionEndEventArguments,
     SwitchCharactorEventArguments,
     ChargeEventArguments,
     SkillEndEventArguments,
@@ -1205,8 +1205,8 @@ class Match(BaseModel):
             mode = 'REAL'
         )
         actions.append(SwitchCharactorAction.from_response(response))
-        actions.append(CombatActionAction(
-            action_type = 'SWITCH',
+        actions.append(ActionEndAction(
+            action_label = PlayerActionLabels.SWITCH.value,
             position = ObjectPosition(
                 player_idx = response.player_idx,
                 charactor_idx = response.request.active_charactor_idx,
@@ -1214,6 +1214,7 @@ class Match(BaseModel):
                 id = self.player_tables[response.player_idx].charactors[
                     response.request.active_charactor_idx].id,
             ),
+            do_combat_action = True
         ))
         event_frame = EventFrame(
             events = [],
@@ -1251,6 +1252,15 @@ class Match(BaseModel):
             number = 1,
             color = ELEMENT_TO_DIE_COLOR[active_charactor.element]
         ))
+        actions.append(ActionEndAction(
+            action_label = PlayerActionLabels.TUNE.value,
+            position = ObjectPosition(
+                player_idx = response.player_idx,
+                area = ObjectPositionType.SYSTEM,
+                id = 0
+            ),
+            do_combat_action = False
+        ))
         event_frame = EventFrame(
             events = [],
             triggered_actions = actions
@@ -1266,13 +1276,14 @@ class Match(BaseModel):
         """
         actions: List[ActionBase] = []
         actions.append(DeclareRoundEndAction.from_response(response))
-        actions.append(CombatActionAction(
-            action_type = 'END',
+        actions.append(ActionEndAction(
+            action_label = PlayerActionLabels.END.value,
             position = ObjectPosition(
                 player_idx = response.player_idx,
                 area = ObjectPositionType.SYSTEM,
                 id = 0
             ),
+            do_combat_action = True
         ))
         event_frame = EventFrame(
             events = [],
@@ -1295,6 +1306,7 @@ class Match(BaseModel):
             value = cost_value,
             mode = 'REAL'
         )
+        action_label, combat_action = skill.get_action_type(self)
         actions: List[Actions] = [
             RemoveDiceAction(
                 player_idx = response.player_idx,
@@ -1307,9 +1319,10 @@ class Match(BaseModel):
                 position = skill.position,
                 skill_type = skill.skill_type
             ),
-            CombatActionAction(
-                action_type = 'SKILL',
+            ActionEndAction(
+                action_label = action_label,
                 position = skill.position,
+                do_combat_action = combat_action
             )
         ]
         event_frame = EventFrame(
@@ -1357,6 +1370,12 @@ class Match(BaseModel):
             target = response.target,
             match = self,
         )
+        action_label, combat_action = card.get_action_type(self)
+        actions.append(ActionEndAction(
+            action_label = action_label,
+            position = card.position,
+            do_combat_action = combat_action
+        ))
         event_frame = EventFrame(
             events = [],
             triggered_actions = actions
@@ -1399,8 +1418,8 @@ class Match(BaseModel):
             return list(self._action_switch_charactor(action))
         elif isinstance(action, DeclareRoundEndAction):
             return list(self._action_declare_round_end(action))
-        elif isinstance(action, CombatActionAction):
-            return list(self._action_combat_action(action))
+        elif isinstance(action, ActionEndAction):
+            return list(self._action_action_end(action))
         elif isinstance(action, MakeDamageAction):
             return list(self._action_make_damage(action))
         elif isinstance(action, ChargeAction):
@@ -1702,12 +1721,13 @@ class Match(BaseModel):
             action = action
         )]
 
-    def _action_combat_action(self, action: CombatActionAction) \
-            -> List[CombatActionEventArguments]:
+    def _action_action_end(self, action: ActionEndAction) \
+            -> List[ActionEndEventArguments]:
         player_idx = self.current_player   
         combat_action_value = CombatActionValue(
             position = action.position,
-            action_type = action.action_type
+            action_label = action.action_label,
+            do_combat_action = action.do_combat_action
         )
         self._modify_value(
             value = combat_action_value,
@@ -1719,7 +1739,7 @@ class Match(BaseModel):
                 f'as a quick action. current player '
                 f'is {self.current_player}.'
             )
-            return [CombatActionEventArguments(
+            return [ActionEndEventArguments(
                 action = action,
                 do_combat_action = False
             )]
@@ -1738,7 +1758,7 @@ class Match(BaseModel):
             f'player {player_idx} did a combat action, current player '
             f'is {self.current_player}.'
         )
-        return [CombatActionEventArguments(
+        return [ActionEndEventArguments(
             action = action,
             do_combat_action = True
         )]

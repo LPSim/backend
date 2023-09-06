@@ -6,12 +6,12 @@ will break the import loop.
 """
 
 
-from typing import List, Literal, Any
+from typing import List, Literal, Any, Tuple
 
 from ..event import MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
-    SkillType, WeaponType, ElementType, FactionType, 
+    PlayerActionLabels, SkillType, WeaponType, ElementType, FactionType, 
     ObjectPositionType, CostLabels
 )
 from ..object_base import (
@@ -23,7 +23,7 @@ from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
 from ..card.equipment.weapon import Weapons
 from ..action import (
-    ChargeAction, CombatActionAction, MakeDamageAction, MoveObjectAction, 
+    ChargeAction, MakeDamageAction, MoveObjectAction, 
     RemoveObjectAction, Actions, SkillEndAction, UseSkillAction
 )
 
@@ -51,6 +51,16 @@ class SkillBase(ObjectBase):
         # set cost label into cost
         self.cost.label = self.cost_label
         # based on charactor id, calculate skill id.
+
+    def get_action_type(self, match: Any) -> Tuple[int, bool]:
+        """
+        Get the action type of using the skill.
+
+        Returns:
+            Tuple[int, bool]: The first element is the action label, the second
+                element is whether the action type is a combat action.
+        """
+        return PlayerActionLabels.SKILL.value, True
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -318,6 +328,16 @@ class SkillTalent(TalentBase):
         """
         return super().is_valid(match) and self.skill.is_valid(match)
 
+    def get_action_type(self, match: Any) -> Tuple[int, bool]:
+        """
+        For skill talent, the action label contains SKILL and is a combat 
+        action.
+        """
+        return (
+            PlayerActionLabels.CARD.value | PlayerActionLabels.SKILL.value,
+            True
+        )
+
     def get_actions(
         self, target: ObjectPosition | None, match: Any
     ) -> List[Actions]:
@@ -342,12 +362,6 @@ class SkillTalent(TalentBase):
         ret.append(SkillEndAction(
             position = self.skill.position,
             skill_type = self.skill.skill_type,
-        ))
-        # use cards are quick actions, but equip talent card will use skills,
-        # so should add CombatActionAction.
-        ret.append(CombatActionAction(
-            action_type = 'SKILL',
-            position = self.skill.position
         ))
         return ret
 

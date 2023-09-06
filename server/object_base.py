@@ -8,9 +8,11 @@ in many other places. Other objects are defined in their own files.
 import time
 import random
 from utils import BaseModel
-from typing import List, Literal, Any
+from typing import List, Literal, Any, Tuple
 from .action import Actions, ActionTypes
-from .consts import ObjectType, ObjectPositionType, CostLabels
+from .consts import (
+    ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
+)
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
     ObjectPosition, Cost
@@ -95,6 +97,16 @@ class CardBase(ObjectBase):
         # set cost label into cost
         self.cost.label = self.cost_label
         assert self.cost.original_value is None
+
+    def get_action_type(self, match: Any) -> Tuple[int, bool]:
+        """
+        Get the action type of using the card. 
+
+        Returns:
+            Tuple[int, bool]: The first element is the action label, the second
+                element is whether the action type is a combat action.
+        """
+        return PlayerActionLabels.CARD.value, False
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """

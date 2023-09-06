@@ -10,7 +10,7 @@ from ...struct import Cost, ObjectPosition
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    ObjectPositionType, PlayerActionLabels, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -113,7 +113,7 @@ class IllusoryTorrent(PassiveSkillBase):
         other people, has usage, and currently is a combat action,
         change the combat action to quick action and decrease usage.
         """
-        if value.action_type != 'SWITCH':
+        if value.action_label & PlayerActionLabels.SWITCH.value == 0:
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,

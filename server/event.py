@@ -13,7 +13,7 @@ from .action import (
     CreateDiceAction,
     RemoveDiceAction,
     DeclareRoundEndAction,
-    CombatActionAction,
+    ActionEndAction,
     SkillEndAction,
     SwitchCharactorAction,
     MakeDamageAction,
@@ -147,12 +147,12 @@ class DeclareRoundEndEventArguments(EventArgumentsBase):
     action: DeclareRoundEndAction
 
 
-class CombatActionEventArguments(EventArgumentsBase):
+class ActionEndEventArguments(EventArgumentsBase):
     """
-    Event arguments for combat action event.
+    Event arguments for action end event.
     """
-    type: Literal[ActionTypes.COMBAT_ACTION] = ActionTypes.COMBAT_ACTION
-    action: CombatActionAction
+    type: Literal[ActionTypes.ACTION_END] = ActionTypes.ACTION_END
+    action: ActionEndAction
     do_combat_action: bool
 
 
@@ -326,7 +326,7 @@ EventArguments = (
     | CreateDiceEventArguments | RemoveDiceEventArguments
     | GameStartEventArguments
     | RoundPrepareEventArguments | DeclareRoundEndEventArguments
-    | CombatActionEventArguments | SwitchCharactorEventArguments
+    | ActionEndEventArguments | SwitchCharactorEventArguments
     | ReceiveDamageEventArguments | AfterMakeDamageEventArguments
     | MakeDamageEventArguments | ChargeEventArguments
     | UseSkillEventArguments | SkillEndEventArguments 
