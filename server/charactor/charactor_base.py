@@ -214,6 +214,49 @@ class ElementalBurstBase(SkillBase):
         return actions
 
 
+class AOESkillBase(SkillBase):
+    """
+    Base class that deals AOE damage. Can inherit this class after previous
+    classes to do AOE attack. It will attack active charactor damage+element, 
+    back chractor back_damage_piercing.
+    """
+    desc: str = (
+        'Deals _ACTIVE_ _ELEMENT_ DMG, deals _BACK_ Piercing DMG to all '
+        'opposing characters on standby.'
+    )
+    back_damage: int
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+        self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
+        self.desc = self.desc.replace('_BACK_', str(self.back_damage))
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        ret = super().get_actions(match)
+        assert len(ret) > 0
+        assert ret[-1].type == 'MAKE_DAMAGE'
+        target_table = match.player_tables[1 - self.position.player_idx]
+        charactors = target_table.charactors
+        for cid, charactor in enumerate(charactors):
+            if cid == target_table.active_charactor_idx:
+                continue
+            if charactor.is_defeated:
+                continue
+            ret[-1].damage_value_list.append(
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = charactor.position,
+                    damage = self.back_damage,
+                    damage_elemental_type = DamageElementalType.PIERCING,
+                    cost = self.cost.copy(),
+                )
+            )
+        return ret
+
+
 class PassiveSkillBase(SkillBase):
     """
     Base class of passive skills.

@@ -8,8 +8,8 @@ from ...consts import (
     ObjectPositionType, DamageType, DieColor
 )
 from ..charactor_base import (
-    PhysicalNormalAttackBase, ElementalSkillBase, ElementalBurstBase, 
-    CharactorBase, SkillTalent
+    AOESkillBase, PhysicalNormalAttackBase, ElementalSkillBase, 
+    ElementalBurstBase, CharactorBase, SkillTalent
 )
 from ...struct import Cost, ObjectPosition
 from ...modifiable_values import DamageValue
@@ -41,42 +41,16 @@ class Nightrider(ElementalSkillBase):
         ]
 
 
-class MidnightPhantasmagoria(ElementalBurstBase):
+class MidnightPhantasmagoria(ElementalBurstBase, AOESkillBase):
     name: Literal['Midnight Phantasmagoria'] = 'Midnight Phantasmagoria'
-    desc: str = (
-        'Deals 4 Electro DMG, deals 2 Piercing DMG to all opposing characters '
-        'on standby.'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
+    back_damage: int = 2
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
         charge = 3,
     )
-
-    def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        assert len(ret) > 0
-        assert ret[-1].type == 'MAKE_DAMAGE'
-        target_table = match.player_tables[1 - self.position.player_idx]
-        charactors = target_table.charactors
-        for cid, charactor in enumerate(charactors):
-            if cid == target_table.active_charactor_idx:
-                continue
-            if charactor.is_defeated:
-                continue
-            ret[-1].damage_value_list.append(
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = charactor.position,
-                    damage = 2,
-                    damage_elemental_type = DamageElementalType.PIERCING,
-                    cost = self.cost.copy(),
-                )
-            )
-        return ret
 
 
 class StellarPredator(SkillTalent):

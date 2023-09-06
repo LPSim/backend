@@ -1993,6 +1993,13 @@ class Match(BaseModel):
             target_classes = Summons
             target_list = table.summons
             target_name = 'summon'
+        elif action.object_position.area == ObjectPositionType.HAND:
+            assert len(table.hands) < self.config.max_hand_size, (
+                'Cannot create hand card when hand is full.'
+            )
+            target_classes = Cards
+            target_list = table.hands
+            target_name = 'hand'
         else:
             raise NotImplementedError(
                 f'Create object action for area {action.object_position.area} '
