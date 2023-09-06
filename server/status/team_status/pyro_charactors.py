@@ -2,14 +2,14 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...modifiable_values import DamageValue
+from ...modifiable_values import DamageIncreaseValue, DamageValue
 
 from ...consts import DamageElementalType, DamageType, ObjectPositionType
 
 from ...action import MakeDamageAction
 
 from ...event import SkillEndEventArguments
-from .base import UsageTeamStatus
+from .base import RoundTeamStatus, UsageTeamStatus
 
 
 class SparksNSplash(UsageTeamStatus):
@@ -54,4 +54,89 @@ class SparksNSplash(UsageTeamStatus):
             return []  # pragma: no cover
 
 
-PyroTeamStatus = SparksNSplash | SparksNSplash
+class InspirationField(RoundTeamStatus):
+    name: Literal['Inspiration Field'] = 'Inspiration Field'
+    desc: str = (
+        "When your character uses a Skill: If this character has at least 7 "
+        "HP, deal +2 additional DMG for this instance. After the Skill DMG "
+        "is finalized, if this character's HP is not greater than 6, heal "
+        "this character for 2 HP."
+    )
+    buff_desc: str = (
+        "When your character uses a Skill: If this character has at least 7 "
+        "HP, deal +2 additional DMG for this instance. After the Skill DMG "
+        "is finalized, heal this character for 2 HP."
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+    talent_activated: bool = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.talent_activated:
+            self.desc = self.buff_desc
+
+    def renew(self, new_status: 'InspirationField') -> None:
+        super().renew(new_status)
+        if new_status.talent_activated:
+            self.talent_activated = True
+            self.desc = self.buff_desc
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        If charactor HP greater than 7, or talent activated, increase damage
+        by 2
+        """
+        assert mode == 'REAL'
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not our charactor use skill, do nothing
+            return value
+        charactor = match.player_tables[value.position.player_idx].charactors[
+            value.position.charactor_idx]
+        if not self.talent_activated and charactor.hp < 7:
+            # no talent and hp less than 7, do nothing
+            return value
+        # increase damage by 2
+        value.damage += 2
+        return value
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If our charactor use skill and HP less than 7, heal 2 HP
+        """
+        if self.position.player_idx != event.action.position.player_idx:
+            # not our charactor, do nothing
+            return []
+        charactor = match.player_tables[
+            event.action.position.player_idx].charactors[
+                event.action.position.charactor_idx]
+        if charactor.hp > 6:
+            # HP greater than 6, do nothing
+            return []
+        # heal this charactor by 2
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost()
+                )
+            ],
+        )]
+
+
+PyroTeamStatus = SparksNSplash | InspirationField
