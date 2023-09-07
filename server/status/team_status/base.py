@@ -1,10 +1,15 @@
 from typing import Any, List, Literal
 
-from ...modifiable_values import DamageDecreaseValue
+from ...struct import Cost
+
+from ...modifiable_values import DamageDecreaseValue, DamageValue
 from ..base import StatusBase
-from ...consts import ObjectType
-from ...action import RemoveObjectAction, Actions
-from ...event import MakeDamageEventArguments, RoundPrepareEventArguments
+from ...consts import DamageElementalType, DamageType, ObjectType, SkillType
+from ...action import MakeDamageAction, RemoveObjectAction, Actions
+from ...event import (
+    MakeDamageEventArguments, RoundPrepareEventArguments, 
+    SkillEndEventArguments
+)
 
 
 class TeamStatusBase(StatusBase):
@@ -145,3 +150,53 @@ class ShieldTeamStatus(DefendTeamStatus):
     min_damage_to_trigger: int = 0
     max_in_one_time: int = 0
     decrease_usage_by_damage: bool = True
+
+
+class ExtraAttackTeamStatus(TeamStatusBase):
+    name: str
+    desc: str
+    version: str
+
+    trigger_skill_type: SkillType | None
+    damage: int
+    damage_elemental_type: DamageElementalType
+    decrease_usage: bool
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        if skill used by self player, and is trigger skill type or trigger
+        skill type is none, then make damage to opponent player's active 
+        charactor.
+        If self.decrease_usage is True, when make damage success, 
+        decrease usage by 1.
+        """
+        assert self.usage >= 0
+        if self.position.player_idx != event.action.position.player_idx:
+            # not self player use skill
+            return []
+        if (
+            self.trigger_skill_type is not None
+            and event.action.skill_type != self.trigger_skill_type
+        ):
+            # not trigger skill type
+            return []
+        target = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        if self.decrease_usage:
+            self.usage -= 1
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = target.position,
+                    damage = self.damage,
+                    damage_elemental_type = self.damage_elemental_type,
+                    cost = Cost(),
+                )
+            ]
+        )]

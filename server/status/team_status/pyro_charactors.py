@@ -4,12 +4,14 @@ from ...struct import Cost
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 
-from ...consts import DamageElementalType, DamageType, ObjectPositionType
+from ...consts import (
+    DamageElementalType, DamageType, ObjectPositionType, SkillType
+)
 
 from ...action import MakeDamageAction
 
 from ...event import SkillEndEventArguments
-from .base import RoundTeamStatus, UsageTeamStatus
+from .base import ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
 
 
 class SparksNSplash(UsageTeamStatus):
@@ -139,7 +141,7 @@ class InspirationField(RoundTeamStatus):
         )]
 
 
-class AurousBlaze(RoundTeamStatus):
+class AurousBlaze(RoundTeamStatus, ExtraAttackTeamStatus):
     name: Literal['Aurous Blaze'] = 'Aurous Blaze'
     desc: str = (
         'After your character other than Yoimiya uses a Skill: '
@@ -149,6 +151,11 @@ class AurousBlaze(RoundTeamStatus):
     usage: int = 2
     max_usage: int = 2
 
+    trigger_skill_type: SkillType | None = None
+    damage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
+    decrease_usage: bool = False
+
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
@@ -156,31 +163,12 @@ class AurousBlaze(RoundTeamStatus):
         if skill used by self player but not yoimiya, make damage to opponent
         active charactor.
         """
-        assert self.usage >= 0
-        if self.position.player_idx != event.action.position.player_idx:
-            # not self player use skill
-            return []
         charactor = match.player_tables[
             self.position.player_idx].get_active_charactor()
         if charactor.name == 'Yoimiya':
             # yoimiya use skill
             return []
-        target = match.player_tables[
-            1 - self.position.player_idx].get_active_charactor()
-        return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = 1 - self.position.player_idx,
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = target.position,
-                    damage = 1,
-                    damage_elemental_type = DamageElementalType.PYRO,
-                    cost = Cost(),
-                )
-            ]
-        )]
+        return super().event_handler_SKILL_END(event, match)
 
 
 PyroTeamStatus = SparksNSplash | InspirationField | AurousBlaze
