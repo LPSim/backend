@@ -159,8 +159,8 @@ def test_yoimiya_different_version_generate():
         charactor:Yoimiya@3.3
         charactor:Yoimiya@3.4
         charactor:Yoimiya
-        Send-Off@3.3*15
-        Send-Off*15
+        Send Off@3.3*15
+        Send Off*15
         '''
     )
     match.set_deck([deck, deck])

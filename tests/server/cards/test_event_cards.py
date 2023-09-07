@@ -1137,11 +1137,11 @@ def test_send_off_new_and_old():
     deck = Deck.from_str(
         '''
         charactor:Rhodeia of Loch*3
-        Send-Off*15
+        Send Off*15
         '''
     )
     # use old version cards
-    old = {'name': 'Send-Off', 'version': '3.3'}
+    old = {'name': 'Send Off', 'version': '3.3'}
     deck_dict = deck.dict()
     deck_dict['cards'] += [old] * 15
     deck = Deck(**deck_dict)

@@ -281,7 +281,7 @@ class ClaxsArts(CardBase):
 
 
 class SendOff(CardBase):
-    name: Literal['Send-Off']
+    name: Literal['Send Off']
     desc: str = (
         'Choose one Summon on the opposing side and cause it to lose '
         '2 Usage(s).'

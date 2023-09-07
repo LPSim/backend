@@ -30,7 +30,7 @@ class IHaventLostYet_3_3(IHLY_4_0):
 
 
 class SendOff_3_3(SendOff_3_7):
-    name: Literal['Send-Off']
+    name: Literal['Send Off']
     desc: str = '''Choose one Summon on the opposing side and destroy it.'''
     version: Literal['3.3']
     cost: Cost = Cost(any_dice_number = 2)

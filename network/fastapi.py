@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -11,6 +12,7 @@ from agents.interaction_agent import InteractionAgent
 
 
 app = FastAPI()
+logging.basicConfig(level = logging.INFO)
 
 
 # Add the CORSMiddleware to the app
@@ -30,22 +32,17 @@ app.add_middleware(
 def get_new_match(seed: Any = None, rich: bool = False):
     deck = Deck.from_str(
         '''
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
-        Setaria*15
-        Strategize*15
+        charactor:Yoimiya@3.3
+        charactor:Yoimiya@3.4
+        charactor:Yoimiya
+        Send Off@3.3*15
+        Send Off*15
         '''
     )
-    # use old version cards
-    # old = {'name': 'I Haven\'t Lost Yet!', 'version': '3.3'}
-    # deck_dict = deck.dict()
-    # deck_dict['cards'] += [old] * 30
-    # deck = Deck(**deck_dict)
     # change HP
     # for charactor in deck.charactors:
-    #     charactor.hp = 2
-    #     charactor.max_hp = 2
+    #     charactor.hp = 20
+    #     charactor.max_hp = 20
     if seed:
         match: Match = Match(random_state = seed)
     else:
@@ -73,7 +70,7 @@ agent_1 = InteractionAgent(player_idx = 1, only_use_command = True)
 @app.on_event('startup')
 async def startup_event():
     global match
-    match = get_new_match(seed = get_random_state(), rich = False)
+    match = get_new_match(seed = get_random_state(), rich = True)
 
 
 @app.post('reset')
