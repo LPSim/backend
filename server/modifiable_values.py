@@ -88,6 +88,8 @@ class DamageElementEnhanceValue(ModifiableValueBase):
     damage_elemental_type: DamageElementalType
     cost: Cost  # original cost of source
 
+    damage_from_element_reaction: bool = False
+
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.damage_type == DamageType.HEAL:
@@ -226,6 +228,7 @@ class DamageIncreaseValue(DamageElementEnhanceValue):
             damage = value.damage,
             damage_elemental_type = value.damage_elemental_type,
             cost = value.cost,
+            damage_from_element_reaction = value.damage_from_element_reaction,
             element_reaction = element_reaction,
             reacted_elements = reacted_elements,
         )
@@ -249,6 +252,8 @@ class DamageMultiplyValue(DamageIncreaseValue):
             target_position = increase_value.target_position,
             damage = increase_value.damage,
             damage_elemental_type = increase_value.damage_elemental_type,
+            damage_from_element_reaction = 
+            increase_value.damage_from_element_reaction,
             cost = increase_value.cost,
             element_reaction = increase_value.element_reaction,
             reacted_elements = increase_value.reacted_elements,
@@ -272,6 +277,8 @@ class DamageDecreaseValue(DamageIncreaseValue):
             target_position = multiply_value.target_position,
             damage = multiply_value.damage,
             damage_elemental_type = multiply_value.damage_elemental_type,
+            damage_from_element_reaction = 
+            multiply_value.damage_from_element_reaction,
             cost = multiply_value.cost,
             element_reaction = multiply_value.element_reaction,
             reacted_elements = multiply_value.reacted_elements,

@@ -289,7 +289,7 @@ def apply_elemental_reaction(
             cnum = (cnum + attack_target) % len(target_charactors)
             c = target_charactors[cnum]
             if c.is_alive:
-                res.append(DamageIncreaseValue(
+                res.append(DamageElementEnhanceValue(
                     position = damage.position,
                     target_position = ObjectPosition(
                         player_idx = damage.target_position.player_idx,
@@ -302,8 +302,7 @@ def apply_elemental_reaction(
                     damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[
                         element_type],
                     cost = damage.cost.copy(),
-                    element_reaction = ElementalReactionType.NONE,
-                    reacted_elements = [],
+                    damage_from_element_reaction = True
                 ))
     else:
         # all others are +1 damage types
@@ -329,6 +328,7 @@ def apply_elemental_reaction(
                         damage_type = DamageType.DAMAGE,
                         damage_elemental_type = damage_type,
                         cost = damage.cost.copy(),
+                        damage_from_element_reaction = True
                     ))
     return damage, res
 
