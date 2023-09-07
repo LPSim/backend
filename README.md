@@ -2,6 +2,8 @@
 
 ---
 
+[![Coverage Status](https://coveralls.io/repos/github/zyr17/GITCG/badge.svg?branch=master)](https://coveralls.io/github/zyr17/GITCG?branch=master)
+
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
 TCG, written with Python 3.10 using Pydantic and FastAPI.
 
