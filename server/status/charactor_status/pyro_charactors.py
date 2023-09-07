@@ -1,11 +1,17 @@
-from typing import Any, Literal
+from typing import Any, List, Literal
+
+from ...struct import Cost
+
+from ...action import MakeDamageAction, RemoveObjectAction
+
+from ...event import MakeDamageEventArguments, SkillEndEventArguments
 
 from ...consts import (
-    DamageElementalType, DieColor, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, DieColor, ObjectPositionType, SkillType
 )
 
 from ...modifiable_values import (
-    CostValue, DamageElementEnhanceValue, DamageIncreaseValue
+    CostValue, DamageElementEnhanceValue, DamageIncreaseValue, DamageValue
 )
 from .base import (
     DefendCharactorStatus, ElementalInfusionCharactorStatus, 
@@ -124,4 +130,89 @@ class ExplosiveSpark(UsageCharactorStatus):
         return value
 
 
-PyroCharactorStatus = Stealth | ExplosiveSpark
+class NiwabiEnshou(ElementalInfusionCharactorStatus, UsageCharactorStatus):
+    name: Literal['Niwabi Enshou'] = 'Niwabi Enshou'
+    desc: str = (
+        'The character to which this is attached has their Normal Attacks '
+        'deal +1 DMG, and their Physical DMG dealt converted to Pyro DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
+
+    effect_triggered: bool = False
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        If corresponding charactor use normal attack, increase damage by 1,
+        and mark effect triggered.
+        """
+        assert mode == 'REAL'
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            # not this charactor use normal attack, not modify
+            return value
+        # this charactor use normal attack, modify
+        self.usage -= 1
+        self.effect_triggered = True
+        value.damage += 1
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        do not remove immediately here, as may trigger additional attack at
+        skill end.
+        """
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        If effect triggered, and have talent on yoimiya, make 1 pyro damage.
+        If usage is zero, then remove self.
+        """
+        ret: List[MakeDamageAction | RemoveObjectAction] = []
+        if self.position.player_idx != event.action.position.player_idx:
+            # not self player use skill
+            self.effect_triggered = False
+            return list(self.check_should_remove())
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        if (
+            charactor.name == 'Yoimiya'
+            and event.action.skill_type == SkillType.NORMAL_ATTACK
+            and self.effect_triggered
+            and charactor.talent is not None
+        ):
+            # yoimiya use normal attack and self effect triggered
+            # and has talent, attack 1 pyro damage
+            target = match.player_tables[
+                1 - self.position.player_idx].get_active_charactor()
+            ret.append(MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = 1 - self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.DAMAGE,
+                        target_position = target.position,
+                        damage = 1,
+                        damage_elemental_type = DamageElementalType.PYRO,
+                        cost = Cost(),
+                    )
+                ]
+            ))
+        # reset mark
+        self.effect_triggered = False
+        return ret + self.check_should_remove()
+
+
+PyroCharactorStatus = Stealth | ExplosiveSpark | NiwabiEnshou

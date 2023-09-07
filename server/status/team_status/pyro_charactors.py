@@ -139,4 +139,48 @@ class InspirationField(RoundTeamStatus):
         )]
 
 
-PyroTeamStatus = SparksNSplash | InspirationField
+class AurousBlaze(RoundTeamStatus):
+    name: Literal['Aurous Blaze'] = 'Aurous Blaze'
+    desc: str = (
+        'After your character other than Yoimiya uses a Skill: '
+        'Deal 1 Pyro DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        if skill used by self player but not yoimiya, make damage to opponent
+        active charactor.
+        """
+        assert self.usage >= 0
+        if self.position.player_idx != event.action.position.player_idx:
+            # not self player use skill
+            return []
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        if charactor.name == 'Yoimiya':
+            # yoimiya use skill
+            return []
+        target = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = target.position,
+                    damage = 1,
+                    damage_elemental_type = DamageElementalType.PYRO,
+                    cost = Cost(),
+                )
+            ]
+        )]
+
+
+PyroTeamStatus = SparksNSplash | InspirationField | AurousBlaze
