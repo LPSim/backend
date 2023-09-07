@@ -4,9 +4,9 @@ by default to avoid using it accidently.
 """
 
 from typing import Any, List, Literal
-from .base import UsageTeamStatus
+from .base import ExtraAttackTeamStatus, UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
-from ...consts import DamageElementalType, DamageType
+from ...consts import DamageElementalType, DamageType, SkillType
 from ...event import AfterMakeDamageEventArguments
 from ...action import RemoveObjectAction
 
@@ -65,4 +65,17 @@ class CatalyzingField_3_3(UsageTeamStatus):
         return self.check_should_remove()
 
 
-OldVersionTeamStatus = CatalyzingField_3_3 | CatalyzingField_3_3
+class RainbowBladework_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
+    name: Literal['Rainbow Bladework'] = 'Rainbow Bladework'
+    desc: str = 'After your character uses a Normal Attack: Deal 1 Hydro DMG.'
+    version: Literal['3.3']
+    usage: int = 3
+    max_usage: int = 3
+
+    trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
+    damage: int = 2
+    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+    decrease_usage: bool = True
+
+
+OldVersionTeamStatus = CatalyzingField_3_3 | RainbowBladework_3_3

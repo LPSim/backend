@@ -1,7 +1,9 @@
 from typing import Any, Literal
 
+from ...consts import DamageElementalType, SkillType
+
 from ...modifiable_values import DamageMultiplyValue
-from .base import UsageTeamStatus
+from .base import DefendTeamStatus, ExtraAttackTeamStatus, UsageTeamStatus
 
 
 class IllusoryBubble(UsageTeamStatus):
@@ -36,4 +38,30 @@ class IllusoryBubble(UsageTeamStatus):
         return value
 
 
-HydroCharactorTeamStatus = IllusoryBubble | IllusoryBubble
+class RainbowBladework(UsageTeamStatus, ExtraAttackTeamStatus):
+    name: Literal['Rainbow Bladework'] = 'Rainbow Bladework'
+    desc: str = 'After your character uses a Normal Attack: Deal 1 Hydro DMG.'
+    version: Literal['3.6'] = '3.6'
+    usage: int = 3
+    max_usage: int = 3
+
+    trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
+    damage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+    decrease_usage: bool = True
+
+
+class RainSword(DefendTeamStatus):
+    name: Literal['Rain Sword'] = 'Rain Sword'
+    desc: str = (
+        'When your active character receives at least 3 DMG: '
+        'Decrease DMG taken by 1.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    min_damage_to_trigger: int = 3
+    max_in_one_time: int = 1
+
+
+HydroCharactorTeamStatus = IllusoryBubble | RainbowBladework | RainSword

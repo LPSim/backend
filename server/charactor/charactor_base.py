@@ -186,7 +186,7 @@ class SkillBase(ObjectBase):
         )
 
     def element_application_self(
-        self, match: Any, element: ElementType
+        self, match: Any, element: DamageElementalType
     ) -> MakeDamageAction:
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]

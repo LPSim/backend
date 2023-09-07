@@ -41,10 +41,7 @@ class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
             self.desc = self.buff_desc
 
     def renew(self, new_status: 'ElectroInfusionKeqing') -> None:
-        if self.max_usage < new_status.max_usage:
-            self.max_usage = new_status.max_usage
-        if self.usage < new_status.usage:
-            self.usage = new_status.usage
+        super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
             self.desc = self.buff_desc
