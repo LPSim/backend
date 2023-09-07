@@ -31,10 +31,7 @@ class JumpyDumpty(ElementalSkillBase):
         Attack and create object
         """
         status_usage = 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        assert charactor.name == 'Klee'
-        if charactor.talent is not None:
+        if self.is_talent_equipped(match):
             status_usage = 2
         return super().get_actions(match) + [
             CreateObjectAction(

@@ -112,6 +112,13 @@ class SkillBase(ObjectBase):
             return self.get_actions(match)
         return []
 
+    # commonly used conditions
+
+    def is_talent_equipped(self, match):
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        return charactor.talent is not None
+
 
 class PhysicalNormalAttackBase(SkillBase):
     """

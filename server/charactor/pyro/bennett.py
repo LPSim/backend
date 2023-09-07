@@ -31,8 +31,6 @@ class FantasticVoyage(ElementalBurstBase):
         """
         Attack and create object
         """
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
         position = ObjectPosition(
             player_idx = self.position.player_idx,
             area = ObjectPositionType.TEAM_STATUS,
@@ -43,7 +41,7 @@ class FantasticVoyage(ElementalBurstBase):
                 object_name = 'Inspiration Field',
                 object_position = position,
                 object_arguments = {
-                    'talent_activated': charactor.talent is not None
+                    'talent_activated': self.is_talent_equipped(match)
                 }
             )
         ]

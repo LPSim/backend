@@ -123,7 +123,7 @@ class SkywardSonnet(ElementalSkillBase):
             self.position.charactor_idx]
         assert charactor.name == 'Venti'
         talent_activated = False
-        if charactor.talent is not None:
+        if self.is_talent_equipped(match):
             talent_activated = True
         return super().get_actions(match) + [
             CreateObjectAction(
