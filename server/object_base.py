@@ -66,7 +66,7 @@ class ObjectBase(BaseModel):
                 int(time.time() % ID_MOD_NUM * ID_MULTI_NUM) 
                 * ID_RAND_NUM + random.randint(0, ID_RAND_NUM - 1)
             )
-            if new_id in used_object_ids:
+            if new_id in used_object_ids:  # pragma: no cover
                 continue
             self.id = new_id
             used_object_ids.add(self.id)

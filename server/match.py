@@ -1937,9 +1937,6 @@ class Match(BaseModel):
         Charactor defeated action, all equipments and status are removed, 
         and is marked as defeated. Currently not support PVE character
         disappear features.
-
-        TODO: multiple charactors defeated at the same time, should all mark
-        defeated before triggering events.
         """
         player_idx = action.player_idx
         charactor_idx = action.charactor_idx

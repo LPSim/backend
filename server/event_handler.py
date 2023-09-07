@@ -91,6 +91,7 @@ class SystemEventHandler(SystemEventHandlerBase):
         for pnum, table in enumerate(match.player_tables):
             for cnum, charactor in enumerate(table.charactors):
                 if charactor.hp == 0 and charactor.is_alive:
+                    charactor.is_alive = False  # mark as defeated first
                     actions.append(CharactorDefeatedAction(
                         player_idx = pnum,
                         charactor_idx = cnum,
