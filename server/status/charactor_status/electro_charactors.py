@@ -2,16 +2,18 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...action import MakeDamageAction, RemoveObjectAction
+from ...action import Actions, MakeDamageAction, RemoveObjectAction
 
-from ...event import MakeDamageEventArguments
+from ...event import MakeDamageEventArguments, SkillEndEventArguments
 
-from ...consts import DamageElementalType, DamageType
+from ...consts import (
+    DamageElementalType, DamageType, ObjectPositionType, SkillType
+)
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 from .base import (
     ElementalInfusionCharactorStatus, PrepareCharactorStatus, 
-    RoundCharactorStatus, UsageCharactorStatus
+    RoundCharactorStatus, UsageCharactorStatus, CharactorStatusBase
 )
 
 
@@ -145,7 +147,59 @@ class RockPaperScissorsComboPaper(PrepareCharactorStatus):
     ] = 'Rock-Paper-Scissors Combo: Paper'
 
 
+class ChakraDesiderata(CharactorStatusBase):
+    name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
+    desc: str = (
+        'After your other characters use Elemental Bursts: Gain 1 Resolve. '
+        '(Max 3) '
+        'When the character to which this is attached uses Secret Art: Musou '
+        'Shinsetsu: Consume all Resolve and deal +1 DMG per Resolve.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 0
+    max_usage: int = 3
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When other charactor using elemental burst, gain resolve.
+        """
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True,
+            charactor_idx_same = False, target_area = ObjectPositionType.SKILL,
+        ):
+            # not other ally use elemental burst, do nothing
+            return []
+        if event.action.skill_type == SkillType.ELEMENTAL_BURST:
+            # is burst
+            self.usage = min(self.usage + 1, self.max_usage)
+        return []
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        When self using elemental burst, increase damage by usage.
+        """
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.ELEMENTAL_BURST
+        ):
+            # not self use burst, do nothing
+            return value
+        # increase damage
+        value.damage += self.usage
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        if charactor.talent is not None:
+            # has talent, double increase damage
+            value.damage += self.usage
+        self.usage = 0
+        return value
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
-    | RockPaperScissorsComboPaper | ElectroCrystalCore
+    | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
 )
