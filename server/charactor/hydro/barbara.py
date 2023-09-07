@@ -118,22 +118,24 @@ class ShiningMiracle(ElementalBurstBase):
             charge = -3,
         )]
         charactors = match.player_tables[self.position.player_idx].charactors
+        heal_action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [],
+        )
         for charactor in charactors:
             if charactor.is_alive:
-                ret.append(MakeDamageAction(
-                    source_player_idx = self.position.player_idx,
-                    target_player_idx = self.position.player_idx,
-                    damage_value_list = [
-                        DamageValue(
-                            position = self.position,
-                            damage_type = DamageType.HEAL,
-                            target_position = charactor.position,
-                            damage = self.damage,
-                            damage_elemental_type = self.damage_type,
-                            cost = self.cost.copy(),
-                        )
-                    ],
-                ))
+                heal_action.damage_value_list.append(
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.HEAL,
+                        target_position = charactor.position,
+                        damage = self.damage,
+                        damage_elemental_type = self.damage_type,
+                        cost = self.cost.copy(),
+                    )
+                )
+        ret.append(heal_action)
         return ret
 
 

@@ -1,13 +1,12 @@
 from typing import Any, List, Literal
 
-from ...modifiable_values import DamageValue
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 from ...action import Actions, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
+    DamageElementalType, DieColor, ElementType, FactionType, 
     ObjectPositionType, SkillType, WeaponType
 )
 from ..charactor_base import (
@@ -103,20 +102,7 @@ class ColdBloodedStrike(SkillTalent):
             return []
         # heal itself
         self.usage -= 1
-        return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
-                    damage = -2,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost(),
-                )
-            ],
-        )]
+        return [self.skill.heal_self(match, 2)]
 
 
 # charactor base

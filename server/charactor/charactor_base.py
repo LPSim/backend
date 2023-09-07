@@ -76,29 +76,9 @@ class SkillBase(ObjectBase):
             `self.damage` and damage type `self.damage_type`.
         2. ChargeAction to charge the active charactor by 1.
         """
-        target_table = match.player_tables[1 - self.position.player_idx]
-        target_charactor_idx = target_table.active_charactor_idx
-        target_charactor = target_table.charactors[target_charactor_idx]
         return [
-            ChargeAction(
-                player_idx = self.position.player_idx,
-                charactor_idx = self.position.charactor_idx,
-                charge = 1,
-            ),
-            MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = 1 - self.position.player_idx,
-                damage_value_list = [
-                    DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.DAMAGE,
-                        target_position = target_charactor.position,
-                        damage = self.damage,
-                        damage_elemental_type = self.damage_type,
-                        cost = self.cost.copy(),
-                    )
-                ],
-            ),
+            self.charge_self(1),
+            self.attack_opposite_active(match, self.damage, self.damage_type)
         ]
 
     def event_handler_USE_SKILL(
@@ -155,6 +135,74 @@ class SkillBase(ObjectBase):
             object_name = name,
             object_position = position,
             object_arguments = args
+        )
+
+    def charge_self(
+        self, charge: int
+    ) -> ChargeAction:
+        return ChargeAction(
+            player_idx = self.position.player_idx,
+            charactor_idx = self.position.charactor_idx,
+            charge = charge,
+        )
+
+    def attack_opposite_active(
+        self, match: Any, damage: int, damage_type: DamageElementalType,
+    ) -> MakeDamageAction:
+        target_table = match.player_tables[1 - self.position.player_idx]
+        target_charactor_idx = target_table.active_charactor_idx
+        target_charactor = target_table.charactors[target_charactor_idx]
+        return MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = target_charactor.position,
+                    damage = damage,
+                    damage_elemental_type = damage_type,
+                    cost = self.cost.copy(),
+                )
+            ],
+        )
+
+    def heal_self(self, match: Any, heal: int) -> MakeDamageAction:
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        return MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = - heal,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost(),
+                )
+            ],
+        )
+
+    def element_application_self(
+        self, match: Any, element: ElementType
+    ) -> MakeDamageAction:
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        return MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.ELEMENT_APPLICATION,
+                    target_position = charactor.position,
+                    damage = 0,
+                    damage_elemental_type = element,
+                    cost = self.cost.copy(),
+                )
+            ],
         )
 
 
