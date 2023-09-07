@@ -45,8 +45,14 @@ class Deck(BaseModel):
         """
         Convert deck string to deck object. One line contains one card or
         charactor. If declare a charactor, use 'charactor:'. Otherwise 
-        write card name directly. To declare multiple same cards or charactors,
-        add `*number` after the line. For example:
+        write card name directly. 
+        To specify different version of cards, add `@version` after the
+        line.
+        To declare multiple same cards or charactors, add `*number` after 
+        the line. When both marks are used, specify version first.
+        You can write comment line start with '#'.
+
+        Examples:
 
         charactor:Fischl
         charactor:Mona
@@ -63,23 +69,36 @@ class Deck(BaseModel):
             if line[0] == '#':
                 # comment line
                 continue
+            # deal with numbers
             if '*' in line:
                 line, number = line.split('*')
                 number = int(number)
             else:
                 number = 1
+            # deal with version
+            if '@' in line:
+                line, version = line.split('@')
+                version = version.strip()
+            else:
+                version = None
             if line.startswith('charactor:'):
+                args = { 'name': line[10:] }
+                if version is not None:
+                    args['version'] = version
                 for _ in range(number):
                     deck.charactors.append(
                         get_instance_from_type_unions(
-                            Charactors, { 'name': line[10:] }
+                            Charactors, args
                         )
                     )
             else:
                 for _ in range(number):
+                    args = { 'name': line }
+                    if version is not None:
+                        args['version'] = version
                     deck.cards.append(
                         get_instance_from_type_unions(
-                            Cards, { 'name': line }
+                            Cards, args
                         )
                     )
         return deck
