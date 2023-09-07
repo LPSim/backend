@@ -1,11 +1,11 @@
 from typing import Any, List, Literal
 
 from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -42,14 +42,7 @@ class NiwabiFireDance(ElementalSkillBase):
         """
         only create object
         """
-        return [
-            CreateObjectAction(
-                object_name = 'Niwabi Enshou',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
-        ]
+        return [self.create_charactor_status('Niwabi Enshou')]
 
 
 class RyuukinSaxifrage(ElementalBurstBase):
@@ -67,17 +60,8 @@ class RyuukinSaxifrage(ElementalBurstBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.TEAM_STATUS,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Aurous Blaze',
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_team_status('Aurous Blaze')
         ]
 
 

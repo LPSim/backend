@@ -6,7 +6,7 @@ from ...modifiable_values import DamageIncreaseValue
 from ...event import AfterMakeDamageEventArguments, RoundPrepareEventArguments
 
 from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
@@ -106,27 +106,8 @@ class MasatsuZetsugiAkaushiBurst(ElementalSkillBase):
         Attack, create Ushi and create status
         """
         ret = super().get_actions(match)
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
-        ret += [CreateObjectAction(
-            object_name = 'Ushi',
-            object_position = position,
-            object_arguments = {}
-        )]
-        status_position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            charactor_idx = self.position.charactor_idx,
-            area = ObjectPositionType.CHARACTOR_STATUS,
-            id = -1
-        )
-        ret += [CreateObjectAction(
-            object_name = 'Superlative Superstrength',
-            object_position = status_position,
-            object_arguments = {}
-        )]
+        ret.append(self.create_summon('Ushi'))
+        ret += [self.create_charactor_status('Superlative Superstrength')]
         return ret
 
 
@@ -147,18 +128,8 @@ class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
         """
         Attack and create status
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            charactor_idx = self.position.charactor_idx,
-            area = ObjectPositionType.CHARACTOR_STATUS,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Raging Oni King',
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_charactor_status('Raging Oni King')
         ]
 
 

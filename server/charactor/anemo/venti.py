@@ -6,12 +6,12 @@ from ...summon.base import AttackerSummonBase
 
 from ...event import ReceiveDamageEventArguments, RoundEndEventArguments
 
-from ...action import Actions, CreateObjectAction, MakeDamageAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions, MakeDamageAction
+from ...struct import Cost
 
 from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
-    ElementalReactionType, FactionType, ObjectPositionType, WeaponType
+    ElementalReactionType, FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -114,11 +114,6 @@ class SkywardSonnet(ElementalSkillBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.TEAM_STATUS,
-            id = -1
-        )
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         assert charactor.name == 'Venti'
@@ -126,12 +121,9 @@ class SkywardSonnet(ElementalSkillBase):
         if self.is_talent_equipped(match):
             talent_activated = True
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Stormzone',
-                object_position = position,
-                object_arguments = {
-                    'talent_activated': talent_activated
-                }
+            self.create_team_status(
+                'Stormzone', 
+                {'talent_activated': talent_activated}
             )
         ]
 
@@ -151,19 +143,8 @@ class WindsGrandOde(ElementalBurstBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
         # create summon first, so it can change element immediately.
-        return [
-            CreateObjectAction(
-                object_name = 'Stormeye',
-                object_position = position,
-                object_arguments = {}
-            )
-        ] + super().get_actions(match)
+        return [self.create_summon('Stormeye')] + super().get_actions(match)
 
 
 # Talents

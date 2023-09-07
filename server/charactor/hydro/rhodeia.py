@@ -8,7 +8,7 @@ from ...action import (
     ActionTypes, Actions, ChangeObjectUsageAction, ChargeAction, 
     CreateObjectAction
 )
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
@@ -127,11 +127,6 @@ class RhodeiaElementSkill(ElementalSkillBase):
         """
         create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
         name_idxs = self.get_next_summon_names(match, self.summon_number)
         ret: List[ChargeAction | CreateObjectAction] = [
             ChargeAction(
@@ -141,11 +136,7 @@ class RhodeiaElementSkill(ElementalSkillBase):
             )
         ]
         for idx in name_idxs:
-            ret.append(CreateObjectAction(
-                object_name = mimic_names[idx],
-                object_position = position,
-                object_arguments = {}
-            ))
+            ret.append(self.create_summon(mimic_names[idx]))
         return ret
 
 

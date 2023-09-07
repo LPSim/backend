@@ -34,15 +34,10 @@ class JumpyDumpty(ElementalSkillBase):
         if self.is_talent_equipped(match):
             status_usage = 2
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Explosive Spark',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {
-                    'usage': status_usage,
-                    'max_usage': status_usage,
-                }
-            )
+            self.create_charactor_status('Explosive Spark', {
+                'usage': status_usage,
+                'max_usage': status_usage,
+            })
         ]
 
 
@@ -61,6 +56,9 @@ class SparksNSplash(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
+        """
+        Create teams status on opposite, so cannot call self.create_team_status
+        """
         position = ObjectPosition(
             player_idx = 1 - self.position.player_idx,
             area = ObjectPositionType.TEAM_STATUS,

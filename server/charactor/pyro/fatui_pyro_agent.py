@@ -32,12 +32,7 @@ class Prowl(ElementalSkillBase):
         Attack and create object
         """
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Stealth',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
+            self.create_charactor_status('Stealth')
         ]
 
 
@@ -53,14 +48,7 @@ class StealthMaster(PassiveSkillBase):
         """
         When game begin, gain stealth
         """
-        return [
-            CreateObjectAction(
-                object_name = 'Stealth',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
-        ]
+        return [self.create_charactor_status('Stealth')]
 
 
 # Talents

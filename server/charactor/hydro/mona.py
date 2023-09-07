@@ -5,8 +5,8 @@ from ...summon.base import DefendSummonBase
 from ...modifiable_values import CombatActionValue, DamageIncreaseValue
 from ...event import RoundPrepareEventArguments
 
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
@@ -46,18 +46,7 @@ class MirrorReflectionOfDoom(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
-        return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Reflection',
-                object_position = position,
-                object_arguments = {}
-            )
-        ]
+        return super().get_actions(match) + [self.create_summon('Reflection')]
 
 
 class StellarisPhantasm(ElementalBurstBase):
@@ -73,15 +62,7 @@ class StellarisPhantasm(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        team_status_position = self.position.set_area(
-            ObjectPositionType.TEAM_STATUS)
-        ret.append(
-            CreateObjectAction(
-                object_name = 'Illusory Bubble',
-                object_position = team_status_position,
-                object_arguments = {}
-            )
-        )
+        ret.append(self.create_team_status('Illusory Bubble'))
         return ret
 
 

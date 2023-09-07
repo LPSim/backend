@@ -23,7 +23,7 @@ from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
 from ..card.equipment.weapon import Weapons
 from ..action import (
-    ChargeAction, MakeDamageAction, MoveObjectAction, 
+    ChargeAction, CreateObjectAction, MakeDamageAction, MoveObjectAction, 
     RemoveObjectAction, Actions, SkillEndAction, UseSkillAction
 )
 
@@ -112,12 +112,50 @@ class SkillBase(ObjectBase):
             return self.get_actions(match)
         return []
 
-    # commonly used conditions
+    # commonly used function for skills
 
-    def is_talent_equipped(self, match):
+    def is_talent_equipped(self, match: Any):
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         return charactor.talent is not None
+
+    def create_team_status(
+        self, name: str, args: Any = {}
+    ) -> CreateObjectAction:
+        position = ObjectPosition(
+            player_idx = self.position.player_idx,
+            area = ObjectPositionType.TEAM_STATUS,
+            id = -1
+        )
+        return CreateObjectAction(
+            object_name = name,
+            object_position = position,
+            object_arguments = args
+        )
+
+    def create_charactor_status(
+        self, name: str, args: Any = {}
+    ) -> CreateObjectAction:
+        return CreateObjectAction(
+            object_name = name,
+            object_position = self.position.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
+            object_arguments = args
+        )
+
+    def create_summon(
+        self, name: str, args: Any = {}
+    ) -> CreateObjectAction:
+        position = ObjectPosition(
+            player_idx = self.position.player_idx,
+            area = ObjectPositionType.SUMMON,
+            id = -1
+        )
+        return CreateObjectAction(
+            object_name = name,
+            object_position = position,
+            object_arguments = args
+        )
 
 
 class PhysicalNormalAttackBase(SkillBase):

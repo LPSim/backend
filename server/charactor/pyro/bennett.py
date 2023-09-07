@@ -1,11 +1,11 @@
 from typing import Any, List, Literal
 
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -31,19 +31,10 @@ class FantasticVoyage(ElementalBurstBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.TEAM_STATUS,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Inspiration Field',
-                object_position = position,
-                object_arguments = {
-                    'talent_activated': self.is_talent_equipped(match)
-                }
-            )
+            self.create_team_status('Inspiration Field', {
+                'talent_activated': self.is_talent_equipped(match)
+            })
         ]
 
 

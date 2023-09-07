@@ -3,8 +3,8 @@ from typing import Any, List, Literal
 from ...modifiable_values import DamageValue
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
-from ...action import Actions, CreateObjectAction, MakeDamageAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions, MakeDamageAction
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
@@ -37,17 +37,8 @@ class GlacialWaltz(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.TEAM_STATUS,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Icicle',
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_team_status('Icicle')
         ]
 
 

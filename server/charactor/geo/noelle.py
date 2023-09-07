@@ -1,11 +1,11 @@
 from typing import Any, List, Literal
 
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -25,15 +25,7 @@ class Breastplate(ElementalSkillBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        ret.append(CreateObjectAction(
-            object_name = 'Full Plate',
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.TEAM_STATUS,
-                id = -1
-            ),
-            object_arguments = {}
-        ))
+        ret.append(self.create_team_status('Full Plate'))
         return ret
 
 
@@ -50,16 +42,7 @@ class SweepingTime(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        ret.append(CreateObjectAction(
-            object_name = 'Sweeping Time',
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                charactor_idx = self.position.charactor_idx,
-                area = ObjectPositionType.CHARACTOR_STATUS,
-                id = -1
-            ),
-            object_arguments = {}
-        ))
+        ret.append(self.create_charactor_status('Sweeping Time'))
         return ret
 
 

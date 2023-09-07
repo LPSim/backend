@@ -6,9 +6,9 @@ from ...modifiable_values import DamageValue
 from ...event import SkillEndEventArguments
 
 from ...action import (
-    Actions, CreateObjectAction, MakeDamageAction, SwitchCharactorAction
+    Actions, MakeDamageAction, SwitchCharactorAction
 )
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
@@ -99,16 +99,7 @@ class BlusteringBlade(ElementalSkillBase):
         """
         actions = super().get_actions(match)
         assert len(actions) == 2
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
-        return actions[:1] + [CreateObjectAction(
-            object_name = 'Shadowsword: Lone Gale',
-            object_position = position,
-            object_arguments = {}
-        )]
+        return actions[:1] + [self.create_summon('Shadowsword: Lone Gale')]
 
 
 class FrostyAssault(ElementalSkillBase):
@@ -127,16 +118,8 @@ class FrostyAssault(ElementalSkillBase):
         """
         actions = super().get_actions(match)
         assert len(actions) == 2
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
-        return actions[:1] + [CreateObjectAction(
-            object_name = 'Shadowsword: Galloping Frost',
-            object_position = position,
-            object_arguments = {}
-        )]
+        return actions[:1] + [
+            self.create_summon('Shadowsword: Galloping Frost')]
 
 
 class PseudoTenguSweeper(ElementalBurstBase):

@@ -126,15 +126,7 @@ class IllusoryHeart(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        team_status_position = self.position.set_area(
-            ObjectPositionType.TEAM_STATUS)
-        ret.append(
-            CreateObjectAction(
-                object_name = 'Shrine of Maya',
-                object_position = team_status_position,
-                object_arguments = {}
-            )
-        )
+        ret.append(self.create_team_status('Shrine of Maya'))
         return ret
 
 

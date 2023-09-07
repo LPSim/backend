@@ -2,16 +2,16 @@ from typing import List, Literal, Any
 
 from ...event import SkillEndEventArguments
 
-from ...action import Actions, CreateObjectAction, MakeDamageAction
+from ...action import Actions, MakeDamageAction
 from ...consts import (
     ElementType, FactionType, SkillType, WeaponType, DamageElementalType,
-    ObjectPositionType, DamageType, DieColor
+    DamageType, DieColor
 )
 from ..charactor_base import (
     AOESkillBase, PhysicalNormalAttackBase, ElementalSkillBase, 
     ElementalBurstBase, CharactorBase, SkillTalent
 )
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 from ...modifiable_values import DamageValue
 from ...summon.base import AttackerSummonBase
 
@@ -27,18 +27,7 @@ class Nightrider(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
-        return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Oz',
-                object_position = position,
-                object_arguments = {}
-            )
-        ]
+        return super().get_actions(match) + [self.create_summon('Oz')]
 
 
 class MidnightPhantasmagoria(ElementalBurstBase, AOESkillBase):

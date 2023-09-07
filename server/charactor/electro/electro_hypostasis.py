@@ -93,12 +93,7 @@ class RockPaperScissorsCombo(ElementalSkillBase):
         Attack and create prepare skill
         """
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Rock-Paper-Scissors Combo: Scissors',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
+            self.create_charactor_status('Rock-Paper-Scissors Combo: Scissors')
         ]
 
 
@@ -129,12 +124,7 @@ class RockPaperScissorsComboScissors(ElementalSkillBase):
         assert ret[0].type == ActionTypes.CHARGE
         ret = ret[1:]
         return ret + [
-            CreateObjectAction(
-                object_name = 'Rock-Paper-Scissors Combo: Paper',
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
+            self.create_charactor_status('Rock-Paper-Scissors Combo: Paper')
         ]
 
 
@@ -177,17 +167,8 @@ class LightningLockdown(ElementalBurstBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Chains of Warding Thunder',
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_summon('Chains of Warding Thunder')
         ]
 
 
@@ -202,16 +183,9 @@ class ElectroCrystalCore(PassiveSkillBase):
         self, event: GameStartEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        When game begin, gain stealth
+        When game begin, gain electro crystal core
         """
-        return [
-            CreateObjectAction(
-                object_name = self.name,
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
-        ]
+        return [self.create_charactor_status(self.name)]
 
 
 # Talents

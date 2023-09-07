@@ -126,17 +126,10 @@ class ...(ElementalSkillBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = ...,
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_summon('...'),
+            self.create_charactor_status('...'),
+            self.create_team_status('...'),
         ]
 
 

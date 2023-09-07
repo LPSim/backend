@@ -6,9 +6,9 @@ from ...modifiable_values import CostValue, DamageValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...action import (
-    Actions, ChargeAction, CreateObjectAction, MakeDamageAction
+    Actions, ChargeAction, MakeDamageAction
 )
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     CostLabels, DamageElementalType, DamageType, DieColor, ElementType, 
@@ -96,15 +96,7 @@ class LetTheShowBegin(ElementalSkillBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
-        ret.append(CreateObjectAction(
-            object_name = 'Melody Loop',
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.SUMMON,
-                id = -1
-            ),
-            object_arguments = {}
-        ))
+        ret.append(self.create_summon('Melody Loop'))
         return ret
 
 

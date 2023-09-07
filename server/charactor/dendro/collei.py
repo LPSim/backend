@@ -4,12 +4,12 @@ from ...event import CreateObjectEventArguments, RoundPrepareEventArguments
 
 from ...summon.base import AttackerSummonBase
 
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -82,13 +82,7 @@ class FloralBrush(ElementalSkillBase):
         if charactor.talent is None:
             # no talent equipped
             return ret
-        ret = [CreateObjectAction(
-            object_name = 'Floral Sidewinder',
-            object_position = self.position.set_area(
-                ObjectPositionType.TEAM_STATUS
-            ),
-            object_arguments = {}
-        )] + ret
+        ret = [self.create_team_status('Floral Sidewinder')] + ret
         return ret
 
 
@@ -107,17 +101,8 @@ class TrumpCardKitty(ElementalBurstBase):
         """
         Attack and create object
         """
-        position = ObjectPosition(
-            player_idx = self.position.player_idx,
-            area = ObjectPositionType.SUMMON,
-            id = -1
-        )
         return super().get_actions(match) + [
-            CreateObjectAction(
-                object_name = 'Cuilein-Anbar',
-                object_position = position,
-                object_arguments = {}
-            )
+            self.create_summon('Cuilein-Anbar')
         ]
 
 
