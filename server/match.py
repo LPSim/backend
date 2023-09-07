@@ -2022,6 +2022,17 @@ class Match(BaseModel):
                     create_result = 'RENEW',
                     create_idx = csnum,
                 )]
+        if (target_name == 'summon' 
+                and len(target_list) >= self.config.max_summon_number):
+            # summon number reaches maximum
+            logging.warning(
+                f'player {player_idx} '
+                f'tried to create new {target_name} {action.object_name}, '
+                f'but summon number reaches maximum '
+                f'{self.config.max_summon_number}, and will not create '
+                'the summon.'
+            )
+            return []
         logging.info(
             f'player {player_idx} '
             f'created new {target_name} {action.object_name}.'
