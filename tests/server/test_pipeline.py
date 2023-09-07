@@ -9,7 +9,8 @@ from server.deck import Deck
 from agents.random_agent import RandomAgent
 from agents.interaction_agent import InteractionAgent
 from tests.utils_for_test import (
-    set_16_omni, make_respond, remove_ids, get_random_state, check_hp
+    get_test_id_from_command, set_16_omni, make_respond, remove_ids, 
+    get_random_state, check_hp
 )
 
 
@@ -422,9 +423,111 @@ def test_support_over_maximum_and_error_tests():
     assert not match.start()
 
 
+def test_summon_over_maximum():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "skill 2 0 1 2 3 4",
+            "skill 2 0 1 2 3 4",
+            "sw_char 1 0",
+            "skill 1 0 1 2",
+            "end",
+            "sw_char 0 0",
+            "skill 1 0 1 2",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "skill 2 0 1 2 3 4",
+            "skill 2 0 1 2 3 4",
+            "sw_char 1 0",
+            "skill 1 0 1 2",
+            "end",
+            "sw_char 0 0",
+            "sw_char 2 0",
+            "sw_char 0 0",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "skill 1 0 1 2",
+            "skill 2 0 1 2 3 4",
+            "TEST 1 rap squi frog oz rap squi oz ref",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Mona
+        charactor:Fischl
+        charactor:Rhodeia of Loch
+        Send Off*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                summons = cmd[-8:]
+                summons = [summons[:4], summons[4:]]
+                for table, name in zip(match.player_tables, summons):
+                    assert len(table.summons) == 4
+                    for s, n in zip(table.summons, name):
+                        assert n in s.name.lower()
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_match_pipeline()
-    test_save_load()
-    test_random_same_after_load()
-    test_use_card()
-    test_support_over_maximum_and_error_tests()
+    # test_match_pipeline()
+    # test_save_load()
+    # test_random_same_after_load()
+    # test_use_card()
+    # test_support_over_maximum_and_error_tests()
+    test_summon_over_maximum()
