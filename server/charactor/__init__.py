@@ -20,7 +20,7 @@ from .anemo import (
     AnemoCharactorTalents, AnemoCharactors, SummonsOfAnemoCharactors
 )
 from .cryo import (
-    CryoCharactorTalents, CryoCharactors,  # SummonsOfCryoCharactors
+    CryoCharactorTalents, CryoCharactors, SummonsOfCryoCharactors
 )
 from .old_version import (
     OldTalents, OldCharactors
@@ -37,7 +37,7 @@ Charactors = (
 SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
     | SummonsOfDendroCharactors | SummonsOfGeoCharactors
-    | SummonsOfAnemoCharactors
+    | SummonsOfAnemoCharactors | SummonsOfCryoCharactors
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents

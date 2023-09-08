@@ -1,6 +1,7 @@
 from .kaeya import Kaeya, ColdBloodedStrike
+from .shenhe import Shenhe, MysticalAbandon, TalismanSpirit
 
 
-CryoCharactors = Kaeya | Kaeya
-# SummonsOfCryoCharactors = Stormeye | Stormeye
-CryoCharactorTalents = ColdBloodedStrike | ColdBloodedStrike
+CryoCharactors = Kaeya | Shenhe
+SummonsOfCryoCharactors = TalismanSpirit | TalismanSpirit
+CryoCharactorTalents = ColdBloodedStrike | MysticalAbandon
