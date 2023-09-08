@@ -211,6 +211,7 @@ class FactionType(str, Enum):
 
     FATUI = 'FATUI'
     MONSTER = 'MONSTER'
+    HILICHURL = 'HILICHURL'
 
     def __str__(self):
         return self.value

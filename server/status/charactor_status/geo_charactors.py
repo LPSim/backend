@@ -7,13 +7,14 @@ from ...consts import (
     DamageElementalType, DieColor, ObjectPositionType, SkillType
 )
 from ...modifiable_values import (
-    CostValue, DamageElementEnhanceValue, DamageIncreaseValue
+    CostValue, DamageDecreaseValue, DamageElementEnhanceValue, 
+    DamageIncreaseValue
 )
 
 from server.status.base import StatusBase
 from .base import (
-    ElementalInfusionCharactorStatus, RoundCharactorStatus, 
-    UsageCharactorStatus
+    DefendCharactorStatus, ElementalInfusionCharactorStatus, 
+    RoundCharactorStatus, UsageCharactorStatus
 )
 
 
@@ -247,4 +248,84 @@ class SuperlativeSuperstrength(UsageCharactorStatus):
         return value
 
 
-GeoCharactorStatus = SweepingTime | RagingOniKing | SuperlativeSuperstrength
+class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
+    """
+    Combined Stonehide and Stone Force into one.
+    """
+    name: Literal['Stonehide'] = 'Stonehide'
+    desc: str = (
+        'When the character to which this is attached receives DMG: Decrease '
+        'DMG taken by 1. When Geo DMG is decreased, consume 1 additional '
+        'Usage(s).'
+        'Stone Force: '
+        'The character to which this is attached has their Physical DMG '
+        'converted to Geo DMG. Once per Round: The character deals +1 DMG. '
+        'Once the Stonehide attached to the character is removed, this status '
+        'will be removed alongside it.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 3
+    max_usage: int = 3
+
+    min_damage_to_trigger: int = 1
+    max_in_one_time: int = 1
+    decrease_usage_by_damage: bool = False
+
+    infused_elemental_type: DamageElementalType = DamageElementalType.GEO
+
+    damage_increase_usage: int = 1
+    damage_increase_usage_max: int = 1
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Renew usage
+        """
+        self.damage_increase_usage = self.damage_increase_usage_max
+        return []
+
+    def value_modifier_DAMAGE_DECREASE(
+        self, value: DamageDecreaseValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageDecreaseValue:
+        value = super().value_modifier_DAMAGE_DECREASE(value, match, mode)
+        # check if need to decrease usage 1 more
+        if not value.is_corresponding_charactor_receive_damage(
+            self.position, match
+        ):
+            # not corresponding charactor, return
+            return value
+        if value.damage_elemental_type != DamageElementalType.GEO:
+            # not geo damage, return
+            return value
+        if self.usage > 0:
+            # decrease usage
+            self.usage -= 1
+        return value
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        Increase damage by 1
+        """
+        assert mode == 'REAL'
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not corresponding charactor, return
+            return value
+        if self.damage_increase_usage <= 0:
+            # no usage, return
+            return value
+        # increase damage
+        value.damage += 1
+        self.damage_increase_usage -= 1
+        return value
+
+
+GeoCharactorStatus = (
+    SweepingTime | RagingOniKing | SuperlativeSuperstrength | Stonehide
+)

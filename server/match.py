@@ -1831,7 +1831,7 @@ class Match(BaseModel):
         NOTE: side effects by elemental reaction is handled by system event
         handler, which is listening ReceiveDamageEventArguments.
         """
-        damage_lists = action.damage_value_list
+        damage_lists = action.damage_value_list[:]
         target_idx = action.target_player_idx
         next_charactor: int = self.player_tables[
             target_idx].active_charactor_idx
