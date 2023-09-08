@@ -1,15 +1,17 @@
 from typing import List, Literal, Any
 from ..object_base import CardBase
 from ..consts import (
-    ObjectType, DamageElementalType, DamageType
+    ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, 
+    ObjectPositionType, ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
     MakeDamageEventArguments,
+    ReceiveDamageEventArguments,
     RoundEndEventArguments,
     ChangeObjectUsageEventArguments,
 )
 from ..action import (
-    MakeDamageAction, RemoveObjectAction
+    Actions, MakeDamageAction, RemoveObjectAction
 )
 from ..modifiable_values import DamageDecreaseValue, DamageValue
 from ..struct import Cost
@@ -254,3 +256,58 @@ class ShieldSummonBase(DefendSummonBase):
     min_damage_to_trigger: int = 0
     max_in_one_time: int = 0
     decrease_usage_by_damage: bool = True
+
+
+class SwirlChangeSummonBase(AttackerSummonBase):
+    """
+    Base class for summons that can change damage elemental type when swirl
+    reaction made by our charactor or summon. 
+    Note: create summon before attack, so it can change element immediately.
+    """
+    name: str
+    desc: str = (
+        'After your character or Summon triggers a Swirl reaction: Convert '
+        'the Elemental Type of this card and change its DMG dealt to the '
+        'element Swirled. (Can only be converted once before leaving the '
+        'field)'
+    )
+    version: str
+    usage: int
+    max_usage: int
+
+    damage_elemental_type: DamageElementalType = DamageElementalType.ANEMO
+
+    def renew(self, new_status: SummonBase) -> None:
+        """
+        When renew, also renew damage elemental type.
+        """
+        super().renew(new_status)
+        self.damage_elemental_type = DamageElementalType.ANEMO
+
+    def event_handler_RECEIVE_DAMAGE(
+        self, event: ReceiveDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When anyone receives damage, and has swirl reaction, and made by
+        our charactor or summon, and current damage type is anemo, 
+        change stormeye damage element.
+        """
+        if self.damage_elemental_type != DamageElementalType.ANEMO:
+            # already changed, do nothing
+            return []
+        if event.final_damage.position.area not in [
+            ObjectPositionType.SKILL, ObjectPositionType.SUMMON
+        ]:  # pragma: no cover
+            # not charactor or summon made damage, do nothing
+            return []
+        if event.final_damage.position.player_idx != self.position.player_idx:
+            # not our player made damage, do nothing
+            return []
+        if event.final_damage.element_reaction != ElementalReactionType.SWIRL:
+            # not swirl reaction, do nothing
+            return []
+        elements = event.final_damage.reacted_elements
+        assert elements[0] == ElementType.ANEMO, 'First element must be anemo'
+        # do type change
+        self.damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[elements[1]]
+        return []

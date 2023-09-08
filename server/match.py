@@ -2378,11 +2378,12 @@ class Match(BaseModel):
     def _action_skill_end(self, action: SkillEndAction) \
             -> List[SkillEndEventArguments]:
         player_idx = action.position.player_idx
+        charactor_idx = action.position.charactor_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[table.active_charactor_idx]
+        charactor = table.charactors[charactor_idx]
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{table.active_charactor_idx} '
+            f'charactor {charactor.name}:{charactor_idx} '
             f'skill ended.'
         )
         return [SkillEndEventArguments(

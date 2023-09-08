@@ -14,7 +14,7 @@ from ...object_base import CardBase
 from ...action import (
     Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
-    GenerateRerollDiceRequestAction, MoveObjectAction, 
+    GenerateRerollDiceRequestAction, MoveObjectAction, SkillEndAction, 
     SwitchCharactorAction, UseSkillAction
 )
 from ...struct import Cost, ObjectPosition
@@ -348,7 +348,7 @@ class PlungingStrike(CardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[SwitchCharactorAction | UseSkillAction]:
+    ) -> List[SwitchCharactorAction | UseSkillAction | SkillEndAction]:
         """
         Switch to target, and use target's normal attack
         """
@@ -367,6 +367,10 @@ class PlungingStrike(CardBase):
             ),
             UseSkillAction(
                 skill_position = skills[normal_idx].position,
+            ),
+            SkillEndAction(
+                position = skills[normal_idx].position,
+                skill_type = SkillType.NORMAL_ATTACK
             )
         ]
 

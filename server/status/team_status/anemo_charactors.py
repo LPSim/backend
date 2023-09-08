@@ -3,11 +3,14 @@ from typing import Any, List, Literal
 
 from ...event import SkillEndEventArguments
 
-from ...consts import CostLabels, ObjectPositionType, SkillType
+from ...consts import (
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
+    ObjectPositionType, SkillType
+)
 
 from ...action import CreateObjectAction, RemoveObjectAction
 
-from ...modifiable_values import CostValue
+from ...modifiable_values import CostValue, DamageIncreaseValue
 
 from .base import RoundTeamStatus, UsageTeamStatus
 
@@ -123,4 +126,58 @@ class WindsOfHarmony(RoundTeamStatus):
         return self.check_should_remove()
 
 
-AnemoTeamStatus = Stormzone | WindsOfHarmony
+class PoeticsOfFuubutsu(UsageTeamStatus):
+    name: Literal[
+        'Poetics of Fuubutsu: Pyro',
+        'Poetics of Fuubutsu: Hydro',
+        'Poetics of Fuubutsu: Electro',
+        'Poetics of Fuubutsu: Cryo',
+    ]
+    desc: str = (
+        'your Characters and Summons will deal +1 DMG for _ELEMENT_ DMG.'
+    )
+    version: Literal['3.8'] = '3.8'
+    usage: int = 2
+    max_usage: int = 2
+    element: ElementType = ElementType.NONE
+
+    def __init__(self, *argv, **kwargs) -> None:
+        super().__init__(*argv, **kwargs)
+        element_name = self.name.split()[-1]
+        element = ElementType[element_name.upper()]
+        self.element = element
+        self.desc = self.desc.replace('_ELEMENT_', element.name.capitalize())
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        """
+        If our charactor skill or summon deal corresponding elemental DMG, 
+        increase DMG.
+        """
+        if value.damage_type != DamageType.DAMAGE:
+            # not damage, do nothing
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not this player, do nothing
+            return value
+        if value.damage_elemental_type != ELEMENT_TO_DAMAGE_TYPE[self.element]:
+            # not corresponding elemental DMG, do nothing
+            return value
+        if value.position.area not in [
+            ObjectPositionType.SKILL, ObjectPositionType.SUMMON
+        ]:
+            # not charactor or summon, do nothing
+            return value
+        if value.damage_from_element_reaction:
+            # damage from elemental reaction, do nothing
+            return value
+        # increase DMG
+        assert mode == 'REAL'
+        self.usage -= 1
+        value.damage += 1
+        return value
+
+
+AnemoTeamStatus = Stormzone | WindsOfHarmony | PoeticsOfFuubutsu

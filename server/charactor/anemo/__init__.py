@@ -3,10 +3,16 @@ from .maguu_kenki import (
     MaguuKenki, TranscendentAutomaton, 
     ShadowswordGallopingFrost, ShadowswordLoneGale
 )
-
-
-AnemoCharactors = Venti | MaguuKenki
-SummonsOfAnemoCharactors = (
-    Stormeye | ShadowswordGallopingFrost | ShadowswordLoneGale
+from .kaedehara_kazuha import (
+    KaedeharaKazuha, PoeticsOfFuubutsu, AutumnWhirlwind
 )
-AnemoCharactorTalents = EmbraceOfWinds | TranscendentAutomaton
+
+
+AnemoCharactors = Venti | MaguuKenki | KaedeharaKazuha
+SummonsOfAnemoCharactors = (
+    Stormeye | ShadowswordGallopingFrost | ShadowswordLoneGale 
+    | AutumnWhirlwind
+)
+AnemoCharactorTalents = (
+    EmbraceOfWinds | TranscendentAutomaton | PoeticsOfFuubutsu
+)

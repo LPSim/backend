@@ -1,17 +1,14 @@
 from typing import Any, List, Literal
 
-from server.summon.base import SummonBase
+from ...summon.base import SwirlChangeSummonBase
 
-from ...summon.base import AttackerSummonBase
-
-from ...event import ReceiveDamageEventArguments, RoundEndEventArguments
+from ...event import RoundEndEventArguments
 
 from ...action import Actions, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
-    ElementalReactionType, FactionType, WeaponType
+    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -22,7 +19,7 @@ from ..charactor_base import (
 # Summons
 
 
-class Stormeye(AttackerSummonBase):
+class Stormeye(SwirlChangeSummonBase):
     name: Literal['Stormeye'] = 'Stormeye'
     desc: str = (
         'End Phase: Deal 2 Anemo DMG. Your opponent switches to: Character '
@@ -35,41 +32,7 @@ class Stormeye(AttackerSummonBase):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
-    damage_elemental_type: DamageElementalType = DamageElementalType.ANEMO
     damage: int = 2
-
-    def renew(self, new_status: SummonBase) -> None:
-        """
-        When renew, also renew damage elemental type.
-        """
-        super().renew(new_status)
-        self.damage_elemental_type = DamageElementalType.ANEMO
-
-    def event_handler_RECEIVE_DAMAGE(
-        self, event: ReceiveDamageEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        When anyone receives damage, and has swirl reaction, and made by
-        our charactor or summon, and current damage type is anemo, 
-        change stormeye damage element.
-
-        TODO: how to consider made by status? currently all damage made from
-        our player are considered valid.
-        """
-        if self.damage_elemental_type != DamageElementalType.ANEMO:
-            # already changed, do nothing
-            return []
-        if event.final_damage.position.player_idx != self.position.player_idx:
-            # not our player made damage, do nothing
-            return []
-        if event.final_damage.element_reaction != ElementalReactionType.SWIRL:
-            # not swirl reaction, do nothing
-            return []
-        elements = event.final_damage.reacted_elements
-        assert elements[0] == ElementType.ANEMO, 'First element must be anemo'
-        # do type change
-        self.damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[elements[1]]
-        return []
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
