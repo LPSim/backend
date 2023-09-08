@@ -1052,6 +1052,12 @@ class Match(BaseModel):
                 ):
                     # normal attack and satisfy charge, charge attack.
                     cost.label |= CostLabels.CHARGED_ATTACK.value
+                if (
+                    skill.skill_type == SkillType.NORMAL_ATTACK
+                    and table.plunge_satisfied
+                ):
+                    # normal attack and satisfy plunge, plunge attack.
+                    cost.label |= CostLabels.PLUNGING_ATTACK.value
                 cost_value = CostValue(
                     cost = cost,
                     position = skill.position,
@@ -1626,6 +1632,8 @@ class Match(BaseModel):
         )
         original_charactor_idx = table.active_charactor_idx
         table.active_charactor_idx = charactor_idx
+        # after choose charactor, add plunging mark
+        table.plunge_satisfied = True
         event_arg = ChooseCharactorEventArguments(
             action = action,
             original_charactor_idx = original_charactor_idx
@@ -1738,6 +1746,14 @@ class Match(BaseModel):
             value = combat_action_value,
             mode = 'REAL'
         )
+        if (
+            combat_action_value.original_value.do_combat_action
+            and combat_action_value.action_label 
+            & (PlayerActionLabels.END.value | PlayerActionLabels.SKILL.value)
+            != 0
+        ):
+            # did any combat action that is not switch, remove plunging mark
+            self.player_tables[player_idx].plunge_satisfied = False
         if not combat_action_value.do_combat_action:
             logging.info(
                 f'player {player_idx} did a combat action, but is modified'
@@ -1787,6 +1803,8 @@ class Match(BaseModel):
             f'switched to charactor {charactor_name}:{charactor_idx}.'
         )
         table.active_charactor_idx = charactor_idx
+        # after charactor switch, add plunging mark
+        table.plunge_satisfied = True
         return [SwitchCharactorEventArguments(
             action = action,
             last_active_charactor_idx = current_active_idx,

@@ -6,13 +6,16 @@ from typing import Any, List, Literal, Tuple
 
 from ...event import RoundPrepareEventArguments
 
-from ...consts import DieColor, ObjectPositionType
+from ...consts import (
+    DieColor, ObjectPositionType, PlayerActionLabels, SkillType
+)
 
 from ...object_base import CardBase
 from ...action import (
     Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
-    GenerateRerollDiceRequestAction, MoveObjectAction
+    GenerateRerollDiceRequestAction, MoveObjectAction, 
+    SwitchCharactorAction, UseSkillAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -313,6 +316,61 @@ class SendOff(CardBase):
         )]
 
 
+class PlungingStrike(CardBase):
+    name: Literal['Plunging Strike']
+    desc: str = (
+        'Combat Action: Switch to the target character. '
+        'That character then uses a Normal Attack.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 3)
+
+    def get_action_type(self, match: Any) -> Tuple[int, bool]:
+        return (
+            PlayerActionLabels.SWITCH.value
+            | PlayerActionLabels.CARD.value
+            | PlayerActionLabels.SKILL.value,
+            True
+        )
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        """
+        pos: List[ObjectPosition] = []
+        table = match.player_tables[self.position.player_idx]
+        for cid, charactor in enumerate(table.charactors):
+            if charactor.is_alive and cid != table.active_charactor_idx:
+                pos.append(charactor.position)
+        return pos
+
+    def is_valid(self, match: Any) -> bool:
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[SwitchCharactorAction | UseSkillAction]:
+        """
+        Switch to target, and use target's normal attack
+        """
+        assert target is not None
+        skills = match.player_tables[target.player_idx].charactors[
+            target.charactor_idx].skills
+        normal_idx: int = -1
+        for idx, skill in enumerate(skills):
+            if skill.skill_type == SkillType.NORMAL_ATTACK:
+                assert normal_idx == -1, 'Multiple normal attack skill'
+                normal_idx = idx
+        return [
+            SwitchCharactorAction(
+                player_idx = target.player_idx,
+                charactor_idx = target.charactor_idx
+            ),
+            UseSkillAction(
+                skill_position = skills[normal_idx].position,
+            )
+        ]
+
+
 class HeavyStrike(CardBase):
     name: Literal['Heavy Strike']
     desc: str = (
@@ -447,6 +505,6 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | HeavyStrike 
-    | FriendshipEternal | WhereIstheUnseenRazor
+    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | PlungingStrike
+    | HeavyStrike | FriendshipEternal | WhereIstheUnseenRazor
 )
