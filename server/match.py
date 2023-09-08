@@ -893,7 +893,7 @@ class Match(BaseModel):
         handler_name = f'event_handler_{event_arg.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
-            if hasattr(obj, 'name'):
+            if hasattr(obj, 'name'):  # pragma: no cover
                 name = obj.name  # type: ignore
             func = getattr(obj, handler_name, None)
             if func is not None:
@@ -926,7 +926,7 @@ class Match(BaseModel):
         modifier_name = f'value_modifier_{value.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
-            if hasattr(obj, 'name'):
+            if hasattr(obj, 'name'):  # pragma: no cover
                 name = obj.name  # type: ignore
             func = getattr(obj, modifier_name, None)
             if func is not None:
@@ -1326,6 +1326,9 @@ class Match(BaseModel):
             ),
             SkillEndAction(
                 position = skill.position,
+                target_position = self.player_tables[
+                    1 - skill.position.player_idx
+                ].get_active_charactor().position,
                 skill_type = skill.skill_type
             ),
             ActionEndAction(
@@ -2016,6 +2019,10 @@ class Match(BaseModel):
             target_classes = Cards
             target_list = table.hands
             target_name = 'hand'
+        elif action.object_position.area == ObjectPositionType.SYSTEM:
+            target_classes = SystemEventHandlers
+            target_list = self.event_handlers
+            target_name = 'system event handler'
         else:
             raise NotImplementedError(
                 f'Create object action for area {action.object_position.area} '

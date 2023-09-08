@@ -6,6 +6,7 @@ from .object_base import ObjectBase
 from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor
 from .event import (
+    MakeDamageEventArguments,
     ReceiveDamageEventArguments,
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
@@ -15,6 +16,7 @@ from .event import (
 from .action import (
     Actions,
     CharactorDefeatedAction,
+    CreateObjectAction,
     GenerateChooseCharactorRequestAction,
     DrawCardAction,
     RemoveCardAction
@@ -28,15 +30,24 @@ class SystemEventHandlerBase(ObjectBase):
     Base class of system event handlers. Its position should be SYSTEM.
     """
 
+    name: Literal['SystemEventHandlerBase']
+
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
         area = ObjectPositionType.SYSTEM,
         id = -1,
     )
 
+    def renew(self, target: 'SystemEventHandlerBase') -> None:
+        """
+        No need to renew.
+        """
+        pass
+
 
 class SystemEventHandler(SystemEventHandlerBase):
 
+    name: Literal['System'] = 'System'
     version: Literal['3.3', '3.4'] = '3.4'
 
     def event_handler_DRAW_CARD(
@@ -133,6 +144,8 @@ class SystemEventHandler(SystemEventHandlerBase):
 
 class OmnipotentGuideEventHandler(SystemEventHandlerBase):
 
+    name: Literal['Omnipotent Guide'] = 'Omnipotent Guide'
+
     def value_modifier_INITIAL_DICE_COLOR(
             self, value: InitialDiceColorValue, 
             match: Any,
@@ -154,6 +167,67 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
         return value
 
 
+class RiptideEventHandler(SystemEventHandlerBase):
+    name: Literal['Riptide'] = 'Riptide'
+    desc: str = (
+        'Riptide system handler is used to handle Riptide when charactor '
+        'defeated. Before make damage, it will record who has Riptide, and if'
+        'charactor defeated event happens, if defeated charactor has Riptide, '
+        'the next active charactor will get Riptide. Note if during the '
+        'defeated with Riptide. After choosing active charactor, the virtual '
+        'will attach real Riptide for active charactor, and all virtual '
+        'Riptide will be removed.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+    has_riptide: List[ObjectPosition] = []
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        record who has Riptide before make damage.
+        """
+        self.has_riptide = []
+        for table in match.player_tables:
+            for charactor in table.charactors:
+                for status in charactor.status:
+                    if status.name == 'Riptide':
+                        self.has_riptide.append(charactor.position)
+        return []
+
+    def event_handler_CHARACTOR_DEFEATED(
+        self, event: CharactorDefeatedEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        If defeated charactor has Riptide, the next active charactor will get
+        Riptide. As this event triggers later than CHOOSE_CHARACTOR, current
+        active charactor is set.
+        """
+        pidx = event.action.player_idx
+        cidx = event.action.charactor_idx
+        found: bool = False
+        for position in self.has_riptide:
+            if position.player_idx == pidx and position.charactor_idx == cidx:
+                found = True
+                break
+        if not found:
+            # defeated charactor does not have Riptide
+            return []
+        return [CreateObjectAction(
+            object_name = 'Riptide',
+            object_position = ObjectPosition(
+                player_idx = pidx,
+                area = ObjectPositionType.CHARACTOR_STATUS,
+                charactor_idx = match.player_tables[pidx].active_charactor_idx,
+                id = 0
+            ),
+            object_arguments = {}
+        )]
+
+
 SystemEventHandlers = (
     SystemEventHandlerBase | SystemEventHandler | OmnipotentGuideEventHandler
+    | RiptideEventHandler
 )

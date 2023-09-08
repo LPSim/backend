@@ -497,6 +497,9 @@ class SkillTalent(TalentBase):
         # skill used, add SkillEndAction
         ret.append(SkillEndAction(
             position = self.skill.position,
+            target_position = match.player_tables[
+                1 - self.skill.position.player_idx
+            ].get_active_charactor().position,
             skill_type = self.skill.skill_type,
         ))
         return ret

@@ -275,6 +275,7 @@ class SkillEndAction(ActionBase):
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     position: ObjectPosition
+    target_position: ObjectPosition  # always initial active charactor now
     skill_type: SkillType
 
 

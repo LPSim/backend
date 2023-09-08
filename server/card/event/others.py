@@ -370,6 +370,8 @@ class PlungingStrike(CardBase):
             ),
             SkillEndAction(
                 position = skills[normal_idx].position,
+                target_position = match.player_tables[
+                    1 - target.player_idx].get_active_charactor().position,
                 skill_type = SkillType.NORMAL_ATTACK
             )
         ]
