@@ -171,4 +171,29 @@ class AurousBlaze(RoundTeamStatus, ExtraAttackTeamStatus):
         return super().event_handler_SKILL_END(event, match)
 
 
-PyroTeamStatus = SparksNSplash | InspirationField | AurousBlaze
+class Pyronado(UsageTeamStatus, ExtraAttackTeamStatus):
+    name: Literal['Pyronado'] = 'Pyronado'
+    desc: str = '''After your character uses a Skill: Deal 2 Pyro DMG.'''
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    newly_created: bool = True
+
+    trigger_skill_type: SkillType | None = None
+    damage: int = 2
+    damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
+    decrease_usage: bool = True
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If newly created, should not trigger immediately.
+        """
+        if self.newly_created:
+            self.newly_created = False
+            return []
+        return super().event_handler_SKILL_END(event, match)
+
+
+PyroTeamStatus = SparksNSplash | InspirationField | AurousBlaze | Pyronado

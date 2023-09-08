@@ -14,7 +14,7 @@ from .geo import (
     GeoCharactorTalents, GeoCharactors, SummonsOfGeoCharactors
 )
 from .pyro import (
-    PyroCharactorTalents, PyroCharactors,  # SummonsOfPyroCharactors
+    PyroCharactorTalents, PyroCharactors, SummonsOfPyroCharactors
 )
 from .anemo import (
     AnemoCharactorTalents, AnemoCharactors, SummonsOfAnemoCharactors
@@ -38,6 +38,7 @@ SummonsOfCharactors = (
     SummonsOfElectroCharactors | SummonsOfHydroCharactors
     | SummonsOfDendroCharactors | SummonsOfGeoCharactors
     | SummonsOfAnemoCharactors | SummonsOfCryoCharactors
+    | SummonsOfPyroCharactors
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents

@@ -56,12 +56,20 @@ class AttackerSummonBase(SummonBase):
     Attacker Summon, as it also makes damage with type HEAL.
     """
     name: str
-    desc: str
+    desc: str = '''End Phase: Deal _DAMAGE_ _ELEMENT_ DMG.'''
     version: str
     usage: int
     max_usage: int
     damage_elemental_type: DamageElementalType
     damage: int
+
+    def __init__(self, *argv, **kwargs) -> None:
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_DAMAGE_', str(self.damage)
+        ).replace(
+            '_ELEMENT_', self.damage_elemental_type.name.capitalize()
+        )
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
