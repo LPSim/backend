@@ -1197,10 +1197,115 @@ def test_send_off_new_and_old():
     assert match.state != MatchState.ERROR
 
 
+def test_plunge_strike():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "TEST 2 card target 1 2",
+            "skill 1 0 1 2",
+            "sw_char 1 0",
+            "TEST 2 card target 0 2",
+            "card 0 0 0 1 2",
+            "sw_char 1 0",
+            "TEST 1 7 9 10 7 10 8",
+            "sw_char 0 0",
+            "TEST 1 5 9 10 7 10 8",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "TEST 3 dice number 9 12",
+            "TEST 1 7 10 10 7 10 8",
+            "sw_char 1 0",
+            "card 0 0 0 1 2",
+            "skill 0 0 1"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Klee
+        charactor:Arataki Itto
+        charactor:Rhodeia of Loch
+        Plunging Strike*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                cnum = [int(x) for x in cmd[4:]]
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert len(req.targets) == len(cnum)
+                        for t, c in zip(req.targets, cnum):
+                            assert t.charactor_idx == c
+            elif test_id == 3:
+                assert len(match.player_tables[0].dice.colors) == 9
+                assert len(match.player_tables[1].dice.colors) == 12
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
-    test_toss_up()
+    # test_toss_up()
     # test_old_i_havent_lost_yet()
     # test_leave_it_to_me()
     # test_claxs_art()
@@ -1208,3 +1313,4 @@ if __name__ == '__main__':
     # test_friendship_eternal()
     # test_unseen_razor()
     # test_send_off_new_and_old()
+    test_plunge_strike()
