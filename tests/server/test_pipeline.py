@@ -93,7 +93,7 @@ def test_save_load():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    match.event_handlers[0].version = '3.3'
+    match.event_handlers[0].version = '3.3'  # type: ignore
     assert match.start()
     match.step()  # switch card
 
@@ -616,6 +616,35 @@ def test_plunge_mark():
     assert match.state != MatchState.ERROR
 
 
+def test_higher_version_compatible():
+    deck = Deck.from_str(
+        '''
+        charactor:Yoimiya@3.3
+        charactor:Yoimiya@3.4
+        charactor:Yoimiya@3.5
+        charactor:Yoimiya@3.6
+        charactor:Yoimiya@3.7
+        charactor:Yoimiya@3.8
+        charactor:Yoimiya@4.0
+        charactor:Yoimiya
+        Send Off@3.3
+        Send Off@3.4
+        Send Off@3.5*1
+        Send Off@3.6*1
+        Send Off@3.7*1
+        Send Off@3.8*1
+        Send Off@4.0*1
+        Send Off*1
+        '''
+    )
+    res = ['3.3', '3.4', '3.4', '3.4', '3.4', '3.8', '3.8', '3.8']
+    res2 = ['3.3', '3.3', '3.3', '3.3', '3.7', '3.7', '3.7', '3.7']
+    for c, r in zip(deck.charactors, res):
+        assert c.version == r
+    for c, r in zip(deck.cards, res2):
+        assert c.version == r
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -623,4 +652,5 @@ if __name__ == '__main__':
     # test_use_card()
     # test_support_over_maximum_and_error_tests()
     # test_summon_over_maximum()
-    test_plunge_mark()
+    # test_plunge_mark()
+    test_higher_version_compatible()

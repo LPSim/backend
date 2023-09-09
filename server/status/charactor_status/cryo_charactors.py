@@ -13,7 +13,7 @@ class Grimheart(UsageCharactorStatus):
         'After the character to which this is attached uses Icetide Vortex: '
         'Remove this status, DMG +_DAMAGE_ for this instance.'
     )
-    version: Literal['3.8', '3.5'] = '3.8'
+    version: Literal['3.8'] = '3.8'
     damage: int = 3
     usage: int = 1
     max_usage: int = 1

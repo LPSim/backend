@@ -8,7 +8,8 @@ in many other places. Other objects are defined in their own files.
 import time
 import random
 from utils import BaseModel
-from typing import List, Literal, Any, Tuple
+from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
+from pydantic import validator
 from .action import Actions, ActionTypes
 from .consts import (
     ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
@@ -83,6 +84,7 @@ class CardBase(ObjectBase):
     type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
                   ObjectType.TALENT, ObjectType.SUMMON,
                   ObjectType.SUPPORT] = ObjectType.CARD
+    strict_version_validation: bool = False  # default accept higher versions
     version: str
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
@@ -91,6 +93,28 @@ class CardBase(ObjectBase):
     )
     cost: Cost
     cost_label: int = CostLabels.CARD.value
+
+    @validator('version', pre = True)
+    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
+        msg = 'version annotation must be Literal with one str'
+        if not isinstance(v, str):
+            raise NotImplementedError(msg)
+        version_hints = get_type_hints(cls)['version']
+        if get_origin(version_hints) != Literal:
+            raise NotImplementedError(msg)
+        version_hints = version_hints.__args__
+        if len(version_hints) > 1:
+            raise NotImplementedError(msg)
+        version_hint = version_hints[0]
+        if values['strict_version_validation'] and v != version_hint:
+            raise ValueError(
+                f'version {v} is not equal to {version_hint}'
+            )
+        if v < version_hint:
+            raise ValueError(
+                f'version {v} is lower than {version_hint}'
+            )
+        return version_hint
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)

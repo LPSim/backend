@@ -27,7 +27,6 @@ class MobMage(Mob):
         'DendroMobMage',
         'AnemoMobMage',
     ]
-    version = '1.0.0'
     element: ElementType = ElementType.NONE
     max_hp: int = 10
     max_charge: int = 2

@@ -1,3 +1,10 @@
+"""
+For each charactor, the newest version of charactor itself, summons, skills,
+and talents are defined in its file. For old versions, they are defined in
+old_version file, and the order of them should follow the version of them,
+the older the later, so when specifying a version, newer version objects will
+always be accepted earlier than older version objects.
+"""
 from .mob import Mob
 from .physical_mob import PhysicalMob
 from .mob_mage import MobMage
@@ -23,7 +30,7 @@ from .cryo import (
     CryoCharactorTalents, CryoCharactors, SummonsOfCryoCharactors
 )
 from .old_version import (
-    OldTalents, OldCharactors
+    OldSummons, OldTalents, OldCharactors
 )
 
 
@@ -39,6 +46,8 @@ SummonsOfCharactors = (
     | SummonsOfDendroCharactors | SummonsOfGeoCharactors
     | SummonsOfAnemoCharactors | SummonsOfCryoCharactors
     | SummonsOfPyroCharactors
+    # Finally old summons
+    | OldSummons
 )
 CharactorTalents = (
     ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents

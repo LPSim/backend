@@ -28,7 +28,7 @@ class Mob(CharactorBase):
         'AnemoMob',
     ]
     desc: str = 'A _NAME_.'
-    version = '1.0.0'
+    version: Literal['1.0'] = '1.0'
     element: ElementType = ElementType.NONE
     max_hp: int = 10
     max_charge: int = 2

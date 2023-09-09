@@ -1,3 +1,4 @@
+from .old_version import OldVersionCharactorStatus
 from .system import SystemCharactorStatus
 from .pyro_charactors import PyroCharactorStatus
 from .dendro_charactors import DendroCharactorStatus
@@ -17,4 +18,6 @@ CharactorStatus = (
     | CryoCharactorStatus
     | SystemCharactorStatus | FoodStatus | ArtifactCharactorStatus
     | EventCardCharactorStatus
+    # finally old versions
+    | OldVersionCharactorStatus
 )

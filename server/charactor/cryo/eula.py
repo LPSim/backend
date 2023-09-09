@@ -36,18 +36,13 @@ class LightfallSword(SummonBase):
         'Each Zeal stack adds 1 DMG to this damage instance. '
         "(Effects on this card's Usage will apply to Zeal.)"
     )
-    version: Literal['3.8', '3.5'] = '3.8'
+    version: Literal['3.8'] = '3.8'
     usage: int = 0
     max_usage: int = 999
     damage: int = 3
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        if self.version == '3.5':
-            self.damage = 2
-        else:
-            assert self.version == '3.8'
-            self.damage = 3
         self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def event_handler_ROUND_END(
