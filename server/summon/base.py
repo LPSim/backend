@@ -130,6 +130,50 @@ class AttackerSummonBase(SummonBase):
         return []
 
 
+class AOESummonBase(AttackerSummonBase):
+    """
+    Base class that deals AOE damage. It will attack active charactor 
+    damage+element, back chractor back_damage_piercing.
+    """
+    desc: str = (
+        'Deals _ACTIVE_ _ELEMENT_ DMG, deals _BACK_ Piercing DMG to all '
+        'opposing characters on standby.'
+    )
+    back_damage: int
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_ELEMENT_', self.damage_elemental_type.value.lower().capitalize())
+        self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
+        self.desc = self.desc.replace('_BACK_', str(self.back_damage))
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        ret = super().event_handler_ROUND_END(event, match)
+        assert len(ret) == 1
+        assert ret[0].type == 'MAKE_DAMAGE'
+        target_table = match.player_tables[1 - self.position.player_idx]
+        charactors = target_table.charactors
+        for cid, charactor in enumerate(charactors):
+            if cid == target_table.active_charactor_idx:
+                continue
+            if charactor.is_defeated:
+                continue
+            ret[0].damage_value_list.append(
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = charactor.position,
+                    damage = self.back_damage,
+                    damage_elemental_type = DamageElementalType.PIERCING,
+                    cost = self.cost.copy(),
+                )
+            )
+        return ret
+
+
 class DefendSummonBase(SummonBase):
     """
     Defend summons, e.g. Ushi, Frog, Baron Bunny. decrease damage with its rule

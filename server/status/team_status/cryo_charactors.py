@@ -17,7 +17,8 @@ from ...modifiable_values import (
 
 from ...action import MakeDamageAction
 from .base import (
-    RoundTeamStatus, UsageTeamStatus, ElementalInfusionTeamStatus
+    DefendTeamStatus, RoundTeamStatus, UsageTeamStatus, 
+    ElementalInfusionTeamStatus
 )
 
 
@@ -216,4 +217,16 @@ class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
         return value
 
 
-CryoTeamStatus = Icicle | IcyQuill | ChonghuasFrostField
+class IceLotus(DefendTeamStatus):
+    name: Literal['Ice Lotus'] = 'Ice Lotus'
+    desc: str = (
+        'When your active character receives DMG: Decreases DMG taken by 1.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    min_damage_to_trigger: int = 1
+    max_in_one_time: int = 1
+
+
+CryoTeamStatus = Icicle | IcyQuill | ChonghuasFrostField | IceLotus
