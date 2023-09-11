@@ -5,16 +5,20 @@ from ...event import (
     SwitchCharactorEventArguments
 )
 
-from ...struct import Cost
+from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, ObjectPositionType, SkillType, WeaponType
 )
 
-from ...modifiable_values import DamageIncreaseValue, DamageValue
+from ...modifiable_values import (
+    DamageElementEnhanceValue, DamageIncreaseValue, DamageValue
+)
 
 from ...action import MakeDamageAction
-from .base import UsageTeamStatus
+from .base import (
+    RoundTeamStatus, UsageTeamStatus, ElementalInfusionTeamStatus
+)
 
 
 class Icicle(UsageTeamStatus):
@@ -137,4 +141,79 @@ class IcyQuill(UsageTeamStatus):
         return value
 
 
-CryoTeamStatus = Icicle | IcyQuill
+class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
+    name: Literal["Chonghua's Frost Field"] = "Chonghua's Frost Field"
+    desc: str = (
+        "Your Sword, Claymore, and Polearm-wielding characters' Physical DMG "
+        "is converted to Cryo DMG."
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    talent_activated: bool = False
+
+    infused_elemental_type: DamageElementalType = DamageElementalType.CRYO
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        if self.talent_activated:
+            self.desc += (
+                " And your Sword, Claymore, and Polearm-wielding character's "
+                "Normal Attacks +1 DMG."
+            )
+            self.max_usage = 3
+            self.usage = 3
+
+    def renew(self, object: 'ChonghuasFrostField'):
+        super().renew(object)
+        self.talent_activated = object.talent_activated
+
+    def charactor_is_using_right_weapon(
+        self, match: Any, position: ObjectPosition
+    ) -> bool:
+        """
+        If position charactor using effected three weapon, return True.
+        """
+        charactor = match.player_tables[position.player_idx].charactors[
+            position.charactor_idx]
+        return charactor.weapon_type in [
+            WeaponType.SWORD, WeaponType.CLAYMORE, WeaponType.POLEARM]
+
+    def value_modifier_DAMAGE_ELEMENT_ENHANCE(
+        self, value: DamageElementEnhanceValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageElementEnhanceValue:
+        """
+        If weapon type not right, do not enhance.
+        """
+        if not self.charactor_is_using_right_weapon(match, value.position):
+            return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode)
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        When source weapon type is sword, claymore or polearm, and talent
+        activated, +1 normal attack DMG.
+        """
+        if not self.talent_activated:
+            # talent not activated, do nothing
+            return value
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            # not corresponding charactor, do nothing
+            return value
+        if not self.charactor_is_using_right_weapon(match, value.position):
+            # not right weapon, do nothing
+            return value
+        # add damage
+        assert mode == 'REAL'
+        value.damage += 1
+        return value
+
+
+CryoTeamStatus = Icicle | IcyQuill | ChonghuasFrostField

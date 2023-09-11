@@ -181,8 +181,9 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
         if self.infused_elemental_type == DamageElementalType.PHYSICAL:
             # not set elemental type manually, get it from name
             element = self.name.split(' ')[0].upper()
-            assert element in ['PYRO', 'HYDRO', 'ELECTRO', 'CRYO', 'ANEMO',
-                               'GEO', 'DENDRO']
+            assert element in [
+                'PYRO', 'HYDRO', 'ELECTRO', 'CRYO', 'ANEMO', 'GEO', 'DENDRO'
+            ], ('In ElementalInfusion: element not set right value')
             assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
             self.infused_elemental_type = DamageElementalType(element)
             self.desc = self.desc.replace('XXX', element)
