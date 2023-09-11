@@ -8,6 +8,7 @@ from ..pyro.yoimiya import FireworkFlareUp, NiwabiFireDance
 
 class RyuukinSaxifrage(RS_3_8):
     damage: int = 4
+    desc: str = '''Deals 4 Pyro DMG, creates 1 Aurous Blaze.'''
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 4,
