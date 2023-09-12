@@ -28,6 +28,7 @@ class ActionTypes(str, Enum):
     USE_CARD = 'USE_CARD'
     SKILL_END = 'SKILL_END'
     CHARACTOR_DEFEATED = 'CHARACTOR_DEFEATED'
+    CHARACTOR_REVIVE = 'CHARACTOR_REVIVE'
     CREATE_OBJECT = 'CREATE_OBJECT'
     REMOVE_OBJECT = 'REMOVE_OBJECT'
     OBJECT_REMOVED = 'OBJECT_REMOVED'
@@ -380,6 +381,16 @@ class SkipPlayerActionAction(ActionBase):
         ActionTypes.SKIP_PLAYER_ACTION
 
 
+class CharactorReviveAction(ActionBase):
+    """
+    Action for charactor revive.
+    """
+    type: Literal[ActionTypes.CHARACTOR_REVIVE] = ActionTypes.CHARACTOR_REVIVE
+    player_idx: int
+    charactor_idx: int
+    revive_hp: int
+
+
 Actions = (
     ActionBase 
     | DrawCardAction 
@@ -409,5 +420,6 @@ Actions = (
     | GenerateChooseCharactorRequestAction
     | GenerateRerollDiceRequestAction
     | SkipPlayerActionAction
+    | CharactorReviveAction
 
 )

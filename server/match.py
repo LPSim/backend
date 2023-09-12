@@ -9,7 +9,7 @@ from utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    ActionBase, Actions, ConsumeArcaneLegendAction,
+    ActionBase, Actions, CharactorReviveAction, ConsumeArcaneLegendAction,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -51,6 +51,7 @@ from .consts import (
     ObjectType, PlayerActionLabels, SkillType,
 )
 from .event import (
+    CharactorReviveEventArguments,
     PlayerActionStartEventArguments,
     ConsumeArcaneLegendEventArguments,
     EventArguments,
@@ -1460,6 +1461,8 @@ class Match(BaseModel):
             return list(self._action_generate_reroll_dice_request(action))
         elif isinstance(action, SkipPlayerActionAction):
             return list(self._action_skip_player_action(action))
+        elif isinstance(action, CharactorReviveAction):
+            return list(self._action_charactor_revive(action))
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f'Unknown action {action}.')
@@ -1963,6 +1966,9 @@ class Match(BaseModel):
         charactor_idx = action.charactor_idx
         table = self.player_tables[player_idx]
         charactor = table.charactors[charactor_idx]
+        assert charactor.is_defeated, (
+            'Should marked as defeated charactor.'
+        )
         logging.info(
             f'player {player_idx} '
             f'charactor {charactor.name}:{charactor_idx} '
@@ -1982,6 +1988,29 @@ class Match(BaseModel):
         return [CharactorDefeatedEventArguments(
             action = action,
             need_switch = need_switch,
+        )]
+
+    def _action_charactor_revive(self, action: CharactorReviveAction) \
+            -> List[CharactorReviveEventArguments]:
+        """
+        Charactor revive action. A defeated charactor is revived.
+        """
+        player_idx = action.player_idx
+        charactor_idx = action.charactor_idx
+        table = self.player_tables[player_idx]
+        charactor = table.charactors[charactor_idx]
+        assert charactor.is_defeated, (
+            'Cannot revive a living charactor.'
+        )
+        logging.info(
+            f'player {player_idx} '
+            f'charactor {charactor.name}:{charactor_idx} '
+            f'revived with {action.revive_hp} HP.'
+        )
+        charactor.is_alive = True
+        charactor.hp = action.revive_hp
+        return [CharactorReviveEventArguments(
+            action = action,
         )]
 
     def _action_create_object(self, action: CreateObjectAction) \

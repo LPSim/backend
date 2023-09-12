@@ -25,6 +25,7 @@ from .action import (
     MoveObjectAction,
     ConsumeArcaneLegendAction,
     UseSkillAction,
+    CharactorReviveAction
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -339,6 +340,15 @@ class PlayerActionStartEventArguments(EventArgumentsBase):
     player_idx: int
 
 
+class CharactorReviveEventArguments(EventArgumentsBase):
+    """
+    Event arguments for charactor revive event.
+    """
+    type: Literal[ActionTypes.CHARACTOR_REVIVE] = \
+        ActionTypes.CHARACTOR_REVIVE
+    action: CharactorReviveAction
+
+
 EventArguments = (
     EventArgumentsBase
     | DrawCardEventArguments
@@ -371,6 +381,7 @@ EventArguments = (
     | RoundEndEventArguments
     # 25
     | PlayerActionStartEventArguments
+    | CharactorReviveEventArguments
 )
 
 

@@ -2,7 +2,7 @@ from typing import Any, List, Literal
 
 from ...event import (
     ChooseCharactorEventArguments, RoundPrepareEventArguments, 
-    SwitchCharactorEventArguments
+    SkillEndEventArguments, SwitchCharactorEventArguments
 )
 
 from ...struct import Cost, ObjectPosition
@@ -229,4 +229,60 @@ class IceLotus(DefendTeamStatus):
     max_in_one_time: int = 1
 
 
-CryoTeamStatus = Icicle | IcyQuill | ChonghuasFrostField | IceLotus
+class FortunePreservingTalisman(UsageTeamStatus):
+    name: Literal[
+        'Fortune-Preserving Talisman'] = 'Fortune-Preserving Talisman'
+    desc: str = (
+        'After your character uses a Skill: If that character does not have '
+        'full HP, heal that character for 2 HP.'
+    )
+    version: Literal['4.0'] = '4.0'
+    usage: int = 3
+    max_usage: int = 3
+    newly_created: bool = True
+
+    def renew(self, new_status: 'FortunePreservingTalisman') -> None:
+        """
+        Reset newly created
+        """
+        super().renew(new_status)
+        self.newly_created = new_status.newly_created
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        if self.newly_created:
+            # newly created, mark as false and no effect
+            self.newly_created = False
+            return []
+        if event.action.position.player_idx != self.position.player_idx:
+            # not our player skill made damage, do nothing
+            return []
+        assert event.action.position.area == ObjectPositionType.SKILL
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            event.action.position.charactor_idx]
+        if charactor.damage_taken <= 0:
+            # no damage, do nothing
+            return []
+        # heal charactor
+        self.usage -= 1
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost(),
+                )
+            ],
+        )]
+
+
+CryoTeamStatus = (
+    Icicle | IcyQuill | ChonghuasFrostField | IceLotus 
+    | FortunePreservingTalisman
+)

@@ -202,6 +202,7 @@ class ChakraDesiderata(CharactorStatusBase):
 
 
 class TheShrinesSacredShade(RoundCharactorStatus):
+    # TODO Rite of Dispatch
     name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
     desc: str = (
         'During this round, the next Yakan Evocation: Sesshou Sakura used by '
