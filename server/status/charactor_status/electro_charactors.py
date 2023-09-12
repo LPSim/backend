@@ -2,15 +2,17 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...action import Actions, MakeDamageAction, RemoveObjectAction
+from ...action import (
+    Actions, MakeDamageAction, RemoveObjectAction, SkillEndAction
+)
 
 from ...event import MakeDamageEventArguments, SkillEndEventArguments
 
 from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, DieColor, ObjectPositionType, SkillType
 )
 
-from ...modifiable_values import DamageIncreaseValue, DamageValue
+from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 from .base import (
     ElementalInfusionCharactorStatus, PrepareCharactorStatus, 
     RoundCharactorStatus, UsageCharactorStatus, CharactorStatusBase
@@ -199,7 +201,49 @@ class ChakraDesiderata(CharactorStatusBase):
         return value
 
 
+class TheShrinesSacredShade(RoundCharactorStatus):
+    name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
+    desc: str = (
+        'During this round, the next Yakan Evocation: Sesshou Sakura used by '
+        'the charactor to which this is attached will cost 2 less Elemental '
+        'Dice.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+    ) -> CostValue:
+        """
+        When use Yakan Evocation: Sesshou Sakura, cost 2 less
+        """
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+            charactor_idx_same = True,
+            target_area = ObjectPositionType.SKILL
+        ):
+            # not our player skill, do nothing
+            return value
+        skill = match.get_object(value.position)
+        if skill.name != 'Yakan Evocation: Sesshou Sakura':
+            # not right skill, do nothing
+            return value
+        assert self.usage > 0
+        success = value.cost.decrease_cost(DieColor.ELECTRO)
+        success = value.cost.decrease_cost(DieColor.ELECTRO) or success
+        if success and mode == 'REAL':
+            self.usage -= 1
+        return value
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndAction, match: Any
+    ) -> List[RemoveObjectAction]:
+        return self.check_should_remove()
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
+    | TheShrinesSacredShade
 )
