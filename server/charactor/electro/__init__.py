@@ -4,7 +4,7 @@ from .electro_hypostasis import (
     ElectroHypostasis, AbsorbingPrism, ChainsOfWardingThunder
 )
 from .raiden_shogun import RaidenShogun, EyeOfStormyJudgment, WishesUnnumbered
-from .yaemiko import YaeMiko, TheShrinesSacredShade, SesshouSakura
+from .yae_miko import YaeMiko, TheShrinesSacredShade, SesshouSakura
 
 
 ElectroCharactors = (
