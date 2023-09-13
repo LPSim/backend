@@ -272,4 +272,66 @@ class MeleeStance(ElementalInfusionCharactorStatus,
         return ret
 
 
-HydroCharactorStatus = Riptide | RangedStance | MeleeStance
+class CeremonialGarment(RoundCharactorStatus):
+    name: Literal['Ceremonial Garment'] = 'Ceremonial Garment'
+    desc: str = (
+        'The character to which this is attached has their Normal Attacks '
+        'deal +1 DMG. After the character to which this attached uses a '
+        'Normal Attack: Heal 1 HP for all your characters.'
+    )
+    version: Literal['3.5'] = '3.5'
+    usage: int = 2
+    max_usage: int = 2
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        """
+        If self use normal attack, increase damage by 1.
+        """
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            # not this charactor use normal attack, not modify
+            return value
+        # damage +1
+        value.damage += 1
+        return value
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If self use normal attack, heal all our charactors for 1 HP.
+        """
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True,
+            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
+        ):
+            # not self use skill
+            return []
+        skill = match.get_object(event.action.position)
+        if skill.skill_type != SkillType.NORMAL_ATTACK:
+            # not normal attack
+            return []
+        action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = []
+        )
+        charactors = match.player_tables[self.position.player_idx].charactors
+        for charactor in charactors:
+            if charactor.is_alive:
+                action.damage_value_list.append(DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost(),
+                ))
+        return [action]
+
+
+HydroCharactorStatus = Riptide | RangedStance | MeleeStance | CeremonialGarment
