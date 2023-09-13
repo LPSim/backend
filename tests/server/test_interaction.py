@@ -22,7 +22,7 @@ def test_response_is_valid():
     req = SwitchCharactorRequest(
         player_idx = 0,
         active_charactor_idx = 0,
-        candidate_charactor_idxs = [1],
+        target_charactor_idx = 1,
         dice_colors = [DieColor.CRYO, DieColor.PYRO],
         cost = Cost(
             any_dice_number = 1,
@@ -30,13 +30,9 @@ def test_response_is_valid():
     )
     resp = SwitchCharactorResponse(
         request = req,
-        charactor_idx = 1,
         dice_idxs = [0],
     )
     assert resp.is_valid(match)
-    resp.charactor_idx = 0
-    assert not resp.is_valid(match)
-    resp.charactor_idx = 1
     resp.dice_idxs = []
     assert not resp.is_valid(match)
     resp.dice_idxs = [-1]

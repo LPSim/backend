@@ -56,6 +56,7 @@ class RerollValue(ModifiableValueBase):
 
 class CostValue(ModifiableValueBase):
     type: ModifiableValueTypes = ModifiableValueTypes.COST
+    target_position: ObjectPosition | None
     cost: Cost
 
     def __init__(self, *argv, **kwargs):

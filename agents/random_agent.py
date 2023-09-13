@@ -129,9 +129,6 @@ class RandomAgent(AgentBase):
         return SwitchCharactorResponse(
             request = req, 
             dice_idxs = idxs,
-            charactor_idx = req.candidate_charactor_idxs[
-                int(self.random() * len(req.candidate_charactor_idxs))
-            ],
         )
 
     def resp_use_skill(

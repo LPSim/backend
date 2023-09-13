@@ -211,7 +211,7 @@ class SwitchCharactorAction(ActionBase):
         """
         return cls(
             player_idx = response.player_idx,
-            charactor_idx = response.charactor_idx,
+            charactor_idx = response.request.target_charactor_idx
         )
 
 

@@ -44,7 +44,7 @@ class SwitchCharactorRequest(RequestBase):
     """
     name: Literal['SwitchCharactorRequest'] = 'SwitchCharactorRequest'
     active_charactor_idx: int
-    candidate_charactor_idxs: List[int]
+    target_charactor_idx: int
     dice_colors: List[DieColor]
     cost: Cost
 
@@ -157,16 +157,12 @@ class RerollDiceResponse(ResponseBase):
 class SwitchCharactorResponse(ResponseBase):
     name: Literal['SwitchCharactorResponse'] = 'SwitchCharactorResponse'
     request: SwitchCharactorRequest
-    charactor_idx: int
     dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
         """
-        Charactor is in the candidate charactors.
         Cost matches the request.
         """
-        if self.charactor_idx not in self.request.candidate_charactor_idxs:
-            return False
         if not list_unique_range_right(
             self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
         ):

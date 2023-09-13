@@ -245,11 +245,16 @@ class InteractionAgent_V1_0(AgentBase):
         """
         args: one charactor idx and variable length of cost colors.
         """
-        assert len(reqs) == 1
+        cidx = int(args[0])
+        selected_req: SwitchCharactorRequest | None = None
+        for req in reqs:
+            if req.target_charactor_idx == cidx:
+                selected_req = req
+                break
+        assert selected_req is not None
         dice_idxs = self._colors_to_idx(args[1:], reqs[0].dice_colors)
         return SwitchCharactorResponse(
-            request = reqs[0],
-            charactor_idx = int(args[0]),
+            request = selected_req,
             dice_idxs = dice_idxs
         )
 

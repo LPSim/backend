@@ -977,35 +977,30 @@ class Match(BaseModel):
         Generate switch charactor requests.
         """
         table = self.player_tables[player_idx]
-        dice_cost = Cost(any_dice_number = 1)
-        dice_cost.label = CostLabels.SWITCH_CHARACTOR
-        dice_cost_value = CostValue(
-            cost = dice_cost,
-            position = ObjectPosition(
-                player_idx = player_idx,
-                area = ObjectPositionType.SYSTEM,
-                id = 0
-            ),
-        )
-        self._modify_value(dice_cost_value, mode = 'TEST')
-        charge, arcane_legend = table.get_charge_and_arcane_legend()
-        if not dice_cost_value.cost.is_valid(
-            dice_colors = table.dice.colors,
-            charge = charge,
-            arcane_legend = arcane_legend,
-            strict = False,
-        ):
-            return
-        candidate_charactor_idxs = [
-            x for x in range(len(table.charactors))
-            if x != table.active_charactor_idx 
-            and table.charactors[x].is_alive
-        ]
-        if len(candidate_charactor_idxs):
+        active_charactor = table.charactors[table.active_charactor_idx]
+        for cidx, charactor in enumerate(table.charactors):
+            if cidx == table.active_charactor_idx or charactor.is_defeated:
+                continue
+            dice_cost = Cost(any_dice_number = 1)
+            dice_cost.label = CostLabels.SWITCH_CHARACTOR
+            dice_cost_value = CostValue(
+                cost = dice_cost,
+                position = active_charactor.position,
+                target_position = charactor.position
+            )
+            self._modify_value(dice_cost_value, mode = 'TEST')
+            charge, arcane_legend = table.get_charge_and_arcane_legend()
+            if not dice_cost_value.cost.is_valid(
+                dice_colors = table.dice.colors,
+                charge = charge,
+                arcane_legend = arcane_legend,
+                strict = False,
+            ):
+                continue
             self.requests.append(SwitchCharactorRequest(
                 player_idx = player_idx,
                 active_charactor_idx = table.active_charactor_idx,
-                candidate_charactor_idxs = candidate_charactor_idxs,
+                target_charactor_idx = cidx,
                 dice_colors = table.dice.colors.copy(),
                 cost = dice_cost_value.cost,
             ))
@@ -1062,6 +1057,7 @@ class Match(BaseModel):
                 cost_value = CostValue(
                     cost = cost,
                     position = skill.position,
+                    target_position = None
                 )
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = table.dice.colors
@@ -1088,6 +1084,7 @@ class Match(BaseModel):
                 cost_value = CostValue(
                     cost = cost,
                     position = card.position,
+                    target_position = None
                 )
                 self._modify_value(cost_value, mode = 'TEST')
                 dice_colors = table.dice.colors
@@ -1201,14 +1198,15 @@ class Match(BaseModel):
                 player_idx = response.player_idx,
                 dice_idxs = dice_idxs,
             ))
+        table = self.player_tables[response.player_idx]
+        active_charactor = table.charactors[table.active_charactor_idx]
+        target_charactors = table.charactors[
+            response.request.target_charactor_idx]
         cost = response.request.cost.original_value
         cost_value = CostValue(
-            position = ObjectPosition(
-                player_idx = response.player_idx,
-                area = ObjectPositionType.SYSTEM,
-                id = 0,
-            ),
+            position = active_charactor.position,
             cost = cost,
+            target_position = target_charactors.position
         )
         self._modify_value(
             value = cost_value,
@@ -1311,6 +1309,7 @@ class Match(BaseModel):
         cost_value = CostValue(
             position = skill.position,
             cost = cost,
+            target_position = None
         )
         self._modify_value(
             value = cost_value,
@@ -1354,6 +1353,7 @@ class Match(BaseModel):
         cost_value = CostValue(
             position = card.position,
             cost = cost,
+            target_position = None
         )
         self._modify_value(
             value = cost_value,
