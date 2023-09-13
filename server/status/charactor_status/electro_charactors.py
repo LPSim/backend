@@ -30,7 +30,7 @@ class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
     mark: Literal['Keqing']  # used to select right status
     buff_desc: str = (
         'When the charactor to which it is attached to deals '
-        'Physical Damage, it will be turned into XXX DMG, '
+        'Physical Damage, it will be turned into Electro DMG, '
         'and Electro DMG dealt by the charactor +1.'
     )
     version: Literal['3.3'] = '3.3'
