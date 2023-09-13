@@ -8,8 +8,10 @@ from ...event import SkillEndEventArguments
 
 from ...consts import DamageElementalType, DamageType, SkillType
 
-from ...modifiable_values import DamageDecreaseValue, DamageValue
-from .base import ShieldTeamStatus
+from ...modifiable_values import (
+    DamageDecreaseValue, DamageIncreaseValue, DamageValue
+)
+from .base import DefendTeamStatus, ShieldTeamStatus
 
 
 class FullPlate(ShieldTeamStatus):
@@ -92,4 +94,43 @@ class FullPlate(ShieldTeamStatus):
         return ret
 
 
-GeoTeamStatus = FullPlate | FullPlate
+class JadeScreen(DefendTeamStatus):
+    name: Literal['Jade Screen'] = 'Jade Screen'
+    desc: str = (
+        'When your active character receives at least 2 DMG: Decrease DMG '
+        'taken by 1.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+    min_damage_to_trigger: int = 2
+    max_in_one_time: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        If our Ningguang has talent, then increase our geo damage by 1
+        """
+        if value.position.player_idx != self.position.player_idx:
+            # not our player
+            return value
+        if value.damage_elemental_type != DamageElementalType.GEO:
+            # not geo damage
+            return value
+        charactors = match.player_tables[self.position.player_idx].charactors
+        ningguang_talent = False
+        for charactor in charactors:
+            if charactor.name == 'Ningguang' and charactor.talent is not None:
+                ningguang_talent = True
+                break
+        if not ningguang_talent:
+            # no ningguang with talent
+            return value
+        # increase damage
+        value.damage += 1
+        return value
+
+
+GeoTeamStatus = FullPlate | JadeScreen
