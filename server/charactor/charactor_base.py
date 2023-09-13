@@ -401,10 +401,11 @@ class TalentBase(CardBase):
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
-        For most talent cards, can quip only on active charactor, so no need
-        to specify targets.
+        For most talent cards, can quip only on active charactor.
         """
-        return []
+        table = match.player_tables[self.position.player_idx]
+        charactor = table.charactors[table.active_charactor_idx]
+        return [charactor.position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -415,10 +416,10 @@ class TalentBase(CardBase):
         For subclasses, inherit this and add other actions (e.g. trigger
         correcponding skills)
         """
-        assert target is None
+        assert target is not None
         ret: List[Actions] = []
-        table = match.player_tables[self.position.player_idx]
-        charactor = table.charactors[table.active_charactor_idx]
+        table = match.player_tables[target.player_idx]
+        charactor = table.charactors[target.charactor_idx]
         # check if need to remove current talent
         if charactor.talent is not None:
             ret.append(RemoveObjectAction(
