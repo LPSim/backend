@@ -281,16 +281,18 @@ class PrepareCharactorStatus(CharactorStatusBase):
             RemoveObjectAction | UseSkillAction | SkipPlayerActionAction
             | ActionEndAction
         ] = []
-        ret.append(RemoveObjectAction(
-            object_position = self.position,
-        ))
+        ret.append(RemoveObjectAction(object_position = self.position))
         assert charactor.name == self.charactor_name
         # use skill
         for skill in charactor.skills:
             if skill.name == self.skill_name:
+                # clear, should not remove self first
+                ret.clear()
                 ret.append(UseSkillAction(skill_position = skill.position))
                 # skip player action
                 ret.append(SkipPlayerActionAction())
+                # remove self
+                ret.append(RemoveObjectAction(object_position = self.position))
                 # action end action to switch player
                 ret.append(ActionEndAction(
                     action_label = PlayerActionLabels.SKILL,

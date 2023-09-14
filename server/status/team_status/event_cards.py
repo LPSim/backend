@@ -8,7 +8,7 @@ from ...action import Actions, ChangeObjectUsageAction, RemoveObjectAction
 
 from ...event import (
     CharactorDefeatedEventArguments, ActionEndEventArguments, 
-    MoveObjectEventArguments
+    MoveObjectEventArguments, SkillEndEventArguments
 )
 
 from ...modifiable_values import (
@@ -205,7 +205,7 @@ class EnduringRock(RoundTeamStatus):
         return value
 
     def event_handler_SKILL_END(
-        self, event: ActionEndEventArguments, match: Any
+        self, event: SkillEndEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction | RemoveObjectAction]:
         """
         if self charactor use skill, and did geo attack, check whether have
@@ -217,6 +217,11 @@ class EnduringRock(RoundTeamStatus):
             return []
         # reset did_geo_attack
         self.did_geo_attack = False
+        if (
+            self.position.player_idx != event.action.position.player_idx
+        ):  # pragma: no cover
+            # not self charactor use skill, do nothing
+            return []
         team_status = match.player_tables[self.position.player_idx].team_status
         for status in team_status:
             if issubclass(type(status), ShieldTeamStatus):
