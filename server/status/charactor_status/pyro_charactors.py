@@ -1,10 +1,14 @@
 from typing import Any, List, Literal
+from server.action import Actions
+from server.event import RoundPrepareEventArguments
 
 from ...struct import Cost
 
-from ...action import MakeDamageAction, RemoveObjectAction
+from ...action import CreateObjectAction, MakeDamageAction, RemoveObjectAction
 
-from ...event import MakeDamageEventArguments, SkillEndEventArguments
+from ...event import (
+    MakeDamageEventArguments, RoundEndEventArguments, SkillEndEventArguments
+)
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ObjectPositionType, SkillType
@@ -15,7 +19,7 @@ from ...modifiable_values import (
 )
 from .base import (
     DefendCharactorStatus, ElementalInfusionCharactorStatus, 
-    UsageCharactorStatus
+    RoundCharactorStatus, UsageCharactorStatus
 )
 
 
@@ -215,4 +219,95 @@ class NiwabiEnshou(ElementalInfusionCharactorStatus, UsageCharactorStatus):
         return ret + self.check_should_remove()
 
 
-PyroCharactorStatus = Stealth | ExplosiveSpark | NiwabiEnshou
+class Brilliance(RoundCharactorStatus):
+    name: Literal['Brilliance'] = 'Brilliance'
+    desc: str = (
+        'When the character uses a Charged Attack: Spend 1 less Pyro. '
+        '(Once every Round) End Phase: Attach Scarlet Seal to this character.'
+    )
+    version: Literal['3.8'] = '3.8'
+    usage: int = 2
+    max_usage: int = 2
+
+    decrease_cost_usage: int = 1
+    decrease_cost_max_usage: int = 1
+
+    def renew(self, new_status: 'Brilliance') -> None:
+        self.decrease_cost_usage = max(new_status.decrease_cost_usage, 
+                                       self.decrease_cost_usage)
+        self.decrease_cost_max_usage = max(new_status.decrease_cost_max_usage, 
+                                           self.decrease_cost_max_usage)
+        return super().renew(new_status)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.decrease_cost_usage = self.decrease_cost_max_usage
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+    ) -> CostValue:
+        if self.decrease_cost_usage <= 0:
+            # no usage left
+            return value
+        if not match.player_tables[self.position.player_idx].charge_satisfied:
+            # not charge attack
+            return value
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+            charactor_idx_same = True, target_area = ObjectPositionType.SKILL
+        ):
+            # not self use skill
+            return value
+        skill = match.get_object(value.position)
+        if skill.skill_type != SkillType.NORMAL_ATTACK:
+            # not normal attack
+            return value
+        # decrease cost
+        if value.cost.decrease_cost(DieColor.PYRO):  # pragma: no branch
+            if mode == 'REAL':
+                self.decrease_cost_usage -= 1
+        return value
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        return [CreateObjectAction(
+            object_name = 'Scarlet Seal',
+            object_position = self.position,
+            object_arguments = {}
+        )]
+
+
+class ScarletSeal(UsageCharactorStatus):
+    name: Literal['Scarlet Seal'] = 'Scarlet Seal'
+    desc: str = (
+        'When the character uses a Charged Attack: Damage dealt +2.'
+    )
+    version: Literal['3.8'] = '3.8'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            # not self use normal attack
+            return value
+        if not match.player_tables[self.position.player_idx].charge_satisfied:
+            # not charge attack
+            return value
+        # increase damage
+        assert mode == 'REAL'
+        self.usage -= 1
+        value.damage += 2
+        return value
+
+
+PyroCharactorStatus = (
+    Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
+)
