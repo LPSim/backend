@@ -308,6 +308,99 @@ class ScarletSeal(UsageCharactorStatus):
         return value
 
 
+class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):
+    name: Literal['Paramita Papilio'] = 'Paramita Papilio'
+    desc: str = (
+        'The character to which this is attached has their Physical DMG dealt '
+        'converted to Pyro DMG, and they will deal +1 Pyro DMG. When the '
+        'character to which this is attached uses a Charged Attack: Apply '
+        'Blood Blossom to target character.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 2
+    max_usage: int = 2
+
+    infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not self use damage skill
+            return value
+        if (
+            value.damage_elemental_type != DamageElementalType.PYRO
+        ):  # pragma: no cover
+            # not pyro damage
+            return value
+        # increase damage
+        value.damage += 1
+        return value
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        If self use charged attack, create blood blossom on target
+        """
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True,
+            charactor_idx_same = True, target_area = ObjectPositionType.SKILL
+        ):
+            # not self use skill
+            return []
+        if not (
+            event.action.skill_type == SkillType.NORMAL_ATTACK
+            and match.player_tables[self.position.player_idx].charge_satisfied
+        ):
+            # not charged attack
+            return []
+        return [CreateObjectAction(
+            object_position = event.action.target_position.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
+            object_name = 'Blood Blossom',
+            object_arguments = {}
+        )]
+
+
+# Usage status, will not disappear until usage is 0
+class BloodBlossom(UsageCharactorStatus):
+    name: Literal['Blood Blossom'] = 'Blood Blossom'
+    desc: str = (
+        'End Phase: Deal 1 Pyro DMG to the character to which this is '
+        'attached.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        assert self.usage > 0
+        self.usage -= 1
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = charactor.position,
+                    damage = 1,
+                    damage_elemental_type = DamageElementalType.PYRO,
+                    cost = Cost()
+                )
+            ]
+        )]
+
+
 PyroCharactorStatus = (
     Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
+    | ParamitaPapilio | BloodBlossom
 )
