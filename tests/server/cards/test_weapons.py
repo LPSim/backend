@@ -373,6 +373,232 @@ def test_a_thousand():
     assert match.state != MatchState.ERROR
 
 
+def test_vortex_vanquisher():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 1 0 15 14 13",
+            "skill 1 12 11 10",
+            "sw_char 3 9",
+            "skill 0 8 7 6",
+            "sw_char 0 5",
+            "skill 0 4 3 2",
+            "TEST 1 8 10 10 10 10 10 10 2",
+            "TEST 2 p0 usage 1",
+            "end",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "TEST 1 7 10 10 10 10 10 0 2",
+            "end",
+            "skill 1 15 14 13",
+            "TEST 1 2 10 10 10 10 7 0 2",
+            "sw_char 3 12",
+            "skill 0 11 10 9",
+            "sw_char 0 8",
+            "skill 1 7 6 5",
+            "end",
+            "skill 1 15 14 13",
+            "skill 0 12 11 10",
+            "TEST 1 2 10 10 8 1 0 0 2",
+            "end"
+        ],
+        [
+            "sw_card 3 2",
+            "choose 3",
+            "skill 1 15 14 13",
+            "TEST 1 10 10 10 10 10 10 10 6",
+            "skill 1 12 11 10",
+            "end",
+            "sw_char 2 15",
+            "skill 1 14 13 12",
+            "TEST 1 8 10 10 10 10 10 5 2",
+            "TEST 2 p0 usage 1",
+            "sw_char 1 11",
+            "sw_char 2 10",
+            "choose 1",
+            "TEST 1 8 10 10 10 10 10 0 2",
+            "skill 0 9 8 7",
+            "end",
+            "skill 1 15 14 13",
+            "skill 0 12 11 10",
+            "sw_char 0 9",
+            "sw_char 1 8",
+            "sw_char 0 7",
+            "end",
+            "sw_char 1 15",
+            "TEST 2 p0 usage 3",
+            "end",
+            "choose 0"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Candace*2
+        charactor:Diluc
+        charactor:Ningguang
+        Sweet Madame*15
+        Vortex Vanquisher*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:4], hps[4:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[pidx].team_status) == 1
+                assert match.player_tables[pidx].team_status[
+                    0].usage == int(cmd[-1])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_vortex_2():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 3",
+            "sw_char 2 15",
+            "skill 1 14 13 12",
+            "sw_char 3 11",
+            "TEST 1 10 10 10 7 10 7 10 10",
+            "card 3 2 10 9 8",
+            "card 2 0",
+            "skill 1 7 6",
+            "skill 0 5 4 3"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "sw_char 1 15",
+            "sw_char 2 14",
+            "skill 1 13 12 11",
+            "sw_char 1 10",
+            "TEST 1 10 10 10 8 10 1 10 10",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Candace*2
+        charactor:Chongyun
+        charactor:Hu Tao
+        Sweet Madame*15
+        Vortex Vanquisher*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:4], hps[4:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_vanilla_weapons()
     test_the_bell()
+    test_vortex_vanquisher()
+    test_vortex_2()

@@ -146,6 +146,12 @@ def test_enduring_rock():
             "sw_char 1 0",
             "skill 1 0 1 2",
             "TEST 3 p0 1 elemental resonance: enduring rock",
+            "end",
+            "card 6 0 15",
+            "skill 1 14 13 12",
+            "sw_char 2 11",
+            "skill 1 10 9 8",
+            "TEST 7 p1 usage 4 1",
             "end"
         ],
         [
@@ -173,7 +179,12 @@ def test_enduring_rock():
             "skill 1 0 1 2",
             "TEST 6 p1 5 rebellious shield",
             "end",
-            "end"
+            "end",
+            "card 5 0 15",
+            "sw_char 2 14",
+            "sw_char 1 13",
+            "skill 0 12 11 10",
+            "skill 2 9 8 7"
         ]
     ]
     agent_0 = InteractionAgent(
@@ -246,6 +257,14 @@ def test_enduring_rock():
                 assert len(match.player_tables[0].team_status) == 2
                 assert match.player_tables[0].team_status[0].usage == 1
                 assert match.player_tables[0].team_status[1].usage == 1
+            elif test_id == 7:
+                cmd = cmd.split()
+                pid = int(cmd[2][1])
+                usage = [int(x) for x in cmd[4:]]
+                status = match.player_tables[pid].team_status
+                assert len(status) == len(usage)
+                for i in range(len(status)):
+                    assert status[i].usage == usage[i]
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
