@@ -11,6 +11,8 @@ This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
+Progress: Charactors 37/54, Cards 91/199
+
 ## Usage
 
 This project works with Python 3.10, and requires packages listed in
