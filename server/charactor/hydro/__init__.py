@@ -6,15 +6,17 @@ from .tartaglia import Tartaglia, AbyssalMayhemHydrospout
 from .sangonomiya_kokomi import (
     SangonomiyaKokomi, BakeKurage, TamakushiCasket
 )
+from .candace import Candace, TheOverflow
 
 
 HydroCharactors = (
     Mona | Barbara | RhodeiaOfLoch | Xingqiu | Tartaglia | SangonomiyaKokomi
+    | Candace
 )
 SummonsOfHydroCharactors = (
     Reflection | MelodyLoop | Frog | Squirrel | Raptor | BakeKurage
 )
 HydroCharactorTalents = (
     ProphecyOfSubmersion | GloriousSeason | StreamingSurge | TheScentRemained
-    | AbyssalMayhemHydrospout | TamakushiCasket
+    | AbyssalMayhemHydrospout | TamakushiCasket | TheOverflow
 )

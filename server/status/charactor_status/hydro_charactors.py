@@ -18,7 +18,8 @@ from ...event import (
     RoundPrepareEventArguments, SkillEndEventArguments
 )
 from .base import (
-    CharactorStatusBase, ElementalInfusionCharactorStatus, RoundCharactorStatus
+    CharactorStatusBase, ElementalInfusionCharactorStatus, 
+    PrepareCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus
 )
 
 
@@ -334,4 +335,29 @@ class CeremonialGarment(RoundCharactorStatus):
         return [action]
 
 
-HydroCharactorStatus = Riptide | RangedStance | MeleeStance | CeremonialGarment
+class HeronShield(PrepareCharactorStatus, ShieldCharactorStatus):
+    name: Literal['Heron Shield'] = 'Heron Shield'
+    desc: str = (
+        'The next time this character acts, they will immediately use the '
+        'Skill Heron Strike. While preparing this Skill: Grant 2 Shield '
+        'points to the character to which this is attached.'
+    )
+    version: Literal['3.8'] = '3.8'
+    charactor_name: Literal['Candace'] = 'Candace'
+    skill_name: Literal['Heron Strike'] = 'Heron Strike'
+
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Do not remove when usage becomes zero
+        """
+        return []
+
+
+HydroCharactorStatus = (
+    Riptide | RangedStance | MeleeStance | CeremonialGarment | HeronShield
+)

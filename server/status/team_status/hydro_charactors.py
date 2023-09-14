@@ -1,9 +1,24 @@
-from typing import Any, Literal
+from typing import Any, List, Literal
 
-from ...consts import DamageElementalType, SkillType
+from ...event import (
+    ChooseCharactorEventArguments, RoundPrepareEventArguments, 
+    SkillEndEventArguments, SwitchCharactorEventArguments
+)
 
-from ...modifiable_values import DamageMultiplyValue
-from .base import DefendTeamStatus, ExtraAttackTeamStatus, UsageTeamStatus
+from ...struct import Cost, ObjectPosition
+
+from ...action import Actions, MakeDamageAction
+
+from ...consts import DamageElementalType, DamageType, SkillType, WeaponType
+
+from ...modifiable_values import (
+    DamageElementEnhanceValue, DamageIncreaseValue, DamageMultiplyValue, 
+    DamageValue
+)
+from .base import (
+    DefendTeamStatus, ElementalInfusionTeamStatus, ExtraAttackTeamStatus, 
+    RoundTeamStatus, UsageTeamStatus
+)
 
 
 class IllusoryBubble(UsageTeamStatus):
@@ -64,4 +79,187 @@ class RainSword(DefendTeamStatus):
     max_in_one_time: int = 1
 
 
-HydroCharactorTeamStatus = IllusoryBubble | RainbowBladework | RainSword
+class PrayerOfTheCrimsonCrown(ElementalInfusionTeamStatus, 
+                              RoundTeamStatus,
+                              ExtraAttackTeamStatus):
+    name: Literal[
+        'Prayer of the Crimson Crown'] = 'Prayer of the Crimson Crown'
+    desc: str = (
+        "Your characters' Normal Attacks deal +1 DMG. "
+        "Your Sword, Claymore, and Polearm-wielding characters' Physical DMG "
+        "is converted to Hydro DMG. After you switch characters, you deal 1 "
+        "Hydro DMG. (Once per Round). "
+    )
+    version: Literal['3.8'] = '3.8'
+    usage: int = 2
+    max_usage: int = 2
+
+    switch_damage_usage: int = 1
+    switch_damage_max_usage: int = 1
+    extra_damage_usage: int = 1
+    extra_damage_max_usage: int = 1
+
+    # enhance args
+    infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+
+    # extra attack args
+    trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
+    damage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+    decrease_usage: bool = False
+
+    # switch charactor attack related
+
+    def _attack(
+        self, match: Any, usage_type: Literal['SWITCH', 'EXTRA'], 
+        damage: int = 1
+    ) -> List[MakeDamageAction]:
+        """
+        attack enemy active charactor
+        """
+        if usage_type == 'SWITCH':
+            if self.switch_damage_usage <= 0:
+                # no usage
+                return []
+            self.switch_damage_usage -= 1
+        else:
+            assert usage_type == 'EXTRA'
+            if self.extra_damage_usage <= 0:
+                # no usage
+                return []
+            self.extra_damage_usage -= 1
+        active_charactor = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = active_charactor.position,
+                    damage = damage,
+                    damage_elemental_type = DamageElementalType.HYDRO,
+                    cost = Cost()
+                )
+            ]
+        )]
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: SwitchCharactorEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If self switch charactor, perform attack
+        """
+        if event.action.player_idx != self.position.player_idx:
+            # not self switch charactor
+            return []
+        return self._attack(match, 'SWITCH')
+
+    def event_handler_CHOOSE_CHARACTOR(
+        self, event: ChooseCharactorEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If self choose charactor (when ally defeated), perform attack
+        """
+        if event.action.player_idx != self.position.player_idx:
+            # not self switch charactor
+            return []
+        return self._attack(match, 'SWITCH')
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        reset usage
+        """
+        self.switch_damage_usage = self.switch_damage_max_usage
+        self.extra_damage_usage = self.extra_damage_max_usage
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    # renew
+
+    def renew(self, new_status: 'PrayerOfTheCrimsonCrown') -> None:
+        self.switch_damage_max_usage = max(self.switch_damage_max_usage,
+                                           new_status.switch_damage_max_usage)
+        self.switch_damage_usage = max(self.switch_damage_usage,
+                                       new_status.switch_damage_usage)
+        self.extra_damage_max_usage = max(self.switch_damage_max_usage,
+                                          new_status.extra_damage_max_usage)
+        self.extra_damage_usage = max(self.switch_damage_usage,
+                                      new_status.extra_damage_usage)
+        return super().renew(new_status)
+
+    # enhance and add damage
+
+    def charactor_is_using_right_weapon(
+        self, match: Any, position: ObjectPosition
+    ) -> bool:
+        """
+        If position charactor using effected three weapon, return True.
+        """
+        charactor = match.player_tables[position.player_idx].charactors[
+            position.charactor_idx]
+        return charactor.weapon_type in [
+            WeaponType.SWORD, WeaponType.CLAYMORE, WeaponType.POLEARM]
+
+    def value_modifier_DAMAGE_ELEMENT_ENHANCE(
+        self, value: DamageElementEnhanceValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageElementEnhanceValue:
+        """
+        If weapon type not right, do not enhance.
+        """
+        if not self.charactor_is_using_right_weapon(match, value.position):
+            return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode)
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        +1 our normal attack DMG.
+        """
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            # not corresponding charactor, do nothing
+            return value
+        # add damage
+        assert mode == 'REAL'
+        value.damage += 1
+        return value
+
+    # extra attack
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If candace have talent, and our charactor use normal attack, then
+        1 hydro damage.
+        """
+        if event.action.position.player_idx != self.position.player_idx:
+            # not our player
+            return []
+        if event.action.skill_type != SkillType.NORMAL_ATTACK:
+            # not normal attack
+            return []
+        charactors = match.player_tables[self.position.player_idx].charactors
+        candace_talent = False
+        for charactor in charactors:
+            if charactor.name == 'Candace' and charactor.talent is not None:
+                candace_talent = True
+                break
+        if not candace_talent:
+            # no candace with talent
+            return []
+        # make damage
+        return self._attack(match, 'EXTRA')
+
+
+HydroCharactorTeamStatus = (
+    IllusoryBubble | RainbowBladework | RainSword | PrayerOfTheCrimsonCrown
+)
