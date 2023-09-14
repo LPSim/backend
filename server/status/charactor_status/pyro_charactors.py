@@ -400,7 +400,16 @@ class BloodBlossom(UsageCharactorStatus):
         )]
 
 
+class DilucInfusion(ElementalInfusionCharactorStatus, 
+                    RoundCharactorStatus):
+    name: Literal['Pyro Elemental Infusion'] = 'Pyro Elemental Infusion'
+    mark: Literal['Diluc'] = 'Diluc'
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+
 PyroCharactorStatus = (
     Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
-    | ParamitaPapilio | BloodBlossom
+    | ParamitaPapilio | BloodBlossom | DilucInfusion
 )
