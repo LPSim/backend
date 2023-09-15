@@ -741,9 +741,199 @@ def test_lithic_spear():
     assert match.state != MatchState.ERROR
 
 
+def test_kings_squire():
+    cmd_records = [
+        [
+            "sw_card 3 1 2",
+            "choose 2",
+            "card 2 1 15 14 13",
+            "skill 0 12 11 10",
+            "sw_char 0 9",
+            "card 1 0",
+            "card 1 0 8",
+            "skill 1 7",
+            "end"
+        ],
+        [
+            "sw_card 1 2 3",
+            "choose 0",
+            "card 1 0 15 14 13",
+            "skill 1 12",
+            "sw_char 2 11",
+            "card 0 0",
+            "card 3 1 10",
+            "card 1 0 9 8",
+            "TEST 1 6 10 8 7 10 8",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Nahida
+        charactor:Collei
+        Where Is the Unseen Razor?*10
+        King's Squire*10
+        Floral Sidewinder*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_kings_squire_2():
+    cmd_records = [
+        [
+            "sw_card 4 2",
+            "choose 2",
+            "card 1 0 15 14 13",
+            "card 1 0",
+            "card 3 1 12",
+            "skill 1 11",
+            "sw_char 1 10",
+            "end"
+        ],
+        [
+            "sw_card 2 1",
+            "choose 0",
+            "card 1 0 15 14 13",
+            "card 2 0",
+            "card 3 1 12",
+            "sw_char 2 11",
+            "skill 1 10",
+            "TEST 2 card 0 cost 2",
+            "TEST 2 card 1 cost 4",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Fischl
+        charactor:Kamisato Ayaka
+        charactor:Collei
+        Where Is the Unseen Razor?*10
+        King's Squire*10
+        Floral Sidewinder*10
+        Kanten Senmyou Blessing*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 2:
+                cmd = cmd.split()
+                cidx = int(cmd[3])
+                cost = int(cmd[5])
+                card = match.player_tables[1].hands[cidx]
+                assert card.cost.total_dice_cost == cost
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_vanilla_weapons()
-    test_the_bell()
-    test_vortex_vanquisher()
-    test_vortex_2()
-    test_lithic_spear()
+    # test_vanilla_weapons()
+    # test_the_bell()
+    # test_vortex_vanquisher()
+    # test_vortex_2()
+    # test_lithic_spear()
+    test_kings_squire()
+    test_kings_squire_2()
