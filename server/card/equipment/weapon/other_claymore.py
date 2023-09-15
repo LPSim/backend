@@ -2,15 +2,40 @@
 
 from typing import Any, List, Literal
 
+from server.modifiable_values import DamageIncreaseValue
+
 from ....action import CreateObjectAction
 
 from ....event import SkillEndEventArguments
 
-from .base import RoundEffectWeaponBase
+from .base import RoundEffectWeaponBase, WeaponBase
 
 from ....struct import Cost, ObjectPosition
 
 from ....consts import CostLabels, ObjectPositionType, ObjectType, WeaponType
+
+
+class WolfsGravestone(WeaponBase):
+    name: Literal["Wolf's Gravestone"] = "Wolf's Gravestone"
+    desc: str = (
+        "The character deals +1 DMG. Deal +2 additional DMG if the target's "
+        'remaining HP is equal or less than 6.'
+    )
+    cost: Cost = Cost(same_dice_number = 3)
+    version: Literal['3.3'] = '3.3'
+    weapon_type: WeaponType = WeaponType.CLAYMORE
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        assert value.target_position.area == ObjectPositionType.CHARACTOR
+        charactor = match.get_object(value.target_position)
+        if charactor.hp <= 6:
+            self.damage_increase = 3
+        super().value_modifier_DAMAGE_INCREASE(value, match, mode)
+        self.damage_increase = 1
+        return value
 
 
 class TheBell(RoundEffectWeaponBase):
@@ -56,4 +81,4 @@ class TheBell(RoundEffectWeaponBase):
         )]
 
 
-Claymores = TheBell | TheBell
+Claymores = WolfsGravestone | TheBell
