@@ -1538,8 +1538,9 @@ class Match(BaseModel):
                     blacklist.append(card)
             if len(draw_cards) < number and action.draw_if_filtered_not_enough:
                 # draw blacklist cards
-                draw_cards += blacklist[:number - len(draw_cards)]
-                blacklist = blacklist[number - len(draw_cards):]
+                length = number - len(draw_cards)
+                draw_cards += blacklist[:length]
+                blacklist = blacklist[length:]
         else:
             # no filter
             draw_cards = table.table_deck[:number]
