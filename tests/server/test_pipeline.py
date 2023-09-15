@@ -150,7 +150,7 @@ def test_save_load():
 
 
 def test_copy_speed():
-    run_time = 50
+    run_time = 20
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)

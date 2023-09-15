@@ -1097,7 +1097,7 @@ def test_send_off_new_and_old():
             "sw_char 0 0",
             "sw_char 1 0",
             "end",
-            "card 2 1 0 1",
+            "card 2 0 0 1",
             "TEST 3 p1 usage 2",
             "end"
         ],
@@ -1109,11 +1109,11 @@ def test_send_off_new_and_old():
             "card 0 0 0 1",
             "skill 0 0 1 2",
             "skill 0 0 1 2",
-            "card 0 1 0 1",
-            "TEST 3 p0 usage 1 0",
+            "card 0 0 0 1",
+            "TEST 3 p0 usage 0",
             "TEST 0 1 0 1",
-            "card 0 1 0 1",
-            "TEST 3 p0 usage 1",
+            "card 0 0 0 1",
+            "TEST 3 p0 usage",
             "end",
             "skill 2 0 1 2 3 4"
         ]
@@ -1312,5 +1312,5 @@ if __name__ == '__main__':
     # test_heavy_strike_2()
     # test_friendship_eternal()
     # test_unseen_razor()
-    # test_send_off_new_and_old()
-    test_plunge_strike()
+    test_send_off_new_and_old()
+    # test_plunge_strike()

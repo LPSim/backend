@@ -97,3 +97,8 @@ def get_test_id_from_command(agent: InteractionAgent | InteractionAgent_V1_0):
         agent.commands = agent.commands[1:]
         return int(command.split(' ')[1])
     return 0
+
+
+def enable_logging():  # pragma: no cover
+    import logging
+    logging.basicConfig(level = logging.INFO)
