@@ -9,6 +9,7 @@ from .hydro_charactors import HydroCharactorStatus
 from .cryo_charactors import CryoCharactorStatus
 from .foods import FoodStatus
 from .artifacts import ArtifactCharactorStatus
+from .weapons import WeaponCharactorStatus
 from .event_cards import EventCardCharactorStatus
 
 
@@ -17,7 +18,7 @@ CharactorStatus = (
     | ElectroCharactorStatus | AnemoCharactorStatus | HydroCharactorStatus
     | CryoCharactorStatus
     | SystemCharactorStatus | FoodStatus | ArtifactCharactorStatus
-    | EventCardCharactorStatus
+    | WeaponCharactorStatus | EventCardCharactorStatus
     # finally old versions
     | OldVersionCharactorStatus
 )

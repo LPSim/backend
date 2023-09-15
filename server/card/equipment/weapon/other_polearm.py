@@ -1,17 +1,19 @@
 
 from typing import Any, List, Literal
 
-from ....action import ChangeObjectUsageAction
+from server.action import Actions
+
+from ....action import ChangeObjectUsageAction, CreateObjectAction
 from ....event import SkillEndEventArguments
 
 from server.modifiable_values import DamageIncreaseValue
 from ....status.charactor_status.base import ShieldCharactorStatus
 from ....status.team_status.base import ShieldTeamStatus
 
-from ....consts import ObjectPositionType, SkillType, WeaponType
+from ....consts import FactionType, ObjectPositionType, SkillType, WeaponType
 
 from ....struct import Cost
-from .base import RoundEffectWeaponBase
+from .base import RoundEffectWeaponBase, WeaponBase
 
 
 class VortexVanquisher(RoundEffectWeaponBase):
@@ -97,4 +99,40 @@ class VortexVanquisher(RoundEffectWeaponBase):
         return []
 
 
-Polearms = VortexVanquisher | VortexVanquisher
+class LithicSpear(WeaponBase):
+    name: Literal['Lithic Spear'] = 'Lithic Spear'
+    desc: str = (
+        'The character deals +1 DMG. '
+        'When played: For each party member from Liyue, grant 1 Shield point '
+        'to the character to which this is attached. (Max 3 points)'
+    )
+    cost: Cost = Cost(same_dice_number = 3)
+    version: Literal['3.7'] = '3.7'
+    weapon_type: WeaponType = WeaponType.POLEARM
+
+    def generate_shield(self, count: int) -> List[Actions]:
+        count = min(count, 3)
+        if count > 0:
+            return [CreateObjectAction(
+                object_position = self.position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS),
+                object_name = self.name,
+                object_arguments = {
+                    'usage': count,
+                    'max_usage': count,
+                }
+            )]
+        return []
+
+    def equip(self, match: Any) -> List[Actions]:
+        """
+        Generate shield
+        """
+        count = 0
+        for c in match.player_tables[self.position.player_idx].charactors:
+            if FactionType.LIYUE in c.faction:
+                count += 1
+        return self.generate_shield(count)
+
+
+Polearms = VortexVanquisher | VortexVanquisher | LithicSpear
