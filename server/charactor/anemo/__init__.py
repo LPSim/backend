@@ -8,11 +8,18 @@ from .kaedehara_kazuha import (
 )
 
 
-AnemoCharactors = Venti | MaguuKenki | KaedeharaKazuha
+AnemoCharactors = (
+    Venti | KaedeharaKazuha 
+    # finally monsters
+    | MaguuKenki
+)
 SummonsOfAnemoCharactors = (
-    Stormeye | ShadowswordGallopingFrost | ShadowswordLoneGale 
-    | AutumnWhirlwind
+    Stormeye | AutumnWhirlwind
+    # finally monsters
+    | ShadowswordGallopingFrost | ShadowswordLoneGale 
 )
 AnemoCharactorTalents = (
-    EmbraceOfWinds | TranscendentAutomaton | PoeticsOfFuubutsu
+    EmbraceOfWinds | PoeticsOfFuubutsu
+    # finally monsters
+    | TranscendentAutomaton
 )

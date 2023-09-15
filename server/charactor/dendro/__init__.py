@@ -3,8 +3,8 @@ from .collei import Collei, FloralSidewinder, CuileinAnbar
 from .tighnari import Tighnari, KeenSight, ClusterbloomArrow
 
 
-DendroCharactors = Nahida | Collei | Tighnari
+DendroCharactors = Collei | Tighnari | Nahida
 SummonsOfDendroCharactors = CuileinAnbar | ClusterbloomArrow
 DendroCharactorTalents = (
-    TheSeedOfStoredKnowledge | FloralSidewinder | KeenSight
+    FloralSidewinder | KeenSight | TheSeedOfStoredKnowledge
 )

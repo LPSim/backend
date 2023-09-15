@@ -8,4 +8,4 @@ from .equipment.artifact import Artifacts
 from .equipment.weapon import Weapons
 
 
-Cards = EventCards | Supports | Artifacts | Weapons
+Cards = Weapons | Artifacts | Supports | EventCards

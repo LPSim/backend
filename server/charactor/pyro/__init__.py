@@ -9,11 +9,14 @@ from .diluc import Diluc, FlowingFlame
 
 
 PyroCharactors = (
-    FatuiPyroAgent | Klee | Bennett | Yoimiya | Xiangling | Yanfei | HuTao
-    | Diluc
+    Diluc | Xiangling | Bennett | Yoimiya | Klee | HuTao | Yanfei
+    # finally monsters
+    | FatuiPyroAgent
 )
 SummonsOfPyroCharactors = Guoba | Guoba
 PyroCharactorTalents = (
-    PaidinFull | PoundingSurprise | GrandExpectation | NaganoharaMeteorSwarm
-    | Crossfire | RightOfFinalInterpretation | SanguineRouge | FlowingFlame
+    FlowingFlame | Crossfire | GrandExpectation | NaganoharaMeteorSwarm
+    | PoundingSurprise | SanguineRouge | RightOfFinalInterpretation
+    # finally monsters
+    | PaidinFull
 )

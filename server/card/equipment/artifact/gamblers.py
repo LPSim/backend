@@ -63,4 +63,4 @@ class GamblersEarrings(ArtifactBase):
         )]
 
 
-OtherArtifacts = GamblersEarrings | GamblersEarrings
+Gamblers = GamblersEarrings | GamblersEarrings

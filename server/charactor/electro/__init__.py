@@ -8,14 +8,20 @@ from .yae_miko import YaeMiko, TheShrinesSacredShade, SesshouSakura
 
 
 ElectroCharactors = (
-    Fischl | Keqing | ElectroHypostasis | RaidenShogun | YaeMiko
+    Fischl | Keqing | RaidenShogun | YaeMiko
+    # finally monsters
+    | ElectroHypostasis
 )
 SummonsOfElectroCharactors = (
-    Oz | ChainsOfWardingThunder | EyeOfStormyJudgment | SesshouSakura
+    Oz | EyeOfStormyJudgment | SesshouSakura
+    # finally monsters
+    | ChainsOfWardingThunder
 )
 ElectroCharactorTalents = (
-    StellarPredator | ThunderingPenance | AbsorbingPrism | WishesUnnumbered
+    StellarPredator | ThunderingPenance | WishesUnnumbered
     | TheShrinesSacredShade
+    # finally monsters
+    | AbsorbingPrism
     # special card for Keqing, treated as a talent card.
     | LightningStiletto
 )

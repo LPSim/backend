@@ -70,4 +70,4 @@ class AmosBow(RoundEffectWeaponBase):
         return value
 
 
-Bows = KingsSquire | AmosBow
+Bows = AmosBow | KingsSquire

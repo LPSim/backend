@@ -4,8 +4,14 @@ from .stonehide_lawachurl import StonehideLawachurl, StonehideReforged
 from .ningguang import Ningguang, StrategicReserve
 
 
-GeoCharactors = Noelle | AratakiItto | StonehideLawachurl | Ningguang
+GeoCharactors = (
+    Ningguang | Noelle | AratakiItto
+    # finally monsters
+    | StonehideLawachurl
+)
 SummonsOfGeoCharactors = Ushi | Ushi
 GeoCharactorTalents = (
-    IGotYourBack | AratakiIchiban | StonehideReforged | StrategicReserve
+    StrategicReserve | IGotYourBack | AratakiIchiban 
+    # finally monsters
+    | StonehideReforged
 )

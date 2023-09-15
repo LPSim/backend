@@ -10,13 +10,14 @@ from .kamisato_ayaka import (
 
 
 CryoCharactors = (
-    Kaeya | Shenhe | Eula | Chongyun | Ganyu | Qiqi | KamisatoAyaka
+    Ganyu | Kaeya | Chongyun | KamisatoAyaka | Eula | Shenhe | Qiqi
 )
 SummonsOfCryoCharactors = (
-    TalismanSpirit | TalismanSpirit | LightfallSword | SacredCryoPearl
-    | HeraldOfFrost | FrostflakeSekiNoTo
+    SacredCryoPearl | FrostflakeSekiNoTo | LightfallSword | TalismanSpirit
+    | HeraldOfFrost
 )
 CryoCharactorTalents = (
-    ColdBloodedStrike | MysticalAbandon | WellspringOfWarLust | SteadyBreathing
-    | UndividedHeart | RiteOfResurrection | KantenSenmyouBlessing
+    UndividedHeart | ColdBloodedStrike | SteadyBreathing 
+    | KantenSenmyouBlessing | WellspringOfWarLust | MysticalAbandon
+    | RiteOfResurrection
 )

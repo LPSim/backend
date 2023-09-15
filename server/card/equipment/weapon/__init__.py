@@ -8,8 +8,8 @@ from .old_version import OldVersionWeapons
 
 
 Weapons = (
-    VanillaWeapon | SacrificialWeapons | Claymores | Catalysts | Polearms 
-    | Bows
+    VanillaWeapon | SacrificialWeapons | Catalysts | Bows | Claymores 
+    | Polearms
     # Finally old version weapons
     | OldVersionWeapons
 )

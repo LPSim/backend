@@ -35,24 +35,26 @@ from .old_version import (
 
 
 Charactors = (
-    Mob | PhysicalMob | MobMage | ElectroCharactors | HydroCharactors
-    | DendroCharactors | GeoCharactors | PyroCharactors | AnemoCharactors
-    | CryoCharactors
+    CryoCharactors | HydroCharactors | PyroCharactors | ElectroCharactors
+    | AnemoCharactors | GeoCharactors | DendroCharactors
+    # Mobs
+    | Mob | PhysicalMob | MobMage
     # finally old charactors
     | OldCharactors
 )
 SummonsOfCharactors = (
-    SummonsOfElectroCharactors | SummonsOfHydroCharactors
-    | SummonsOfDendroCharactors | SummonsOfGeoCharactors
-    | SummonsOfAnemoCharactors | SummonsOfCryoCharactors
-    | SummonsOfPyroCharactors
+    SummonsOfCryoCharactors | SummonsOfHydroCharactors
+    | SummonsOfPyroCharactors | SummonsOfElectroCharactors
+    | SummonsOfAnemoCharactors | SummonsOfGeoCharactors
+    | SummonsOfDendroCharactors
     # Finally old summons
     | OldSummons
 )
 CharactorTalents = (
-    ElectroCharactorTalents | HydroCharactorTalents | DendroCharactorTalents
-    | GeoCharactorTalents | PyroCharactorTalents | AnemoCharactorTalents
-    | CryoCharactorTalents
+    CryoCharactorTalents | HydroCharactorTalents
+    | PyroCharactorTalents | ElectroCharactorTalents
+    | AnemoCharactorTalents | GeoCharactorTalents
+    | DendroCharactorTalents
     # finally old talents
     | OldTalents
 )

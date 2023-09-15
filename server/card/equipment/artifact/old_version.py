@@ -4,7 +4,7 @@ from ....action import Actions
 
 from ....struct import Cost
 from .element_artifacts import SmallElementalArtifact as SEA_4_0
-from .others import GamblersEarrings as GE_3_8
+from .gamblers import GamblersEarrings as GE_3_8
 
 
 class SmallElementalArtifact_3_3(SEA_4_0):
@@ -24,4 +24,4 @@ class GamblersEarrings_3_3(GE_3_8):
         return []
 
 
-OldVersionArtifacts = SmallElementalArtifact_3_3 | GamblersEarrings_3_3
+OldVersionArtifacts = GamblersEarrings_3_3 | SmallElementalArtifact_3_3

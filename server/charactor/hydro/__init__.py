@@ -10,13 +10,18 @@ from .candace import Candace, TheOverflow
 
 
 HydroCharactors = (
-    Mona | Barbara | RhodeiaOfLoch | Xingqiu | Tartaglia | SangonomiyaKokomi
-    | Candace
+    Barbara | Xingqiu | Mona | Tartaglia | SangonomiyaKokomi | Candace
+    # finally monsters
+    | RhodeiaOfLoch
 )
 SummonsOfHydroCharactors = (
-    Reflection | MelodyLoop | Frog | Squirrel | Raptor | BakeKurage
+    MelodyLoop | Reflection | BakeKurage 
+    # finally monsters
+    | Frog | Squirrel | Raptor
 )
 HydroCharactorTalents = (
-    ProphecyOfSubmersion | GloriousSeason | StreamingSurge | TheScentRemained
+    GloriousSeason | TheScentRemained | ProphecyOfSubmersion
     | AbyssalMayhemHydrospout | TamakushiCasket | TheOverflow
+    # finally monsters
+    | StreamingSurge
 )

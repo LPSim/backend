@@ -135,4 +135,4 @@ class LithicSpear(WeaponBase):
         return self.generate_shield(count)
 
 
-Polearms = VortexVanquisher | VortexVanquisher | LithicSpear
+Polearms = LithicSpear | VortexVanquisher

@@ -6,8 +6,8 @@ from .old_version import OldVersionEventCards
 
 
 EventCards = (
-    OtherEventCards | ArcaneLegendCards | ElementResonanceCards 
-    | NationResonanceCards | FoodCards
+    ArcaneLegendCards | ElementResonanceCards | NationResonanceCards 
+    | OtherEventCards | FoodCards
     # finally old version cards
     | OldVersionEventCards
 )

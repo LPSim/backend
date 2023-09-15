@@ -1,11 +1,11 @@
 from .element_artifacts import ElementArtifacts
 from .millelith import MillelithArtifacts
-from .others import OtherArtifacts
+from .gamblers import Gamblers
 
 from .old_version import OldVersionArtifacts
 
 Artifacts = (
-    ElementArtifacts | MillelithArtifacts | OtherArtifacts
+    MillelithArtifacts | Gamblers | ElementArtifacts
     # finally old versions
     | OldVersionArtifacts
 )
