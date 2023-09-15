@@ -8,7 +8,9 @@ from ....struct import ObjectPosition, Cost
 
 from ....action import Actions, MoveObjectAction, RemoveObjectAction
 
-from ....consts import CostLabels, ObjectPositionType, ObjectType, WeaponType
+from ....consts import (
+    CostLabels, DamageElementalType, ObjectPositionType, ObjectType, WeaponType
+)
 from ....object_base import CardBase
 
 
@@ -112,6 +114,12 @@ class WeaponBase(CardBase):
             self.position, match, None
         ):
             # not current charactor using skill
+            return value
+        if value.damage_from_element_reaction:
+            # from elemental reaction
+            return value
+        if value.damage_elemental_type == DamageElementalType.PIERCING:
+            # piercing damage
             return value
         # modify damage
         value.damage += self.damage_increase
