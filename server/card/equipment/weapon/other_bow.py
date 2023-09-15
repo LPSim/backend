@@ -12,7 +12,7 @@ from .base import RoundEffectWeaponBase, WeaponBase
 
 
 class KingsSquire(WeaponBase):
-    name: Literal["King's Squire"] = "King's Squire"
+    name: Literal["King's Squire"]
     desc: str = (
         'The character deals +1 DMG. When played: The character to which this '
         'is attached will spend 2 less Elemental Dice next time they use an '
@@ -35,7 +35,7 @@ class KingsSquire(WeaponBase):
 
 
 class AmosBow(RoundEffectWeaponBase):
-    name: Literal["Amos' Bow"] = "Amos' Bow"
+    name: Literal["Amos' Bow"]
     desc: str = (
         'The character deals +1 DMG. When the character uses a Skill that '
         'costs at least a total of 5 Elemental Dice and Energy, +2 additional '

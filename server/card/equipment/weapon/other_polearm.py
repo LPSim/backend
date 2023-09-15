@@ -100,7 +100,7 @@ class VortexVanquisher(RoundEffectWeaponBase):
 
 
 class LithicSpear(WeaponBase):
-    name: Literal['Lithic Spear'] = 'Lithic Spear'
+    name: Literal['Lithic Spear']
     desc: str = (
         'The character deals +1 DMG. '
         'When played: For each party member from Liyue, grant 1 Shield point '

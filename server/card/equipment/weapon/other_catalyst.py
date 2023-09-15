@@ -65,7 +65,7 @@ class AThousandFloatingDreams(RoundEffectWeaponBase):
 
 
 class FruitOfFulfillment(WeaponBase):
-    name: Literal['Fruit of Fulfillment'] = 'Fruit of Fulfillment'
+    name: Literal['Fruit of Fulfillment']
     desc: str = '''The character deals +1 DMG. When played: Draw 2 cards.'''
     cost: Cost = Cost(any_dice_number = 3)
     version: Literal['3.8'] = '3.8'
