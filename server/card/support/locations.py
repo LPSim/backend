@@ -3,15 +3,16 @@ from server.dice import Dice
 
 from server.action import (
     Actions, CreateDiceAction, DrawCardAction, 
-    GenerateRerollDiceRequestAction, RemoveDiceAction, RemoveObjectAction
+    GenerateRerollDiceRequestAction, MakeDamageAction, RemoveDiceAction, 
+    RemoveObjectAction
 )
-from ...modifiable_values import CostValue, RerollValue
+from ...modifiable_values import CostValue, DamageValue, RerollValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, DieColor, 
-    ObjectPositionType
+    ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, 
+    DamageElementalType, DamageType, DieColor, ObjectPositionType
 )
 from .base import RoundEffectSupportBase, SupportBase
 
@@ -79,6 +80,95 @@ class KnightsOfFavoniusLibrary(LocationBase):
         return value
 
 
+class WangshuInn(LocationBase):
+    name: Literal['Wangshu Inn']
+    desc: str = (
+        'End Phase: Heal the most injured character on standby for 2 HP.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        If back charactor not full hp, heal 2 hp, and check if should remove.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return []
+        table = match.player_tables[self.position.player_idx]
+        charactors = table.charactors
+        active = table.active_charactor_idx
+        charactor = None
+        for cnum, c in enumerate(charactors):
+            if cnum == active or c.is_defeated:
+                # active or defeated, do nothing
+                continue
+            if charactor is None or c.damage_taken > charactor.damage_taken:
+                charactor = c
+        if charactor is None:
+            # no charactor on standby, do nothing
+            return []
+        if charactor.damage_taken <= 0:
+            # full hp, do nothing
+            return []
+        self.usage -= 1
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            ],
+        )] + self.check_should_remove()
+
+
+class FavoniusCathedral(LocationBase):
+    name: Literal['Favonius Cathedral']
+    desc: str = '''End Phase: Heal your active character for 2 HP.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        If active charactor not full hp, heal 2 hp, and check if should remove.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return []
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        if charactor.damage_taken <= 0:
+            # full hp, do nothing
+            return []
+        self.usage -= 1
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            ],
+        )] + self.check_should_remove()
+
+
 class Tenshukaku(LocationBase):
     name: Literal['Tenshukaku']
     desc: str = (
@@ -115,6 +205,49 @@ class Tenshukaku(LocationBase):
             number = 1,
             color = DieColor.OMNI
         )]
+
+
+class SangonomiyaShrine(LocationBase):
+    name: Literal['Sangonomiya Shrine']
+    desc: str = '''End Phase: Heal all your characters for 1 HP.'''
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        If active charactor not full hp, heal 2 hp, and check if should remove.
+        """
+        if self.position.area != 'SUPPORT':
+            # not in support area, do nothing
+            return []
+        charactors = match.player_tables[self.position.player_idx].charactors
+        ret: List[MakeDamageAction] = []
+        for charactor in charactors:
+            if charactor.is_defeated or charactor.damage_taken <= 0:
+                # full hp or defeated, do nothing
+                continue
+            ret.append(MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.HEAL,
+                        target_position = charactor.position,
+                        damage = -1,
+                        damage_elemental_type = DamageElementalType.HEAL,
+                        cost = self.cost.copy()
+                    )
+                ],
+            ))
+        if len(ret) == 0:
+            # no charactor to heal, do nothing
+            return []
+        self.usage -= 1
+        return ret + self.check_should_remove()
 
 
 class SumeruCity(RoundEffectLocationBase):
@@ -262,6 +395,7 @@ class Vanarana(LocationBase):
 
 
 Locations = (
-    LiyueHarborWharf | KnightsOfFavoniusLibrary | Tenshukaku | SumeruCity 
+    LiyueHarborWharf | KnightsOfFavoniusLibrary | WangshuInn 
+    | FavoniusCathedral | Tenshukaku | SangonomiyaShrine | SumeruCity 
     | Vanarana
 )
