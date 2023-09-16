@@ -21,7 +21,7 @@ class BlusteringBlade(BB_3_4):
         actions = super().get_actions(match)
         attack_actions = super(BB_3_4, self).get_actions(match)
         assert len(actions) == 2
-        summon_action = actions[1]
+        summon_action = actions[0]
         assert summon_action.type == ActionTypes.CREATE_OBJECT
         attack_actions.append(summon_action)
         return attack_actions
@@ -38,7 +38,7 @@ class FrostyAssault(FA_3_4):
         actions = super().get_actions(match)
         attack_actions = super(FA_3_4, self).get_actions(match)
         assert len(actions) == 2
-        summon_action = actions[1]
+        summon_action = actions[0]
         assert summon_action.type == ActionTypes.CREATE_OBJECT
         attack_actions.append(summon_action)
         return attack_actions

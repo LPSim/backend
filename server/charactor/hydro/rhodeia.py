@@ -128,15 +128,10 @@ class RhodeiaElementSkill(ElementalSkillBase):
         create object
         """
         name_idxs = self.get_next_summon_names(match, self.summon_number)
-        ret: List[ChargeAction | CreateObjectAction] = [
-            ChargeAction(
-                player_idx = self.position.player_idx,
-                charactor_idx = self.position.charactor_idx,
-                charge = 1
-            )
-        ]
+        ret: List[ChargeAction | CreateObjectAction] = []
         for idx in name_idxs:
             ret.append(self.create_summon(mimic_names[idx]))
+        ret.append(self.charge_self(1))
         return ret
 
 

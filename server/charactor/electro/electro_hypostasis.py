@@ -6,7 +6,7 @@ from ...modifiable_values import CostValue, DamageValue
 from ...event import GameStartEventArguments, RoundPrepareEventArguments
 
 from ...action import (
-    ActionTypes, Actions, CreateObjectAction, MakeDamageAction
+    Actions, CreateObjectAction, MakeDamageAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -119,11 +119,8 @@ class RockPaperScissorsComboScissors(ElementalSkillBase):
         """
         Attack and create prepare skill
         """
-        ret = super().get_actions(match)
-        assert len(ret) == 2
-        assert ret[0].type == ActionTypes.CHARGE
-        ret = ret[1:]
-        return ret + [
+        return [
+            self.attack_opposite_active(match, self.damage, self.damage_type),
             self.create_charactor_status('Rock-Paper-Scissors Combo: Paper')
         ]
 
@@ -145,11 +142,9 @@ class RockPaperScissorsComboPaper(ElementalSkillBase):
         """
         Do not charge.
         """
-        ret = super().get_actions(match)
-        assert len(ret) == 2
-        assert ret[0].type == ActionTypes.CHARGE
-        ret = ret[1:]
-        return ret
+        return [
+            self.attack_opposite_active(match, self.damage, self.damage_type),
+        ]
 
 
 class LightningLockdown(ElementalBurstBase):

@@ -79,8 +79,8 @@ class SkillBase(ObjectBase):
         2. ChargeAction to charge the active charactor by 1.
         """
         return [
+            self.attack_opposite_active(match, self.damage, self.damage_type),
             self.charge_self(1),
-            self.attack_opposite_active(match, self.damage, self.damage_type)
         ]
 
     def event_handler_USE_SKILL(
@@ -151,6 +151,7 @@ class SkillBase(ObjectBase):
     def attack_opposite_active(
         self, match: Any, damage: int, damage_type: DamageElementalType,
     ) -> MakeDamageAction:
+        assert damage > 0
         target_table = match.player_tables[1 - self.position.player_idx]
         target_charactor_idx = target_table.active_charactor_idx
         target_charactor = target_table.charactors[target_charactor_idx]
@@ -302,11 +303,10 @@ class ElementalBurstBase(SkillBase):
         When using elemental burst, the charge of the active charactor will be
         reduced by `self.charge`.
         """
-        actions = super().get_actions(match)
-        for action in actions:
-            if isinstance(action, ChargeAction):
-                action.charge = -self.cost.charge
-        return actions
+        return [
+            self.charge_self(-self.cost.charge),
+            self.attack_opposite_active(match, self.damage, self.damage_type),
+        ]
 
 
 class AOESkillBase(SkillBase):
@@ -328,18 +328,36 @@ class AOESkillBase(SkillBase):
         self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
         self.desc = self.desc.replace('_BACK_', str(self.back_damage))
 
-    def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        assert len(ret) > 0
-        assert ret[-1].type == 'MAKE_DAMAGE'
+    def attack_opposite_active(
+        self, match: Any, damage: int, damage_type: DamageElementalType,
+    ) -> MakeDamageAction:
+        """
+        For AOE, modify attack opposite to also attack back charactors
+        """
         target_table = match.player_tables[1 - self.position.player_idx]
+        target_charactor_idx = target_table.active_charactor_idx
+        target_charactor = target_table.charactors[target_charactor_idx]
         charactors = target_table.charactors
+        damage_action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = target_charactor.position,
+                    damage = damage,
+                    damage_elemental_type = damage_type,
+                    cost = self.cost.copy(),
+                )
+            ],
+        )
         for cid, charactor in enumerate(charactors):
             if cid == target_table.active_charactor_idx:
                 continue
             if charactor.is_defeated:
                 continue
-            ret[-1].damage_value_list.append(
+            damage_action.damage_value_list.append(
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,
@@ -349,7 +367,7 @@ class AOESkillBase(SkillBase):
                     cost = self.cost.copy(),
                 )
             )
-        return ret
+        return damage_action
 
 
 class PassiveSkillBase(SkillBase):

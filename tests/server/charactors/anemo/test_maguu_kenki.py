@@ -257,3 +257,4 @@ def test_maguu_kenki_old():
 
 if __name__ == '__main__':
     test_maguu_kenki_old()
+    test_maguu_kenki()

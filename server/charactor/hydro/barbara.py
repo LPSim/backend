@@ -6,7 +6,7 @@ from ...modifiable_values import CostValue, DamageValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...action import (
-    Actions, ChargeAction, MakeDamageAction
+    Actions, MakeDamageAction
 )
 from ...struct import Cost
 
@@ -112,11 +112,7 @@ class ShiningMiracle(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret: List[Actions] = [ChargeAction(
-            player_idx = self.position.player_idx,
-            charactor_idx = self.position.charactor_idx,
-            charge = -3,
-        )]
+        ret: List[Actions] = [self.charge_self(-3)]
         charactors = match.player_tables[self.position.player_idx].charactors
         heal_action = MakeDamageAction(
             source_player_idx = self.position.player_idx,

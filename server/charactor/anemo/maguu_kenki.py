@@ -97,9 +97,10 @@ class BlusteringBlade(ElementalSkillBase):
         """
         only create object
         """
-        actions = super().get_actions(match)
-        assert len(actions) == 2
-        return actions[:1] + [self.create_summon('Shadowsword: Lone Gale')]
+        return [
+            self.create_summon('Shadowsword: Lone Gale'),
+            self.charge_self(1)
+        ]
 
 
 class FrostyAssault(ElementalSkillBase):
@@ -116,10 +117,10 @@ class FrostyAssault(ElementalSkillBase):
         """
         only create object
         """
-        actions = super().get_actions(match)
-        assert len(actions) == 2
-        return actions[:1] + [
-            self.create_summon('Shadowsword: Galloping Frost')]
+        return [
+            self.create_summon('Shadowsword: Galloping Frost'),
+            self.charge_self(1)
+        ]
 
 
 class PseudoTenguSweeper(ElementalBurstBase):
