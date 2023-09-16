@@ -6,17 +6,19 @@ from ...dice import Dice
 
 from .base import RoundEffectSupportBase, SupportBase
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, CostLabels, DieColor, ElementType, 
-    ELEMENT_TO_DIE_COLOR, ObjectPositionType, SkillType
+    ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DieColor, 
+    ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
+    ObjectPositionType, SkillType
 )
-from ...struct import Cost
+from ...struct import Cost, ObjectPosition
 from ...action import (
     Actions, ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
-    DrawCardAction, RemoveDiceAction, RemoveObjectAction
+    DrawCardAction, MoveObjectAction, RemoveDiceAction, RemoveObjectAction
 )
 from ...event import (
     ActionEndEventArguments, ChangeObjectUsageEventArguments, 
-    ChooseCharactorEventArguments, RoundEndEventArguments, 
+    ChooseCharactorEventArguments, PlayerActionStartEventArguments, 
+    ReceiveDamageEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
     SwitchCharactorEventArguments
 )
@@ -30,6 +32,31 @@ class CompanionBase(SupportBase):
 class RoundEffectCompanionBase(RoundEffectSupportBase):
     cost_label: int = (CostLabels.CARD.value 
                        | CostLabels.COMPANION.value)
+
+
+class Paimon(CompanionBase):
+    name: Literal['Paimon']
+    desc: str = '''When Action Phase begins: Create Omni Element x2.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 3)
+    usage: int = 2
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateDiceAction | RemoveObjectAction]:
+        """
+        When in round prepare, increase usage. 
+        If usage is 3, remove self, draw a card and create a dice.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        self.usage -= 1
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 2,
+            color = DieColor.OMNI,
+        )] + self.check_should_remove()
 
 
 class Tubby(RoundEffectCompanionBase):
@@ -220,6 +247,78 @@ class Liben(CompanionBase):
         ]
 
 
+class ChangTheNinth(CompanionBase):
+    name: Literal['Chang the Ninth']
+    desc: str = (
+        'When either side uses a Skill: If Physical DMG or Piercing DMG was '
+        'dealt, or an Elemental Reaction was triggered, this card gains 1 '
+        'Inspiration. When this card gains 3 Inspiration, discard this card, '
+        'then draw 2 cards.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost()
+    usage: int = 0
+    max_usage: int = 3
+    inspiration_got: bool = False
+
+    def event_handler_PLAYER_ACTION_START(
+        self, event: PlayerActionStartEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When anyone start action, reset inspiration got.
+        """
+        self.inspiration_got = False
+        return []
+
+    def event_handler_RECEIVE_DAMAGE(
+        self, event: ReceiveDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If physical or piercing or elemental reaction, gain inspiration.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if event.final_damage.damage_type == 'HEAL':
+            # heal, do nothing
+            return []
+        if (
+            event.final_damage.damage_elemental_type not in [
+                DamageElementalType.PHYSICAL, DamageElementalType.PIERCING]
+            and event.final_damage.element_reaction 
+            == ElementalReactionType.NONE
+        ):
+            # not physical piercing and not elemental reaction, do nothing
+            return []
+        # get inspiration
+        self.inspiration_got = True
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[DrawCardAction | RemoveObjectAction]:
+        """
+        If inspiration got, increase usage. If usage receives max_usage, 
+        remove self and draw two cards.
+        """
+        if self.inspiration_got:
+            self.usage += 1
+        self.inspiration_got = False
+        if self.usage == self.max_usage:
+            # remove self and draw two cards
+            return [
+                RemoveObjectAction(
+                    object_position = self.position,
+                ),
+                DrawCardAction(
+                    player_idx = self.position.player_idx,
+                    number = 2,
+                    draw_if_filtered_not_enough = True
+                ),
+            ]
+        return []
+
+
 class LiuSu(CompanionBase):
     name: Literal['Liu Su']
     desc: str = (
@@ -276,6 +375,54 @@ class LiuSu(CompanionBase):
         charactor = match.player_tables[event.action.player_idx].charactors[
             event.action.charactor_idx]
         return self.charge(charactor)
+
+
+class KidKujirai(CompanionBase):
+    name: Literal['Kid Kujirai']
+    desc: str = (
+        "When the Action Phase begins: Create 1 Omni Element. Then if your "
+        "opponent's Support Zone is not full, transfer this card to your "
+        "opponent's Support Zone."
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost()
+    usage: int = 0
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateDiceAction | MoveObjectAction | RemoveObjectAction]:
+        """
+        Create one OMNI for this side; and if other side has position, move
+        to opposite; otherwise remove self.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        ret: List[CreateDiceAction | MoveObjectAction 
+                  | RemoveObjectAction] = []
+        ret.append(CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            color = DieColor.OMNI,
+        ))
+        opposite = match.player_tables[1 - self.position.player_idx].supports
+        max_number = match.config.max_support_number
+        if len(opposite) >= max_number:
+            # opposite side support is full, remove self
+            ret.append(RemoveObjectAction(
+                object_position = self.position,
+            ))
+        else:
+            # opposite side support is not full, move to opposite
+            ret.append(MoveObjectAction(
+                object_position = self.position,
+                target_position = ObjectPosition(
+                    player_idx = 1 - self.position.player_idx,
+                    area = ObjectPositionType.SUPPORT,
+                    id = self.position.id
+                ),
+            ))
+        return ret
 
 
 class Rana(RoundEffectCompanionBase):
@@ -348,4 +495,7 @@ class Setaria(CompanionBase):
         )] + self.check_should_remove()
 
 
-Companions = Tubby | Timmie | Liben | LiuSu | Rana | Setaria
+Companions = (
+    Paimon | Tubby | Timmie | Liben | ChangTheNinth | LiuSu | KidKujirai 
+    | Rana | Setaria
+)

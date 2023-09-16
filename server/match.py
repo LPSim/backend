@@ -2250,9 +2250,9 @@ class Match(BaseModel):
         if action.object_position.area == ObjectPositionType.HAND:
             current_list = table.hands
             current_name = 'hand'
-        # elif action.object_position.area == ObjectPositionType.SUPPORT:
-        #     current_list = table.supports
-        #     current_name = 'support'
+        elif action.object_position.area == ObjectPositionType.SUPPORT:
+            current_list = table.supports
+            current_name = 'support'
         elif action.object_position.area == ObjectPositionType.CHARACTOR:
             # move equipments
             charactor = table.charactors[charactor_idx]
@@ -2290,6 +2290,7 @@ class Match(BaseModel):
                 f'Move object action from area '
                 f'{action.object_position.area} is not implemented.'
             )
+        table = self.player_tables[action.target_position.player_idx]
         for csnum, current_object in enumerate(current_list):
             if current_object.id == action.object_position.id:
                 if action.target_position.area == ObjectPositionType.HAND:
