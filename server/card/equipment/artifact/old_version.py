@@ -5,6 +5,10 @@ from ....action import Actions
 from ....struct import Cost
 from .element_artifacts import SmallElementalArtifact as SEA_4_0
 from .gamblers import GamblersEarrings as GE_3_8
+from .vermillion_shimenawa import ThunderingPoise as TP_4_0
+from .vermillion_shimenawa import VermillionHereafter as VH_4_0
+from .vermillion_shimenawa import CapriciousVisage as CV_4_0
+from .vermillion_shimenawa import ShimenawasReminiscence as SR_4_0
 
 
 class SmallElementalArtifact_3_3(SEA_4_0):
@@ -24,4 +28,40 @@ class GamblersEarrings_3_3(GE_3_8):
         return []
 
 
-OldVersionArtifacts = GamblersEarrings_3_3 | SmallElementalArtifact_3_3
+# VermillionShimenawas
+'''
+    ThunderingPoise | VermillionHereafter
+    | CapriciousVisage | ShimenawasReminiscence 
+'''
+
+
+class ThunderingPoise(TP_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 2)
+
+
+class VermillionHereafter(VH_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+class CapriciousVisage(CV_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 2)
+
+
+class ShimenawasReminiscence(SR_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+VermillionShimenawas_3_7 = (
+    ThunderingPoise | VermillionHereafter
+    | CapriciousVisage | ShimenawasReminiscence
+)
+
+
+OldVersionArtifacts = (
+    VermillionShimenawas_3_7
+    | GamblersEarrings_3_3 | SmallElementalArtifact_3_3
+)

@@ -1,16 +1,14 @@
-from typing import Any, List, Literal
+from typing import Any, Literal
 
-from .base import ArtifactBase
+from .base import RoundEffectArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue
 from ....consts import (
     ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, CostLabels
 )
-from ....event import RoundPrepareEventArguments
-from ....action import Actions
 
 
-class SmallElementalArtifact(ArtifactBase):
+class SmallElementalArtifact(RoundEffectArtifactBase):
     """
     Seven artifacts that decrease elemental cost.
     """
@@ -33,6 +31,7 @@ class SmallElementalArtifact(ArtifactBase):
     usage: int = 1
     cost: Cost = Cost(any_dice_number = 2)
     element: ElementType = ElementType.NONE
+    max_usage_per_round: int = 1
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -54,22 +53,6 @@ class SmallElementalArtifact(ArtifactBase):
         self.desc = self.desc.replace(
             "XXX", self.element.value.capitalize()
         )
-
-    def equip(self, match: Any) -> List[Actions]:
-        """
-        Equip this artifact. Reset usage.
-        """
-        self.usage = 1
-        return []
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        When in round prepare, reset usage
-        """
-        self.usage = 1
-        return []
 
     def value_modifier_COST(
         self, 
