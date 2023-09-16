@@ -650,6 +650,7 @@ if __name__ == '__main__':
     # test_save_load()
     # test_random_same_after_load()
     # test_use_card()
+    # test_copy_speed()
     # test_support_over_maximum_and_error_tests()
     # test_summon_over_maximum()
     # test_plunge_mark()

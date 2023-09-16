@@ -770,6 +770,112 @@ def test_instructor():
     assert match.state != MatchState.ERROR
 
 
+def test_lucky_dog():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 1",
+            "skill 0 15 14 13",
+            "TEST 1 10 10 10 10 10 10",
+            "skill 0 12 11 10",
+            "card 0 1 9 8",
+            "skill 0 7 6 5",
+            "sw_char 0 4",
+            "sw_char 1 3",
+            "skill 3 2 1 0",
+            "end",
+            "skill 2 15 14 13 12 11",
+            "TEST 1 10 3 10 5 6 6",
+            "sw_char 0 10",
+            "card 2 0 9 8",
+            "skill 1 7 6 5",
+            "skill 1 4 3 2"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 15 14",
+            "skill 2 13 12 11 10 9",
+            "skill 1 8 7 6",
+            "sw_char 2 5",
+            "sw_char 1 4",
+            "skill 0 3 2 1",
+            "TEST 1 10 8 10 6 9 9",
+            "end",
+            "sw_char 0 15",
+            "TEST 1 10 3 10 3 6 6",
+            "skill 1 14 13 12",
+            "sw_char 2 11",
+            "skill 0 10 9 8",
+            "TEST 1 9 3 10 5 6 6",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Rhodeia of Loch
+        charactor:Ganyu
+        charactor:Yae Miko
+        Lucky Dog's Silver Circlet*20
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.strip().split()
+                hps = [int(x) for x in cmd[2:]]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # from tests.utils_for_test import enable_logging
     # enable_logging()
@@ -779,4 +885,5 @@ if __name__ == '__main__':
     # test_gambler()
     # test_old_gambler()
     # test_millelith()
-    test_instructor()
+    # test_instructor()
+    test_lucky_dog()
