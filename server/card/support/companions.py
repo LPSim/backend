@@ -1,5 +1,7 @@
 from typing import Any, Literal, List
 
+from ...modifiable_values import CostValue
+
 from ...dice import Dice
 
 from .base import RoundEffectSupportBase, SupportBase
@@ -28,6 +30,45 @@ class CompanionBase(SupportBase):
 class RoundEffectCompanionBase(RoundEffectSupportBase):
     cost_label: int = (CostLabels.CARD.value 
                        | CostLabels.COMPANION.value)
+
+
+class Tubby(RoundEffectCompanionBase):
+    name: Literal['Tubby']
+    desc: str = (
+        'When playing a Location Support Card: Spend 2 less Elemental Dice. '
+        '(Once per Round)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    max_usage_per_round: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> CostValue:
+        """
+        If in support and self use location, decrease cost by 2.
+        """
+        if self.usage <= 0:
+            # no usage
+            return value
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        if value.cost.label & CostLabels.LOCATION.value == 0:
+            # not location
+            return value
+        # decrease
+        result = [
+            value.cost.decrease_cost(None),
+            value.cost.decrease_cost(None),
+        ]
+        if True in result:
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
 
 
 class Timmie(CompanionBase):
@@ -307,4 +348,4 @@ class Setaria(CompanionBase):
         )] + self.check_should_remove()
 
 
-Companions = Timmie | Liben | LiuSu | Rana | Setaria
+Companions = Tubby | Timmie | Liben | LiuSu | Rana | Setaria
