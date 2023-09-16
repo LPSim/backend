@@ -1046,6 +1046,123 @@ def test_paimon_kujirai():
     assert match.state != MatchState.ERROR
 
 
+def test_master_zhang():
+    cmd_records = [
+        [
+            "sw_card 2 4",
+            "choose 0",
+            "end",
+            "end",
+            "card 1 0 15",
+            "card 1 0 14",
+            "TEST 1 card 1 cost 1",
+            "card 1 0 13",
+            "TEST 2 p0 support 0 0",
+            "card 0 0",
+            "TEST 1 card 5 cost 1",
+            "card 4 0 12",
+            "TEST 1 card 4 cost 0",
+            "card 0 0 11",
+            "card 3 1",
+            "TEST 2 p0 support 0 0 0 1",
+            "sw_char 1 10",
+            "end",
+            "card 3 0",
+            "TEST 2 p0 support 0 0 1 1",
+            "end"
+        ],
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "end",
+            "end",
+            "TEST 1 card 2 cost 3",
+            "card 2 0 15 14 13",
+            "card 4 0 12",
+            "card 4 1 11",
+            "end",
+            "card 5 1",
+            "TEST 1 card 6 cost 3",
+            "card 5 0 15",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Xingqiu
+        charactor:Ganyu
+        charactor:Fischl
+        Master Zhang*15
+        Where Is the Unseen Razor?*15
+        King's Squire*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                supports = match.player_tables[pidx].supports
+                assert len(supports) == len(usages)
+                for u, s in zip(usages, supports):
+                    assert u == s.usage
+            elif test_id == 1:
+                cmd = cmd.split()
+                cid = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cid:
+                        assert req.cost.total_dice_cost == cost
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
@@ -1054,4 +1171,5 @@ if __name__ == '__main__':
     # test_liusu()
     # test_tubby()
     # test_chang_nine()
-    test_paimon_kujirai()
+    # test_paimon_kujirai()
+    test_master_zhang()
