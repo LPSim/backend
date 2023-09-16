@@ -785,10 +785,273 @@ def test_tubby():
     assert match.state != MatchState.ERROR
 
 
+def test_chang_nine():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "card 2 0",
+            "skill 0 15 14 13",
+            "TEST 1 p0 support 1",
+            "TEST 1 p1 support 1",
+            "sw_char 4 12",
+            "skill 2 11 10 9 8 7",
+            "end",
+            "card 5 4",
+            "card 2 2",
+            "card 2 0",
+            "end",
+            "TEST 1 p0 support 1",
+            "TEST 1 p1 support 2",
+            "skill 2 15 14 13 12 11"
+        ],
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "card 2 0",
+            "skill 1 15 14 13",
+            "sw_char 3 12",
+            "TEST 1 p0 support 2",
+            "TEST 1 p1 support 2",
+            "skill 0 11 10 9",
+            "card 1 0",
+            "sw_char 1 8",
+            "skill 0 7 6 5",
+            "TEST 2 p0 card 6",
+            "TEST 2 p1 card 5",
+            "card 1 1",
+            "TEST 1 p1 support 1",
+            "sw_char 5 4",
+            "skill 0 3 2 1",
+            "sw_char 1 0",
+            "end",
+            "skill 0 15 14 13",
+            "TEST 1 p0 support 1",
+            "TEST 1 p1 support 2",
+            "sw_char 2 12",
+            "skill 1 11 10 9",
+            "sw_char 3 8",
+            "skill 1 7 6 5",
+            "end",
+            "card 0 0",
+            "card 4 0",
+            "card 6 0",
+            "card 5 0",
+            "TEST 1 p1 support 0 0 0 0",
+            "card 4 1"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Xingqiu
+        charactor:AnemoMobMage
+        charactor:Yae Miko
+        charactor:Mona
+        charactor:Ganyu
+        charactor:Klee
+        Chang the Ninth*15
+        Sweet Madame*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                supports = match.player_tables[pidx].supports
+                assert len(supports) == len(usages)
+                for u, s in zip(usages, supports):
+                    assert u == s.usage
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                card_num = int(cmd[4])
+                assert len(match.player_tables[pidx].hands) == card_num
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_paimon_kujirai():
+    cmd_records = [
+        [
+            "sw_card 1 4",
+            "choose 0",
+            "reroll",
+            "card 3 0 7 6 5",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "end",
+            "reroll",
+            "TEST 1 p0 support 1 0 0 0",
+            "TEST 1 p1 support 1 0",
+            "TEST 2 p0 dice 12",
+            "TEST 2 p1 dice 12",
+            "end",
+            "reroll",
+            "TEST 1 p0 support 0 0",
+            "TEST 1 p1 support 0 0",
+            "TEST 2 p0 dice 12",
+            "TEST 2 p1 dice 11",
+            "card 2 0",
+            "card 2 0",
+            "sw_char 1 10",
+            "end",
+            "reroll"
+        ],
+        [
+            "sw_card 2 1",
+            "choose 0",
+            "reroll",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0 5 4 0",
+            "TEST 1 p0 support 2 0 0 0",
+            "TEST 1 p1 support 0 0 2",
+            "end",
+            "reroll",
+            "end",
+            "reroll",
+            "card 1 0",
+            "card 0 0",
+            "end",
+            "reroll",
+            "TEST 2 p0 dice 11",
+            "TEST 2 p1 dice 12",
+            "TEST 1 p0 support 0",
+            "TEST 1 p1 support 0 0 0",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Xingqiu
+        charactor:AnemoMobMage
+        charactor:Yae Miko
+        charactor:Mona
+        charactor:Ganyu
+        charactor:Klee
+        Chang the Ninth*15
+        Kid Kujirai*15
+        Paimon*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                supports = match.player_tables[pidx].supports
+                assert len(supports) == len(usages)
+                for u, s in zip(usages, supports):
+                    assert u == s.usage
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                dice_num = int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == dice_num
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
     # test_liben()
     # test_setaria()
     # test_liusu()
-    test_tubby()
+    # test_tubby()
+    # test_chang_nine()
+    test_paimon_kujirai()
