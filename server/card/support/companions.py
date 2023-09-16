@@ -9,12 +9,14 @@ from ...consts import (
 )
 from ...struct import Cost
 from ...action import (
-    Actions, ChangeObjectUsageAction, CreateDiceAction, DrawCardAction, 
-    RemoveDiceAction, RemoveObjectAction
+    Actions, ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
+    DrawCardAction, RemoveDiceAction, RemoveObjectAction
 )
 from ...event import (
     ActionEndEventArguments, ChangeObjectUsageEventArguments, 
-    RoundEndEventArguments, RoundPrepareEventArguments, SkillEndEventArguments
+    ChooseCharactorEventArguments, RoundEndEventArguments, 
+    RoundPrepareEventArguments, SkillEndEventArguments, 
+    SwitchCharactorEventArguments
 )
 
 
@@ -177,6 +179,64 @@ class Liben(CompanionBase):
         ]
 
 
+class LiuSu(CompanionBase):
+    name: Literal['Liu Su']
+    desc: str = (
+        'After you switch characters: If the character you switched to does '
+        'not have Energy, they will gain 1 Energy. (Once per Round)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+    usage: int = 2
+    used_this_round: bool = False
+
+    def play(self, match: Any) -> List[Actions]:
+        self.used_this_round = False
+        return super().play(match)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.used_this_round = False
+        return []
+
+    def charge(self, charactor: Any) -> List[ChargeAction 
+                                             | RemoveObjectAction]:
+        """
+        If this charactor is our charactor and has no energy, charge it.
+        """
+        if (
+            self.position.area == ObjectPositionType.SUPPORT
+            and charactor.position.player_idx == self.position.player_idx
+            and charactor.charge == 0 
+            and not self.used_this_round
+        ):
+            # in support, and our charactor, and no energy
+            assert self.usage > 0
+            self.usage -= 1
+            self.used_this_round = True
+            return [ChargeAction(
+                player_idx = charactor.position.player_idx,
+                charactor_idx = charactor.position.charactor_idx,
+                charge = 1,
+            )] + self.check_should_remove()
+        return []
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: SwitchCharactorEventArguments, match: Any
+    ) -> List[ChargeAction | RemoveObjectAction]:
+        charactor = match.player_tables[event.action.player_idx].charactors[
+            event.action.charactor_idx]
+        return self.charge(charactor)
+
+    def event_handler_CHOOSE_CHARACTOR(
+        self, event: ChooseCharactorEventArguments, match: Any
+    ) -> List[ChargeAction | RemoveObjectAction]:
+        charactor = match.player_tables[event.action.player_idx].charactors[
+            event.action.charactor_idx]
+        return self.charge(charactor)
+
+
 class Rana(RoundEffectCompanionBase):
     name: Literal['Rana']
     desc: str = (
@@ -247,4 +307,4 @@ class Setaria(CompanionBase):
         )] + self.check_should_remove()
 
 
-Companions = Timmie | Liben | Rana | Setaria
+Companions = Timmie | Liben | LiuSu | Rana | Setaria
