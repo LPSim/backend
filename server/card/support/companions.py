@@ -464,6 +464,51 @@ class Rana(RoundEffectCompanionBase):
         return []
 
 
+class MasterZhang(RoundEffectCompanionBase):
+    name: Literal['Master Zhang']
+    desc: str = (
+        'When playing a Weapon card: Spend 1 less Elemental Die. On top of '
+        'that, for each of your characters already equipped with a Weapon on '
+        'the field, you spend 1 less Elemental Die. (Once per Round.)'
+    )
+    version: Literal['3.8'] = '3.8'
+    cost: Cost = Cost(same_dice_number = 1)
+    max_usage_per_round: int = 1
+    card_cost_label: int = CostLabels.WEAPON.value
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> CostValue:
+        """
+        If has usage, and self use weapon card, decrease.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if self.usage <= 0:
+            # no usage
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        if value.cost.label & self.card_cost_label == 0:
+            # not corresponding card
+            return value
+        # decrease
+        decrease_number = 1
+        table = match.player_tables[self.position.player_idx]
+        for charactor in table.charactors:
+            if charactor.weapon is not None:
+                decrease_number += 1
+        result = []
+        for _ in range(decrease_number):
+            result.append(value.cost.decrease_cost(None))
+        if True in result:
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+
 class Setaria(CompanionBase):
     name: Literal['Setaria']
     desc: str = (
@@ -497,5 +542,5 @@ class Setaria(CompanionBase):
 
 Companions = (
     Paimon | Tubby | Timmie | Liben | ChangTheNinth | LiuSu | KidKujirai 
-    | Rana | Setaria
+    | Rana | MasterZhang | Setaria
 )
