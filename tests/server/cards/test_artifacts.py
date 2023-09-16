@@ -876,6 +876,141 @@ def test_lucky_dog():
     assert match.state != MatchState.ERROR
 
 
+def test_big_elemental_artifacts():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll 4 3",
+            "card 1 2 2 1 0",
+            "card 1 1 0 1 2",
+            "card 1 0 1 0",
+            "end",
+            "TEST 1 p0 pyro dendro geo",
+            "reroll",
+            "card 3 1 5 4 3",
+            "sw_char 1 4",
+            "TEST 2 skill 0 cost 2",
+            "skill 0 0 3",
+            "end",
+            "TEST 1 p0 dendro geo geo",
+            "reroll",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "reroll 1 0 4 5",
+            "card 2 2 7 6 5",
+            "card 2 1 4 3 1",
+            "end",
+            "TEST 1 p1 electro electro",
+            "reroll",
+            "card 0 0 7 6 5",
+            "end",
+            "TEST 1 p1 cryo electro electro",
+            "reroll",
+            "end"
+        ]
+    ]
+    repeat_times = 20
+    for _ in range(repeat_times):
+        cmd_records[0] += cmd_records[0][-2:]
+        cmd_records[1] += cmd_records[1][-2:]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Xingqiu
+        charactor:Kamisato Ayaka
+        charactor:Yae Miko
+        Blizzard Strayer*2
+        Deepwood Memories*2
+        Archaic Petra*2
+        Thundering Fury*2
+        Viridescent Venerer*2
+        Heart of Depth*2
+        Crimson Witch of Flames*2
+        Blizzard Strayer@3.6*2
+        Deepwood Memories@3.6*2
+        Archaic Petra@3.6*2
+        Thundering Fury@3.6*2
+        Viridescent Venerer@3.6*2
+        Heart of Depth@3.6*2
+        Crimson Witch of Flames@3.6*2
+        Blizzard Strayer@3.3*2
+        Deepwood Memories@3.3*2
+        Archaic Petra@3.3*2
+        Thundering Fury@3.3*2
+        Viridescent Venerer@3.3*2
+        Heart of Depth@3.3*2
+        Crimson Witch of Flames@3.3*2
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                colors = [x.upper() for x in cmd[3:]]
+                colors += colors
+                for color in match.player_tables[pidx].dice.colors:
+                    if color in colors:
+                        colors.remove(color)
+                assert len(colors) == 0
+            elif test_id == 2:
+                cmd = cmd.split()
+                sid = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseSkillRequest' and req.skill_idx == sid:
+                        assert req.cost.total_dice_cost == cost
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # from tests.utils_for_test import enable_logging
     # enable_logging()
@@ -886,4 +1021,5 @@ if __name__ == '__main__':
     # test_old_gambler()
     # test_millelith()
     # test_instructor()
-    test_lucky_dog()
+    # test_lucky_dog()
+    test_big_elemental_artifacts()
