@@ -568,8 +568,89 @@ def test_vanarana():
     assert match.state != MatchState.ERROR
 
 
+def test_library():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll 4 2 3 0 1 5 6 7",
+            "card 2 0 7",
+            "reroll 2 1 0 4 3 5 6",
+            "card 3 0 6",
+            "reroll 4 2 3 0 1 5",
+            "card 1 0",
+            "reroll 3 0 1",
+            "reroll 1 2 3",
+            "end",
+            "reroll 6 1 2 3 5 7 4",
+            "reroll 4 2 3 5 6 7",
+            "reroll 5 6 2 3 4 7",
+            "end"
+        ],
+        [
+            "sw_card 3 2 1",
+            "choose 0",
+            "reroll 1 0 2 3 4 5 6 7",
+            "card 1 0 7",
+            "reroll 0 1 3 4",
+            "end",
+            "reroll 1 2 4 6 5 7",
+            "reroll 3 2 1 6 7"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Electro Hypostasis
+        charactor:Klee
+        charactor:Keqing
+        Knights of Favonius Library*15
+        Toss-Up*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_liyue_harbor()
-    test_tenshukaku()
-    test_sumeru_city()
-    test_vanarana()
+    # test_liyue_harbor()
+    # test_tenshukaku()
+    # test_sumeru_city()
+    # test_vanarana()
+    test_library()
