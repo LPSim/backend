@@ -1,22 +1,17 @@
 from typing import Any, List, Literal
 
-from ...status.team_status.base import DefendTeamStatus
+from ...summon.base import AOESummonBase
 
-from ...summon.base import AOESummonBase, ShieldSummonBase, AttackerSummonBase
-
-from ...modifiable_values import CombatActionValue, DamageIncreaseValue
-from ...event import RoundPrepareEventArguments
-
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
+from ...action import Actions
+from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    DamageElementalType, DieColor, ElementType, FactionType, 
+    WeaponType
 )
 from ..charactor_base import (
-    AOESkillBase, ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
+    AOESkillBase, ElementalBurstBase, ElementalNormalAttackBase, 
+    ElementalSkillBase, PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -59,7 +54,7 @@ class TrailOftheQilin(ElementalSkillBase):
         ]
 
 
-class FrostflakeArrow(ElementalSkillBase, AOESkillBase):
+class FrostflakeArrow(ElementalNormalAttackBase, AOESkillBase):
     name: Literal['Frostflake Arrow'] = 'Frostflake Arrow'
     desc: str = '''Deals 1 Cryo DMG, creates 1 Ice Lotus.'''
     damage: int = 2
