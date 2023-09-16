@@ -3,12 +3,15 @@ from typing import Any, List, Literal
 from server.action import Actions
 from server.event import UseCardEventArguments
 
-from ...action import DrawCardAction, RemoveObjectAction
+from ...action import CreateDiceAction, DrawCardAction, RemoveObjectAction
 
-from ...event import SkillEndEventArguments
+from ...event import (
+    PlayerActionStartEventArguments, ReceiveDamageEventArguments, 
+    SkillEndEventArguments
+)
 
 from ...struct import Cost
-from ...consts import CostLabels, ObjectPositionType
+from ...consts import CostLabels, DamageElementalType, ObjectPositionType
 from .base import RoundEffectSupportBase, SupportBase
 
 
@@ -23,6 +26,79 @@ class RoundEffectItemBase(RoundEffectSupportBase):
     cost: Cost
     max_usage_per_round: int 
     cost_label: int = CostLabels.CARD.value | CostLabels.ITEM.value
+
+
+class ParametricTransformer(ItemBase):
+    name: Literal['Parametric Transformer']
+    desc: str = (
+        'When either side uses a Skill: If Elemental DMG was dealt this card '
+        'gains 1 Qualitative Progress. When this card gains 3 Qualitative '
+        'Progress, discard this card, then create 3 different Basic Elemental '
+        'Dice.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(any_dice_number = 2)
+    usage: int = 0
+    max_usage: int = 3
+    create_dice_number: int = 3
+    progress_got: bool = False
+
+    def event_handler_PLAYER_ACTION_START(
+        self, event: PlayerActionStartEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When anyone start action, reset progress_got.
+        """
+        self.progress_got = False
+        return []
+
+    def event_handler_RECEIVE_DAMAGE(
+        self, event: ReceiveDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If elemental damage, gain progress
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if event.final_damage.damage_type == 'HEAL':
+            # heal, do nothing
+            return []
+        if (
+            event.final_damage.damage_elemental_type in [
+                DamageElementalType.PHYSICAL, DamageElementalType.PIERCING,
+                DamageElementalType.HEAL
+            ]
+        ):
+            # physical or piercing or heal, do nothing
+            return []
+        # get progress
+        self.progress_got = True
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[CreateDiceAction | RemoveObjectAction]:
+        """
+        If progress got, increase usage. If usage receives max_usage, 
+        remove self and create different dice.
+        """
+        if self.progress_got:
+            self.usage += 1
+        self.progress_got = False
+        if self.usage == self.max_usage:
+            # remove self and create different dice
+            return [
+                RemoveObjectAction(
+                    object_position = self.position,
+                ),
+                CreateDiceAction(
+                    player_idx = self.position.player_idx,
+                    number = self.create_dice_number,
+                    different = True
+                )
+            ]
+        return []
 
 
 class NRE(RoundEffectItemBase):
@@ -115,4 +191,4 @@ class TreasureSeekingSeelie(ItemBase):
         ]
 
 
-Items = NRE | TreasureSeekingSeelie
+Items = ParametricTransformer | NRE | TreasureSeekingSeelie
