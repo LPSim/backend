@@ -11,7 +11,7 @@ This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
-Progress: Charactors 37/54, Cards 101/199
+Progress: Charactors 37/54, Cards 122/199
 
 ## Usage
 
