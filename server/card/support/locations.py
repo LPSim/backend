@@ -6,6 +6,7 @@ from server.action import (
     GenerateRerollDiceRequestAction, MakeDamageAction, RemoveDiceAction, 
     RemoveObjectAction
 )
+from server.event import MoveObjectEventArguments
 from ...modifiable_values import CostValue, DamageValue, RerollValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
@@ -394,8 +395,65 @@ class Vanarana(LocationBase):
         )]
 
 
+class GoldenHouse(LocationBase):
+    name: Literal['Golden House']
+    desc: str = (
+        'When you play a Weapon card or an Artifact card with an original '
+        'cost of at least 3: Spend 1 less Elemental Die. (Once per Round)'
+    )
+    version: Literal['4.0'] = '4.0'
+    cost: Cost = Cost(same_dice_number = 0)
+    usage: int = 2
+    used_this_round: bool = False
+
+    card_cost_label: int = CostLabels.WEAPON.value
+    decrease_threshold: int = 3
+
+    def play(self, match: Any) -> List[Actions]:
+        self.used_this_round = False
+        return super().play(match)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.used_this_round = False
+        return []
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        if card label match and original cost greater than threshold, 
+        reduce cost.
+        """
+        if (
+            self.position.area == ObjectPositionType.SUPPORT
+            and value.position.player_idx == self.position.player_idx
+            and value.cost.original_value.total_dice_cost
+            >= self.decrease_threshold
+            and value.cost.label & self.card_cost_label != 0
+            and not self.used_this_round
+        ):
+            # area right, player right, cost label match, cost greater than
+            # threshold, and not used this round
+            if value.cost.decrease_cost(None):
+                if mode == 'REAL':
+                    self.usage -= 1
+                    self.used_this_round = True
+        return value
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        if self.usage == 0:
+            # if usage is zero, it run out of usage, remove it
+            return list(self.check_should_remove())
+        # otherwise, do parent event handler
+        return super().event_handler_MOVE_OBJECT(event, match)
+
+
 Locations = (
     LiyueHarborWharf | KnightsOfFavoniusLibrary | WangshuInn 
     | FavoniusCathedral | Tenshukaku | SangonomiyaShrine | SumeruCity 
-    | Vanarana
+    | Vanarana | GoldenHouse
 )
