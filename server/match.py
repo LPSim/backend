@@ -1478,7 +1478,6 @@ class Match(BaseModel):
             or len(action.whitelist_names) > 0
             or len(action.whitelist_types) > 0
         ):
-            raise NotImplementedError('Not tested part')
             if (
                 action.blacklist_cost_labels > 0 
                 or len(action.blacklist_names) > 0
@@ -1500,6 +1499,7 @@ class Match(BaseModel):
                     blacklist.append(card)
             if len(draw_cards) < number and action.draw_if_filtered_not_enough:
                 # draw blacklist cards
+                raise NotImplementedError('Not tested part.')
                 draw_cards += blacklist[:number - len(draw_cards)]
                 blacklist = blacklist[number - len(draw_cards):]
         elif (
