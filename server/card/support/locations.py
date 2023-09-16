@@ -2,15 +2,16 @@ from typing import Any, List, Literal
 from server.dice import Dice
 
 from server.action import (
-    Actions, CreateDiceAction, DrawCardAction, RemoveDiceAction, 
-    RemoveObjectAction
+    Actions, CreateDiceAction, DrawCardAction, 
+    GenerateRerollDiceRequestAction, RemoveDiceAction, RemoveObjectAction
 )
-from ...modifiable_values import CostValue
+from ...modifiable_values import CostValue, RerollValue
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, DieColor
+    ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, DieColor, 
+    ObjectPositionType
 )
 from .base import RoundEffectSupportBase, SupportBase
 
@@ -47,6 +48,35 @@ class LiyueHarborWharf(LocationBase):
                 draw_if_filtered_not_enough = True
             ),
         ] + self.check_should_remove()
+
+
+class KnightsOfFavoniusLibrary(LocationBase):
+    name: Literal['Knights of Favonius Library']
+    desc: str = (
+        'When played: Select any Elemental Dice to reroll. '
+        'Roll Phase: Gain another chance to reroll.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+    usage: int = 0
+
+    def play(self, match: Any) -> List[GenerateRerollDiceRequestAction]:
+        return [GenerateRerollDiceRequestAction(
+            player_idx = self.position.player_idx,
+            reroll_times = 1,
+        )]
+
+    def value_modifier_REROLL(
+        self, value: RerollValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> RerollValue:
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if value.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        value.value += 1
+        return value
 
 
 class Tenshukaku(LocationBase):
@@ -231,4 +261,7 @@ class Vanarana(LocationBase):
         )]
 
 
-Locations = LiyueHarborWharf | Tenshukaku | SumeruCity | Vanarana
+Locations = (
+    LiyueHarborWharf | KnightsOfFavoniusLibrary | Tenshukaku | SumeruCity 
+    | Vanarana
+)

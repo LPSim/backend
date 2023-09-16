@@ -964,6 +964,9 @@ class Match(BaseModel):
         ))
 
     def _request_reroll_dice(self, player_idx: int, reroll_number: int):
+        """
+        reroll by game actions cannot be modified
+        """
         if reroll_number <= 0:
             return
         player_table = self.player_tables[player_idx]
