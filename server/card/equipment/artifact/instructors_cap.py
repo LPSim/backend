@@ -13,7 +13,7 @@ from .base import RoundEffectArtifactBase
 
 
 class InstructorsCap(RoundEffectArtifactBase):
-    name: Literal["Instructor's Cap"] = "Instructor's Cap"
+    name: Literal["Instructor's Cap"]
     desc: str = (
         'After a character triggers an Elemental Reaction: Create 1 Elemental '
         "Die that matches this Character's Elemental Type. (Max 3 times per "

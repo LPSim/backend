@@ -15,7 +15,7 @@ from .base import RoundEffectArtifactBase
 
 
 class LuckyDogsSilverCirclet(RoundEffectArtifactBase):
-    name: Literal["Lucky Dog's Silver Circlet"] = "Lucky Dog's Silver Circlet"
+    name: Literal["Lucky Dog's Silver Circlet"]
     desc: str = (
         'After a character uses an Elemental Skill: Heal self for 2 HP. '
         '(Once per Round)'
