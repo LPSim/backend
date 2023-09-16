@@ -228,6 +228,129 @@ def test_NRE():
     assert match.state != MatchState.ERROR
 
 
+def test_parametric():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 15 14",
+            "skill 1 13 12 11",
+            "TEST 1 p0 support 1",
+            "TEST 1 p1 support 0",
+            "sw_char 2 10",
+            "skill 0 9 8 7",
+            "skill 2 6 5 4 3 2",
+            "end",
+            "skill 0 15 14 13",
+            "TEST 2 p1 dice 13",
+            "card 0 0 12 11",
+            "card 0 0 10 9",
+            "card 0 0 8 7",
+            "skill 1 6 5 4",
+            "skill 1 3 2 1",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "TEST 1 p0 support 1",
+            "card 2 0 15 14",
+            "skill 1 13 12 11",
+            "TEST 1 p0 support 1",
+            "TEST 1 p1 support 0",
+            "sw_char 0 10",
+            "TEST 1 p0 support 2",
+            "TEST 1 p1 support 1",
+            "end",
+            "TEST 1 p0 support 2",
+            "TEST 1 p1 support 1",
+            "skill 0 15 14 13",
+            "skill 1 12 11 10",
+            "skill 1 9 8 7",
+            "TEST 2 p0 dice 10",
+            "end",
+            "sw_char 3 0",
+            "card 0 0 0 1",
+            "skill 1 0 1 2",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Mona
+        charactor:Xiangling
+        charactor:Ganyu
+        charactor:Barbara
+        Parametric Transformer*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                supports = match.player_tables[pidx].supports
+                assert len(supports) == len(usages)
+                for u, s in zip(usages, supports):
+                    assert u == s.usage
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                num = int(cmd[-1])
+                assert len(match.player_tables[pidx].dice.colors) == num
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_seelie()
     test_NRE()
+    test_parametric()
