@@ -798,10 +798,122 @@ def test_cathedral_inn_sangonomiya():
     assert match.state != MatchState.ERROR
 
 
+def test_golden_house():
+    cmd_records = [
+        [
+            "sw_card 2 0",
+            "choose 2",
+            "card 0 0",
+            "TEST 1 card 1 cost 2",
+            "TEST 1 card 2 cost 2",
+            "card 0 0",
+            "card 2 0",
+            "TEST 1 card 0 cost 0",
+            "TEST 1 card 1 cost 2",
+            "end",
+            "end",
+            "card 5 0",
+            "card 0 0",
+            "TEST 1 card 1 cost 2",
+            "TEST 1 card 1 cost 2",
+            "card 1 0 15 14",
+            "end",
+            "card 1 0",
+            "card 1 0 15 14",
+            "card 1 0 13 0",
+            "end"
+        ],
+        [
+            "sw_card 2 3 4",
+            "choose 2",
+            "TEST 1 card 0 cost 3",
+            "TEST 1 card 1 cost 2",
+            "end",
+            "end",
+            "card 2 0",
+            "card 2 0",
+            "card 2 0",
+            "card 0 0",
+            "end",
+            "card 3 0 1 0",
+            "card 2 0",
+            "card 4 0 0 13 12",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Mona
+        charactor:Xiangling
+        charactor:Ganyu
+        Golden House*15
+        King's Squire*15
+        Raven Bow*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                cid = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cid:
+                        assert req.cost.total_dice_cost == cost
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_liyue_harbor()
     # test_tenshukaku()
     # test_sumeru_city()
     # test_vanarana()
     # test_library()
-    test_cathedral_inn_sangonomiya()
+    # test_cathedral_inn_sangonomiya()
+    test_golden_house()
