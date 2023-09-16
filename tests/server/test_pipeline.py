@@ -582,6 +582,7 @@ def test_plunge_mark():
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
+    match.enable_history = True
     match.start()
     match.step()
 
@@ -653,5 +654,5 @@ if __name__ == '__main__':
     # test_copy_speed()
     # test_support_over_maximum_and_error_tests()
     # test_summon_over_maximum()
-    # test_plunge_mark()
+    test_plunge_mark()
     test_higher_version_compatible()

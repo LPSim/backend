@@ -199,6 +199,7 @@ class AbsorbingPrism(TalentBase):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3
     )
+    remove_when_used: bool = True
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:
         return PlayerActionLabels.CARD.value, True
@@ -224,7 +225,7 @@ class AbsorbingPrism(TalentBase):
                         target_position = charactor.position,
                         damage = -3,
                         damage_elemental_type = DamageElementalType.HEAL,
-                        cost = self.cost.copy()
+                        cost = Cost(),
                     )
                 ],
             ),

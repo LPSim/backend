@@ -1,6 +1,6 @@
 from .struct import ObjectPosition
 from utils import BaseModel
-from typing import Literal, List
+from typing import Any, Literal, List
 from .consts import DieColor, ElementalReactionType, ElementType
 from .action import (
     ActionTypes, 
@@ -24,6 +24,7 @@ from .action import (
     ChangeObjectUsageAction,
     MoveObjectAction,
     ConsumeArcaneLegendAction,
+    UseCardAction,
     UseSkillAction,
     CharactorReviveAction
 )
@@ -349,6 +350,15 @@ class CharactorReviveEventArguments(EventArgumentsBase):
     action: CharactorReviveAction
 
 
+class UseCardEventArguments(EventArgumentsBase):
+    """
+    Event arguments for use card event.
+    """
+    type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
+    action: UseCardAction
+    card: Any
+
+
 EventArguments = (
     EventArgumentsBase
     | DrawCardEventArguments
@@ -382,6 +392,7 @@ EventArguments = (
     # 25
     | PlayerActionStartEventArguments
     | CharactorReviveEventArguments
+    | UseCardEventArguments
 )
 
 

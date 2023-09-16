@@ -65,7 +65,7 @@ class LightfallSword(SummonBase):
                         target_position = target_charactor.position,
                         damage = self.damage + self.usage,
                         damage_elemental_type = DamageElementalType.PHYSICAL,
-                        cost = self.cost.copy(),
+                        cost = Cost(),
                     )
                 ],
             ),

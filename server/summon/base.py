@@ -1,5 +1,10 @@
-from typing import List, Literal, Any
-from ..object_base import CardBase
+from typing import List, Literal, Any, get_origin, get_type_hints
+
+from pydantic import validator
+
+from server.action import Actions
+from server.event import UseCardEventArguments
+from ..object_base import CardBase, ObjectBase
 from ..consts import (
     ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, 
     ObjectPositionType, ObjectType, DamageElementalType, DamageType
@@ -14,18 +19,40 @@ from ..action import (
     Actions, MakeDamageAction, RemoveObjectAction
 )
 from ..modifiable_values import DamageDecreaseValue, DamageValue
-from ..struct import Cost
+from ..struct import Cost, ObjectPosition
 
 
-class SummonBase(CardBase):
+class SummonBase(ObjectBase):
     type: Literal[ObjectType.SUMMON] = ObjectType.SUMMON
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'RESET_WITH_MAX'
     name: str
     desc: str
+    strict_version_validation: bool = False  # default accept higher versions
     version: str
     usage: int
     max_usage: int
-    cost: Cost = Cost()
+
+    @validator('version', pre = True)
+    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
+        msg = 'version annotation must be Literal with one str'
+        if not isinstance(v, str):
+            raise NotImplementedError(msg)
+        version_hints = get_type_hints(cls)['version']
+        if get_origin(version_hints) != Literal:
+            raise NotImplementedError(msg)
+        version_hints = version_hints.__args__
+        if len(version_hints) > 1:
+            raise NotImplementedError(msg)
+        version_hint = version_hints[0]
+        if values['strict_version_validation'] and v != version_hint:
+            raise ValueError(
+                f'version {v} is not equal to {version_hint}'
+            )
+        if v < version_hint:
+            raise ValueError(
+                f'version {v} is lower than {version_hint}'
+            )
+        return version_hint
 
     def renew(self, new_status: 'SummonBase') -> None:
         """
@@ -93,7 +120,7 @@ class AttackerSummonBase(SummonBase):
                         target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
-                        cost = self.cost.copy(),
+                        cost = Cost(),
                     )
                 ],
             )
@@ -168,7 +195,7 @@ class AOESummonBase(AttackerSummonBase):
                     target_position = charactor.position,
                     damage = self.back_damage,
                     damage_elemental_type = DamageElementalType.PIERCING,
-                    cost = self.cost.copy(),
+                    cost = Cost(),
                 )
             )
         return ret
@@ -237,7 +264,7 @@ class DefendSummonBase(SummonBase):
                         target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
-                        cost = self.cost.copy(),
+                        cost = Cost(),
                     )
                 ],
             )

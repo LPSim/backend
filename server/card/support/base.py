@@ -22,6 +22,7 @@ class SupportBase(CardBase):
     usage: int
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     cost_label: int = CostLabels.CARD.value
+    remove_when_used: bool = False
 
     def check_should_remove(self) -> List[RemoveObjectAction]:
         """

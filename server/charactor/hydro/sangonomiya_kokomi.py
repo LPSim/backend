@@ -47,7 +47,7 @@ class BakeKurage(AttackerSummonBase):
             target_position = active_charactor.position,
             damage = -1,
             damage_elemental_type = DamageElementalType.HEAL,
-            cost = self.cost.copy(),
+            cost = Cost(),
         ))
         # if our Kokomi with talent and Ceremonial Garment, increase damage
         charactors = match.player_tables[self.position.player_idx].charactors

@@ -405,6 +405,7 @@ class TalentBase(CardBase):
     charactor_name: str
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
     cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
+    remove_when_used: bool = False
 
     def is_valid(self, match: Any) -> bool:
         """

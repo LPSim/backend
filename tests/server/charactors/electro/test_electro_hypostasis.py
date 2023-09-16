@@ -404,5 +404,5 @@ def test_electro_bennett():
 
 
 if __name__ == '__main__':
-    # test_elec_hypo()
-    test_prepare_frozen()
+    test_elec_hypo()
+    # test_prepare_frozen()

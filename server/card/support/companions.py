@@ -2,7 +2,7 @@ from typing import Any, Literal, List
 
 from ...dice import Dice
 
-from .base import SupportBase
+from .base import RoundEffectSupportBase, SupportBase
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, CostLabels, DieColor, ElementType, 
     ELEMENT_TO_DIE_COLOR, ObjectPositionType, SkillType
@@ -19,6 +19,11 @@ from ...event import (
 
 
 class CompanionBase(SupportBase):
+    cost_label: int = (CostLabels.CARD.value 
+                       | CostLabels.COMPANION.value)
+
+
+class RoundEffectCompanionBase(RoundEffectSupportBase):
     cost_label: int = (CostLabels.CARD.value 
                        | CostLabels.COMPANION.value)
 
@@ -172,7 +177,7 @@ class Liben(CompanionBase):
         ]
 
 
-class Rana(CompanionBase):
+class Rana(RoundEffectCompanionBase):
     name: Literal['Rana']
     desc: str = (
         'After your character uses an Elemental Skill: '
@@ -181,23 +186,7 @@ class Rana(CompanionBase):
     )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
-    usage: int = 1
-
-    def play(self, match: Any) -> List[Actions]:
-        """
-        When played, reset usage.
-        """
-        self.usage = 1
-        return super().play(match)
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        When in round prepare, reset usage
-        """
-        self.usage = 1
-        return []
+    max_usage_per_round: int = 1
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any

@@ -111,7 +111,7 @@ class Oz(AttackerSummonBase):
                             target_position = target_charactor.position,
                             damage = 2,
                             damage_elemental_type = self.damage_elemental_type,
-                            cost = self.cost.copy(),
+                            cost = Cost()
                         )
                     ],
                 )

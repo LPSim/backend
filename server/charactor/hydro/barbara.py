@@ -55,7 +55,7 @@ class MelodyLoop(AttackerSummonBase):
                                 damage = self.damage,
                                 damage_elemental_type 
                                 = self.damage_elemental_type,
-                                cost = self.cost.copy(),
+                                cost = Cost(),
                             )
                         ],
                     )
@@ -74,7 +74,7 @@ class MelodyLoop(AttackerSummonBase):
                                 damage = 0,
                                 damage_elemental_type
                                 = DamageElementalType.HYDRO,
-                                cost = self.cost.copy(),
+                                cost = Cost(),
                             )
                         ],
                     )

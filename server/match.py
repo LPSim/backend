@@ -20,7 +20,7 @@ from .action import (
     ActionEndAction, SkipPlayerActionAction,
     SwitchCharactorAction,
     MakeDamageAction,
-    ChargeAction,
+    ChargeAction, UseCardAction,
     UseSkillAction,
     # UseCardAction,
     SkillEndAction,
@@ -79,6 +79,7 @@ from .event import (
     RemoveObjectEventArguments,
     ChangeObjectUsageEventArguments,
     MoveObjectEventArguments,
+    UseCardEventArguments,
     UseSkillEventArguments,
 )
 from .object_base import ObjectBase
@@ -1241,12 +1242,7 @@ class Match(BaseModel):
         table = self.player_tables[response.player_idx]
         actions: List[ActionBase] = []
         actions.append(RemoveCardAction(
-            position = ObjectPosition(
-                player_idx = response.player_idx,
-                area = ObjectPositionType.HAND,
-                id = table.hands[response.card_idx].id,
-            ),
-            card_idx = response.card_idx,
+            position = table.hands[response.card_idx].position,
             remove_type = 'BURNED'
         ))
         actions.append(RemoveDiceAction(
@@ -1364,25 +1360,11 @@ class Match(BaseModel):
                 player_idx = response.player_idx,
                 dice_idxs = response.dice_idxs,
             ),
-            # UseCardAction(
-            #     card_position = card.position,
-            # )
+            UseCardAction(
+                card_position = card.position,
+                target = response.target,
+            )
         ]
-        if card.type in [ObjectType.CARD, ObjectType.ARCANE]:
-            # only card and arcane type will be removed from hand.
-            actions.append(RemoveCardAction(
-                position = ObjectPosition(
-                    player_idx = response.player_idx,
-                    area = ObjectPositionType.HAND,
-                    id = card.id,
-                ),
-                card_idx = request.card_idx,
-                remove_type = 'USED',
-            ))
-        actions += card.get_actions(
-            target = response.target,
-            match = self,
-        )
         action_label, combat_action = card.get_action_type(self)
         actions.append(ActionEndAction(
             action_label = action_label,
@@ -1439,8 +1421,8 @@ class Match(BaseModel):
             return list(self._action_charge(action))
         elif isinstance(action, UseSkillAction):
             return list(self._action_use_skill(action))
-        # elif isinstance(action, UseCardAction):
-        #     return list(self._action_use_card(action))
+        elif isinstance(action, UseCardAction):
+            return list(self._action_use_card(action))
         elif isinstance(action, SkillEndAction):
             return list(self._action_skill_end(action))
         elif isinstance(action, CharactorDefeatedAction):
@@ -1600,11 +1582,19 @@ class Match(BaseModel):
             -> List[RemoveCardEventArguments]:
         player_idx = action.position.player_idx
         card_position = action.position.area
+        card_id = action.position.id
         remove_type = action.remove_type  # used or burned (Keqing, EleTuning)
         table = self.player_tables[player_idx]
         if card_position == ObjectPositionType.HAND:
-            card = table.hands.pop(action.card_idx)
-            assert card.id == action.position.id
+            match_idx = -1
+            for idx, card in enumerate(table.hands):
+                if card.id == card_id:
+                    match_idx = idx
+                    break
+            else:
+                self._set_match_state(MatchState.ERROR)  # pragma no cover
+                raise AssertionError(f'Cannot find card {card_id} in hand.')
+            card = table.hands.pop(match_idx)
         # elif card_position == ObjectPositionType.DECK:
         #     card = table.table_deck.pop(action.card_idx)
         else:
@@ -2410,6 +2400,18 @@ class Match(BaseModel):
         )
         return [UseSkillEventArguments(
             action = action,
+        )]
+
+    def _action_use_card(self, action: UseCardAction) \
+            -> List[UseCardEventArguments]:
+        card = self.get_object(action.card_position)
+        logging.info(
+            f'player {action.card_position.player_idx} '
+            f'use card {card.name}.'  # type: ignore
+        )
+        return [UseCardEventArguments(
+            action = action,
+            card = card
         )]
 
     def _action_skill_end(self, action: SkillEndAction) \

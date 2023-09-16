@@ -64,7 +64,7 @@ class ShadowswordLoneGale(AttackerSummonBase):
                     target_position = target_charactor.position,
                     damage = self.damage,
                     damage_elemental_type = self.damage_elemental_type,
-                    cost = self.cost.copy(),
+                    cost = Cost(),
                 )
             ]
         )]

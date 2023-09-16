@@ -204,9 +204,7 @@ class LightningStiletto(SkillTalent):
         for i, card in enumerate(hands):
             if card.id == self.id:
                 ret.append(RemoveCardAction(
-                    position = self.position.set_area(
-                        ObjectPositionType.HAND),
-                    card_idx = i,
+                    position = self.position,
                     remove_type = 'USED' if self.use_card else 'BURNED'
                 ))
                 break

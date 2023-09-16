@@ -150,7 +150,6 @@ class PlayerTable(BaseModel):
             for card in self.hands:
                 if card.id == position.id:
                     return card
-            raise NotImplementedError('Not tested part')
             return None
         # elif position.area == ObjectPositionType.DECK:
         #     for card in self.table_deck:

@@ -7,10 +7,11 @@ in many other places. Other objects are defined in their own files.
 
 import time
 import random
+from .event import UseCardEventArguments
 from utils import BaseModel
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 from pydantic import validator
-from .action import Actions, ActionTypes
+from .action import Actions, ActionTypes, RemoveCardAction
 from .consts import (
     ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
 )
@@ -82,8 +83,7 @@ class CardBase(ObjectBase):
     name: str
     desc: str
     type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
-                  ObjectType.TALENT, ObjectType.SUMMON,
-                  ObjectType.SUPPORT] = ObjectType.CARD
+                  ObjectType.TALENT, ObjectType.SUPPORT] = ObjectType.CARD
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     position: ObjectPosition = ObjectPosition(
@@ -93,6 +93,7 @@ class CardBase(ObjectBase):
     )
     cost: Cost
     cost_label: int = CostLabels.CARD.value
+    remove_when_used: bool = True
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -160,3 +161,28 @@ class CardBase(ObjectBase):
         the cost of the card.
         """
         return True
+
+    def event_handler_USE_CARD(
+        self, event: UseCardEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If this card is used, trigger events
+        """
+        actions: List[Actions] = []
+        if event.action.card_position.id != self.id:
+            # not this card
+            return actions
+        if self.remove_when_used:
+            actions.append(RemoveCardAction(
+                position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.HAND,
+                    id = self.id,
+                ),
+                remove_type = 'USED',
+            ))
+        actions += self.get_actions(
+            target = event.action.target,
+            match = match,
+        )
+        return actions

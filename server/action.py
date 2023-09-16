@@ -97,7 +97,6 @@ class RemoveCardAction(ActionBase):
     """
     type: Literal[ActionTypes.REMOVE_CARD] = ActionTypes.REMOVE_CARD
     position: ObjectPosition
-    card_idx: int
     remove_type: Literal['USED', 'BURNED']
 
 
@@ -268,6 +267,7 @@ class UseCardAction(ActionBase):
     """
     type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
     card_position: ObjectPosition
+    target: ObjectPosition | None
 
 
 class SkillEndAction(ActionBase):
