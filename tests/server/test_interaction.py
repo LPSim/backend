@@ -1,14 +1,14 @@
-from server.consts import DieColor, ObjectPositionType
-from server.deck import Deck
-from server.interaction import (
+from src.lpsim.server.consts import DieColor, ObjectPositionType
+from src.lpsim.server.deck import Deck
+from src.lpsim.server.interaction import (
     SwitchCardRequest, SwitchCardResponse,
     RerollDiceRequest, RerollDiceResponse,
     SwitchCharactorRequest, SwitchCharactorResponse,
     UseCardRequest, UseCardResponse,
     UseSkillRequest, UseSkillResponse,
 )
-from server.match import Match
-from server.struct import Cost, ObjectPosition
+from src.lpsim.server.match import Match
+from src.lpsim.server.struct import Cost, ObjectPosition
 
 
 def test_response_is_valid():

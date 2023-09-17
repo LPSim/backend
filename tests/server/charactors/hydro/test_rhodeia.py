@@ -1,7 +1,7 @@
 
-from agents.interaction_agent import InteractionAgent
-from server.match import Match, MatchState
-from server.deck import Deck
+from src.lpsim.agents.interaction_agent import InteractionAgent
+from src.lpsim.server.match import Match, MatchState
+from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp, get_random_state, get_test_id_from_command, make_respond, 
     set_16_omni

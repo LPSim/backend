@@ -1,10 +1,10 @@
 import logging
 from typing import Literal
-from server.match import Match
-from utils import BaseModel
-from server.deck import Deck
-from agents import NothingAgent
-from agents import RandomAgent
+from src.lpsim.server.match import Match
+from src.lpsim.utils import BaseModel
+from src.lpsim.server.deck import Deck
+from src.lpsim.agents import NothingAgent
+from src.lpsim.agents import RandomAgent
 
 
 class Main(BaseModel):

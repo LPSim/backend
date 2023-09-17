@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.2.2", "setuptools-scm>=7.1.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lpsim"
+dynamic = ["version"]
+authors = [
+    { name="Zyr17", email="jzjqz17@gmail.com" },
+]
+description = "Lochfolk Prinzessin Simulator, which simulates Genius Invokation TCG"
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "numpy",
+    "pydantic==1.10.8",
+    "typing_extensions"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/zyr17/GITCG"
+"Bug Tracker" = "https://github.com/zyr17/GITCG/issues"
+
+[tool.setuptools_scm]
+write_to = "src/lpsim/_version.py"
+version_scheme = "post-release"

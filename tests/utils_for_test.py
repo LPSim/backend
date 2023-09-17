@@ -1,11 +1,13 @@
 import numpy as np
 from typing import List, Any
-from agents.interaction_agent import InteractionAgent, InteractionAgent_V1_0
-from server.match import Match
-from server.event_handler import OmnipotentGuideEventHandler
-from agents.agent_base import AgentBase
-from server.struct import ObjectPosition
-from utils import BaseModel
+from src.lpsim.agents.interaction_agent import (
+    InteractionAgent, InteractionAgent_V1_0
+)
+from src.lpsim.server.match import Match
+from src.lpsim.server.event_handler import OmnipotentGuideEventHandler
+from src.lpsim.agents.agent_base import AgentBase
+from src.lpsim.server.struct import ObjectPosition
+from src.lpsim.utils import BaseModel
 from tests.default_random_state import get_default_random_state
 
 

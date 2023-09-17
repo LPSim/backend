@@ -1,4 +1,4 @@
-from server.deck import Deck
+from src.lpsim.server.deck import Deck
 from tests.utils_for_test import remove_ids
 
 

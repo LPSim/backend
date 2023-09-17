@@ -1,14 +1,14 @@
 import pytest
 
-from agents.random_agent import RandomAgent
-from agents.nothing_agent import NothingAgent
-from server.action import CreateDiceAction, MoveObjectAction
-from server.consts import ObjectPositionType
-from server.deck import Deck
-from server.interaction import SwitchCardResponse
-from server.object_base import ObjectBase
-from server.struct import ObjectPosition
-from server.match import Match, MatchConfig
+from src.lpsim.agents.random_agent import RandomAgent
+from src.lpsim.agents.nothing_agent import NothingAgent
+from src.lpsim.server.action import CreateDiceAction, MoveObjectAction
+from src.lpsim.server.consts import ObjectPositionType
+from src.lpsim.server.deck import Deck
+from src.lpsim.server.interaction import SwitchCardResponse
+from src.lpsim.server.object_base import ObjectBase
+from src.lpsim.server.struct import ObjectPosition
+from src.lpsim.server.match import Match, MatchConfig
 
 
 def test_object_position_validation():

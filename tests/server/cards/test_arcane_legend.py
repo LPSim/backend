@@ -1,13 +1,13 @@
 
-from server.deck import Deck
-from server.interaction import UseCardResponse
-from server.match import Match, MatchState
+from src.lpsim.server.deck import Deck
+from src.lpsim.server.interaction import UseCardResponse
+from src.lpsim.server.match import Match, MatchState
 
 from tests.utils_for_test import (
     get_random_state, get_test_id_from_command, make_respond
 )
-from agents.interaction_agent import InteractionAgent
-from agents.nothing_agent import NothingAgent
+from src.lpsim.agents.interaction_agent import InteractionAgent
+from src.lpsim.agents.nothing_agent import NothingAgent
 
 
 def test_covenant_of_rock():

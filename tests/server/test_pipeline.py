@@ -2,12 +2,12 @@ import time
 import json
 
 import pytest
-from agents.nothing_agent import NothingAgent
-from server.event_handler import OmnipotentGuideEventHandler
-from server.match import Match, MatchState
-from server.deck import Deck
-from agents.random_agent import RandomAgent
-from agents.interaction_agent import InteractionAgent
+from src.lpsim.agents.nothing_agent import NothingAgent
+from src.lpsim.server.event_handler import OmnipotentGuideEventHandler
+from src.lpsim.server.match import Match, MatchState
+from src.lpsim.server.deck import Deck
+from src.lpsim.agents.random_agent import RandomAgent
+from src.lpsim.agents.interaction_agent import InteractionAgent
 from tests.utils_for_test import (
     get_test_id_from_command, set_16_omni, make_respond, remove_ids, 
     get_random_state, check_hp

@@ -4,11 +4,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from server.match import Match
-from server.deck import Deck
+from src.lpsim import Match, Deck
 from tests.utils_for_test import get_random_state, set_16_omni, make_respond
-from agents.nothing_agent import NothingAgent
-from agents.interaction_agent import InteractionAgent
+from src.lpsim.agents import NothingAgent, InteractionAgent
 
 
 app = FastAPI()

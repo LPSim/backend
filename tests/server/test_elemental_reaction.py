@@ -1,9 +1,9 @@
-from agents.interaction_agent import InteractionAgent
-from agents.nothing_agent import NothingAgent
-from server.elemental_reaction import check_elemental_reaction
-from server.match import Match, MatchState
-from server.deck import Deck
-from server.consts import (
+from src.lpsim.agents.interaction_agent import InteractionAgent
+from src.lpsim.agents.nothing_agent import NothingAgent
+from src.lpsim.server.elemental_reaction import check_elemental_reaction
+from src.lpsim.server.match import Match, MatchState
+from src.lpsim.server.deck import Deck
+from src.lpsim.server.consts import (
     DamageElementalType, ElementType, ElementalReactionType
 )
 from tests.utils_for_test import (

@@ -22,6 +22,8 @@ This project works with Python 3.10, and requires packages listed in
 A FastAPI server is provided, which can be used to interact with the match.
 Its requirements are listed in `network/requirements.txt`.
 
+TODO: package-like usage is suppoted, need to update README
+
 Currently package-like usage is not supported, please follow the following
 instructions to run the project. 
 This project support a frontend `zyr17/GITCG-frontend`. To use the frontend, 
@@ -49,9 +51,8 @@ in console environments and within frontend interfaces.
 
 
 ```python
-from server.match import Match
-from server.deck import Deck
-from agents import RandomAgent
+from lpsim import Match, Deck
+from lpsim.agents import RandomAgent
 deck_string = '''
 charactor:Fischl
 charactor:Mona

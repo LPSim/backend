@@ -1,9 +1,9 @@
-from server.interaction import SwitchCardResponse
+from src.lpsim.server.interaction import SwitchCardResponse
 from tests.utils_for_test import make_respond
-from agents.interaction_agent import InteractionAgent
-from agents.nothing_agent import NothingAgent
-from server.match import Match
-from server.deck import Deck
+from src.lpsim.agents.interaction_agent import InteractionAgent
+from src.lpsim.agents.nothing_agent import NothingAgent
+from src.lpsim.server.match import Match
+from src.lpsim.server.deck import Deck
 
 
 def test_draw_card():
