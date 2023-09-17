@@ -13,13 +13,14 @@ class Deck(BaseModel):
 
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 
-                    charactor_number: int | None) -> bool:
+                    charactor_number: int | None,
+                    check_restriction: bool) -> bool:
         """
         check whether the deck is legal.
         1. the number of charactors
         2. the number of cards
         3. the number of cards with the same name
-        4. cards with special carrying rules  # TODO
+        4. cards with special carrying rules
         """
         if charactor_number is not None:
             if len(self.charactors) != charactor_number:
@@ -38,6 +39,51 @@ class Deck(BaseModel):
                         f'{max_same_card_number} in deck'
                     )
                     return False
+        if check_restriction:
+            for card in self.cards:
+                restriction = card.get_deck_restriction()
+                if restriction.type == 'NONE':
+                    continue
+                elif restriction.type == 'FACTION':
+                    counter = 0
+                    for charactor in self.charactors:
+                        if restriction.name in charactor.faction:
+                            counter += 1
+                    if counter < restriction.number:
+                        logging.error(
+                            f'to use card {card.name}, '
+                            f'charactor number of faction {restriction.name} '
+                            f'should be at least {restriction.number}'
+                        )
+                        return False
+                elif restriction.type == 'CHARACTOR':
+                    counter = 0
+                    for charactor in self.charactors:
+                        if restriction.name == charactor.name:
+                            counter += 1
+                    if counter < restriction.number:
+                        logging.error(
+                            f'to use card {card.name}, '
+                            f'charactor number of name {restriction.name} '
+                            f'should be at least {restriction.number}'
+                        )
+                        return False
+                elif restriction.type == 'ELEMENT':
+                    counter = 0
+                    for charactor in self.charactors:
+                        if restriction.name == charactor.element.value:
+                            counter += 1
+                    if counter < restriction.number:
+                        logging.error(
+                            f'to use card {card.name}, '
+                            f'charactor number of element {restriction.name} '
+                            f'should be at least {restriction.number}'
+                        )
+                        return False
+                else:
+                    raise NotImplementedError(
+                        f'restriction type {restriction.type} not implemented'
+                    )
         return True
 
     @staticmethod

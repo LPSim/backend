@@ -17,7 +17,7 @@ from .consts import (
 )
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
-    ObjectPosition, Cost
+    DeckRestriction, ObjectPosition, Cost
 )
 
 
@@ -122,6 +122,13 @@ class CardBase(ObjectBase):
         # set cost label into cost
         self.cost.label = self.cost_label
         assert self.cost.original_value is None
+
+    def get_deck_restriction(self) -> DeckRestriction:
+        """
+        Get the deck restriction of the card. It will be checked when deck is
+        created.
+        """
+        return DeckRestriction(type = 'NONE', name = '', number = 0)
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:
         """

@@ -19,7 +19,7 @@ from ..consts import (
 from ..object_base import (
     ObjectBase, CardBase
 )
-from ..struct import Cost, ObjectPosition
+from ..struct import Cost, DeckRestriction, ObjectPosition
 from ..modifiable_values import DamageValue
 from ..status import CharactorStatus
 from ..card.equipment.artifact import Artifacts
@@ -406,6 +406,16 @@ class TalentBase(CardBase):
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
     cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
     remove_when_used: bool = False
+
+    def get_deck_restriction(self) -> DeckRestriction:
+        """
+        For talent cards, should contain the corresponding charactor.
+        """
+        return DeckRestriction(
+            type = 'CHARACTOR', 
+            name = self.charactor_name, 
+            number = 1
+        )
 
     def is_valid(self, match: Any) -> bool:
         """

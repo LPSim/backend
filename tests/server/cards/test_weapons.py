@@ -100,6 +100,7 @@ def test_vanilla_weapons():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -221,6 +222,7 @@ def test_the_bell():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -335,6 +337,7 @@ def test_a_thousand():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -461,6 +464,7 @@ def test_vortex_vanquisher():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -559,6 +563,7 @@ def test_vortex_2():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -694,6 +699,7 @@ def test_lithic_spear():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -797,6 +803,7 @@ def test_kings_squire():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -891,6 +898,7 @@ def test_kings_squire_2():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -995,6 +1003,7 @@ def test_amos():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1089,6 +1098,7 @@ def test_fruit_of_fullfillment():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1194,6 +1204,7 @@ def test_sacrificial():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1290,6 +1301,7 @@ def test_wolf_gravestone():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1400,6 +1412,7 @@ def test_aquila_favonia():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1492,6 +1505,7 @@ def test_skyward():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)

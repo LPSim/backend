@@ -4,16 +4,28 @@ from typing import Any, List, Literal
 
 from ...action import CreateDiceAction, CreateObjectAction
 from ...consts import (
-    ELEMENT_TO_DIE_COLOR, DieColor, ElementType, ObjectPositionType
+    ELEMENT_TO_DIE_COLOR, DieColor, ElementType, FactionType, 
+    ObjectPositionType
 )
 
-from server.struct import ObjectPosition
+from server.struct import DeckRestriction, ObjectPosition
 from ...object_base import CardBase
 from ...struct import Cost
 
 
 class ElementalResonanceCardBase(CardBase):
     element: ElementType
+
+    def get_deck_restriction(self) -> DeckRestriction:
+        """
+        For element resonance cards, should contain at least 2 charactors of
+        the corresponding element.
+        """
+        return DeckRestriction(
+            type = 'ELEMENT',
+            name = self.element.value,
+            number = 2
+        )
 
 
 name_to_element_type = {
@@ -102,7 +114,18 @@ class EnduringRock(ElementalResonanceCardBase):
 
 
 class NationResonanceCardBase(CardBase):
-    pass
+    faction: FactionType
+
+    def get_deck_restriction(self) -> DeckRestriction:
+        """
+        For nation resonance cards, should contain at least 2 charactors of
+        the corresponding faction.
+        """
+        return DeckRestriction(
+            type = 'FACTION',
+            name = self.faction.value,
+            number = 2
+        )
 
 
 class WindAndFreedom(NationResonanceCardBase):
@@ -116,6 +139,7 @@ class WindAndFreedom(NationResonanceCardBase):
     )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
+    faction: FactionType = FactionType.MONDSTADT
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         return []

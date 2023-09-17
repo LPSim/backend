@@ -88,6 +88,7 @@ def test_crystallize():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     set_16_omni(match)
     assert match.start()
     match.step()
@@ -180,6 +181,7 @@ def test_frozen():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -299,6 +301,7 @@ def test_frozen_and_pyro():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -399,6 +402,7 @@ def test_burning_flame():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -508,6 +512,7 @@ def test_dendro_core_catalyzing_field():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -572,9 +577,10 @@ def test_catalyzing_field_old():
     deck.charactors[0].max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    match.event_handlers[0].version = '3.3'
+    match.event_handlers[0].version = '3.3'  # type: ignore
     assert match.start()
     match.step()
 
@@ -625,6 +631,7 @@ def test_swirl():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -682,6 +689,7 @@ def test_swirl_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -745,6 +753,7 @@ def test_swirl_3():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -820,6 +829,7 @@ def test_swirl_4():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -907,6 +917,7 @@ def test_swirl_with_catalyzing_field():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -1006,6 +1017,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.charactor_number = 4
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -1108,7 +1120,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
         only_use_command = True
     )
     match = Match()
-    match.event_handlers[0].version = '3.3'
+    match.event_handlers[0].version = '3.3'  # type: ignore
     deck = Deck.from_str(
         '''
         charactor:HydroMobMage
@@ -1123,6 +1135,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.charactor_number = 4
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -1252,6 +1265,7 @@ def test_overloaded():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()
@@ -1319,6 +1333,7 @@ def test_background_overloaded():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()

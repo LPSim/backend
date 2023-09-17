@@ -424,6 +424,7 @@ def test_liben():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     match.start()
@@ -535,6 +536,7 @@ def test_setaria():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     match.start()
@@ -636,6 +638,7 @@ def test_liusu():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -749,6 +752,7 @@ def test_tubby():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     match.start()
@@ -873,6 +877,7 @@ def test_chang_nine():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1003,6 +1008,7 @@ def test_paimon_kujirai():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     match.start()
@@ -1117,6 +1123,7 @@ def test_master_zhang():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     set_16_omni(match)

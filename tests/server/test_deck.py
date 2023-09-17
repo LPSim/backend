@@ -114,44 +114,169 @@ def test_deck_assertions():
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None
+        charactor_number = None,
+        check_restriction = False
     )
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 30,
-        charactor_number = 3
+        charactor_number = 3,
+        check_restriction = False
     )
     assert not deck.check_legal(
         card_number = 29, 
         max_same_card_number = 30,
-        charactor_number = 3
+        charactor_number = 3,
+        check_restriction = False
     )
     assert not deck.check_legal(
         card_number = 31, 
         max_same_card_number = 30,
-        charactor_number = 3
+        charactor_number = 3,
+        check_restriction = False
     )
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 29,
-        charactor_number = 3
+        charactor_number = 3,
+        check_restriction = False
     )
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 3
+        charactor_number = 3,
+        check_restriction = False
     )
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 2
+        charactor_number = 2,
+        check_restriction = False
     )
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 4
+        charactor_number = 4,
+        check_restriction = False
+    )
+
+
+def test_deck_restriction():
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Collei
+        charactor:Barbara
+        Wind and Freedom*30
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert not deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
+    )
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        Wind and Freedom*30
+        Sweet Madame*30
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
+    )
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        Elemental Resonance: Woven Waters*30
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
+    )
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        Elemental Resonance: Woven Weeds*30
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert not deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
+    )
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        The Seed of Stored Knowledge*5
+        Prophecy of Submersion*5
+        Glorious Season*5
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
+    )
+    deck = Deck.from_str('''
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        The Seed of Stored Knowledge*5
+        Prophecy of Submersion*5
+        Grand Expectation*5
+    ''')
+    assert deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = False,
+    )
+    assert not deck.check_legal(
+        card_number = None, 
+        max_same_card_number = None,
+        charactor_number = None,
+        check_restriction = True,
     )
 
 
 if __name__ == '__main__':
     test_deck_string()
+    test_deck_restriction()

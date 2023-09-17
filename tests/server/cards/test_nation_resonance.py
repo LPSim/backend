@@ -77,6 +77,7 @@ def test_wind_and_freedom():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.charactor_number = 10
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -171,6 +172,7 @@ def test_wind_and_freedom_one_round():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.charactor_number = 10
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()

@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Literal
 
 from utils import BaseModel
 from .consts import ObjectPositionType, DieColor
@@ -266,3 +266,12 @@ class Cost(BaseModel):
                     break
             return success
         return True
+
+
+class DeckRestriction(BaseModel):
+    """
+    Deck restriction to add one card into deck
+    """
+    type: Literal['NONE', 'CHARACTOR', 'FACTION', 'ELEMENT']
+    name: str
+    number: int

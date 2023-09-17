@@ -165,6 +165,7 @@ class MatchConfig(BaseModel):
     """
     """
     random_first_player: bool = True
+    check_deck_restriction: bool = True
     initial_hand_size: int = 5
     initial_card_draw: int = 2
     initial_dice_number: int = 8
@@ -370,7 +371,8 @@ class Match(BaseModel):
             is_legal = player_table.player_deck_information.check_legal(
                 card_number = self.config.card_number,
                 max_same_card_number = self.config.max_same_card_number,
-                charactor_number = self.config.charactor_number
+                charactor_number = self.config.charactor_number,
+                check_restriction = self.config.check_deck_restriction,
             )
             if not is_legal:
                 logging.error(f'Player {pnum} deck is not legal.')

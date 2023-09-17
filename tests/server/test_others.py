@@ -274,6 +274,7 @@ def test_remove_non_exist_equip():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     assert match.start()
     with pytest.raises(AssertionError):
         match._action_move_object(

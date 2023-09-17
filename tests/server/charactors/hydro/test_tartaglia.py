@@ -130,6 +130,7 @@ def test_tartaglia():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -235,6 +236,7 @@ def test_tartaglia_2():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)

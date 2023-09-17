@@ -91,6 +91,7 @@ def test_adeptus_temptation():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -234,6 +235,7 @@ def test_lotus_flower_crisp():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -371,6 +373,7 @@ def test_lotus_flower_crisp_and_reflection():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -493,6 +496,7 @@ def test_mond_hash():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -613,6 +617,7 @@ def test_tandoori():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -729,6 +734,7 @@ def test_pizza():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -848,6 +854,7 @@ def test_full_and_tandoori():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -944,6 +951,7 @@ def test_north_chicken():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
@@ -1048,6 +1056,7 @@ def test_north_chicken_2():
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
+    match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
