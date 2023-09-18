@@ -65,6 +65,7 @@ jobs:
 
   upload-to-test-pypi:
     needs: test
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     environment:
       name: pypi
