@@ -388,8 +388,9 @@ class HeavyStrike(CardBase):
     cost: Cost = Cost(same_dice_number = 1)
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # no targets
-        return []
+        # active charactor
+        return [match.player_tables[
+            self.position.player_idx].get_active_charactor().position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -397,14 +398,11 @@ class HeavyStrike(CardBase):
         """
         Act the card. Create charactor status.
         """
-        assert target is None  # no targets
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        position = active_charactor.position.set_area(
-            ObjectPositionType.CHARACTOR_STATUS)
+        assert target is not None
         return [CreateObjectAction(
             object_name = self.name,
-            object_position = position,
+            object_position = target.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
             object_arguments = {}
         )]
 
