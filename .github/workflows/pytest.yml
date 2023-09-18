@@ -23,6 +23,7 @@ jobs:
 
     - name: Run tests with coverage
       run: |
+        python -m setuptools_scm
         python -m pytest --cov
         coverage xml
 
