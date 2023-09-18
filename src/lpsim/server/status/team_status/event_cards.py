@@ -2,13 +2,16 @@
 
 from typing import Any, Literal, List
 
-from ...consts import CostLabels, ElementType, PlayerActionLabels
+from ...consts import (
+    CostLabels, DamageType, ElementType, ElementalReactionType, 
+    PlayerActionLabels
+)
 
 from ...action import Actions, ChangeObjectUsageAction, RemoveObjectAction
 
 from ...event import (
     CharactorDefeatedEventArguments, ActionEndEventArguments, 
-    MoveObjectEventArguments, SkillEndEventArguments
+    MakeDamageEventArguments, MoveObjectEventArguments, SkillEndEventArguments
 )
 
 from ...modifiable_values import (
@@ -273,7 +276,56 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
         return self.check_should_remove()
 
 
+class SprawlingGreenery(RoundTeamStatus):
+    name: Literal[
+        'Elemental Resonance: Sprawling Greenery'
+    ] = 'Elemental Resonance: Sprawling Greenery'
+    desc: str = (
+        'During this round, the next Elemental Reaction you trigger deals '
+        '+2 DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        If we trigger elemental reaction, add 2 damage.
+        """
+        if (
+            self.position.player_idx != value.position.player_idx
+            or self.position.player_idx == value.target_position.player_idx
+        ):
+            # not we attack or we attack ourself, do nothing
+            return value
+        if value.damage_type != DamageType.DAMAGE:  # pragma: no cover
+            # not damage, do nothing
+            return value
+        if value.element_reaction == ElementalReactionType.NONE:
+            # not elemental reaction, do nothing
+            return value
+        if self.usage <= 0:
+            # no usage, do nothing
+            return value
+        # we trigger elemental reaction, add 2 damage
+        assert mode == 'REAL'
+        self.usage -= 1
+        value.damage += 2
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When make damage end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
-    | EnduringRock | WhereIstheUnseenRazor
+    | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
 )

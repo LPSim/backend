@@ -4,7 +4,7 @@ from ...action import RemoveObjectAction
 
 from ...event import MakeDamageEventArguments
 
-from ...consts import SkillType
+from ...consts import ElementType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus
@@ -53,4 +53,91 @@ class HeavyStrike(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-EventCardCharactorStatus = HeavyStrike | HeavyStrike
+class ShatteringIce(RoundCharactorStatus):
+    name: Literal[
+        'Elemental Resonance: Shattering Ice'
+    ] = 'Elemental Resonance: Shattering Ice'
+    desc: str = (
+        'During this Round, your character will deal +2 DMG '
+        'for the next instance.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        add 2 damage for skills.
+        """
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not this charactor use skill, do nothing
+            return value
+        if self.usage <= 0:
+            # no usage, do nothing
+            return value
+        # we trigger elemental reaction, add 2 damage
+        assert mode == 'REAL'
+        self.usage -= 1
+        value.damage += 2
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When make damage end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
+class FerventFlames(RoundCharactorStatus):
+    name: Literal[
+        'Elemental Resonance: Fervent Flames'
+    ] = 'Elemental Resonance: Fervent Flames'
+    desc: str = (
+        'During this round, the next instance of Pyro-Related Reactions your '
+        'character triggers deals +3 DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        """
+        If we trigger pyro elemental reaction, add 3 damage.
+        """
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not this charactor use skill, do nothing
+            return value
+        if ElementType.PYRO not in value.reacted_elements:
+            # not trigger pyro elemental reaction, do nothing
+            return value
+        if self.usage <= 0:
+            # no usage, do nothing
+            return value
+        # we trigger elemental reaction, add 2 damage
+        assert mode == 'REAL'
+        self.usage -= 1
+        value.damage += 3
+        return value
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When make damage end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
+EventCardCharactorStatus = HeavyStrike | ShatteringIce | FerventFlames

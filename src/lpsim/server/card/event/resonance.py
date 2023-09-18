@@ -1,11 +1,14 @@
-
-
 from typing import Any, List, Literal
 
-from ...action import CreateDiceAction, CreateObjectAction
+from ...modifiable_values import DamageValue
+
+from ...action import (
+    ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
+    CreateObjectAction, MakeDamageAction, SwitchCharactorAction
+)
 from ...consts import (
-    ELEMENT_TO_DIE_COLOR, DieColor, ElementType, FactionType, 
-    ObjectPositionType
+    ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, DieColor, 
+    ElementType, FactionType, ObjectPositionType
 )
 
 from ...object_base import CardBase
@@ -75,10 +78,242 @@ class WovenCards(ElementalResonanceCardBase):
         )]
 
 
+class ShatteringIce(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: Shattering Ice']
+    desc: str = (
+        'During this Round, your current active character will deal +2 DMG '
+        'for the next instance.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.CRYO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.CRYO
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # avtive character
+        return [match.player_tables[
+            self.position.player_idx].get_active_charactor().position]
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Create status
+        """
+        assert target is not None
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = target.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
+            object_arguments = {}
+        )]
+
+
+class SoothingWater(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: Soothing Water']
+    desc: str = (
+        'Heal your active character for 2 HP and all your characters on '
+        'standby for 1 HP.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.HYDRO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.HYDRO
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        At least one charactor is taken damage.
+        """
+        for charactor in match.player_tables[
+                self.position.player_idx].charactors:
+            if charactor.is_alive and charactor.damage_taken > 0:
+                return True
+        return False
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        heal active 2, others 1.
+        """
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        damage_action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = active_charactor.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            ],
+        )
+        for charactor in match.player_tables[
+                self.position.player_idx].charactors:
+            if (
+                charactor.is_alive
+                and charactor.position != active_charactor.position
+            ):
+                damage_action.damage_value_list.append(
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.HEAL,
+                        target_position = charactor.position,
+                        damage = -1,
+                        damage_elemental_type = DamageElementalType.HEAL,
+                        cost = self.cost.copy()
+                    )
+                )
+        return [damage_action]
+
+
+class FerventFlames(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: Fervent Flames']
+    desc: str = (
+        'During this round, the next instance of Pyro-Related Reactions your '
+        'current active character triggers deals +3 DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.PYRO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.PYRO
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # avtive character
+        return [match.player_tables[
+            self.position.player_idx].get_active_charactor().position]
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Create status
+        """
+        assert target is not None
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = target.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
+            object_arguments = {}
+        )]
+
+
+class HighVoltage(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: High Voltage']
+    desc: str = (
+        'During this round, one of your characters without maximum Energy '
+        'gains 1 Energy. (Active Character prioritized)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.ELECTRO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.ELECTRO
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        At least one charactor without maximum Energy.
+        """
+        for charactor in match.player_tables[
+                self.position.player_idx].charactors:
+            if charactor.is_alive and charactor.charge < charactor.max_charge:
+                return True
+        return False
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChargeAction]:
+        """
+        active charactor first to gain energy.
+        """
+        assert target is None
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        if active_charactor.charge < active_charactor.max_charge:
+            return [ChargeAction(
+                player_idx = self.position.player_idx,
+                charactor_idx = active_charactor.position.charactor_idx,
+                charge = 1,
+            )]
+        for charactor in match.player_tables[
+                self.position.player_idx].charactors:
+            if (
+                charactor.is_alive
+                and charactor.charge < charactor.max_charge
+            ):
+                return [ChargeAction(
+                    player_idx = self.position.player_idx,
+                    charactor_idx = charactor.position.charactor_idx,
+                    charge = 1,
+                )]
+        else:
+            raise AssertionError('No charactor can be charged.')
+
+
+class ImpetuousWinds(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: Impetuous Winds']
+    desc: str = (
+        'Switch to the target character and create Omni Element x1.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.ANEMO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.ANEMO
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # all alive charactors except active charactor
+        active_idx = match.player_tables[
+            self.position.player_idx].active_charactor_idx
+        return [
+            charactor.position for (cid, charactor) in enumerate(
+                match.player_tables[self.position.player_idx].charactors
+            )
+            if charactor.is_alive and cid != active_idx
+        ]
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateDiceAction | SwitchCharactorAction]:
+        """
+        Create one omni element dice
+        """
+        assert target is not None
+        return [
+            SwitchCharactorAction(
+                player_idx = target.player_idx,
+                charactor_idx = target.charactor_idx,
+            ),
+            CreateDiceAction(
+                player_idx = self.position.player_idx,
+                color = DieColor.OMNI,
+                number = 1,
+            ),
+        ]
+
+
 class EnduringRock(ElementalResonanceCardBase):
-    name: Literal[
-        'Elemental Resonance: Enduring Rock'
-    ] = 'Elemental Resonance: Enduring Rock'
+    name: Literal['Elemental Resonance: Enduring Rock']
     desc: str = (
         'During this round, after your character deals Geo DMG next time: '
         'Should there be any Combat Status on your side that provides Shield, '
@@ -110,6 +345,62 @@ class EnduringRock(ElementalResonanceCardBase):
             ),
             object_arguments = {}
         )]
+
+
+class SprawlingGreenery(ElementalResonanceCardBase):
+    name: Literal['Elemental Resonance: Sprawling Greenery']
+    desc: str = (
+        'During this round, the next Elemental Reaction you trigger deals '
+        '+2 DMG. Your Burning Flame, Dendro Core, and Catalyzing Field gain '
+        '+1 Usage(s).'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.DENDRO,
+        elemental_dice_number = 1
+    )
+    element: ElementType = ElementType.DENDRO
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction | ChangeObjectUsageAction]:
+        """
+        Create status and add usage if exists. 
+        """
+        assert target is None
+        ret: List[CreateObjectAction | ChangeObjectUsageAction] = [
+            CreateObjectAction(
+                object_name = self.name,
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = -1,
+                ),
+                object_arguments = {}
+            )
+        ]
+        object_names = ['Burning Flame', 'Dendro Core', 'Catalyzing Field']
+        status = match.player_tables[self.position.player_idx].team_status
+        for s in status:
+            if s.name in object_names:
+                ret.append(ChangeObjectUsageAction(
+                    object_position = s.position,
+                    change_type = 'DELTA',
+                    change_usage = 1,
+                ))
+        summons = match.player_tables[self.position.player_idx].summons
+        for s in summons:
+            if s.name in object_names:
+                ret.append(ChangeObjectUsageAction(
+                    object_position = s.position,
+                    change_type = 'DELTA',
+                    change_usage = 1,
+                ))
+        return ret
 
 
 class NationResonanceCardBase(CardBase):
@@ -161,5 +452,8 @@ class WindAndFreedom(NationResonanceCardBase):
         )]
 
 
-ElementResonanceCards = WovenCards | EnduringRock
+ElementResonanceCards = (
+    WovenCards | ShatteringIce | SoothingWater | FerventFlames | HighVoltage
+    | ImpetuousWinds | EnduringRock | SprawlingGreenery
+)
 NationResonanceCards = WindAndFreedom | WindAndFreedom
