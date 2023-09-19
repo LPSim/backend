@@ -3,7 +3,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.deck import Deck
 from src.lpsim.server.match import Match, MatchState
 from tests.utils_for_test import (
-    get_random_state, get_test_id_from_command, make_respond, set_16_omni
+    check_hp, get_random_state, get_test_id_from_command, make_respond, 
+    set_16_omni
 )
 
 
@@ -200,7 +201,7 @@ def test_wind_and_freedom_one_round():
     assert match.state != MatchState.ERROR
 
 
-def test_stone_hunder_nature():
+def test_stone_thunder_nature():
     cmd_records = [
         [
             "sw_card 0 2",
@@ -330,6 +331,164 @@ def test_stone_hunder_nature():
     assert match.state != MatchState.ERROR
 
 
+def test_fatui_monster():
+    cmd_records = [
+        [
+            "sw_card 1 0",
+            "choose 0",
+            "end",
+            "end",
+            "TEST 2 card 1 cannot use",
+            "skill 1 15 14 13",
+            "card 3 0 12 11",
+            "card 7 0 10 9",
+            "card 4 0 8 7",
+            "TEST 2 card 3 cannot use",
+            "card 0 0 6 5",
+            "card 1 0 4 3",
+            "card 2 0 2 1",
+            "end",
+            "TEST 1 2 10 10 8 5 4",
+            "skill 1 15 14 13",
+            "TEST 1 2 10 10 6 5 0",
+            "TEST 3 p1c0 status 1",
+            "card 0 0 12 11 10 9",
+            "TEST 4 no summon",
+            "end",
+            "skill 0 15 14 13",
+            "sw_char 1 12",
+            "skill 0 11 10 9",
+            "skill 0 8 7 6"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "end",
+            "end",
+            "skill 1 15 14 13",
+            "sw_char 1 12",
+            "skill 0 11 10 9",
+            "TEST 1 8 10 10 9 6 10",
+            "TEST 5 p1 usage 1 1 1 1",
+            "sw_char 2 8",
+            "skill 0 7 6 5",
+            "TEST 1 5 10 10 9 6 10",
+            "end",
+            "card 4 0 15 14",
+            "skill 0 13 12 11",
+            "choose 0",
+            "end",
+            "sw_char 1 15",
+            "sw_char 0 14",
+            "card 0 0 13 12",
+            "card 0 0 11 10",
+            "card 0 0 9 8",
+            "card 1 0 7 6",
+            "TEST 5 p0 usage 1 2 2 2 2",
+            "sw_char 1 5",
+            "TEST 5 p0 usage 1 1 1 1 1",
+            "TEST 1 2 6 7 3 4 0",
+            "TEST 3 p0c2 status 1",
+            "TEST 2 card 1 cannot use",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Mona
+        charactor:Nahida
+        charactor:Klee
+        Fatui Conspiracy*10
+        Abyssal Summons*10
+        Guardian's Oath*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                card_num = int(cmd[3])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert req.card_idx != card_num
+            elif test_id == 3:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                cidx = int(cmd[2][3])
+                usages = [int(x) for x in cmd[4:]]
+                status = match.player_tables[pidx].charactors[cidx].status
+                assert len(status) == len(usages)
+                for s, u in zip(status, usages):
+                    assert s.usage == u
+            elif test_id == 4:
+                for table in match.player_tables:
+                    assert len(table.summons) == 0
+            elif test_id == 5:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                status = match.player_tables[pidx].team_status
+                assert len(status) == len(usages)
+                for s, u in zip(status, usages):
+                    assert s.usage == u
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_wind_and_freedom()
-    test_stone_hunder_nature()
+    test_stone_thunder_nature()
+    test_fatui_monster()
