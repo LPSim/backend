@@ -4,7 +4,8 @@ from ...modifiable_values import DamageValue
 
 from ...action import (
     ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
-    CreateObjectAction, MakeDamageAction, SwitchCharactorAction
+    CreateObjectAction, DrawCardAction, GenerateSwitchCardRequestAction, 
+    MakeDamageAction, RemoveDiceAction, SwitchCharactorAction
 )
 from ...consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, DieColor, 
@@ -452,8 +453,118 @@ class WindAndFreedom(NationResonanceCardBase):
         )]
 
 
+class StoneAndContracts(NationResonanceCardBase):
+    name: Literal['Stone and Contracts']
+    desc: str = (
+        'When the Action Phase of the next Round begins: Create 3 Omni '
+        'Element. '
+        '(You must have at least 2 Liyue characters in your deck to add this '
+        'card to your deck.)'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(any_dice_number = 3)
+    faction: FactionType = FactionType.LIYUE
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        create Stone and Contracts team status.
+        """
+        assert target is None
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {},
+        )]
+
+
+class ThunderAndEternity(NationResonanceCardBase):
+    name: Literal['Thunder and Eternity']
+    desc: str = (
+        'Convert all your Elemental Dice to Omni Element. '
+        '(You must have at least 2 Inazuman characters in your deck to add '
+        'this card to your deck.)'
+    )
+    version: Literal['4.0'] = '4.0'
+    cost: Cost = Cost()
+    faction: FactionType = FactionType.INAZUMA
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_dice_color(self, match: Any) -> DieColor:
+        """
+        Return omni color
+        """
+        return DieColor.OMNI
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[RemoveDiceAction | CreateDiceAction]:
+        """
+        remove all dice, and create same number dice
+        """
+        assert target is None
+        player_table = match.player_tables[self.position.player_idx]
+        dice_number = len(player_table.dice.colors)
+        return [
+            RemoveDiceAction(
+                player_idx = self.position.player_idx,
+                dice_idxs = list(range(dice_number)),
+            ),
+            CreateDiceAction(
+                player_idx = self.position.player_idx,
+                color = self.get_dice_color(match),
+                number = len(player_table.dice.colors),
+            )
+        ]
+
+
+class NatureAndWisdom(NationResonanceCardBase):
+    name: Literal['Nature and Wisdom']
+    desc: str = (
+        'Draw 1 card. After that, switch any cards in your hand. '
+        '(You must have at least 2 Sumeru characters in your deck to add '
+        'this card to your deck.)'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 1)
+    faction: FactionType = FactionType.SUMERU
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[DrawCardAction | GenerateSwitchCardRequestAction]:
+        """
+        draw 1 card, and switch any cards in your hand.
+        """
+        assert target is None
+        return [
+            DrawCardAction(
+                player_idx = self.position.player_idx,
+                number = 1,
+                draw_if_filtered_not_enough = True
+            ),
+            GenerateSwitchCardRequestAction(
+                player_idx = self.position.player_idx,
+            )
+        ]
+
+
 ElementResonanceCards = (
     WovenCards | ShatteringIce | SoothingWater | FerventFlames | HighVoltage
     | ImpetuousWinds | EnduringRock | SprawlingGreenery
 )
-NationResonanceCards = WindAndFreedom | WindAndFreedom
+NationResonanceCards = (
+    WindAndFreedom | StoneAndContracts | ThunderAndEternity | NatureAndWisdom
+)

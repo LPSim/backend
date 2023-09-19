@@ -50,6 +50,7 @@ class ActionTypes(str, Enum):
     # generate request actions
     GENERATE_CHOOSE_CHARACTOR = 'GENERATE_CHOOSE_CHARACTOR'
     GENERATE_REROLL_DICE = 'GENERATE_REROLL_DICE'
+    GENERATE_SWITCH_CARD = 'GENERATE_SWITCH_CARD'
 
     # change game state actions
     SKIP_PLAYER_ACTION = 'SKIP_PLAYER_ACTION'
@@ -389,6 +390,18 @@ class CharactorReviveAction(ActionBase):
     player_idx: int
     charactor_idx: int
     revive_hp: int
+
+
+# 25
+
+
+class GenerateSwitchCardRequestAction(ActionBase):
+    """
+    Action for generating switch card request.
+    """
+    type: Literal[ActionTypes.GENERATE_SWITCH_CARD] = \
+        ActionTypes.GENERATE_SWITCH_CARD
+    player_idx: int
 
 
 Actions = (

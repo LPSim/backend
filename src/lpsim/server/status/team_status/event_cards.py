@@ -3,11 +3,13 @@
 from typing import Any, Literal, List
 
 from ...consts import (
-    CostLabels, DamageType, ElementType, ElementalReactionType, 
+    CostLabels, DamageType, DieColor, ElementType, ElementalReactionType, 
     PlayerActionLabels
 )
 
-from ...action import Actions, ChangeObjectUsageAction, RemoveObjectAction
+from ...action import (
+    Actions, ChangeObjectUsageAction, CreateDiceAction, RemoveObjectAction
+)
 
 from ...event import (
     CharactorDefeatedEventArguments, ActionEndEventArguments, 
@@ -17,7 +19,9 @@ from ...event import (
 from ...modifiable_values import (
     CombatActionValue, CostValue, DamageIncreaseValue
 )
-from .base import RoundTeamStatus, ShieldTeamStatus, UsageTeamStatus
+from .base import (
+    RoundTeamStatus, ShieldTeamStatus, TeamStatusBase, UsageTeamStatus
+)
 
 
 class ChangingShifts(UsageTeamStatus):
@@ -333,8 +337,36 @@ class ReviveOnCooldown(RoundTeamStatus):
     max_usage: int = 1
 
 
+class StoneAndContracts(TeamStatusBase):
+    name: Literal['Stone and Contracts']
+    desc: str = (
+        'When the Action Phase of the next Round begins: Create 3 Omni '
+        'Element. '
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+    def event_handler_ROUND_PREPARE(
+        self, event: Any, match: Any
+    ) -> List[CreateDiceAction | RemoveObjectAction]:
+        """
+        When round prepare, create 3 omni element and remove self.
+        """
+        return [
+            CreateDiceAction(
+                player_idx = self.position.player_idx,
+                color = DieColor.OMNI,
+                number = 3,
+            ),
+            RemoveObjectAction(
+                object_position = self.position,
+            )
+        ]
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
-    | ReviveOnCooldown
+    | ReviveOnCooldown | StoneAndContracts
 )

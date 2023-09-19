@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ...consts import ELEMENT_TO_DIE_COLOR
+
 from ...action import (
     ActionTypes, ChargeAction, CreateDiceAction, CreateObjectAction, 
     RemoveObjectAction
@@ -8,6 +10,25 @@ from ...struct import Cost, ObjectPosition
 from .others import IHaventLostYet as IHLY_4_0
 from .others import SendOff as SendOff_3_7
 from .foods import MintyMeatRolls as MintyMeatRolls_3_4
+from .resonance import ThunderAndEternity as TAE_4_0
+
+
+class ThunderAndEternity_3_7(TAE_4_0):
+    name: Literal['Thunder and Eternity']
+    desc: str = (
+        'Convert all your Elemental Dice to the Type of the active character. '
+        '(You must have at least 2 Inazuman characters in your deck to add '
+        'this card to your deck.)'
+    )
+    version: Literal['3.7']
+
+    def get_dice_color(self, match: Any) -> str:
+        """
+        Convert all your Elemental Dice to the Type of the active character.
+        """
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        return ELEMENT_TO_DIE_COLOR[charactor.element]
 
 
 class IHaventLostYet_3_3(IHLY_4_0):
@@ -56,4 +77,7 @@ class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
     )
 
 
-OldVersionEventCards = IHaventLostYet_3_3 | SendOff_3_3 | MintyMeatRolls_3_3
+OldVersionEventCards = (
+    ThunderAndEternity_3_7 | IHaventLostYet_3_3 | SendOff_3_3 
+    | MintyMeatRolls_3_3
+)

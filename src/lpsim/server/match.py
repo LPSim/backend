@@ -9,7 +9,7 @@ from ..utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    ActionBase, Actions, CharactorReviveAction, ConsumeArcaneLegendAction,
+    ActionBase, Actions,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -31,6 +31,9 @@ from .action import (
     CharactorDefeatedAction,
     GenerateChooseCharactorRequestAction,
     GenerateRerollDiceRequestAction,
+    CharactorReviveAction,
+    ConsumeArcaneLegendAction,
+    GenerateSwitchCardRequestAction,
 )
 from .interaction import (
     Requests, Responses, 
@@ -489,7 +492,8 @@ class Match(BaseModel):
             # all response and action are cleared, start state transition
             elif self.state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
-                self._request_switch_card()
+                for player_idx in range(len(self.player_tables)):
+                    self._request_switch_card(player_idx)
             elif self.state == MatchState.STARTING_CARD_SWITCH:
                 self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
                 for player_idx in range(len(self.player_tables)):
@@ -941,15 +945,15 @@ class Match(BaseModel):
     Request functions. To generate specific requests.
     """
 
-    def _request_switch_card(self):
+    def _request_switch_card(self, player_idx: int):
         """
         Generate switch card requests.
         """
-        for pnum, player_table in enumerate(self.player_tables):
-            self.requests.append(SwitchCardRequest(
-                player_idx = pnum,
-                card_names = [card.name for card in player_table.hands]
-            ))
+        table = self.player_tables[player_idx]
+        self.requests.append(SwitchCardRequest(
+            player_idx = player_idx,
+            card_names = [card.name for card in table.hands]
+        ))
 
     def _request_choose_charactor(self, player_idx: int):
         """
@@ -1450,6 +1454,8 @@ class Match(BaseModel):
             return list(self._action_skip_player_action(action))
         elif isinstance(action, CharactorReviveAction):
             return list(self._action_charactor_revive(action))
+        elif isinstance(action, GenerateSwitchCardRequestAction):
+            return list(self._action_generate_switch_card_request(action))
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f'Unknown action {action}.')
@@ -2450,6 +2456,12 @@ class Match(BaseModel):
         self, action: GenerateRerollDiceRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_reroll_dice(action.player_idx, action.reroll_times)
+        return []
+
+    def _action_generate_switch_card_request(
+        self, action: GenerateSwitchCardRequestAction
+    ) -> List[EventArgumentsBase]:
+        self._request_switch_card(action.player_idx)
         return []
 
     """
