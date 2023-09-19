@@ -1309,6 +1309,242 @@ def test_plunge_strike():
     assert match.state != MatchState.ERROR
 
 
+def test_star_quick_dream_vennessa_exile():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 1",
+            "sw_char 0 15",
+            "card 4 0 14 13 12",
+            "TEST 2 p0 dice 16",
+            "card 0 0",
+            "card 1 0 15",
+            "TEST 3 card 0 cost 2",
+            "card 0 0 13 11",
+            "skill 1 12 10 9",
+            "TEST 4 card 0 can use",
+            "card 0 0 9",
+            "TEST 5 p0 summon 4",
+            "skill 1 8 7 6",
+            "end",
+            "TEST 1 5 10 10 9 10 10",
+            "TEST 6 p1c1 charge 2",
+            "TEST 6 p1c2 charge 3",
+            "sw_char 1 15",
+            "skill 2 14 13 12 11 10",
+            "sw_char 0 9",
+            "skill 2 8 7 6 5",
+            "TEST 1 5 10 10 1 7 7",
+            "TEST 6 p0c1 charge 2",
+            "TEST 6 p0c2 charge 3",
+            "end",
+            "choose 1",
+            "end",
+            "end",
+            "card 6 0 15 14 13",
+            "card 0 0 15 12 11",
+            "card 5 0",
+            "end",
+            "card 5 0 15 14 13",
+            "end",
+            "card 7 0 15",
+            "end",
+            "card 6 0",
+            "card 5 0",
+            "card 5 0",
+            "card 6 0",
+            "end",
+            "sw_char 2 15",
+            "sw_char 1 14",
+            "sw_char 2 13",
+            "end",
+            "end",
+            "end",
+            "end",
+            "end",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card 3",
+            "choose 1",
+            "card 2 0 15 14",
+            "card 2 0",
+            "card 1 0",
+            "TEST 3 card 0 cost 1",
+            "TEST 3 card 2 cost 0",
+            "card 2 0",
+            "sw_char 0 13",
+            "skill 1 12 11 10",
+            "TEST 5 p0 summon 4",
+            "card 1 0 9 8",
+            "end",
+            "card 0 0 15",
+            "skill 2 14 13 12 11",
+            "end",
+            "choose 1",
+            "TEST 7 card 3 cannot use",
+            "skill 2 15 14 13 12 11",
+            "sw_char 2 10",
+            "end",
+            "TEST 7 card 1 cannot use",
+            "TEST 7 card 3 cannot use",
+            "end",
+            "end",
+            "end",
+            "card 5 0 15 14 13",
+            "card 0 0 15 12 11",
+            "tune 4 15",
+            "tune 3 15",
+            "tune 1 15",
+            "tune 0 12",
+            "end",
+            "card 2 0 15 14",
+            "card 1 1 13 12",
+            "sw_char 1 11",
+            "end",
+            "sw_char 2 15",
+            "skill 2 14 13 12 11",
+            "sw_char 1 10",
+            "end",
+            "card 7 1 15 14",
+            "end",
+            "card 7 0 15 14 13",
+            "tune 5 15",
+            "tune 2 15",
+            "end",
+            "end",
+            "card 3 0",
+            "card 6 0 15 14 13",
+            "card 4 1 15",
+            "card 6 1 14 13",
+            "card 5 0 12 11",
+            "end",
+            "end",
+            "card 5 0",
+            "skill 3 15 14 13",
+            "card 2 0 12 11",
+            "card 1 0 10 9",
+            "skill 3 8 7 6",
+            "TEST 6 p1c2 charge 1",
+            "TEST 6 p1c0 charge 0",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Raiden Shogun
+        charactor:Ganyu@3.3
+        charactor:Keqing
+        Quick Knit*6
+        Starsigns*6
+        The Legend of Vennessa*6
+        Rhythm of the Great Dream*6
+        Exile's Circlet*6
+        Raven Bow*6
+        Where Is the Unseen Razor?*6
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                dnum = int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == dnum
+            elif test_id == 3:
+                cmd = cmd.split()
+                cidx = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                        assert req.cost.total_dice_cost == cost
+            elif test_id == 4:
+                found = False
+                cmd = cmd.split()
+                cidx = int(cmd[3])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                        found = True
+                assert found
+            elif test_id == 5:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                usages = [int(x) for x in cmd[4:]]
+                summons = match.player_tables[pidx].summons
+                assert len(summons) == len(usages)
+                for s, u in zip(summons, usages):
+                    assert s.usage == u
+            elif test_id == 6:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                cidx = int(cmd[2][3])
+                charge = int(cmd[4])
+                assert match.player_tables[pidx].charactors[
+                    cidx].charge == charge
+            elif test_id == 7:
+                cmd = cmd.split()
+                cidx = int(cmd[3])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert req.card_idx != cidx
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -1319,5 +1555,6 @@ if __name__ == '__main__':
     # test_heavy_strike_2()
     # test_friendship_eternal()
     # test_unseen_razor()
-    test_send_off_new_and_old()
+    # test_send_off_new_and_old()
     # test_plunge_strike()
+    test_star_quick_dream_vennessa_exile()
