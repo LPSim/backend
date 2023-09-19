@@ -2,22 +2,26 @@
 
 from typing import Any, Literal, List
 
+from ...struct import Cost
+
 from ...consts import (
-    CostLabels, DamageType, DieColor, ElementType, ElementalReactionType, 
-    PlayerActionLabels
+    CostLabels, DamageElementalType, DamageType, DieColor, ElementType, 
+    ElementalReactionType, ObjectPositionType, PlayerActionLabels
 )
 
 from ...action import (
-    Actions, ChangeObjectUsageAction, CreateDiceAction, RemoveObjectAction
+    Actions, ChangeObjectUsageAction, CreateDiceAction, MakeDamageAction, 
+    RemoveObjectAction
 )
 
 from ...event import (
     CharactorDefeatedEventArguments, ActionEndEventArguments, 
-    MakeDamageEventArguments, MoveObjectEventArguments, SkillEndEventArguments
+    MakeDamageEventArguments, MoveObjectEventArguments, 
+    RoundPrepareEventArguments, SkillEndEventArguments
 )
 
 from ...modifiable_values import (
-    CombatActionValue, CostValue, DamageIncreaseValue
+    CombatActionValue, CostValue, DamageIncreaseValue, DamageValue
 )
 from .base import (
     RoundTeamStatus, ShieldTeamStatus, TeamStatusBase, UsageTeamStatus
@@ -408,8 +412,88 @@ class AncientCourtyard(RoundTeamStatus):
         return self.check_should_remove()
 
 
+class FatuiAmbusher(UsageTeamStatus):
+    name: Literal[
+        'Fatui Ambusher: Cryo Cicin Mage',
+        'Fatui Ambusher: Mirror Maiden',
+        'Fatui Ambusher: Pyroslinger Bracer',
+        'Fatui Ambusher: Electrohammer Vanguard'
+    ]
+    desc: str = (
+        "After a character on whose side of the field this card is on uses a "
+        "Skill: Deals 1 XXX DMG to the active character on that side. "
+        "(Once per round) "
+        "Usage(s): 2"
+    )
+    element: DamageElementalType = DamageElementalType.PIERCING
+    version: Literal['3.7'] = '3.7'
+    usage: int = 2
+    max_usage: int = 2
+
+    activated_this_round: bool = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.activated_this_round = False
+        if self.name == 'Fatui Ambusher: Cryo Cicin Mage':
+            self.element = DamageElementalType.CRYO
+        elif self.name == 'Fatui Ambusher: Mirror Maiden':
+            self.element = DamageElementalType.HYDRO
+        elif self.name == 'Fatui Ambusher: Pyroslinger Bracer':
+            self.element = DamageElementalType.PYRO
+        else:
+            assert self.name == 'Fatui Ambusher: Electrohammer Vanguard'
+            self.element = DamageElementalType.ELECTRO
+        self.desc = self.desc.replace('XXX', self.element.name.capitalize())
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        reset activated_this_round
+        """
+        self.activated_this_round = False
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        When attached charactor use skill, then damage itself.
+        """
+        if self.activated_this_round:
+            # already activated, do nothing
+            return []
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True, 
+            target_area = ObjectPositionType.SKILL,
+        ):
+            # not charactor use skill, not modify
+            return []
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        if self.usage > 0:  # pragma: no branch
+            self.usage -= 1
+            self.activated_this_round = True
+            return [MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = self.position.player_idx,
+                damage_value_list = [DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = active_charactor.position,
+                    damage = 1,
+                    damage_elemental_type = self.element,
+                    cost = Cost()
+                )]
+            )]
+        else:
+            return []  # pragma: no cover
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
     | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
+    | FatuiAmbusher
 )

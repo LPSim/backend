@@ -1,4 +1,5 @@
 from .system import BurningFlame
+from .events import EventSummons
 
 
-Summons = BurningFlame | BurningFlame
+Summons = BurningFlame | EventSummons

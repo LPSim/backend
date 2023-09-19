@@ -17,8 +17,6 @@ class ThunderAndEternity_3_7(TAE_4_0):
     name: Literal['Thunder and Eternity']
     desc: str = (
         'Convert all your Elemental Dice to the Type of the active character. '
-        '(You must have at least 2 Inazuman characters in your deck to add '
-        'this card to your deck.)'
     )
     version: Literal['3.7']
 

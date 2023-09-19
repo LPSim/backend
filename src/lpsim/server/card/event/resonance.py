@@ -18,6 +18,16 @@ from ...struct import Cost, DeckRestriction, ObjectPosition
 
 class ElementalResonanceCardBase(CardBase):
     element: ElementType
+    restriction_desc: str = (
+        '(You must have at least 2 XXX characters in your deck to add '
+        'this card to your deck.)'
+    )
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc += self.restriction_desc.replace(
+            'XXX', self.element.name.capitalize()
+        )
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -406,6 +416,16 @@ class SprawlingGreenery(ElementalResonanceCardBase):
 
 class NationResonanceCardBase(CardBase):
     faction: FactionType
+    restriction_desc: str = (
+        '(You must have at least 2 XXX characters in your deck to add '
+        'this card to your deck.)'
+    )
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc += self.restriction_desc.replace(
+            'XXX', self.faction.name.capitalize()
+        )
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -424,9 +444,6 @@ class WindAndFreedom(NationResonanceCardBase):
     desc: str = (
         'In this Round, when an opposing character is defeated during your '
         'Action, you can continue to act again when that Action ends. '
-        'Usage(s): 1 '
-        '(You must have at least 2 Mondstadt characters in your deck to add '
-        'this card to your deck.)'
     )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
@@ -458,8 +475,6 @@ class StoneAndContracts(NationResonanceCardBase):
     desc: str = (
         'When the Action Phase of the next Round begins: Create 3 Omni '
         'Element. '
-        '(You must have at least 2 Liyue characters in your deck to add this '
-        'card to your deck.)'
     )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 3)
@@ -490,8 +505,6 @@ class ThunderAndEternity(NationResonanceCardBase):
     name: Literal['Thunder and Eternity']
     desc: str = (
         'Convert all your Elemental Dice to Omni Element. '
-        '(You must have at least 2 Inazuman characters in your deck to add '
-        'this card to your deck.)'
     )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
@@ -532,8 +545,6 @@ class NatureAndWisdom(NationResonanceCardBase):
     name: Literal['Nature and Wisdom']
     desc: str = (
         'Draw 1 card. After that, switch any cards in your hand. '
-        '(You must have at least 2 Sumeru characters in your deck to add '
-        'this card to your deck.)'
     )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
@@ -561,10 +572,103 @@ class NatureAndWisdom(NationResonanceCardBase):
         ]
 
 
+class AbyssalSummons(NationResonanceCardBase):
+    name: Literal['Abyssal Summons']
+    desc: str = '''Summon 1 Random Hilichurl Summon! '''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    faction: FactionType = FactionType.MONSTER
+
+    def is_valid(self, match: Any) -> bool:
+        # if no place for summon, return False
+        table = match.player_tables[self.position.player_idx]
+        return len(table.summons) < match.config.max_summon_number
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Create 1 Random Hilichurl Summon!
+        """
+        assert target is None
+        hilichurl_names = [
+            'Cryo Hilichurl Shooter',
+            'Electro Hilichurl Shooter',
+            'Hilichurl Berserker',
+            'Hydro Samachurl'
+        ]
+        # if already has above summons, do not re-create it
+        summons = match.player_tables[self.position.player_idx].summons
+        for summon in summons:
+            if summon.name in hilichurl_names:
+                hilichurl_names.remove(summon.name)
+        assert len(hilichurl_names) > 0, 'No Hilichurl summon can be created.'
+        selected_name = hilichurl_names[int(match._random() 
+                                            * len(hilichurl_names))]
+        return [CreateObjectAction(
+            object_name = selected_name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.SUMMON,
+                id = -1,
+            ),
+            object_arguments = {},
+        )]
+
+
+class FatuiConspiracy(NationResonanceCardBase):
+    name: Literal['Fatui Conspiracy']
+    desc: str = (
+        "Create 1 Fatui Ambusher of a random type on the opponent's field."
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+    faction: FactionType = FactionType.FATUI
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Create 1 Random Status
+        """
+        assert target is None
+        fatui_names = [
+            'Fatui Ambusher: Cryo Cicin Mage',
+            'Fatui Ambusher: Mirror Maiden',
+            'Fatui Ambusher: Pyroslinger Bracer',
+            'Fatui Ambusher: Electrohammer Vanguard'
+        ]
+        # if enemy already has above status, do not re-create it
+        enemy_status = match.player_tables[
+            1 - self.position.player_idx].team_status
+        for status in enemy_status:
+            if status.name in fatui_names:
+                fatui_names.remove(status.name)
+        assert len(fatui_names) > 0, 'No Fatui status can be created.'
+        # create with random name
+        selected_name = fatui_names[int(match._random() * len(fatui_names))]
+        return [CreateObjectAction(
+            object_name = selected_name,
+            object_position = ObjectPosition(
+                player_idx = 1 - self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {},
+        )]
+
+
 ElementResonanceCards = (
     WovenCards | ShatteringIce | SoothingWater | FerventFlames | HighVoltage
     | ImpetuousWinds | EnduringRock | SprawlingGreenery
 )
 NationResonanceCards = (
     WindAndFreedom | StoneAndContracts | ThunderAndEternity | NatureAndWisdom
+    | AbyssalSummons | FatuiConspiracy
 )

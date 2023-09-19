@@ -14,8 +14,8 @@ from ...object_base import CardBase
 from ...action import (
     Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
-    GenerateRerollDiceRequestAction, MoveObjectAction, SkillEndAction, 
-    SwitchCharactorAction, UseSkillAction
+    GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
+    SkillEndAction, SwitchCharactorAction, UseSkillAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -316,6 +316,40 @@ class SendOff(CardBase):
         )]
 
 
+class GuardiansOath(CardBase):
+    name: Literal["Guardian's Oath"]
+    desc: str = (
+        'Destroy all Summons. (Affects both you and your opponent.)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 4)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def is_valid(self, match: Any) -> bool:
+        return (
+            len(match.player_tables[0].summons) > 0
+            or len(match.player_tables[1].summons) > 0
+        )
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        Act the card. Destroy all summons.
+        """
+        assert target is None
+        ret: List[RemoveObjectAction] = []
+        for table in match.player_tables:
+            for summon in table.summons:
+                ret.append(RemoveObjectAction(
+                    object_position = summon.position
+                ))
+        return ret
+
+
 class PlungingStrike(CardBase):
     name: Literal['Plunging Strike']
     desc: str = (
@@ -509,6 +543,6 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | PlungingStrike
-    | HeavyStrike | FriendshipEternal | WhereIstheUnseenRazor
+    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | GuardiansOath
+    | PlungingStrike | HeavyStrike | FriendshipEternal | WhereIstheUnseenRazor
 )
