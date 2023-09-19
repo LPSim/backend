@@ -200,5 +200,136 @@ def test_wind_and_freedom_one_round():
     assert match.state != MatchState.ERROR
 
 
+def test_stone_hunder_nature():
+    cmd_records = [
+        [
+            "sw_card 0 2",
+            "choose 0",
+            "reroll",
+            "card 2 0 4",
+            "sw_card 2 0",
+            "TEST 1 p0 no stone in hand",
+            "TEST 1 p1 no stone in hand",
+            "TEST 1 p1 no thunder in hand",
+            "card 0 0",
+            "sw_char 1 6",
+            "end",
+            "reroll",
+            "card 4 0 7",
+            "sw_card 0 2 1 3 5",
+            "card 4 0 1",
+            "sw_card 3 5",
+            "TEST 1 p0 no nature card",
+            "TEST 1 p0 no thunder card",
+            "card 4 0 5 4 3",
+            "card 2 0 2 1 0",
+            "end",
+            "reroll",
+            "TEST 2 p0 11 dice",
+            "TEST 2 p1 8 dice",
+            "end"
+        ],
+        [
+            "sw_card 0 2 3 4",
+            "choose 0",
+            "reroll",
+            "card 1 0 2",
+            "sw_card 0 1 2 3",
+            "TEST 3 p0 all cryo",
+            "card 2 0",
+            "TEST 3 p1 all omni",
+            "card 2 0 6 5 4",
+            "end",
+            "reroll",
+            "TEST 2 p1 11 dice",
+            "TEST 4 p1 no team status",
+            "sw_char 1 10",
+            "end",
+            "reroll"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        charactor:Ganyu
+        charactor:Fischl
+        charactor:Keqing
+        Stone and Contracts*7
+        Thunder and Eternity*7
+        Thunder and Eternity@3.7*7
+        Nature and Wisdom*7
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                name = cmd[4]
+                for card in match.player_tables[pidx].hands:
+                    assert name not in card.name.lower()
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                dnum = int(cmd[3])
+                assert len(match.player_tables[pidx].dice.colors) == dnum
+            elif test_id == 3:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                color = cmd[4].upper()
+                colors = match.player_tables[pidx].dice.colors
+                assert colors == [color] * len(colors)
+            elif test_id == 4:
+                assert len(match.player_tables[1].team_status) == 0
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_wind_and_freedom()
+    test_stone_hunder_nature()
