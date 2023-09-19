@@ -4,10 +4,17 @@ Arcane legend cards.
 
 from typing import Any, List, Literal
 
-from ...action import ConsumeArcaneLegendAction, CreateDiceAction
+from ...modifiable_values import DamageValue
+
+from ...action import (
+    ConsumeArcaneLegendAction, CreateDiceAction, CreateObjectAction, 
+    MakeDamageAction
+)
 
 from ...struct import Cost, ObjectPosition
-from ...consts import CostLabels, ObjectType
+from ...consts import (
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, ObjectType
+)
 from ...object_base import CardBase
 
 
@@ -25,6 +32,53 @@ class ArcaneLegendBase(CardBase):
         return [ConsumeArcaneLegendAction(
             player_idx = self.position.player_idx
         )]
+
+
+class AncientCourtyard(ArcaneLegendBase):
+    name: Literal['Ancient Courtyard']
+    desc: str = (
+        'You must have a character who has already equipped a Weapon or '
+        'Artifact: The next time you play a Weapon or Artifact card in this '
+        'Round: Spend 2 less Elemental Dice.'
+    )
+    version: Literal['3.8'] = '3.8'
+    cost: Cost = Cost(arcane_legend = True)
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        You must have a character who has already equipped a Weapon or Artifact
+        """
+        for charactor in match.player_tables[
+                self.position.player_idx].charactors:
+            if charactor.weapon is not None or charactor.artifact is not None:
+                return True
+        return False
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        No targets.
+        """
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ConsumeArcaneLegendAction | CreateObjectAction]:
+        """
+        create team status
+        """
+        assert target is None
+        ret: List[ConsumeArcaneLegendAction | CreateObjectAction] = []
+        ret += super().get_actions(target, match)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectType.TEAM_STATUS,
+                id = 0,
+            ),
+            object_arguments = {}
+        ))
+        return ret
 
 
 class CovenantOfRock(ArcaneLegendBase):
@@ -66,4 +120,67 @@ class CovenantOfRock(ArcaneLegendBase):
         return ret
 
 
-ArcaneLegendCards = CovenantOfRock | CovenantOfRock
+class JoyousCelebration(ArcaneLegendBase):
+    name: Literal['Joyous Celebration']
+    desc: str = (
+        'Your active character must be one of the following elemental types '
+        'to play this card: Cryo/Hydro/Pyro/Electro/Dendro: The element '
+        'corresponding to your active character\'s Elemental Type will be '
+        'applied to all your characters.'
+    )
+    version: Literal['3.8'] = '3.8'
+    cost: Cost = Cost(arcane_legend = True)
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        Your active character must be one of the following elemental types to
+        play this card: Cryo/Hydro/Pyro/Electro/Dendro
+        """
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        return charactor.element in [
+            ElementType.CRYO, ElementType.HYDRO, ElementType.PYRO,
+            ElementType.ELECTRO, ElementType.DENDRO
+        ]
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        No targets.
+        """
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ConsumeArcaneLegendAction | MakeDamageAction]:
+        """
+        apply element to all your characters.
+        """
+        assert target is None
+        ret: List[ConsumeArcaneLegendAction | MakeDamageAction] = []
+        ret += super().get_actions(target, match)
+        damage_action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+            ],
+        )
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        element = active_charactor.element
+        for c in match.player_tables[self.position.player_idx].charactors:
+            if c.is_defeated:
+                continue
+            damage_action.damage_value_list.append(
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.ELEMENT_APPLICATION,
+                    target_position = c.position,
+                    damage = 0,
+                    damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[element],
+                    cost = self.cost.copy(),
+                )
+            )
+        return ret + [damage_action]
+
+
+ArcaneLegendCards = AncientCourtyard | CovenantOfRock | JoyousCelebration
