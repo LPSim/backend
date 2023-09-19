@@ -1,3 +1,4 @@
+from .exile import ExileArtifacts
 from .vermillion_shimenawa import VermillionShimenawas
 from .lucky_dog import LuckyDogsSilverCirclet
 from .element_artifacts import ElementArtifacts
@@ -8,8 +9,8 @@ from .instructors_cap import InstructorsCap
 from .old_version import OldVersionArtifacts
 
 Artifacts = (
-    LuckyDogsSilverCirclet | Gamblers | InstructorsCap | MillelithArtifacts 
-    | VermillionShimenawas | ElementArtifacts
+    LuckyDogsSilverCirclet | Gamblers | InstructorsCap | ExileArtifacts
+    | MillelithArtifacts | VermillionShimenawas | ElementArtifacts
     # finally old versions
     | OldVersionArtifacts
 )

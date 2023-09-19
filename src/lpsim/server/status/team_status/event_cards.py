@@ -491,9 +491,49 @@ class FatuiAmbusher(UsageTeamStatus):
             return []  # pragma: no cover
 
 
+class RhythmOfTheGreatDream(UsageTeamStatus):
+    name: Literal['Rhythm of the Great Dream']
+    desc: str = (
+        'The next time you play a Weapon or Artifact from your hand: Spend 1 '
+        'less Elemental Die.'
+    )
+    version: Literal['3.8'] = '3.8'
+    usage: int = 1
+    max_usage: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        decrease weapons or artifact cost by 1
+        """
+        if value.position.player_idx != self.position.player_idx:
+            # not self charactor, do nothing
+            return value
+        if value.cost.label & (CostLabels.WEAPON.value 
+                               | CostLabels.ARTIFACT.value) == 0:
+            # not weapon or artifact, do nothing
+            return value
+        # try decrease once
+        if value.cost.decrease_cost(None):
+            # decrease success
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        As it triggers on equipping weapon or artifact,
+        When move object end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
     | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
-    | FatuiAmbusher
+    | FatuiAmbusher | RhythmOfTheGreatDream
 )

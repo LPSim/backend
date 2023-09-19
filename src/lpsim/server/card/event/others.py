@@ -229,6 +229,36 @@ class LeaveItToMe(CardBase):
         )]
 
 
+class Starsigns(CardBase):
+    name: Literal['Starsigns']
+    desc: str = '''Your current Active Character gains 1 Energy.'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(any_dice_number = 2)
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        can use if charge not full
+        """
+        active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        return active_charactor.charge < active_charactor.max_charge
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # active charactor
+        return [match.player_tables[
+            self.position.player_idx].get_active_charactor().position]
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChargeAction]:
+        assert target is not None
+        return [ChargeAction(
+            player_idx = target.player_idx,
+            charactor_idx = target.charactor_idx,
+            charge = 1,
+        )]
+
+
 class ClaxsArts(CardBase):
     name: Literal["Clax's Arts"]
     desc: str = (
@@ -281,6 +311,35 @@ class ClaxsArts(CardBase):
                 charge = -1,
             ))
         return ret
+
+
+class QuickKnit(CardBase):
+    name: Literal['Quick Knit']
+    desc: str = '''Choose one Summon on your side and grant it +1 Usage(s).'''
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # all current summons
+        return [x.position for x in match.player_tables[
+            self.position.player_idx].summons]
+
+    def is_valid(self, match: Any) -> bool:
+        # should have summon
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChangeObjectUsageAction]:
+        """
+        Add 1 usage of selected summon
+        """
+        assert target is not None
+        return [ChangeObjectUsageAction(
+            object_position = target,
+            change_type = 'DELTA',
+            change_usage = 1
+        )]
 
 
 class SendOff(CardBase):
@@ -441,6 +500,32 @@ class HeavyStrike(CardBase):
         )]
 
 
+class TheLegendOfVennessa(CardBase):
+    name: Literal['The Legend of Vennessa']
+    desc: str = '''Create 4 basic Elemental Dice of different types.'''
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 3)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateDiceAction]:
+        """
+        Act the card. Create 4 basic Elemental Dice of different types.
+        """
+        assert target is None
+        return [
+            CreateDiceAction(
+                player_idx = self.position.player_idx,
+                number = 4,
+                different = True
+            ),
+        ]
+
+
 class FriendshipEternal(CardBase):
     name: Literal['Friendship Eternal']
     desc: str = (
@@ -489,6 +574,37 @@ class FriendshipEternal(CardBase):
                 draw_if_filtered_not_enough = True
             ))
         return ret
+
+
+class RhythmOfTheGreatDream(CardBase):
+    name: Literal['Rhythm of the Great Dream']
+    desc: str = (
+        'The next time you play a Weapon or Artifact from your hand: Spend 1 '
+        'less Elemental Die.'
+    )
+    version: Literal['3.8'] = '3.8'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is None
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {}
+        )]
 
 
 class WhereIstheUnseenRazor(CardBase):
@@ -543,6 +659,8 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | ClaxsArts | SendOff | GuardiansOath
-    | PlungingStrike | HeavyStrike | FriendshipEternal | WhereIstheUnseenRazor
+    | IHaventLostYet | LeaveItToMe | Starsigns | ClaxsArts | QuickKnit 
+    | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
+    | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
+    | WhereIstheUnseenRazor
 )
