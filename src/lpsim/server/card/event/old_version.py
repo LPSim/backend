@@ -7,6 +7,7 @@ from ...action import (
 from ...struct import Cost, ObjectPosition
 from .others import IHaventLostYet as IHLY_4_0
 from .others import SendOff as SendOff_3_7
+from .foods import MintyMeatRolls as MintyMeatRolls_3_4
 
 
 class IHaventLostYet_3_3(IHLY_4_0):
@@ -47,4 +48,12 @@ class SendOff_3_3(SendOff_3_7):
         )]
 
 
-OldVersionEventCards = IHaventLostYet_3_3 | SendOff_3_3
+class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
+    version: Literal['3.3']
+    desc: str = (
+        "Before this Round ends, the target character's Normal Attacks cost 1 "
+        "less Unaligned Element."
+    )
+
+
+OldVersionEventCards = IHaventLostYet_3_3 | SendOff_3_3 | MintyMeatRolls_3_3

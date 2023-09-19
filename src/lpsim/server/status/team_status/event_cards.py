@@ -325,7 +325,16 @@ class SprawlingGreenery(RoundTeamStatus):
         return self.check_should_remove()
 
 
+class ReviveOnCooldown(RoundTeamStatus):
+    name: Literal['Revive on cooldown'] = 'Revive on cooldown'
+    desc: str = '''You cannot revive any charactor with food this round.'''
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+
 EventCardTeamStatus = (
     WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
+    | ReviveOnCooldown
 )
