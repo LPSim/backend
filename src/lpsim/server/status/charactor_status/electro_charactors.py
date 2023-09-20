@@ -9,7 +9,8 @@ from ...action import (
 from ...event import MakeDamageEventArguments, SkillEndEventArguments
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, DieColor, ElementType, ObjectPositionType,
+    SkillType
 )
 
 from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
@@ -203,7 +204,6 @@ class ChakraDesiderata(CharactorStatusBase):
 
 
 class TheShrinesSacredShade(RoundCharactorStatus):
-    # TODO Rite of Dispatch
     name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
     desc: str = (
         'During this round, the next Yakan Evocation: Sesshou Sakura used by '
@@ -313,8 +313,65 @@ class TidecallerSurfEmbrace(PrepareCharactorStatus, ShieldCharactorStatus):
         return []
 
 
+class CrowfeatherCover(UsageCharactorStatus):
+    name: Literal['Crowfeather Cover'] = 'Crowfeather Cover'
+    desc: str = (
+        'The character with this attached deals +1 Elemental Skill and '
+        'Elemental Burst DMG.'
+    )
+    version: Literal['3.5'] = '3.5'
+    usage: int = 2
+    max_usage: int = 2
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if value.damage_from_element_reaction:
+            # is elemental reaction, do nothing
+            return value
+        if (
+            value.is_corresponding_charactor_use_damage_skill(
+                self.position, match, SkillType.ELEMENTAL_SKILL
+            )
+            or value.is_corresponding_charactor_use_damage_skill(
+                self.position, match, SkillType.ELEMENTAL_BURST
+            )
+        ):
+            # is self use elemental skill or elemental burst
+            if self.usage <= 0:  # pragma: no cover
+                # no usage
+                return value
+            # increase damage
+            assert mode == 'REAL'
+            self.usage -= 1
+            value.damage += 1
+            # talent effects
+            charactors = match.player_tables[
+                self.position.player_idx].charactors
+            if (
+                charactors[self.position.charactor_idx].element 
+                != ElementType.ELECTRO
+            ):
+                # not electro
+                return value
+            found_talent_kujou: bool = False
+            for charactor in charactors:
+                if (
+                    charactor.name == 'Kujou Sara' 
+                    and charactor.talent is not None
+                ):
+                    found_talent_kujou = True
+                    break
+            if found_talent_kujou:
+                # increase one more damage
+                value.damage += 1
+        return value
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
     | TheShrinesSacredShade | TheWolfWithin | TidecallerSurfEmbrace
+    | CrowfeatherCover
 )

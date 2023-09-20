@@ -7,21 +7,25 @@ from .raiden_shogun import RaidenShogun, EyeOfStormyJudgment, WishesUnnumbered
 from .yae_miko import YaeMiko, TheShrinesSacredShade, SesshouSakura
 from .razor import Razor, Awakening
 from .beidou import Beidou, LightningStorm
+from .kujou_sara import (
+    KujouSara, TenguJuuraiAmbush, TenguJuuraiStormcluster, SinOfPride
+)
 
 
 ElectroCharactors = (
-    Fischl | Razor | Keqing | Beidou | RaidenShogun | YaeMiko
+    Fischl | Razor | Keqing | Beidou | KujouSara | RaidenShogun | YaeMiko
     # finally monsters
     | ElectroHypostasis
 )
 SummonsOfElectroCharactors = (
-    Oz | EyeOfStormyJudgment | SesshouSakura
+    Oz | TenguJuuraiAmbush | TenguJuuraiStormcluster | EyeOfStormyJudgment 
+    | SesshouSakura
     # finally monsters
     | ChainsOfWardingThunder
 )
 ElectroCharactorTalents = (
     StellarPredator | Awakening | ThunderingPenance | LightningStorm 
-    | WishesUnnumbered | TheShrinesSacredShade
+    | SinOfPride | WishesUnnumbered | TheShrinesSacredShade
     # finally monsters
     | AbsorbingPrism
     # special card for Keqing, treated as a talent card.
