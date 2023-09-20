@@ -1,5 +1,3 @@
-
-
 from typing import Any, List, Literal
 
 from ...struct import Cost, ObjectPosition
@@ -14,12 +12,17 @@ from ...consts import (
 )
 
 from ...action import (
-    ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction, 
+    Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction, 
     RemoveObjectAction
 )
 
-from ...event import ReceiveDamageEventArguments, SkillEndEventArguments
-from .base import ElementalInfusionCharactorStatus, UsageCharactorStatus
+from ...event import (
+    AfterMakeDamageEventArguments, ReceiveDamageEventArguments, 
+    RoundEndEventArguments, SkillEndEventArguments
+)
+from .base import (
+    CharactorStatusBase, ElementalInfusionCharactorStatus, UsageCharactorStatus
+)
 
 
 class SeedOfSkandha(UsageCharactorStatus):
@@ -190,4 +193,81 @@ class VijnanaSuffusion(ElementalInfusionCharactorStatus, UsageCharactorStatus):
         )] + self.check_should_remove()
 
 
-DendroCharactorStatus = SeedOfSkandha | VijnanaSuffusion
+class RadicalVitality(CharactorStatusBase):
+    name: Literal['Radical Vitality'] = 'Radical Vitality'
+    desc: str = ''
+    desc_template: str = (
+        'When this character deals or takes Elemental DMG: Gain 1 stack of '
+        'Radical Vitality. (Max XXX stacks) '
+        'End Phase: If Radical Vitality stacks reach maximum, they will be '
+        'cleared and the character will lose all Energy.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 0
+    max_usage: int = 3
+    element_damage_triggered: bool = False
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._update_desc()
+
+    def _update_desc(self) -> None:
+        self.desc = self.desc_template.replace(
+            'XXX', str(self.max_usage)
+        )
+
+    def renew(self, new_status: 'RadicalVitality') -> None:
+        super().renew(new_status)
+        self._update_desc()
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[Actions]:
+        if self.usage == self.max_usage:
+            self.usage = 0
+        return []
+
+    def event_handler_AFTER_MAKE_DAMAGE(
+        self, event: AfterMakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If contains elemental damage and target or source self, gain progress
+        """
+        satisfied: bool = False
+        for damage in event.damages:
+            source_self = self.position.check_position_valid(
+                damage.final_damage.position, match, 
+                player_idx_same = True, charactor_idx_same = True,
+            )
+            target_self = self.position.check_position_valid(
+                damage.final_damage.target_position, match, 
+                player_idx_same = True, charactor_idx_same = True,
+            )
+            if source_self or target_self:
+                # source or target self
+                if damage.final_damage.damage_type != DamageType.DAMAGE:
+                    # heal, do nothing
+                    continue
+                if (
+                    damage.final_damage.damage_elemental_type in [
+                        DamageElementalType.PHYSICAL, 
+                        DamageElementalType.PIERCING,
+                        DamageElementalType.HEAL
+                    ]
+                ):
+                    # physical or piercing or heal, do nothing
+                    continue
+                if source_self and (
+                    damage.final_damage.cost.label 
+                    & CostLabels.ELEMENTAL_BURST.value != 0
+                ):
+                    # source self, and elemental burst, do nothing
+                    continue
+                satisfied = True
+        if satisfied:
+            # increase usage
+            self.usage = min(self.usage + 1, self.max_usage)
+        return []
+
+
+DendroCharactorStatus = SeedOfSkandha | VijnanaSuffusion | RadicalVitality
