@@ -110,7 +110,7 @@ def get_pidx_cidx(cmd):
     return int(cmd[2][1]), int(cmd[2][3])
 
 
-def compare_usage(data, usage_strs):
+def check_usage(data, usage_strs):
     usage = [int(x) for x in usage_strs]
     assert len(data) == len(usage)
     for u, d in zip(usage, data):

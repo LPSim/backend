@@ -1,7 +1,7 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, compare_usage, get_pidx_cidx, get_random_state, 
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
     get_test_id_from_command, make_respond, set_16_omni
 )
 
@@ -146,7 +146,7 @@ def test_sara():
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
                 status = match.player_tables[pidx].charactors[cidx].status
-                compare_usage(status, cmd[4:])
+                check_usage(status, cmd[4:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
