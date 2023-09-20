@@ -266,6 +266,7 @@ def test_timmie():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -414,6 +415,7 @@ def test_liben():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:Noelle
@@ -525,6 +527,7 @@ def test_setaria():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -628,6 +631,7 @@ def test_liusu():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -739,6 +743,7 @@ def test_tubby():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -863,6 +868,7 @@ def test_chang_nine():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:AnemoMobMage
         charactor:Yae Miko
@@ -993,6 +999,7 @@ def test_paimon_kujirai():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:AnemoMobMage
         charactor:Yae Miko
@@ -1111,6 +1118,7 @@ def test_master_zhang():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Ganyu
         charactor:Fischl

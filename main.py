@@ -23,6 +23,7 @@ if __name__ == '__main__':
     main = Main()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida

@@ -57,6 +57,7 @@ def test_seelie():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Noelle*3
         Treasure-Seeking Seelie*30
         '''
@@ -171,6 +172,7 @@ def test_NRE():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -296,6 +298,7 @@ def test_parametric():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Xiangling
         charactor:Ganyu

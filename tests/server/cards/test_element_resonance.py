@@ -55,6 +55,7 @@ def test_woven_element():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida*3
         Elemental Resonance: Woven Flames*4
         Elemental Resonance: Woven Ice*4
@@ -206,6 +207,7 @@ def test_enduring_rock():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:Arataki Itto
         charactor:Noelle
@@ -422,6 +424,7 @@ def test_other_all_element_resonance():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Collei
         charactor:Fischl
         charactor:Xiangling
@@ -573,6 +576,7 @@ def test_other_all_element_resonance_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Diluc
         charactor:AnemoMobMage
         charactor:Xingqiu

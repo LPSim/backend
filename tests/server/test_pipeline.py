@@ -474,6 +474,7 @@ def test_summon_over_maximum():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Fischl
         charactor:Rhodeia of Loch
@@ -569,6 +570,7 @@ def test_plunge_mark():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Fischl
         charactor:Rhodeia of Loch
@@ -622,6 +624,7 @@ def test_plunge_mark():
 def test_higher_version_compatible():
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Yoimiya@3.3
         charactor:Yoimiya@3.4
         charactor:Yoimiya@3.5

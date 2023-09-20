@@ -245,6 +245,7 @@ def test_nahida_talents():
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:PyroMobMage
         charactor:HydroMobMage
@@ -426,6 +427,7 @@ def test_nahida_talents_2():
     )
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck1 = Deck.from_str('''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:Nahida
         charactor:HydroMobMage
@@ -887,6 +889,7 @@ def test_seed_with_element_application():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu@3.3
         charactor:Nahida
         charactor:Fischl

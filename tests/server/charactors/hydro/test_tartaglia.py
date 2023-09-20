@@ -118,6 +118,7 @@ def test_tartaglia():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Klee
         charactor:Tartaglia
         charactor:Venti
@@ -224,6 +225,7 @@ def test_tartaglia_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Klee
         charactor:Tartaglia
         charactor:Venti

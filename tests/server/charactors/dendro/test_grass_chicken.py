@@ -107,6 +107,7 @@ def test_grass_chicken():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Jadeplume Terrorshroom
         charactor:Klee
         charactor:Xingqiu

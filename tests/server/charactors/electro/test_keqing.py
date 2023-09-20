@@ -81,6 +81,7 @@ def test_keqing():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Keqing
         charactor:Kaeya
         charactor:Fischl
@@ -215,6 +216,7 @@ def test_keqing_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Kaeya
         charactor:Keqing
         charactor:Fischl

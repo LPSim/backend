@@ -68,6 +68,7 @@ def test_xingqiu():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu@3.3
         charactor:Xingqiu
         charactor:Yoimiya

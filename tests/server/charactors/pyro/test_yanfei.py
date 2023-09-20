@@ -81,6 +81,7 @@ def test_yanfei():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Yanfei
         charactor:Yanfei
         charactor:Qiqi

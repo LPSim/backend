@@ -80,6 +80,7 @@ def test_tighnari():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Tighnari
         charactor:Fischl
         charactor:Collei

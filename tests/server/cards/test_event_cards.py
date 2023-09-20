@@ -114,6 +114,7 @@ def test_changing_shifts():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -192,6 +193,7 @@ def test_toss_up():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -512,6 +514,7 @@ def test_leave_it_to_me():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -728,6 +731,7 @@ def test_heavy_strike():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:Arataki Itto
         charactor:Noelle
@@ -822,6 +826,7 @@ def test_heavy_strike_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:CryoMobMage
         charactor:Noelle
@@ -918,6 +923,7 @@ def test_friendship_eternal():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Rhodeia of Loch
         charactor:Nahida
@@ -1027,6 +1033,7 @@ def test_unseen_razor():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Barbara
         charactor:Arataki Itto
         charactor:Noelle
@@ -1141,6 +1148,7 @@ def test_send_off_new_and_old():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Rhodeia of Loch*3
         Send Off*15
         '''
@@ -1249,6 +1257,7 @@ def test_plunge_strike():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Klee
         charactor:Arataki Itto
         charactor:Rhodeia of Loch
@@ -1449,6 +1458,7 @@ def test_star_quick_dream_vennessa_exile():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Raiden Shogun
         charactor:Ganyu@3.3
         charactor:Keqing

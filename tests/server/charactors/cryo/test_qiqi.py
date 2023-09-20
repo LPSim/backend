@@ -135,6 +135,7 @@ def test_qiqi():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Qiqi
         charactor:Electro Hypostasis
         charactor:Fischl

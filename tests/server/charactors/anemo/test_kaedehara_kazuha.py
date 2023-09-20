@@ -109,6 +109,7 @@ def test_kaedehara_kazuha():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Klee
         charactor:Kaedehara Kazuha
         charactor:Xingqiu
@@ -225,6 +226,7 @@ def test_kaedehara_klee():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Klee
         charactor:Kaedehara Kazuha
         charactor:Xingqiu

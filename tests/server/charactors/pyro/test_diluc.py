@@ -82,6 +82,7 @@ def test_diluc():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Keqing
         charactor:Diluc
         charactor:Qiqi

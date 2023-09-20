@@ -89,6 +89,7 @@ def test_maguu_kenki():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Maguu Kenki
         charactor:Nahida
         charactor:Fischl
@@ -205,6 +206,7 @@ def test_maguu_kenki_old():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Fischl
         Transcendent Automaton*30

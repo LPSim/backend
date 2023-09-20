@@ -66,6 +66,7 @@ def test_adeptus_temptation():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -209,6 +210,7 @@ def test_lotus_flower_crisp():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -347,6 +349,7 @@ def test_lotus_flower_crisp_and_reflection():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -469,6 +472,7 @@ def test_mond_hash():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -588,6 +592,7 @@ def test_tandoori():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -724,6 +729,7 @@ def test_pizza():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:CryoMobMage
         charactor:Noelle
@@ -843,6 +849,7 @@ def test_full_and_tandoori():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Rhodeia of Loch
         charactor:Nahida
@@ -941,6 +948,7 @@ def test_north_chicken():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Mona
         charactor:Nahida
@@ -1045,6 +1053,7 @@ def test_north_chicken_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Mona
         charactor:Nahida
@@ -1186,6 +1195,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ganyu
         charactor:Fischl
         charactor:Keqing
@@ -1306,6 +1316,7 @@ def test_meatroll():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Mona
         charactor:Nahida
@@ -1410,6 +1421,7 @@ def test_guoba_egg():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ganyu
         charactor:Fischl
         charactor:Keqing

@@ -267,6 +267,7 @@ def test_stone_thunder_nature():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ganyu
         charactor:Fischl
         charactor:Keqing
@@ -411,6 +412,7 @@ def test_fatui_monster():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Nahida
         charactor:Klee

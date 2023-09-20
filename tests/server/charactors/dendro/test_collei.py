@@ -85,6 +85,7 @@ def test_collei():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Collei
         charactor:Nahida
         charactor:Fischl

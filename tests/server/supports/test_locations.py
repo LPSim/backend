@@ -59,6 +59,7 @@ def test_liyue_harbor():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:Noelle
@@ -174,6 +175,7 @@ def test_tenshukaku():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:Noelle
@@ -310,6 +312,7 @@ def test_sumeru_city():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:Noelle
@@ -450,6 +453,7 @@ def test_vanarana():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -619,6 +623,7 @@ def test_library():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -743,6 +748,7 @@ def test_cathedral_inn_sangonomiya():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Xiangling
         charactor:Fischl
@@ -864,6 +870,7 @@ def test_golden_house():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Xiangling
         charactor:Ganyu

@@ -86,6 +86,7 @@ def test_barbara():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Barbara
         charactor:Nahida
@@ -253,6 +254,7 @@ def test_barbara_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Barbara*2
         Glorious Season*30

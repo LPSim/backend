@@ -93,6 +93,7 @@ def test_kokomi():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Sangonomiya Kokomi
         charactor:Sangonomiya Kokomi@3.5
         charactor:Qiqi

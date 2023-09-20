@@ -94,6 +94,7 @@ def test_rhodeia():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Rhodeia of Loch
         charactor:Nahida

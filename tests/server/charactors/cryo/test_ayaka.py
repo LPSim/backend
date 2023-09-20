@@ -85,6 +85,7 @@ def test_ayaka():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Kamisato Ayaka
         charactor:Kamisato Ayaka
         charactor:Fischl

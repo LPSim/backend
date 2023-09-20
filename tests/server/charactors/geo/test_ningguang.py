@@ -97,6 +97,7 @@ def test_ningguang():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ningguang
         charactor:Arataki Itto
         charactor:Qiqi

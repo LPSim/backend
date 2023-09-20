@@ -85,6 +85,7 @@ def test_hutao():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Hu Tao
         charactor:Keqing
         charactor:Qiqi

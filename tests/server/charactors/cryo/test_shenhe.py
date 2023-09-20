@@ -70,6 +70,7 @@ def test_shenhe():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Shenhe
         charactor:AnemoMobMage
         charactor:CryoMobMage
@@ -171,6 +172,7 @@ def test_shenhe_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Shenhe
         charactor:AnemoMobMage
         charactor:CryoMobMage

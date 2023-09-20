@@ -99,6 +99,7 @@ def test_stonehide():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Stonehide Lawachurl
         charactor:Stonehide Lawachurl
         charactor:CryoMobMage

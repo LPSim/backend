@@ -123,6 +123,8 @@ class Deck(BaseModel):
         default_version: str | None = None
         for line in deck_str.split('\n'):
             line = line.strip()
+            if line == '':
+                continue
             if line.startswith('default_version:'):
                 default_version = line[16:]
                 continue

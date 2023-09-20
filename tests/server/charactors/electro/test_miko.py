@@ -86,6 +86,7 @@ def test_miko():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Yae Miko
         charactor:Yae Miko
         charactor:Fischl

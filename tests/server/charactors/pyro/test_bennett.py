@@ -110,6 +110,7 @@ def test_bennett():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Bennett
         charactor:Klee
         charactor:Keqing
@@ -200,6 +201,7 @@ def test_bennett_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Bennett
         charactor:Klee
         charactor:Keqing

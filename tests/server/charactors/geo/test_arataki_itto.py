@@ -107,6 +107,7 @@ def test_arataki_itto():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:PhysicalMob
         charactor:Mona
@@ -242,6 +243,7 @@ def test_arataki_itto_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PhysicalMob
         charactor:Arataki Itto
         charactor:Mona

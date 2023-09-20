@@ -70,6 +70,7 @@ def test_eula():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Eula@3.5
         charactor:Eula
         charactor:CryoMobMage
@@ -185,6 +186,7 @@ def test_eula_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Eula@3.5
         charactor:Eula
         charactor:Fischl

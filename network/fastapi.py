@@ -30,17 +30,18 @@ app.add_middleware(
 def get_new_match(seed: Any = None, rich: bool = False):
     deck = Deck.from_str(
         '''
-        charactor:Yoimiya@3.3
-        charactor:Yoimiya@3.4
-        charactor:Yoimiya
-        Send Off@3.3*15
-        Send Off*15
+        default_version:4.0
+        charactor:Fischl
+        charactor:Zhongli
+        charactor:Arataki Itto
+        charactor:Ganyu
+        Dominance of Earth*10
+        Sweet Madame*10
+        Vortex Vanquisher*10
+        Tenacity of the Millelith*10
         '''
     )
     # change HP
-    # for charactor in deck.charactors:
-    #     charactor.hp = 20
-    #     charactor.max_hp = 20
     if seed:
         match: Match = Match(random_state = seed)
     else:
@@ -50,6 +51,7 @@ def get_new_match(seed: Any = None, rich: bool = False):
     match.config.charactor_number = None
     match.config.card_number = None
     match.config.random_first_player = False
+    match.config.check_deck_restriction = False
     if rich:
         set_16_omni(match)
     match.start()

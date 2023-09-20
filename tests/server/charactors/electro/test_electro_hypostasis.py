@@ -68,6 +68,7 @@ def test_elec_hypo():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -194,6 +195,7 @@ def test_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:Klee
         charactor:Keqing
@@ -266,6 +268,7 @@ def test_prepare_frozen():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Electro Hypostasis
         charactor:CryoMobMage
         charactor:Mona
@@ -358,6 +361,7 @@ def test_electro_bennett():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Bennett
         charactor:Maguu Kenki
         charactor:Electro Hypostasis

@@ -82,6 +82,7 @@ def test_vanilla_weapons():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Barbara
         charactor:Noelle
@@ -212,6 +213,7 @@ def test_the_bell():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Barbara
         charactor:Noelle
@@ -319,6 +321,7 @@ def test_a_thousand():
     # deck information
     deck1 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Venti
         charactor:Xingqiu
         charactor:Noelle
@@ -327,6 +330,7 @@ def test_a_thousand():
     )
     deck2 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Maguu Kenki
         charactor:Yoimiya
@@ -453,6 +457,7 @@ def test_vortex_vanquisher():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Candace*2
         charactor:Diluc
         charactor:Ningguang
@@ -552,6 +557,7 @@ def test_vortex_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Candace*2
         charactor:Chongyun
         charactor:Hu Tao
@@ -685,6 +691,7 @@ def test_lithic_spear():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Candace
         charactor:Hu Tao
@@ -791,6 +798,7 @@ def test_kings_squire():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Nahida
         charactor:Collei
@@ -885,6 +893,7 @@ def test_kings_squire_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Kamisato Ayaka
         charactor:Collei
@@ -992,6 +1001,7 @@ def test_amos():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Ganyu
         charactor:Collei
@@ -1087,6 +1097,7 @@ def test_fruit_of_fullfillment():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Klee
@@ -1190,6 +1201,7 @@ def test_sacrificial():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Chongyun
         charactor:Fischl
         charactor:Yae Miko
@@ -1290,6 +1302,7 @@ def test_wolf_gravestone():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Chongyun
         charactor:Fischl
         charactor:Yae Miko
@@ -1402,6 +1415,7 @@ def test_aquila_favonia():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Qiqi
         charactor:Yae Miko
@@ -1491,6 +1505,7 @@ def test_skyward():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Kamisato Ayaka
         charactor:Yae Miko

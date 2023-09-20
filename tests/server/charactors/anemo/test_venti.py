@@ -143,6 +143,7 @@ def test_venti():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Venti
         charactor:Barbara
         charactor:Fischl
@@ -271,6 +272,7 @@ def test_venti_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Arataki Itto
         charactor:Venti
         charactor:Nahida

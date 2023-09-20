@@ -63,6 +63,7 @@ def test_ganyu():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ganyu
         charactor:Ganyu@3.3
         charactor:Fischl
@@ -159,6 +160,7 @@ def test_ganyu_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Ganyu
         charactor:Ganyu@3.3
         charactor:Fischl

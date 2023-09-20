@@ -88,6 +88,7 @@ def test_maguu_kenki_10_10_10():
     # deck information
     deck1 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Venti
         charactor:Xingqiu
         charactor:Noelle
@@ -96,6 +97,7 @@ def test_maguu_kenki_10_10_10():
     )
     deck2 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Maguu Kenki
         charactor:Yoimiya
@@ -228,6 +230,7 @@ def test_maguu_kenki_10_10_10_2():
     # deck information
     deck1 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Venti
         charactor:Xingqiu
         charactor:Noelle
@@ -238,6 +241,7 @@ def test_maguu_kenki_10_10_10_2():
         c.hp = c.max_hp = 20
     deck2 = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida
         charactor:Maguu Kenki
         charactor:Yoimiya

@@ -208,6 +208,7 @@ def test_old_version_elemental_artifacts():
     )
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -556,6 +557,7 @@ def test_millelith():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:Noelle
@@ -714,6 +716,7 @@ def test_instructor():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:AnemoMobMage
         charactor:Barbara
         charactor:Yae Miko
@@ -831,6 +834,7 @@ def test_lucky_dog():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Rhodeia of Loch
         charactor:Ganyu
         charactor:Yae Miko
@@ -938,6 +942,7 @@ def test_big_elemental_artifacts():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Kamisato Ayaka
         charactor:Yae Miko

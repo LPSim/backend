@@ -76,6 +76,7 @@ def test_vermillion_shimenawa():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Qiqi
         charactor:Yae Miko
@@ -205,6 +206,7 @@ def test_vermillion_shimenawa_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xingqiu
         charactor:Kamisato Ayaka
         charactor:Yae Miko

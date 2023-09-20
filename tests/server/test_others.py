@@ -140,6 +140,7 @@ def test_match_config_and_match_errors():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:GeoMob*3
         Strategize*100
         '''
@@ -150,6 +151,7 @@ def test_match_config_and_match_errors():
     assert not match.start()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:GeoMob*3
         Strategize*30
         '''
@@ -266,6 +268,7 @@ def test_remove_non_exist_equip():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:GeoMob*3
         Strategize*30
         '''

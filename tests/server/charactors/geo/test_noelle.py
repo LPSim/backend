@@ -103,6 +103,7 @@ def test_noelle():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Noelle
         charactor:PhysicalMob
         charactor:Mona

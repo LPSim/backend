@@ -51,6 +51,7 @@ def test_xiangling():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Xiangling
         charactor:Xiangling@3.3
         charactor:CryoMobMage

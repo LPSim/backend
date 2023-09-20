@@ -68,6 +68,7 @@ def test_dead_agent():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Fatui Pyro Agent*2
         charactor:Nahida
         charactor:Fischl

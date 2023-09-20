@@ -71,6 +71,7 @@ def test_kaeya():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Kaeya
         charactor:Mona
         charactor:ElectroMobMage
@@ -176,6 +177,7 @@ def test_kaeya_wind_and_freedom():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Kaeya
         charactor:Mona
         charactor:ElectroMobMage

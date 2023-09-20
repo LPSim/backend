@@ -74,6 +74,7 @@ def test_yoimiya_3_3():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Yoimiya@3.3
         charactor:Nahida@3.7
         charactor:Mona@3.3
@@ -157,6 +158,7 @@ def test_yoimiya_different_version_generate():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Yoimiya@3.3
         charactor:Yoimiya@3.4
         charactor:Yoimiya

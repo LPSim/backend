@@ -26,6 +26,7 @@ def test_deck_string():
         ] * 30,
     })
     deck_str_1 = Deck.from_str('''
+        default_version:4.0
         charactor:DendroMobMage*2
         charactor:ElectroMobMage
         Strategize*30
@@ -64,6 +65,7 @@ def test_deck_string():
         ] * 10,
     })
     deck_str_2 = Deck.from_str('''
+        default_version:4.0
         charactor:DendroMobMage*2
         charactor:ElectroMobMage
         Wine-Stained Tricorne*10
@@ -95,6 +97,7 @@ def test_deck_string():
         ] * 30,
     })
     deck_str_3 = Deck.from_str('''
+        default_version:4.0
         charactor:Fischl
         charactor:DendroMobMage
         charactor:PyroMobMage
@@ -107,6 +110,7 @@ def test_deck_string():
 
 def test_deck_assertions():
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:DendroMobMage*2
         charactor:ElectroMobMage
         Strategize*30
@@ -163,6 +167,7 @@ def test_deck_assertions():
 
 def test_deck_restriction():
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Collei
         charactor:Barbara
@@ -181,6 +186,7 @@ def test_deck_restriction():
         check_restriction = True,
     )
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Barbara
@@ -200,6 +206,7 @@ def test_deck_restriction():
         check_restriction = True,
     )
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Barbara
@@ -218,6 +225,7 @@ def test_deck_restriction():
         check_restriction = True,
     )
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Barbara
@@ -236,6 +244,7 @@ def test_deck_restriction():
         check_restriction = True,
     )
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Barbara
@@ -256,6 +265,7 @@ def test_deck_restriction():
         check_restriction = True,
     )
     deck = Deck.from_str('''
+        default_version:4.0
         charactor:Nahida
         charactor:Mona
         charactor:Barbara

@@ -68,6 +68,7 @@ def test_chongyun():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Chongyun
         charactor:Shenhe
         charactor:Fischl

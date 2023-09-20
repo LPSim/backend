@@ -568,6 +568,7 @@ def test_catalyzing_field_old():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Nahida*2
         charactor:Fischl
         Mondstadt Hash Brown*30
@@ -621,6 +622,7 @@ def test_swirl():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:HydroMobMage
         charactor:AnemoMobMage
@@ -679,6 +681,7 @@ def test_swirl_2():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:HydroMobMage
         charactor:AnemoMobMage
@@ -743,6 +746,7 @@ def test_swirl_3():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:CryoMobMage
         charactor:HydroMobMage
         charactor:AnemoMobMage
@@ -819,6 +823,7 @@ def test_swirl_4():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:CryoMobMage
         charactor:HydroMobMage
         charactor:AnemoMobMage
@@ -907,6 +912,7 @@ def test_swirl_with_catalyzing_field():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:ElectroMobMage
         charactor:DendroMobMage
         charactor:AnemoMobMage
@@ -1005,6 +1011,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:HydroMobMage
         charactor:ElectroMobMage
         charactor:DendroMobMage
@@ -1123,6 +1130,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     match.event_handlers[0].version = '3.3'  # type: ignore
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:HydroMobMage
         charactor:ElectroMobMage
         charactor:DendroMobMage
@@ -1255,6 +1263,7 @@ def test_overloaded():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:AnemoMobMage
@@ -1323,6 +1332,7 @@ def test_background_overloaded():
     match = Match()
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:PyroMobMage
         charactor:ElectroMobMage
         charactor:AnemoMobMage

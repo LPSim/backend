@@ -276,6 +276,7 @@ def test_ancient_courtyard():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Nahida
         charactor:Klee
@@ -412,6 +413,7 @@ def test_joyous():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Nahida
         charactor:Klee
@@ -537,6 +539,7 @@ def test_jpyous_2():
     # deck information
     deck = Deck.from_str(
         '''
+        default_version:4.0
         charactor:Mona
         charactor:Nahida
         charactor:Klee
