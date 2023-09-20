@@ -1,8 +1,8 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, compare_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 
@@ -150,13 +150,9 @@ def test_grass_chicken():
                 check_hp(match, hps)
             elif test_id == 2:
                 cmd = cmd.split()
-                pidx = int(cmd[2][1])
-                cidx = int(cmd[2][3])
-                usage = [int(x) for x in cmd[4:]]
+                pidx, cidx = get_pidx_cidx(cmd)
                 status = match.player_tables[pidx].charactors[cidx].status
-                assert len(status) == len(usage)
-                for u, s in zip(usage, status):
-                    assert u == s.usage
+                compare_usage(status, cmd[4:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond

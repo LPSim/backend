@@ -104,3 +104,14 @@ def get_test_id_from_command(agent: InteractionAgent | InteractionAgent_V1_0):
 def enable_logging():  # pragma: no cover
     import logging
     logging.basicConfig(level = logging.INFO)
+
+
+def get_pidx_cidx(cmd):
+    return int(cmd[2][1]), int(cmd[2][3])
+
+
+def compare_usage(data, usage_strs):
+    usage = [int(x) for x in usage_strs]
+    assert len(data) == len(usage)
+    for u, d in zip(usage, data):
+        assert u == d.usage
