@@ -11,7 +11,7 @@ This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
-Progress: Charactors 37/54, Cards 158/199
+Progress: Charactors 42/54, Cards 163/199
 
 ## Usage
 
@@ -129,13 +129,18 @@ their requests will be generated simultaneously.
 All modifications to the match table are orchestrated through actions. 
 Each action triggers an event and has the potential to activate subsequent 
 actions. These newly activated actions are appended to the top of the existing 
-action list, akin to a stack structure.
+action list, akin to a stacked-lists structure.
 
-Objects integrated into this system introduce two  types of triggers: event 
+Objects integrated into this system introduce two types of triggers: event 
 handlers and value modifiers. Event handlers function to monitor events and 
 produce lists of actions in response. Value modifiers is used on edit 
 mutable values and updating internal states if is necessary. Modifiable values
 applies to attributes like initial dice color, damage, and cost.
+
+All codes are tested with pytest and 100% coverage (except defensive codes,
+which are marked with `# pragma: no cover`). With the support of different
+version compatibility, when a new version is implemented, all past tests
+should be passed without modification.
 
 # Progress
 
