@@ -3,14 +3,14 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...consts import DamageElementalType, DamageType
+from ...consts import DamageElementalType, DamageType, SkillType
 
-from ...modifiable_values import DamageValue
+from ...modifiable_values import DamageDecreaseValue, DamageValue
 
 from ...action import MakeDamageAction
 
 from ...event import PlayerActionStartEventArguments
-from .base import UsageTeamStatus
+from .base import ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
 
 
 class TenkoThunderbolts(UsageTeamStatus):
@@ -49,4 +49,37 @@ class TenkoThunderbolts(UsageTeamStatus):
         )]
 
 
-ElectroTeamStatus = TenkoThunderbolts | TenkoThunderbolts
+class ThunderbeastsTarge(RoundTeamStatus, ExtraAttackTeamStatus):
+    name: Literal["Thunderbeast's Targe"] = "Thunderbeast's Targe"
+    desc: str = (
+        'After your character uses a Normal Attack: Deal 1 Electro DMG. '
+        'When your character receives at least 3 DMG: Decrease DMG taken by 1.'
+    )
+    version: Literal['3.4'] = '3.4'
+    usage: int = 2
+    max_usage: int = 2
+
+    trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
+    damage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
+    decrease_usage: bool = False
+
+    def value_modifier_DAMAGE_DECREASE(
+        self, value: DamageDecreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageDecreaseValue:
+        """
+        If this charactor receives damage, and not piercing, and greater than
+        3, decrease damage by 1
+        """
+        if (
+            value.is_corresponding_charactor_receive_damage(
+                self.position, match,
+            ) 
+            and value.damage >= 3
+        ):
+            value.damage -= 1
+        return value
+
+
+ElectroTeamStatus = TenkoThunderbolts | ThunderbeastsTarge

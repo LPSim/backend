@@ -651,6 +651,11 @@ class Match(BaseModel):
                         f'{event_arg.type.name}.'
                     )
                     event_frame.triggered_actions = func(event_arg, self)
+                    if event_frame.triggered_actions is None:
+                        raise AssertionError(
+                            f'Object {object_name} with event '
+                            f'{event_arg.type} returns None.'
+                        )
                     if len(event_frame.triggered_actions) > 0:
                         logging.info(
                             f'Object {object_name} with event {event_arg.type}'

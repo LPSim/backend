@@ -256,7 +256,7 @@ class ElementalSkillBase(SkillBase):
     """
     Base class of elemental skills.
     """
-    desc: str = """Deals 3 _ELEMENT_ DMG."""
+    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
@@ -265,7 +265,8 @@ class ElementalSkillBase(SkillBase):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
+            '_ELEMENT_', self.damage_type.value.lower().capitalize()
+        ).replace('_DAMAGE_', str(self.damage))
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:

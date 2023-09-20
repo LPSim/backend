@@ -15,7 +15,8 @@ from ...consts import (
 from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 from .base import (
     ElementalInfusionCharactorStatus, PrepareCharactorStatus, 
-    RoundCharactorStatus, UsageCharactorStatus, CharactorStatusBase
+    RoundCharactorStatus, ShieldCharactorStatus, UsageCharactorStatus, 
+    CharactorStatusBase
 )
 
 
@@ -289,8 +290,31 @@ class TheWolfWithin(RoundCharactorStatus):
         )]
 
 
+class TidecallerSurfEmbrace(PrepareCharactorStatus, ShieldCharactorStatus):
+    name: Literal['Tidecaller: Surf Embrace'] = 'Tidecaller: Surf Embrace'
+    desc: str = (
+        'The next time this character acts, they will immediately use the '
+        'Skill Wavestrider. While preparing this Skill: Grant 2 Shield '
+        'points to the character to which this is attached.'
+    )
+    version: Literal['3.4'] = '3.4'
+    charactor_name: Literal['Beidou'] = 'Beidou'
+    skill_name: Literal['Wavestrider'] = 'Wavestrider'
+
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Do not remove when usage becomes zero
+        """
+        return []
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
-    | TheShrinesSacredShade | TheWolfWithin
+    | TheShrinesSacredShade | TheWolfWithin | TidecallerSurfEmbrace
 )

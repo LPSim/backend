@@ -2,6 +2,7 @@
 Old version of charactors, summons and talents. Status are not defined here,
 and old status will be implemented in their old_version.py.
 """
+from .beidou_3_4 import Beidou_3_4
 from .razor_3_3 import Razor_3_3
 from .eula_3_5 import Eula_3_5, LightfallSword_3_5
 from .sangonomiya_kokomi_3_5 import SangonomiyaKokomi_3_5
@@ -19,7 +20,7 @@ OldSummons = LightfallSword_3_5 | LightfallSword_3_5
 OldCharactors = (
     Eula_3_5 | SangonomiyaKokomi_3_5 
 
-    | Yoimiya_3_4 
+    | Yoimiya_3_4 | Beidou_3_4
 
     | MaguuKenki_3_3 | Yoimiya_3_3 | Xingqiu_3_3 | Xiangling_3_3 | Ganyu_3_3
     | Razor_3_3
