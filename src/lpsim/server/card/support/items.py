@@ -11,7 +11,9 @@ from ...event import (
 )
 
 from ...struct import Cost
-from ...consts import CostLabels, DamageElementalType, ObjectPositionType
+from ...consts import (
+    CostLabels, DamageElementalType, DamageType, ObjectPositionType
+)
 from .base import RoundEffectSupportBase, SupportBase
 
 
@@ -61,7 +63,7 @@ class ParametricTransformer(ItemBase):
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        if event.final_damage.damage_type == 'HEAL':
+        if event.final_damage.damage_type == DamageType.HEAL:
             # heal, do nothing
             return []
         if (

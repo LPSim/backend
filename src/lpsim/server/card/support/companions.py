@@ -6,8 +6,8 @@ from ...dice import Dice
 
 from .base import RoundEffectSupportBase, SupportBase
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DieColor, 
-    ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
+    ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
+    DieColor, ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
     ObjectPositionType, SkillType
 )
 from ...struct import Cost, ObjectPosition
@@ -279,7 +279,7 @@ class ChangTheNinth(CompanionBase):
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        if event.final_damage.damage_type == 'HEAL':
+        if event.final_damage.damage_type == DamageType.HEAL:
             # heal, do nothing
             return []
         if (
