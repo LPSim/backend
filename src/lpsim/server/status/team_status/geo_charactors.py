@@ -133,4 +133,12 @@ class JadeScreen(DefendTeamStatus):
         return value
 
 
-GeoTeamStatus = FullPlate | JadeScreen
+class JadeShield(ShieldTeamStatus):
+    name: Literal['Jade Shield'] = 'Jade Shield'
+    desc: str = '''Grants 2 Shield points to your active character.'''
+    version: Literal['3.7'] = '3.7'
+    usage: int = 2
+    max_usage: int = 2
+
+
+GeoTeamStatus = FullPlate | JadeScreen | JadeShield

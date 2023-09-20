@@ -328,6 +328,17 @@ class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
         return value
 
 
+class Petrification(RoundCharactorStatus):
+    name: Literal['Petrification'] = 'Petrification'
+    desc: str = (
+        'Character cannot use Skills.(Lasts until the end of this Round)'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+
 GeoCharactorStatus = (
     SweepingTime | RagingOniKing | SuperlativeSuperstrength | Stonehide
+    | Petrification
 )
