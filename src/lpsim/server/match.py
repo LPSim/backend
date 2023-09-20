@@ -1805,6 +1805,11 @@ class Match(BaseModel):
         current_active_name = table.charactors[current_active_idx].name
         charactor_idx = action.charactor_idx
         charactor_name = table.charactors[charactor_idx].name
+        if table.charactors[charactor_idx].is_defeated:
+            self._set_match_state(MatchState.ERROR)  # pragma: no cover
+            raise AssertionError(
+                f'Cannot switch to defeated charactor {charactor_name}.'
+            )
         logging.info(
             f'player {player_idx} '
             f'from charactor {current_active_name}:{current_active_idx} '
@@ -1941,6 +1946,16 @@ class Match(BaseModel):
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
         charactor = table.charactors[action.charactor_idx]
+        if charactor.is_defeated:
+            # charge defeated charactor
+            logging.warning(
+                f'tried to charge a defeated charactor! '
+                f'player {player_idx} '
+                f'charactor {charactor.name}:{action.charactor_idx}. '
+                f'bug or defeated before charging?'
+            )
+            # ignore this action and return empty event arguments
+            return []
         logging.info(
             f'player {player_idx} '
             f'charactor {charactor.name}:{table.active_charactor_idx} '

@@ -5,10 +5,11 @@ from .electro_hypostasis import (
 )
 from .raiden_shogun import RaidenShogun, EyeOfStormyJudgment, WishesUnnumbered
 from .yae_miko import YaeMiko, TheShrinesSacredShade, SesshouSakura
+from .razor import Razor, Awakening
 
 
 ElectroCharactors = (
-    Fischl | Keqing | RaidenShogun | YaeMiko
+    Fischl | Razor | Keqing | RaidenShogun | YaeMiko
     # finally monsters
     | ElectroHypostasis
 )
@@ -18,7 +19,7 @@ SummonsOfElectroCharactors = (
     | ChainsOfWardingThunder
 )
 ElectroCharactorTalents = (
-    StellarPredator | ThunderingPenance | WishesUnnumbered
+    StellarPredator | Awakening | ThunderingPenance | WishesUnnumbered
     | TheShrinesSacredShade
     # finally monsters
     | AbsorbingPrism

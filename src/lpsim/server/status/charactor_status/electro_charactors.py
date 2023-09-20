@@ -243,8 +243,54 @@ class TheShrinesSacredShade(RoundCharactorStatus):
         return self.check_should_remove()
 
 
+class TheWolfWithin(RoundCharactorStatus):
+    name: Literal['The Wolf Within'] = 'The Wolf Within'
+    desc: str = (
+        'After the character to which this is attached uses a Normal Attack '
+        'or an Elemental Skill: Deal 2 Electro DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        If self use normal attack or elemental skill, deal damage
+        """
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True,
+            charactor_idx_same = True, target_area = ObjectPositionType.SKILL
+        ):
+            # not self use skill
+            return []
+        if event.action.skill_type not in [
+            SkillType.NORMAL_ATTACK, SkillType.ELEMENTAL_SKILL
+        ]:
+            # not normal attack or elemental skill
+            return []
+        # make damage
+        target = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = 1 - self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = target.position,
+                    damage = 2,
+                    damage_elemental_type = DamageElementalType.ELECTRO,
+                    cost = Cost()
+                )
+            ]
+        )]
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
-    | TheShrinesSacredShade
+    | TheShrinesSacredShade | TheWolfWithin
 )
