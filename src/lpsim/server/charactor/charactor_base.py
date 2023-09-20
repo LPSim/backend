@@ -408,6 +408,13 @@ class TalentBase(CardBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
     remove_when_used: bool = False
 
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc += (
+            f' (You must have {self.charactor_name} in your deck to add this '
+            'card to your deck.)'
+        )
+
     def get_deck_restriction(self) -> DeckRestriction:
         """
         For talent cards, should contain the corresponding charactor.
