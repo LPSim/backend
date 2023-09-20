@@ -89,17 +89,27 @@ class Deck(BaseModel):
     @staticmethod
     def from_str(deck_str: str) -> 'Deck':
         """
-        Convert deck string to deck object. One line contains one card or
-        charactor. If declare a charactor, use 'charactor:'. Otherwise 
+        Convert deck string to deck object. One line contains one command, 
+        card or charactor. 
+
+        To specify default versions for all cards that don't have version
+        specified, use 'default_version:version'. If not set, cards without
+        version information will not have version in its argument. This line
+        must appear before any other lines.
+
+        If declare a charactor, use 'charactor:'. Otherwise 
         write card name directly. 
+
         To specify different version of cards, add `@version` after the
         line.
+
         To declare multiple same cards or charactors, add `*number` after 
         the line. When both marks are used, specify version first.
         You can write comment line start with '#'.
 
         Examples:
 
+        default_version:4.0
         charactor:Fischl
         charactor:Mona
         charactor:Nahida
@@ -110,8 +120,12 @@ class Deck(BaseModel):
         """
         deck_str = deck_str.strip()
         deck = Deck()
+        default_version: str | None = None
         for line in deck_str.split('\n'):
             line = line.strip()
+            if line.startswith('default_version:'):
+                default_version = line[16:]
+                continue
             if line[0] == '#':
                 # comment line
                 continue
@@ -126,7 +140,7 @@ class Deck(BaseModel):
                 line, version = line.split('@')
                 version = version.strip()
             else:
-                version = None
+                version = default_version
             if line.startswith('charactor:'):
                 args = { 'name': line[10:] }
                 if version is not None:
