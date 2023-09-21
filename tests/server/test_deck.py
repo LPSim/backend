@@ -30,6 +30,7 @@ def test_deck_string():
         charactor:DendroMobMage*2
         charactor:ElectroMobMage
         Strategize*30
+
     ''')
     deck_dict_1 = remove_ids(deck_dict_1)
     deck_str_1 = remove_ids(deck_str_1)
@@ -66,8 +67,12 @@ def test_deck_string():
     })
     deck_str_2 = Deck.from_str('''
         default_version:4.0
+
+        # charactors
         charactor:DendroMobMage*2
         charactor:ElectroMobMage
+
+        # cards
         Wine-Stained Tricorne*10
         Laurel Coronet*10
         Strategize*10
