@@ -6,20 +6,21 @@ from .maguu_kenki import (
 from .kaedehara_kazuha import (
     KaedeharaKazuha, PoeticsOfFuubutsu, AutumnWhirlwind
 )
+from .sucrose import Sucrose, LargeWindSpirit, ChaoticEntropy
 
 
 AnemoCharactors = (
-    Venti | KaedeharaKazuha 
+    Sucrose | Venti | KaedeharaKazuha 
     # finally monsters
     | MaguuKenki
 )
 SummonsOfAnemoCharactors = (
-    Stormeye | AutumnWhirlwind
+    LargeWindSpirit | Stormeye | AutumnWhirlwind
     # finally monsters
     | ShadowswordGallopingFrost | ShadowswordLoneGale 
 )
 AnemoCharactorTalents = (
-    EmbraceOfWinds | PoeticsOfFuubutsu
+    ChaoticEntropy | EmbraceOfWinds | PoeticsOfFuubutsu
     # finally monsters
     | TranscendentAutomaton
 )

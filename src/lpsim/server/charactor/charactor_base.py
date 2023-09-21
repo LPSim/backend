@@ -706,5 +706,4 @@ class CharactorBase(ObjectBase):
                 return self.weapon
             elif self.artifact is not None and self.artifact.id == position.id:
                 return self.artifact
-            raise NotImplementedError('Not tested part')
             return None
