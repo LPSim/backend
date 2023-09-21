@@ -2,7 +2,7 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, 
+    check_hp, check_usage, get_test_id_from_command, make_respond, 
     get_random_state, set_16_omni
 )
 
@@ -922,6 +922,204 @@ def test_golden_house():
     assert match.state != MatchState.ERROR
 
 
+def test_jade_dawn_narukami_chinju():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "reroll",
+            "card 5 0 5",
+            "card 6 0 4",
+            "card 4 0",
+            "card 15 0 3",
+            "card 21 1 2",
+            "card 15 2",
+            "card 3 0",
+            "card 2 0",
+            "card 8 3",
+            "card 6 2",
+            "card 15 1 3",
+            "card 16 2 2",
+            "card 16 0",
+            "sw_char 1 1",
+            "sw_char 0 0",
+            "end",
+            "TEST 1 p0 8 cryo",
+            "reroll",
+            "sw_char 2 7",
+            "sw_char 1 6",
+            "end",
+            "TEST 1 p0 8 hydro",
+            "reroll",
+            "TEST 2 p1 dice 12",
+            "card 0 0 7",
+            "card 2 0 6",
+            "sw_char 2 5",
+            "sw_char 1 4",
+            "end",
+            "TEST 1 p0 4 hydro",
+            "reroll",
+            "end",
+            "TEST 1 p0 4 hydro",
+            "reroll",
+            "end",
+            "reroll",
+            "TEST 1 p0 4 hydro",
+            "TEST 1 p1 4 anemo",
+            "sw_char 2 6",
+            "end",
+            "reroll",
+            "sw_char 1 3",
+            "end",
+            "reroll"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "reroll",
+            "card 7 0 1 0",
+            "card 23 0 3 2",
+            "card 17 0 1 0",
+            "sw_char 0",
+            "sw_char 1",
+            "sw_char 2",
+            "sw_char 1 1",
+            "end",
+            "TEST 3 p1 not all hydro",
+            "reroll",
+            "sw_char 0",
+            "sw_char 1",
+            "sw_char 2",
+            "sw_char 1 5",
+            "card 6 0 6 5",
+            "TEST 2 p1 dice 6",
+            "card 6 1 3 2",
+            "card 18 0 4 3",
+            "card 18 1 3 0",
+            "tune 20 2",
+            "tune 20 2",
+            "card 17 0 2 1",
+            "TEST 2 p1 dice 2",
+            "end",
+            "reroll",
+            "card 4 0 6",
+            "card 5 2 7",
+            "card 6 0 6",
+            "card 7 0 5",
+            "end",
+            "reroll",
+            "TEST 2 p0 dice 10",
+            "TEST 1 p0 6 hydro",
+            "sw_char 2 7",
+            "end",
+            "reroll 6 7",
+            "TEST 1 p0 6 hydro",
+            "sw_char 1 7",
+            "sw_char 2 6",
+            "end",
+            "reroll",
+            "end",
+            "reroll",
+            "end",
+            "reroll",
+            "TEST 1 p0 6 hydro",
+            "TEST 4 p0 support 0 0",
+            "TEST 4 p1 support 1 1 1 1",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Diona
+        charactor:Mona
+        charactor:Sucrose
+        Jade Chamber*10
+        Jade Chamber@3.3*10
+        Dawn Winery*10
+        Grand Narukami Shrine*10
+        Chinju Forest*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    match.config.max_hand_size = 50
+    match.config.initial_hand_size = 30
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                count = int(cmd[3])
+                color = cmd[4].upper()
+                for c in match.player_tables[pidx].dice.colors:
+                    if c == color:
+                        count -= 1
+                assert count <= 0
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                count = int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == count
+            elif test_id == 3:
+                found_not = False
+                for c in match.player_tables[1].dice.colors:
+                    if c != 'HYDRO':
+                        found_not = True
+                assert found_not
+            elif test_id == 4:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                support = match.player_tables[pidx].supports
+                check_usage(support, cmd[4:])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_liyue_harbor()
     # test_tenshukaku()
@@ -929,4 +1127,5 @@ if __name__ == '__main__':
     # test_vanarana()
     # test_library()
     # test_cathedral_inn_sangonomiya()
-    test_golden_house()
+    # test_golden_house()
+    test_jade_dawn_narukami_chinju()
