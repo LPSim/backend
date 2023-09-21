@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ...modifiable_values import CombatActionValue, CostValue
+
 
 from ...action import (
     Actions, CreateDiceAction, DrawCardAction, RemoveObjectAction
@@ -7,12 +9,14 @@ from ...action import (
 
 from ...event import (
     PlayerActionStartEventArguments, ReceiveDamageEventArguments, 
-    SkillEndEventArguments, UseCardEventArguments
+    RoundPrepareEventArguments, SkillEndEventArguments, 
+    SwitchCharactorEventArguments, UseCardEventArguments
 )
 
 from ...struct import Cost
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, ObjectPositionType
+    CostLabels, DamageElementalType, DamageType, ObjectPositionType, 
+    PlayerActionLabels
 )
 from .base import RoundEffectSupportBase, SupportBase
 
@@ -149,6 +153,101 @@ class NRE(RoundEffectItemBase):
         return super().event_handler_USE_CARD(event, match)
 
 
+class RedFeatherFan(RoundEffectItemBase):
+    name: Literal['Red Feather Fan']
+    desc: str = (
+        'After you switch characters: The next Switch Character action you '
+        'perform this Round will be considered a Fast Action instead of a '
+        'Combat Action. It will also cost 1 less Elemental Die. '
+        '(Once per Round)'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 2)
+    max_usage_per_round: int = 1
+    switch_count: int = 0  # activate after first switch
+
+    # when decrease cost, should consume usage regardless of whether fast
+    # action success
+    is_cost_decreased: bool = False
+
+    def play(self, match: Any) -> List[Actions]:
+        self.switch_count = 0
+        self.is_cost_decreased = False
+        return super().play(match)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.switch_count = 0
+        self.is_cost_decreased = False
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: SwitchCharactorEventArguments, match: Any
+    ) -> List[Actions]:
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if self.position.player_idx != event.action.player_idx:
+            # not our charactor switch, do nothing
+            return []
+        # activate
+        self.switch_count += 1
+        return []
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        if activated, and our switch charactor, try to decrease cost.
+        if success, mark is_cost_decreased.
+        """
+        if (
+            self.switch_count < 1  # for cost, ignore first switch
+            or self.position.area != ObjectPositionType.SUPPORT
+            or self.position.player_idx != value.position.player_idx
+            or self.usage <= 0
+            or value.cost.label & CostLabels.SWITCH_CHARACTOR.value == 0
+        ):
+            # not activated, or not equipped, or not our charactor, 
+            # or no usage, or not switch charactor, do nothing
+            return value
+        # decrease cost
+        if value.cost.decrease_cost(None):
+            if mode == 'REAL':
+                self.is_cost_decreased = True
+        return value
+
+    def value_modifier_COMBAT_ACTION(
+        self, value: CombatActionValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> CombatActionValue:
+        """
+        If activated, and our switch charactor, try to act as fast action.
+        Then if change to fast or decrease cost, consume usage.
+        """
+        if (
+            self.switch_count < 2  # for combat action, ignore first two switch
+            or self.position.area != ObjectPositionType.SUPPORT
+            or self.position.player_idx != value.position.player_idx
+            or self.usage <= 0
+            or value.action_label & PlayerActionLabels.SWITCH.value == 0
+        ):
+            # not activated, or not equipped, or not our charactor, 
+            # or no usage, or not switch charactor, do nothing
+            return value
+        # change to fast action
+        changed = False
+        if value.do_combat_action:
+            value.do_combat_action = False
+            changed = True
+        assert mode == 'REAL'
+        # decrease usage
+        if changed or self.is_cost_decreased:
+            self.usage -= 1
+        return value
+
+
 class TreasureSeekingSeelie(ItemBase):
     name: Literal['Treasure-Seeking Seelie']
     desc: str = (
@@ -193,4 +292,4 @@ class TreasureSeekingSeelie(ItemBase):
         ]
 
 
-Items = ParametricTransformer | NRE | TreasureSeekingSeelie
+Items = ParametricTransformer | NRE | RedFeatherFan | TreasureSeekingSeelie
