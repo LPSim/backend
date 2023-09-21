@@ -7,7 +7,9 @@ from ...action import (
     RemoveObjectAction
 )
 from ...event import MoveObjectEventArguments
-from ...modifiable_values import CostValue, DamageValue, RerollValue
+from ...modifiable_values import (
+    CostValue, DamageValue, InitialDiceColorValue, RerollValue
+)
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
@@ -78,6 +80,68 @@ class KnightsOfFavoniusLibrary(LocationBase):
             # not self player
             return value
         value.value += 1
+        return value
+
+
+class JadeChamber(LocationBase):
+    name: Literal['Jade Chamber']
+    desc: str = (
+        'Roll Phase: 2 of the starting Elemental Dice you roll are always '
+        'guaranteed to match the Elemental Type of your active character.'
+    )
+    version: Literal['4.0'] = '4.0'
+    cost: Cost = Cost()
+    usage: int = 0
+
+    def value_modifier_INITIAL_DICE_COLOR(
+            self, value: InitialDiceColorValue, 
+            match: Any,
+            mode: Literal['REAL', 'TEST']) -> InitialDiceColorValue:
+        """
+        If self in support, fix two dice colors to self
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        active = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        element = active.element
+        value.dice_colors += [ELEMENT_TO_DIE_COLOR[element]] * 2
+        return value
+
+
+class DawnWinery(RoundEffectLocationBase):
+    name: Literal['Dawn Winery']
+    desc: str = (
+        'When you perform "Switch Character": Spend 1 less Elemental Die. '
+        '(Once per Round)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    max_usage_per_round: int = 1
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        if self.usage <= 0:
+            # no usage
+            return value
+        if value.cost.label & CostLabels.SWITCH_CHARACTOR.value == 0:
+            # not switch character
+            return value
+        # decrease cost
+        if value.cost.decrease_cost(None):
+            if mode == 'REAL':
+                self.usage -= 1
         return value
 
 
@@ -206,6 +270,43 @@ class Tenshukaku(LocationBase):
             number = 1,
             color = DieColor.OMNI
         )]
+
+
+class GrandNarukamiShrine(LocationBase):
+    name: Literal['Grand Narukami Shrine']
+    desc: str = (
+        'Triggers automatically once per Round: Create 1 random Elemental Die.'
+    )
+    version: Literal['3.6'] = '3.6'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 3
+
+    def play(self, match: Any) -> List[Actions]:
+        """
+        When played, set usage to 2 and generate one random die.
+        """
+        self.usage = 2
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            different = True  # use different to avoid OMNI die
+        )]
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateDiceAction | RemoveObjectAction]:
+        """
+        create one random die, and out of usage remove self.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        self.usage -= 1
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            different = True  # use different to avoid OMNI die
+        )] + self.check_should_remove()
 
 
 class SangonomiyaShrine(LocationBase):
@@ -395,6 +496,43 @@ class Vanarana(LocationBase):
         )]
 
 
+class ChinjuForest(LocationBase):
+    name: Literal['Chinju Forest']
+    desc: str = (
+        'When Action Phase begins: If you do not start first, create 1 '
+        'Elemental Die that matches the Type of your active character.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 1)
+    usage: int = 3
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateDiceAction | RemoveObjectAction]:
+        """
+        When in round prepare, if have usage, create one die that match
+        active charactor element.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if self.usage <= 0:  # pragma: no cover
+            # no usage
+            return []
+        if event.player_go_first == self.position.player_idx:
+            # self go first, do nothing
+            return []
+        table = match.player_tables[self.position.player_idx]
+        active = table.get_active_charactor()
+        element = active.element
+        self.usage -= 1
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            color = ELEMENT_TO_DIE_COLOR[element]
+        )] + self.check_should_remove()
+
+
 class GoldenHouse(LocationBase):
     name: Literal['Golden House']
     desc: str = (
@@ -402,7 +540,7 @@ class GoldenHouse(LocationBase):
         'cost of at least 3: Spend 1 less Elemental Die. (Once per Round)'
     )
     version: Literal['4.0'] = '4.0'
-    cost: Cost = Cost(same_dice_number = 0)
+    cost: Cost = Cost()
     usage: int = 2
     used_this_round: bool = False
 
@@ -453,7 +591,7 @@ class GoldenHouse(LocationBase):
 
 
 Locations = (
-    LiyueHarborWharf | KnightsOfFavoniusLibrary | WangshuInn 
-    | FavoniusCathedral | Tenshukaku | SangonomiyaShrine | SumeruCity 
-    | Vanarana | GoldenHouse
+    LiyueHarborWharf | KnightsOfFavoniusLibrary | JadeChamber | DawnWinery 
+    | WangshuInn | FavoniusCathedral | Tenshukaku | GrandNarukamiShrine 
+    | SangonomiyaShrine | SumeruCity | Vanarana | ChinjuForest | GoldenHouse
 )
