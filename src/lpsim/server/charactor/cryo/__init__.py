@@ -7,17 +7,18 @@ from .qiqi import Qiqi, RiteOfResurrection, HeraldOfFrost
 from .kamisato_ayaka import (
     KamisatoAyaka, FrostflakeSekiNoTo, KantenSenmyouBlessing
 )
+from .diona import Diona, DrunkenMist, ShakenNotPurred
 
 
 CryoCharactors = (
-    Ganyu | Kaeya | Chongyun | KamisatoAyaka | Eula | Shenhe | Qiqi
+    Ganyu | Diona | Kaeya | Chongyun | KamisatoAyaka | Eula | Shenhe | Qiqi
 )
 SummonsOfCryoCharactors = (
-    SacredCryoPearl | FrostflakeSekiNoTo | LightfallSword | TalismanSpirit
-    | HeraldOfFrost
+    SacredCryoPearl | DrunkenMist | FrostflakeSekiNoTo | LightfallSword 
+    | TalismanSpirit | HeraldOfFrost
 )
 CryoCharactorTalents = (
-    UndividedHeart | ColdBloodedStrike | SteadyBreathing 
+    UndividedHeart | ShakenNotPurred | ColdBloodedStrike | SteadyBreathing 
     | KantenSenmyouBlessing | WellspringOfWarLust | MysticalAbandon
     | RiteOfResurrection
 )

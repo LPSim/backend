@@ -17,7 +17,7 @@ from ...modifiable_values import (
 
 from ...action import MakeDamageAction
 from .base import (
-    DefendTeamStatus, RoundTeamStatus, UsageTeamStatus, 
+    DefendTeamStatus, RoundTeamStatus, ShieldTeamStatus, UsageTeamStatus, 
     ElementalInfusionTeamStatus
 )
 
@@ -282,7 +282,15 @@ class FortunePreservingTalisman(UsageTeamStatus):
         )]
 
 
+class CatClawShield(ShieldTeamStatus):
+    name: Literal['Cat-Claw Shield'] = 'Cat-Claw Shield'
+    desc: str = '''Grants 1 Shield point for your active character.'''
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+
+
 CryoTeamStatus = (
     Icicle | IcyQuill | ChonghuasFrostField | IceLotus 
-    | FortunePreservingTalisman
+    | FortunePreservingTalisman | CatClawShield
 )
