@@ -3,17 +3,23 @@ from typing import Any, List, Literal
 from ...struct import Cost
 
 from ...action import (
-    Actions, MakeDamageAction, RemoveObjectAction, SkillEndAction
+    Actions, ChangeObjectUsageAction, MakeDamageAction, RemoveObjectAction, 
+    SkillEndAction
 )
 
-from ...event import MakeDamageEventArguments, SkillEndEventArguments
+from ...event import (
+    ChangeObjectUsageEventArguments, MakeDamageEventArguments, 
+    RoundEndEventArguments, SkillEndEventArguments
+)
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, ObjectPositionType,
     SkillType
 )
 
-from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
+from ...modifiable_values import (
+    CostValue, DamageElementEnhanceValue, DamageIncreaseValue, DamageValue
+)
 from .base import (
     ElementalInfusionCharactorStatus, PrepareCharactorStatus, 
     RoundCharactorStatus, ShieldCharactorStatus, UsageCharactorStatus, 
@@ -369,9 +375,72 @@ class CrowfeatherCover(UsageCharactorStatus):
         return value
 
 
+class PactswornPathclearer(ElementalInfusionCharactorStatus):
+    name: Literal['Pactsworn Pathclearer'] = 'Pactsworn Pathclearer'
+    desc: str = (
+        'End Phase: Gain 1 level of Indwelling. '
+        'Create the following effects based on the Indwelling Level: '
+        'If equal to or greater than 2: Physical DMG dealt is converted to '
+        'Electro DMG; If equal or greater than 4: DMG dealt +2; If equal to '
+        'or greater than 6: Indwelling Level -4'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 0
+    max_usage: int = 999
+    infused_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
+
+    def value_modifier_DAMAGE_ELEMENT_ENHANCE(
+        self, value: DamageElementEnhanceValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageElementEnhanceValue:
+        if self.usage < 2:
+            # level not enough
+            return value
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
+            value, match, mode)
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if self.usage < 4:
+            # level not enough
+            return value
+        if value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # self use skill, increase damage
+            assert mode == 'REAL'
+            value.damage += 2
+        return value
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[ChangeObjectUsageAction]:
+        """
+        add one usage
+        """
+        return [ChangeObjectUsageAction(
+            object_position = self.position,
+            change_type = 'DELTA',
+            change_usage = 1
+        )]
+
+    def event_handler_CHANGE_OBJECT_USAGE(
+        self, event: ChangeObjectUsageEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When change object usage, check if usage is greater than 6.
+        If so, decrease by 4.
+        """
+        if self.usage >= 6:
+            self.usage -= 4
+        return []
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
     | TheShrinesSacredShade | TheWolfWithin | TidecallerSurfEmbrace
-    | CrowfeatherCover
+    | CrowfeatherCover | PactswornPathclearer
 )
