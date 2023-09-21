@@ -40,6 +40,7 @@ class LightfallSword(SummonBase):
     usage: int = 0
     max_usage: int = 999
     damage: int = 3
+    damage_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -64,7 +65,7 @@ class LightfallSword(SummonBase):
                         damage_type = DamageType.DAMAGE,
                         target_position = target_charactor.position,
                         damage = self.damage + self.usage,
-                        damage_elemental_type = DamageElementalType.PHYSICAL,
+                        damage_elemental_type = self.damage_elemental_type,
                         cost = Cost(),
                     )
                 ],
