@@ -74,8 +74,7 @@ class DandelionField(AttackerSummonBase):
                     damage_type = DamageType.HEAL,
                     target_position = our_active.position,
                     damage = -1,
-                    damage_elemental_type 
-                    = self.damage_elemental_type,
+                    damage_elemental_type = DamageElementalType.HEAL,
                     cost = Cost(),
                 )
             ],
@@ -142,7 +141,7 @@ class DandelionBreeze(ElementalBurstBase):
                         damage_type = DamageType.HEAL,
                         target_position = charactor.position,
                         damage = self.damage,
-                        damage_elemental_type = self.damage_type,
+                        damage_elemental_type = DamageElementalType.HEAL,
                         cost = self.cost.copy(),
                     )
                 )

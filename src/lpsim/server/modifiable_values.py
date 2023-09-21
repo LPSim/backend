@@ -95,6 +95,9 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         super().__init__(*argv, **kwargs)
         if self.damage_type == DamageType.HEAL:
             assert self.damage < 0, 'Heal should be negative'
+            assert self.damage_elemental_type == DamageElementalType.HEAL, (
+                'Heal should be heal type'
+            )
         elif self.damage_type == DamageType.DAMAGE:
             assert self.damage >= 0, 'Damage should be non-negative'
         else:
