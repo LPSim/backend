@@ -6,17 +6,19 @@ from .xiangling import Xiangling, Guoba, Crossfire
 from .yanfei import Yanfei, RightOfFinalInterpretation
 from .hu_tao import HuTao, SanguineRouge
 from .diluc import Diluc, FlowingFlame
+from .amber import Amber, BaronBunny, BunnyTriggered
 
 
 PyroCharactors = (
-    Diluc | Xiangling | Bennett | Yoimiya | Klee | HuTao | Yanfei
+    Diluc | Xiangling | Bennett | Amber | Yoimiya | Klee | HuTao | Yanfei
     # finally monsters
     | FatuiPyroAgent
 )
-SummonsOfPyroCharactors = Guoba | Guoba
+SummonsOfPyroCharactors = Guoba | BaronBunny
 PyroCharactorTalents = (
-    FlowingFlame | Crossfire | GrandExpectation | NaganoharaMeteorSwarm
-    | PoundingSurprise | SanguineRouge | RightOfFinalInterpretation
+    FlowingFlame | Crossfire | GrandExpectation | BunnyTriggered 
+    | NaganoharaMeteorSwarm | PoundingSurprise | SanguineRouge 
+    | RightOfFinalInterpretation
     # finally monsters
     | PaidinFull
 )
