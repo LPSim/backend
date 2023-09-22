@@ -1,13 +1,18 @@
 from typing import Any, List, Literal
 
-from ...modifiable_values import DamageElementEnhanceValue, DamageIncreaseValue
-from ...action import Actions, RemoveObjectAction
-from ...event import MakeDamageEventArguments, SkillEndEventArguments
-from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, 
-    ObjectPositionType, SkillType
+from ...modifiable_values import (
+    CostValue, DamageElementEnhanceValue, DamageIncreaseValue
 )
-from .base import ElementalInfusionCharactorStatus
+from ...action import Actions, RemoveObjectAction
+from ...event import (
+    MakeDamageEventArguments, RoundPrepareEventArguments, 
+    SkillEndEventArguments
+)
+from ...consts import (
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DieColor, 
+    ElementType, ElementalReactionType, ObjectPositionType, SkillType
+)
+from .base import ElementalInfusionCharactorStatus, RoundCharactorStatus
 
 
 class MidareRanzan(ElementalInfusionCharactorStatus):
@@ -149,4 +154,91 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
         )]
 
 
-AnemoCharactorStatus = MidareRanzan | MidareRanzan
+class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
+    name: Literal["Yaksha's Mask"] = "Yaksha's Mask"
+    desc: str = (
+        'The character to which this is attached has their Physical DMG dealt '
+        'converted to Anemo DMG and they will deal +1 Anemo DMG. When the '
+        'character to which this is attached uses a Plunging Attack: +2 '
+        'additional DMG. If the character this card is attached to is the '
+        'active character, when you perform "Switch Character": Spend 1 less '
+        'Elemental Die. (Once per Round)'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 2
+    max_usage: int = 2
+    infused_elemental_type: DamageElementalType = DamageElementalType.ANEMO
+    switch_cost_decrease_usage: int = 1
+    switch_cost_decrease_max_usage: int = 1
+
+    skill_cost_decrease_usage: int = 0
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.switch_cost_decrease_usage = self.switch_cost_decrease_max_usage
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    def renew(self, new_status: 'YakshasMask') -> None:
+        self.switch_cost_decrease_usage = new_status.switch_cost_decrease_usage
+        self.skill_cost_decrease_usage = new_status.skill_cost_decrease_usage
+        super().renew(new_status)
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        if not value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, None
+        ):
+            # not self use damage skill
+            return value
+        if (
+            value.is_corresponding_charactor_use_damage_skill(
+                self.position, match, SkillType.NORMAL_ATTACK
+            )
+            and match.player_tables[self.position.player_idx].plunge_satisfied
+        ):
+            # self use plunge attack, increase damage by 2
+            value.damage += 2
+        if value.damage_elemental_type == DamageElementalType.ANEMO:
+            # anemo damage, increase damage by 1
+            value.damage += 1
+        return value
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        if value.cost.label & CostLabels.SWITCH_CHARACTOR.value != 0:
+            # switch charactor cost
+            if (
+                value.position.player_idx != self.position.player_idx
+                or value.position.charactor_idx != self.position.charactor_idx
+                or self.switch_cost_decrease_usage <= 0
+            ):
+                # not self switch from this charactor, or no usage
+                return value
+            # decrease cost
+            if value.cost.decrease_cost(None):  # pragma: no branch
+                if mode == 'REAL':
+                    self.switch_cost_decrease_usage -= 1
+        elif value.cost.label & CostLabels.ELEMENTAL_SKILL.value != 0:
+            # elemental skill
+            if not (
+                self.position.check_position_valid(
+                    value.position, match, player_idx_same = True, 
+                    charactor_idx_same = True, 
+                    target_area = ObjectPositionType.SKILL
+                )
+                and self.skill_cost_decrease_usage > 0
+            ):
+                # not self use skill, or no usage
+                return value
+            # decrease cost
+            if value.cost.decrease_cost(DieColor.ANEMO):  # pragma: no branch
+                if mode == 'REAL':
+                    self.skill_cost_decrease_usage -= 1
+        return value
+
+
+AnemoCharactorStatus = MidareRanzan | YakshasMask
