@@ -11,23 +11,25 @@ from .kujou_sara import (
     KujouSara, TenguJuuraiAmbush, TenguJuuraiStormcluster, SinOfPride
 )
 from .cyno import Cyno, FeatherfallJudgment
+from .lisa import Lisa, LightningRoseSummon, PulsatingWitch
 
 
 ElectroCharactors = (
     Fischl | Razor | Keqing | Cyno | Beidou | KujouSara | RaidenShogun 
-    | YaeMiko
+    | YaeMiko | Lisa
     # finally monsters
     | ElectroHypostasis
 )
 SummonsOfElectroCharactors = (
     Oz | TenguJuuraiAmbush | TenguJuuraiStormcluster | EyeOfStormyJudgment 
-    | SesshouSakura
+    | SesshouSakura | LightningRoseSummon
     # finally monsters
     | ChainsOfWardingThunder
 )
 ElectroCharactorTalents = (
     StellarPredator | Awakening | ThunderingPenance | FeatherfallJudgment 
     | LightningStorm | SinOfPride | WishesUnnumbered | TheShrinesSacredShade
+    | PulsatingWitch
     # finally monsters
     | AbsorbingPrism
     # special card for Keqing, treated as a talent card.

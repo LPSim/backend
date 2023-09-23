@@ -438,9 +438,42 @@ class PactswornPathclearer(ElementalInfusionCharactorStatus):
         return []
 
 
+class Conductive(CharactorStatusBase):
+    """
+    repeatedly attach, end phase accumulate will perform in this status;
+    damage increase will perform in elemental skill.
+    """
+    name: Literal['Conductive'] = 'Conductive'
+    desc: str = (
+        'This status starts with 2 stacks of Conductive. When attached '
+        'repeatedly, Conductive stack +1. Conductive can be stacked to a '
+        'maximum of 4 stacks. End Phase: Accumulate 1 stack of Conductive. '
+        'When the character attached with Conductive takes DMG from Violet '
+        'Arc: Remove this status and DMG +1 for each stack of Conductive. '
+    )
+    version: Literal['4.0'] = '4.0'
+    usage: int = 2
+    max_usage: int = 4
+
+    def renew(self, new_status: 'Conductive'):
+        """
+        Add one usage
+        """
+        self.usage = min(self.max_usage, self.usage + 1)
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When in round end, add one usage
+        """
+        self.usage = min(self.max_usage, self.usage + 1)
+        return []
+
+
 ElectroCharactorStatus = (
     ElectroInfusionKeqing | RockPaperScissorsComboScissors
     | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
     | TheShrinesSacredShade | TheWolfWithin | TidecallerSurfEmbrace
-    | CrowfeatherCover | PactswornPathclearer
+    | CrowfeatherCover | PactswornPathclearer | Conductive
 )
