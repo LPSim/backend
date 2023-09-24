@@ -12,8 +12,8 @@ from ...action import Actions, CreateObjectAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DamageType, DieColor, 
+    ElementType, FactionType, ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -217,7 +217,7 @@ class ...(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = ...,
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             PhysicalNormalAttackBase(
