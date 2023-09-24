@@ -1,11 +1,11 @@
 from typing import Any, List, Literal
 
-from ...modifiable_values import DamageIncreaseValue, DamageValue
+from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
+    CostLabels, DamageElementalType, DamageType, ObjectPositionType, SkillType
 )
 
 from ...action import (
@@ -358,6 +358,69 @@ class HeronShield(PrepareCharactorStatus, ShieldCharactorStatus):
         return []
 
 
+class Refraction(RoundCharactorStatus):
+    name: Literal['Refraction'] = 'Refraction'
+    desc: str = (
+        'The character to which this is attached takes +1 Hydro DMG.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 2
+    max_usage: int = 2
+
+    is_talent_activated: bool = False
+    cost_increase_usage: int = 1
+    cost_increase_max_usage: int = 1
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        if self.is_talent_activated:
+            self.desc += (
+                ' The Elemental Dice Cost of switching from this character to '
+                'another character is increased by 1.'
+            )
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.cost_increase_usage = self.cost_increase_max_usage
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+    ) -> CostValue:
+        """
+        if talent activated, increase switch cost
+        """
+        if (
+            self.is_talent_activated
+            and self.cost_increase_usage > 0
+            and value.cost.label & CostLabels.SWITCH_CHARACTOR.value != 0
+            and value.position.player_idx == self.position.player_idx
+            and value.position.charactor_idx == self.position.charactor_idx
+        ):
+            # talent activated, switch cost, and this charactor switch to
+            # other, increase cost
+            value.cost.any_dice_number += 1
+            if mode == 'REAL':
+                self.cost_increase_usage -= 1
+        return value
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if value.damage_elemental_type != DamageElementalType.HYDRO:
+            # not hydro damage
+            return value
+        if value.is_corresponding_charactor_receive_damage(
+            self.position, match
+        ):
+            # this charactor receive damage
+            value.damage += 1
+        return value
+
+
 HydroCharactorStatus = (
     Riptide | RangedStance | MeleeStance | CeremonialGarment | HeronShield
+    | Refraction
 )

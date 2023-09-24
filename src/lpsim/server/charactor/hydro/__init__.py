@@ -7,12 +7,13 @@ from .sangonomiya_kokomi import (
     SangonomiyaKokomi, BakeKurage, TamakushiCasket
 )
 from .candace import Candace, TheOverflow
+from .mirror_maiden import MirrorMaiden, MirrorCage
 
 
 HydroCharactors = (
     Barbara | Xingqiu | Mona | Tartaglia | SangonomiyaKokomi | Candace
     # finally monsters
-    | RhodeiaOfLoch
+    | RhodeiaOfLoch | MirrorMaiden
 )
 SummonsOfHydroCharactors = (
     MelodyLoop | Reflection | BakeKurage 
@@ -23,5 +24,5 @@ HydroCharactorTalents = (
     GloriousSeason | TheScentRemained | ProphecyOfSubmersion
     | AbyssalMayhemHydrospout | TamakushiCasket | TheOverflow
     # finally monsters
-    | StreamingSurge
+    | StreamingSurge | MirrorCage
 )

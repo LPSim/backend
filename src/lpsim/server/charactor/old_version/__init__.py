@@ -13,6 +13,7 @@ from .yoimiya_3_3 import Yoimiya_3_3
 from .xingqiu_3_3 import Xingqiu_3_3
 from .xiangling_3_3 import Xiangling_3_3
 from .ganyu_3_3 import Ganyu_3_3, UndividedHeart_3_3
+from .mirror_maiden_3_3 import MirrorMaiden_3_3
 
 
 OldTalents = FloralSidewinder_3_3 | FloralSidewinder_3_3 | UndividedHeart_3_3
@@ -23,5 +24,5 @@ OldCharactors = (
     | Yoimiya_3_4 | Beidou_3_4
 
     | MaguuKenki_3_3 | Yoimiya_3_3 | Xingqiu_3_3 | Xiangling_3_3 | Ganyu_3_3
-    | Razor_3_3
+    | Razor_3_3 | MirrorMaiden_3_3
 )
