@@ -150,7 +150,57 @@ def test_save_load():
 
 
 def test_copy_speed():
-    run_time = 20
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "card 1 0 0 1",
+            "skill 1 0 1 2",
+            "sw_char 1 1",
+            "skill 1 omni omni hydro",
+            "end",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "skill 2 omni omni dendro omni omni",
+            "end",
+            "skill 1 0 1 2",
+            "card 0 0 0 1 2"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        Rana*10
+        Wine-Stained Tricorne*10
+        The Seed of Stored Knowledge*10
+        """
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            make_respond(agent_1, match)
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0:
+            break
+
+    assert match.state != MatchState.ERROR
+
+    run_time = 100
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)
@@ -178,17 +228,36 @@ def test_copy_speed():
 
 
 def test_random_same_after_load():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
     agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match()
-    deck = TEST_DECK
-    deck = Deck(**deck)
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Rhodeia of Loch
+        charactor:Kamisato Ayaka
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = charactor.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 10
+    match.config.card_number = None
+    match.config.charactor_number = None
+    match.config.check_deck_restriction = False
     initial_match = match.copy(deep = True)
+    initial_agent_0 = agent_0.copy(deep = True)
     initial_agent_1 = agent_1.copy(deep = True)
     results_1 = []
-    test_step = 50
+    test_step = 100
     assert match.start()
     match.step()
     for _ in range(test_step):
@@ -199,6 +268,7 @@ def test_random_same_after_load():
 
     # use deepcopy to rerun
     match = initial_match.copy(deep = True)
+    agent_0 = initial_agent_0.copy(deep = True)
     agent_1 = initial_agent_1.copy(deep = True)
     assert match.start()
     match.step()
@@ -211,11 +281,12 @@ def test_random_same_after_load():
         assert now == results_1[i], f'deepcopy error at {i}'
     assert match.state != MatchState.ERROR
 
-    # use json to rerun
     match = Match(**json.loads(initial_match.json()))
     assert match.json() == initial_match.json()
     assert match == initial_match
+    agent_0 = RandomAgent(**json.loads(initial_agent_0.json()))
     agent_1 = RandomAgent(**json.loads(initial_agent_1.json()))
+    assert agent_0 == initial_agent_0
     assert agent_1 == initial_agent_1
     assert match.start()
     match.step()
@@ -226,6 +297,45 @@ def test_random_same_after_load():
         now = match.copy(deep = True)
         remove_ids(now)
         assert now == results_1[i], f'json error at {i}'
+    assert match.state != MatchState.ERROR
+
+
+def test_save_load_same():
+    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
+    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Rhodeia of Loch
+        charactor:Kamisato Ayaka
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = charactor.max_hp = 99
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 10
+    match.config.card_number = None
+    match.config.charactor_number = None
+    match.config.check_deck_restriction = False
+    test_step = 100
+    assert match.start()
+    match.step()
+    for _ in range(test_step):
+        make_respond(agent_0, match, assertion = False)
+        make_respond(agent_1, match, assertion = False)
+        match_copy = match.copy(deep = True)
+        assert remove_ids(match_copy) == remove_ids(
+            Match(**json.loads(match_copy.json())))
+        match = Match(**json.loads(match.json()))
     assert match.state != MatchState.ERROR
 
 
@@ -657,7 +767,8 @@ if __name__ == '__main__':
     # test_random_same_after_load()
     # test_use_card()
     # test_copy_speed()
+    test_save_load_same()
     # test_support_over_maximum_and_error_tests()
     # test_summon_over_maximum()
-    test_plunge_mark()
-    test_higher_version_compatible()
+    # test_plunge_mark()
+    # test_higher_version_compatible()

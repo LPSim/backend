@@ -41,6 +41,7 @@ class LargeWindSpirit(SwirlChangeSummonBase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         if self.talent_activated:
+            self.desc = self.desc.replace(self.talent_desc, '')
             self.desc += self.talent_desc
 
     def renew(self, obj: 'LargeWindSpirit') -> None:

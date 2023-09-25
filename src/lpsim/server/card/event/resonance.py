@@ -25,9 +25,11 @@ class ElementalResonanceCardBase(CardBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.desc += self.restriction_desc.replace(
+        restriction = self.restriction_desc.replace(
             'XXX', self.element.name.capitalize()
         )
+        self.desc = self.desc.replace(restriction, '')
+        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -423,9 +425,11 @@ class NationResonanceCardBase(CardBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.desc += self.restriction_desc.replace(
+        restriction = self.restriction_desc.replace(
             'XXX', self.faction.name.capitalize()
         )
+        self.desc = self.desc.replace(restriction, '')
+        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """

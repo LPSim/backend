@@ -1,5 +1,11 @@
 import logging
 
+from pydantic import validator
+
+from .object_base import CardBase
+
+from .charactor.charactor_base import CharactorBase
+
 from ..utils import BaseModel, get_instance_from_type_unions
 from typing import Literal, List
 from . import Cards
@@ -8,8 +14,16 @@ from . import Charactors
 
 class Deck(BaseModel):
     name: Literal['Deck'] = 'Deck'
-    charactors: List[Charactors] = []
-    cards: List[Cards] = []
+    charactors: List[CharactorBase] = []
+    cards: List[CardBase] = []
+
+    @validator('charactors', each_item = True, pre = True)
+    def parse_charactors(cls, v):
+        return get_instance_from_type_unions(Charactors, v)
+
+    @validator('cards', each_item = True, pre = True)
+    def parse_cards(cls, v):
+        return get_instance_from_type_unions(Cards, v)
 
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 

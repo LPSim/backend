@@ -10,6 +10,14 @@ from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 
 from pydantic import validator
 
+from ..card.equipment.artifact.base import ArtifactBase
+
+from ..card.equipment.weapon.base import WeaponBase
+
+from ..status.charactor_status.base import CharactorStatusBase
+
+from ...utils import get_instance_from_type_unions
+
 from ..event import MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
@@ -410,10 +418,12 @@ class TalentBase(CardBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.desc += (
+        restriction = (
             f' (You must have {self.charactor_name} in your deck to add this '
             'card to your deck.)'
         )
+        self.desc = self.desc.replace(restriction, '')
+        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -570,14 +580,30 @@ class CharactorBase(ObjectBase):
     weapon_type: WeaponType
 
     # charactor status
-    hp: int = 0
+    hp: int = -1
     charge: int = 0
-    weapon: Weapons | None = None
-    artifact: Artifacts | None = None
+    weapon: WeaponBase | None = None
+    artifact: ArtifactBase | None = None
     talent: TalentBase | None = None
-    status: List[CharactorStatus] = []
+    status: List[CharactorStatusBase] = []
     element_application: List[ElementType] = []
     is_alive: bool = True
+
+    @validator('status', each_item = True, pre = True)
+    def parse_status(cls, v):
+        return get_instance_from_type_unions(CharactorStatus, v)
+
+    @validator('weapon', pre = True)
+    def parse_weapon(cls, v):
+        if v is None:
+            return v
+        return get_instance_from_type_unions(Weapons, v)
+
+    @validator('artifact', pre = True)
+    def parse_artifact(cls, v):
+        if v is None:
+            return v
+        return get_instance_from_type_unions(Artifacts, v)
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -603,9 +629,11 @@ class CharactorBase(ObjectBase):
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.hp = self.max_hp
+        if self.hp == -1:
+            self.hp = self.max_hp
         old_skill_ids = [x.id for x in self.skills]
         self._init_skills()
+        self.position = self.position  # set position to update skill positions
         if len(old_skill_ids):
             new_skill_ids = [x.id for x in self.skills]
             if len(new_skill_ids) != len(old_skill_ids):

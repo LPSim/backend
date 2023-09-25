@@ -59,9 +59,11 @@ def remove_ids(model: BaseModel) -> BaseModel:
         elif isinstance(value, BaseModel):
             remove_ids(value)
         elif isinstance(value, list) or isinstance(value, tuple):
-            for v in value:
-                if isinstance(v, BaseModel):
-                    assert not isinstance(v, ObjectPosition)
+            assert isinstance(value, list)
+            for num, v in enumerate(value):
+                if isinstance(v, ObjectPosition):
+                    value[num] = v.set_id(0)
+                elif isinstance(v, BaseModel):
                     remove_ids(v)
     if 'id' in model.__fields__.keys():
         model.id = 0

@@ -374,10 +374,12 @@ class Refraction(RoundCharactorStatus):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.is_talent_activated:
-            self.desc += (
+            additional_desc = (
                 ' The Elemental Dice Cost of switching from this character to '
                 'another character is increased by 1.'
             )
+            self.desc = self.desc.replace(additional_desc, '')
+            self.desc += additional_desc
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
