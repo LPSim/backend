@@ -59,16 +59,18 @@ def remove_ids(model: BaseModel) -> BaseModel:
         elif isinstance(value, BaseModel):
             remove_ids(value)
         elif isinstance(value, list) or isinstance(value, tuple):
-            for v in value:
-                if isinstance(v, BaseModel):
-                    assert not isinstance(v, ObjectPosition)
+            assert isinstance(value, list)
+            for num, v in enumerate(value):
+                if isinstance(v, ObjectPosition):
+                    value[num] = v.set_id(0)
+                elif isinstance(v, BaseModel):
                     remove_ids(v)
     if 'id' in model.__fields__.keys():
         model.id = 0
     return model
 
 
-def get_random_state(offset: int = 0):  # pragma no cover
+def get_random_state(offset: int = 0):
     """
     get random state tuple for test. it will use a fixed random state and
     random offset times as the result random state.
@@ -77,7 +79,7 @@ def get_random_state(offset: int = 0):  # pragma no cover
     if offset > 0:
         random_state = np.random.RandomState()
         state[1] = np.array(state[1], dtype = 'uint32')
-        random_state.set_state(random_state)  # type: ignore
+        random_state.set_state(state)  # type: ignore
         for _ in range(offset):
             random_state.random()
         state = list(random_state.get_state(legacy = True))  # type: ignore

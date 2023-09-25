@@ -1,5 +1,6 @@
 from typing import List, Tuple, Literal
-from . import Charactors
+
+from .charactor.charactor_base import CharactorBase
 from .consts import (
     ElementType, ElementalReactionType, DamageElementalType,
     DamageType, ELEMENT_TO_DAMAGE_TYPE, ObjectPositionType,
@@ -252,7 +253,7 @@ def check_elemental_reaction(
 
 
 def apply_elemental_reaction(
-        target_charactors: List[Charactors],
+        target_charactors: List[CharactorBase],
         damage: DamageElementEnhanceValue,
         reaction: ElementalReactionType,
         reacted_elements: List[ElementType]

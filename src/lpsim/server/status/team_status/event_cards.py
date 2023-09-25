@@ -434,7 +434,6 @@ class FatuiAmbusher(UsageTeamStatus):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.activated_this_round = False
         if self.name == 'Fatui Ambusher: Cryo Cicin Mage':
             self.element = DamageElementalType.CRYO
         elif self.name == 'Fatui Ambusher: Mirror Maiden':

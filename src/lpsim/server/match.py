@@ -3,7 +3,7 @@ import logging
 import numpy as np
 from typing import Literal, List, Any, Dict
 from enum import Enum
-from pydantic import PrivateAttr
+from pydantic import PrivateAttr, validator
 
 from ..utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
@@ -85,7 +85,7 @@ from .event import (
     UseCardEventArguments,
     UseSkillEventArguments,
 )
-from .object_base import ObjectBase
+from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
@@ -258,6 +258,14 @@ class Match(BaseModel):
     event_frames: List[EventFrame] = []
     requests: List[Requests] = []
     winner: int = -1
+
+    @validator('event_handlers', each_item = True, pre = True)
+    def parse_event_handlers(cls, v):
+        return get_instance_from_type_unions(SystemEventHandlers, v)
+
+    @validator('requests', each_item = True, pre = True)
+    def parse_requests(cls, v):
+        return get_instance_from_type_unions(Requests, v)
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -1482,8 +1490,8 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
-        draw_cards: List[Cards] = []
-        blacklist: List[Cards] = []
+        draw_cards: List[CardBase] = []
+        blacklist: List[CardBase] = []
         if self.version <= '0.0.1':
             # in 0.0.1, whitelist and blacklist are not supported
             # no filter
@@ -1573,7 +1581,7 @@ class Match(BaseModel):
         card_idxs = action.card_idxs[:]
         card_idxs.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cidx].name for cidx in card_idxs]
-        restore_cards: List[Cards] = []
+        restore_cards: List[CardBase] = []
         for cidx in card_idxs:
             restore_cards.append(table.hands[cidx])
             table.hands = table.hands[:cidx] + table.hands[cidx + 1:]

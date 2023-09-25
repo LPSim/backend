@@ -42,7 +42,7 @@ class MobMage(Mob):
         Check if element type fits name.
         """
         if 'name' not in values:
-            raise ValueError('Name not found.')
+            raise AssertionError('Name not found.')
         type_in_name: str = values['name'][:-7].upper()
         element_type: str = v.value
         if type_in_name != element_type:

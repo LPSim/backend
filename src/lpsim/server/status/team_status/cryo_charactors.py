@@ -158,10 +158,12 @@ class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.talent_activated:
-            self.desc += (
+            talent_desc = (
                 " And your Sword, Claymore, and Polearm-wielding character's "
                 "Normal Attacks +1 DMG."
             )
+            self.desc = self.desc.replace(talent_desc, '')
+            self.desc += talent_desc
             self.max_usage = 3
             self.usage = 3
 
