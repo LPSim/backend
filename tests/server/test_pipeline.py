@@ -303,7 +303,7 @@ def test_random_same_after_load():
 def test_save_load_same():
     agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
     agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state())
+    match = Match(random_state = get_random_state(100))
     deck = Deck.from_str(
         '''
         default_version:4.0
@@ -315,6 +315,7 @@ def test_save_load_same():
         Sweet Madame*5
         Abyssal Summons*5
         Fatui Conspiracy*5
+        Timmie*5
         '''
     )
     for charactor in deck.charactors:

@@ -70,7 +70,7 @@ def remove_ids(model: BaseModel) -> BaseModel:
     return model
 
 
-def get_random_state(offset: int = 0):  # pragma no cover
+def get_random_state(offset: int = 0):
     """
     get random state tuple for test. it will use a fixed random state and
     random offset times as the result random state.
@@ -79,7 +79,7 @@ def get_random_state(offset: int = 0):  # pragma no cover
     if offset > 0:
         random_state = np.random.RandomState()
         state[1] = np.array(state[1], dtype = 'uint32')
-        random_state.set_state(random_state)  # type: ignore
+        random_state.set_state(state)  # type: ignore
         for _ in range(offset):
             random_state.random()
         state = list(random_state.get_state(legacy = True))  # type: ignore
