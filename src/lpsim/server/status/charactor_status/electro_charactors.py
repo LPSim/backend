@@ -22,8 +22,8 @@ from ...modifiable_values import (
 )
 from .base import (
     ElementalInfusionCharactorStatus, PrepareCharactorStatus, 
-    RoundCharactorStatus, ShieldCharactorStatus, UsageCharactorStatus, 
-    CharactorStatusBase
+    ReviveCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus, 
+    UsageCharactorStatus, CharactorStatusBase
 )
 
 
@@ -81,51 +81,10 @@ class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
         return value
 
 
-class ElectroCrystalCore(UsageCharactorStatus):
+class ElectroCrystalCore(ReviveCharactorStatus):
     name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
-    desc: str = (
-        'When the character to which this is attached would be defeated: '
-        'Remove this effect, ensure the character will not be defeated, and '
-        'heal them to 1 HP.'
-    )
     version: Literal['3.7'] = '3.7'
-    usage: int = 1
-    max_usage: int = 1
-
-    def event_handler_MAKE_DAMAGE(
-        self, event: MakeDamageEventArguments, match: Any
-    ) -> List[MakeDamageAction | RemoveObjectAction]:
-        """
-        when make damage, check whether this charactor's hp is 0. if so,
-        heal it by 1 hp.
-
-        Using make damage action, so it will trigger immediately before
-        receiving any other damage, and can be defeated by other damage.
-        """
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        if charactor.hp > 0:
-            # hp not 0, do nothing
-            return []
-        if self.usage <= 0:  # pragma: no cover
-            # no usage, do nothing
-            return []
-        # heal this charactor by 1
-        self.usage -= 1
-        return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost()
-                )
-            ],
-        )] + self.check_should_remove()
+    heal: int = 1
 
 
 class RockPaperScissorsComboScissors(PrepareCharactorStatus):

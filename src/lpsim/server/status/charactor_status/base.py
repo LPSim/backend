@@ -1,7 +1,13 @@
 from typing import Any, Literal, List
 
-from ...modifiable_values import DamageDecreaseValue, DamageElementEnhanceValue
-from ...consts import DamageElementalType, ObjectType, PlayerActionLabels
+from ...struct import Cost
+
+from ...modifiable_values import (
+    DamageDecreaseValue, DamageElementEnhanceValue, DamageValue
+)
+from ...consts import (
+    DamageElementalType, DamageType, ObjectType, PlayerActionLabels
+)
 from ..base import StatusBase
 from ...action import (
     ActionEndAction, MakeDamageAction, RemoveObjectAction, Actions, 
@@ -305,3 +311,52 @@ class PrepareCharactorStatus(CharactorStatusBase):
                 return ret
         else:
             raise AssertionError('Skill not found')
+
+
+class ReviveCharactorStatus(UsageCharactorStatus):
+    name: str
+    version: str
+    heal: int
+
+    desc: str = (
+        'When the character to which this is attached would be defeated: '
+        'Remove this effect, ensure the character will not be defeated, and '
+        'heal them to _HEAL_ HP.'
+    )
+    usage: int = 1
+    max_usage: int = 1
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        when make damage, check whether this charactor's hp is 0. if so,
+        heal it by self.heal hp.
+
+        Using make damage action, so it will trigger immediately before
+        receiving any other damage, and can be defeated by other damage.
+        """
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        if charactor.hp > 0:
+            # hp not 0, do nothing
+            return []
+        if self.usage <= 0:  # pragma: no cover
+            # no usage, do nothing
+            return []
+        # heal this charactor by 1
+        self.usage -= 1
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = - self.heal,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost()
+                )
+            ],
+        )] + self.check_should_remove()
