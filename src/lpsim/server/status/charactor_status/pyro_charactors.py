@@ -19,7 +19,8 @@ from ...modifiable_values import (
 )
 from .base import (
     DefendCharactorStatus, ElementalInfusionCharactorStatus, 
-    RoundCharactorStatus, UsageCharactorStatus
+    ReviveCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus, 
+    UsageCharactorStatus
 )
 
 
@@ -409,7 +410,41 @@ class DilucInfusion(ElementalInfusionCharactorStatus,
     max_usage: int = 2
 
 
+class FieryRebirth(ReviveCharactorStatus):
+    name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
+    version: Literal['3.7'] = '3.7'
+    heal: int = 3
+
+
+class AegisOfAbyssalFlame(ShieldCharactorStatus):
+    name: Literal['Aegis of Abyssal Flame'] = 'Aegis of Abyssal Flame'
+    desc: str = (
+        'Grant the character to which this is attached 3 Shield points. '
+        'Before this Shield is depleted, the character to which this is '
+        'attached will deal +1 Pyro DMG.'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 3
+    max_usage: int = 3
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageIncreaseValue:
+        if (
+            value.is_corresponding_charactor_use_damage_skill(
+                self.position, match, None
+            )
+            and value.damage_elemental_type == DamageElementalType.PYRO
+        ):
+            # self attack and pyro damage, increase 1 damage
+            assert mode == 'REAL'
+            value.damage += 1
+        return value
+
+
 PyroCharactorStatus = (
     Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
-    | ParamitaPapilio | BloodBlossom | DilucInfusion
+    | ParamitaPapilio | BloodBlossom | DilucInfusion | FieryRebirth
+    | AegisOfAbyssalFlame
 )

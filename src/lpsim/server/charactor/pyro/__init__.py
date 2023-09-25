@@ -7,18 +7,25 @@ from .yanfei import Yanfei, RightOfFinalInterpretation
 from .hu_tao import HuTao, SanguineRouge
 from .diluc import Diluc, FlowingFlame
 from .amber import Amber, BaronBunny, BunnyTriggered
+from .abyss_lector_fathomless_flames import (
+    AbyssLectorFathomlessFlames, DarkfireFurnace, EmbersRekindled
+)
 
 
 PyroCharactors = (
     Diluc | Xiangling | Bennett | Amber | Yoimiya | Klee | HuTao | Yanfei
     # finally monsters
-    | FatuiPyroAgent
+    | FatuiPyroAgent | AbyssLectorFathomlessFlames
 )
-SummonsOfPyroCharactors = Guoba | BaronBunny
+SummonsOfPyroCharactors = (
+    Guoba | BaronBunny 
+    # finally monsters
+    | DarkfireFurnace
+)
 PyroCharactorTalents = (
     FlowingFlame | Crossfire | GrandExpectation | BunnyTriggered 
     | NaganoharaMeteorSwarm | PoundingSurprise | SanguineRouge 
     | RightOfFinalInterpretation
     # finally monsters
-    | PaidinFull
+    | PaidinFull | EmbersRekindled
 )
