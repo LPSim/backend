@@ -292,7 +292,20 @@ class CatClawShield(ShieldTeamStatus):
     max_usage: int = 1
 
 
+class FlowingCicinShield(ShieldTeamStatus):
+    name: Literal['Flowing Cicin Shield'] = 'Flowing Cicin Shield'
+    desc: str = (
+        'Provides 1 Shield point for your active character. '
+        'When created: If you have Cryo Cicins on the field, additionally '
+        'increase Shield by the amount of Usage(s) it has. (Adds a maximum of '
+        '3 additional Shield)'
+    )
+    version: Literal['3.7'] = '3.7'
+    usage: int = 1
+    max_usage: int = 1
+
+
 CryoTeamStatus = (
     Icicle | IcyQuill | ChonghuasFrostField | IceLotus 
-    | FortunePreservingTalisman | CatClawShield
+    | FortunePreservingTalisman | CatClawShield | FlowingCicinShield
 )

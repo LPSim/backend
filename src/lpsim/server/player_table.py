@@ -167,7 +167,6 @@ class PlayerTable(BaseModel):
             for summon in self.summons:
                 if summon.id == position.id:
                     return summon
-            raise NotImplementedError('Not tested part')
             return None
         elif position.area == ObjectPositionType.SUPPORT:
             for support in self.supports:

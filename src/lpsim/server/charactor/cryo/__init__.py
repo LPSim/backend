@@ -8,17 +8,26 @@ from .kamisato_ayaka import (
     KamisatoAyaka, FrostflakeSekiNoTo, KantenSenmyouBlessing
 )
 from .diona import Diona, DrunkenMist, ShakenNotPurred
+from .fatui_cryo_cicin_mage import (
+    FatuiCryoCicinMage, CryoCicins, CicinsColdGlare
+)
 
 
 CryoCharactors = (
     Ganyu | Diona | Kaeya | Chongyun | KamisatoAyaka | Eula | Shenhe | Qiqi
+    # finally monsters
+    | FatuiCryoCicinMage
 )
 SummonsOfCryoCharactors = (
     SacredCryoPearl | DrunkenMist | FrostflakeSekiNoTo | LightfallSword 
     | TalismanSpirit | HeraldOfFrost
+    # finally monsters
+    | CryoCicins
 )
 CryoCharactorTalents = (
     UndividedHeart | ShakenNotPurred | ColdBloodedStrike | SteadyBreathing 
     | KantenSenmyouBlessing | WellspringOfWarLust | MysticalAbandon
     | RiteOfResurrection
+    # finally monsters
+    | CicinsColdGlare
 )

@@ -19,7 +19,8 @@ from ...event import (
 )
 from .base import (
     CharactorStatusBase, ElementalInfusionCharactorStatus, 
-    PrepareCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus
+    PrepareCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus, 
+    UsageCharactorStatus
 )
 
 
@@ -422,7 +423,42 @@ class Refraction(RoundCharactorStatus):
         return value
 
 
+class TakimeguriKanka(ElementalInfusionCharactorStatus, UsageCharactorStatus):
+    name: Literal['Takimeguri Kanka'] = 'Takimeguri Kanka'
+    desc: str = (
+        'The character to which this is attached has their Normal Attacks '
+        'deal +1 DMG, and their Physical DMG is converted to Hydro DMG.'
+    )
+    version: Literal['4.1'] = '4.1'
+    usage: int = 2
+    max_usage: int = 2
+    infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+
+    def value_modifier_DAMAGE_INCREASE(
+        self, value: DamageIncreaseValue, match: Any,
+        mode: Literal['TEST', 'REAL'],
+    ) -> DamageIncreaseValue:
+        if value.is_corresponding_charactor_use_damage_skill(
+            self.position, match, SkillType.NORMAL_ATTACK
+        ):
+            assert mode == 'REAL'
+            self.usage -= 1
+            value.damage += 1
+            charactor = match.player_tables[
+                self.position.player_idx].charactors[
+                    self.position.charactor_idx]
+            target = match.player_tables[
+                value.target_position.player_idx].charactors[
+                    value.target_position.charactor_idx]
+            if (
+                charactor.talent is not None
+                and target.hp <= 6
+            ):
+                value.damage += 1
+        return value
+
+
 HydroCharactorStatus = (
     Riptide | RangedStance | MeleeStance | CeremonialGarment | HeronShield
-    | Refraction
+    | Refraction | TakimeguriKanka
 )
