@@ -11,7 +11,33 @@ This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
-Progress: Charactors 52/54, Cards 185/199
+## Progress
+
+[Charactors](docs/charactors.md)
+[Cards](docs/cards.md)
+
+(until 4.0) Charactors 52/54, Cards 185/199
+
+(4.1)
+
+[ ] Yaoyao
+[ ] Dehya
+[ ] Wanderer
+
+[ ] Beneficient
+[ ] Stalwart and True
+[ ] Gales of Reverie
+
+[ ] MoonPiercer
+[ ] Crown of Watatsumi
+[ ] Yayoi Nanatsuki
+[ ] Gandharva Ville
+[ ] Fresh Wind of Freedom
+[ ] Pankration!
+
+Balance changes:
+
+TBD
 
 ## Usage
 
@@ -141,11 +167,6 @@ All codes are tested with pytest and 100% coverage (except defensive codes,
 which are marked with `# pragma: no cover`). With the support of different
 version compatibility, when a new version is implemented, all past tests
 should be passed without modification.
-
-# Progress
-
-[Charactors](docs/charactors.md)
-[Cards](docs/cards.md)
 
 ## Contribution
 
