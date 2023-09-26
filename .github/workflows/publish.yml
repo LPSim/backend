@@ -1,8 +1,12 @@
 name: publish to PyPI
 
 on:
-  - push
-  - workflow_dispatch
+  push:
+    branches:
+      - master
+    tags:
+      - '*'
+  workflow_dispatch:
 
 jobs:
   test:

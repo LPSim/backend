@@ -28,4 +28,5 @@ jobs:
         coverage xml
 
     - name: Upload coverage to Coveralls
+      if: github.ref == 'refs/heads/master'
       uses: coverallsapp/github-action@v2
