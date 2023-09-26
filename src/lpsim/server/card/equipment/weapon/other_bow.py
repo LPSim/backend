@@ -1,13 +1,15 @@
 
 from typing import Any, List, Literal
 
+from ....event import SkillEndEventArguments
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....action import CreateObjectAction
 
-from ....consts import ObjectPositionType, WeaponType
+from ....consts import ObjectPositionType, SkillType, WeaponType
 
-from ....struct import Cost
+from ....struct import Cost, ObjectPosition
 from .base import RoundEffectWeaponBase, WeaponBase
 
 
@@ -70,4 +72,43 @@ class AmosBow(RoundEffectWeaponBase):
         return value
 
 
-Bows = AmosBow | KingsSquire
+class ElegyForTheEnd(WeaponBase):
+    name: Literal["Elegy for the End"]
+    desc: str = (
+        'The character deals +1 DMG. '
+        'After the character uses an Elemental Burst: Create Millennial '
+        'Movement: Farewell Song. (Your character deals +1 DMG, Duration '
+        '(Rounds): 2)'
+    )
+    cost: Cost = Cost(same_dice_number = 3)
+    version: Literal['3.7'] = '3.7'
+    weapon_type: WeaponType = WeaponType.BOW
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        If equipped and self use elemental burst, create a status
+        """
+        if not self.position.check_position_valid(
+            event.action.position, match, player_idx_same = True,
+            charactor_idx_same = True, 
+            source_area = ObjectPositionType.CHARACTOR
+        ):
+            # not equipped or not self use skill
+            return []
+        if event.action.skill_type != SkillType.ELEMENTAL_BURST:
+            # not elemental burst
+            return []
+        return [CreateObjectAction(
+            object_name = 'Millennial Movement: Farewell Song',
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = 0
+            ),
+            object_arguments = {}
+        )]
+
+
+Bows = AmosBow | ElegyForTheEnd | KingsSquire

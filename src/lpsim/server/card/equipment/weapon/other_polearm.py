@@ -1,10 +1,12 @@
 
 from typing import Any, List, Literal
 
-from ....action import Actions
+from ....action import Actions, ChargeAction
 
 from ....action import ChangeObjectUsageAction, CreateObjectAction
-from ....event import SkillEndEventArguments
+from ....event import (
+    ChargeEventArguments, RoundPrepareEventArguments, SkillEndEventArguments
+)
 
 from ....modifiable_values import DamageIncreaseValue
 from ....status.charactor_status.base import ShieldCharactorStatus
@@ -135,4 +137,46 @@ class LithicSpear(WeaponBase):
         return self.generate_shield(count)
 
 
-Polearms = LithicSpear | VortexVanquisher
+class EngulfingLightning(RoundEffectWeaponBase):
+    name: Literal['Engulfing Lightning']
+    desc: str = (
+        'The character deals +1 DMG. '
+        'Triggers automatically once per Round: If the character to which '
+        'this is attached does not have Energy, they will gain 1 Energy.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 3)
+    weapon_type: WeaponType = WeaponType.POLEARM
+    max_usage_per_round: int = 1
+
+    def _charge_one(self, match: Any) -> List[ChargeAction]:
+        if self.position.area != ObjectPositionType.CHARACTOR:
+            # not equipped
+            return []
+        charactor = match.player_tables[
+            self.position.player_idx].charactors[self.position.charactor_idx]
+        if charactor.charge == 0 and self.usage > 0:
+            self.usage -= 1
+            return [ChargeAction(
+                player_idx = self.position.player_idx,
+                charactor_idx = self.position.charactor_idx,
+                charge = 1,
+            )]
+        return []
+
+    def equip(self, match: Any) -> List[Actions]:
+        return super().equip(match) + self._charge_one(match)
+
+    def event_handler_CHARGE(
+        self, event: ChargeEventArguments, match: Any
+    ) -> List[ChargeAction]:
+        return self._charge_one(match)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        ret = super().event_handler_ROUND_PREPARE(event, match)
+        return ret + self._charge_one(match)
+
+
+Polearms = LithicSpear | VortexVanquisher | EngulfingLightning

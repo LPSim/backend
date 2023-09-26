@@ -1,3 +1,4 @@
+from .favonius import FavoniusWeapons
 from .skyward import SkywardWeapons
 from .vanilla import VanillaWeapon
 from .sacrificial import SacrificialWeapons
@@ -11,7 +12,7 @@ from .old_version import OldVersionWeapons
 
 Weapons = (
     VanillaWeapon | SacrificialWeapons | Catalysts | Bows | Claymores 
-    | Polearms | Swords | SkywardWeapons
+    | Polearms | Swords | SkywardWeapons | FavoniusWeapons
     # Finally old version weapons
     | OldVersionWeapons
 )
