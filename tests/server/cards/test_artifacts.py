@@ -5,8 +5,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, get_random_state, 
-    set_16_omni
+    check_hp, get_pidx_cidx, get_test_id_from_command, make_respond, 
+    get_random_state, set_16_omni
 )
 from src.lpsim.server.interaction import UseSkillRequest
 
@@ -1020,6 +1020,291 @@ def test_big_elemental_artifacts():
     assert match.state != MatchState.ERROR
 
 
+def test_advanturer_traveling_doctor():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "skill 0 15 14 13",
+            "card 12 0 12",
+            "skill 0 11 10 9",
+            "skill 0 8 7 6",
+            "skill 0 5 4 3",
+            "skill 0 2 1 0",
+            "end",
+            "skill 0 15 14 13",
+            "skill 1 12 11 10",
+            "TEST 1 24 30 30 27 29 24",
+            "skill 2 9 8 7",
+            "TEST 1 23 30 30 26 28 22",
+            "sw_char 1",
+            "skill 1 6 5 4",
+            "sw_char 0",
+            "skill 0 3 2 1",
+            "end",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "skill 0 9 8 7",
+            "skill 0 6 5 4",
+            "skill 0 3 2 1",
+            "end",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "end",
+            "skill 1 15 14 13",
+            "skill 0 12 11 10",
+            "TEST 1 25 30 30 0 28 19",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "skill 0 15 14 13",
+            "sw_char 1 12",
+            "sw_char 2 11",
+            "skill 0 10 9 8",
+            "TEST 1 28 30 30 26 28 26",
+            "sw_char 1 7",
+            "skill 0 6 5 4",
+            "card 5 2 3",
+            "sw_char 2 2",
+            "card 9 1",
+            "card 1 0",
+            "card 3 0",
+            "end",
+            "skill 1 15 14 13",
+            "TEST 1 25 30 30 26 28 23",
+            "skill 2 12 11 10",
+            "TEST 1 24 30 30 26 28 22",
+            "card 13 0 9",
+            "skill 2 8 7 6",
+            "sw_char 0 5",
+            "end",
+            "end",
+            "end",
+            "choose 2",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "skill 2 9 8 7"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Venti
+        charactor:Xiangling
+        charactor:Xingqiu
+        Sweet Madame*15
+        Adventurer's Bandana*5
+        Traveling Doctor's Handkerchief*5
+        Clax's Arts*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.max_hp = 30
+        charactor.hp = 30
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    match.config.initial_hand_size = 20
+    match.config.max_hand_size = 30
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_emblem_of_severed_fate():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 2 2 15 14",
+            "card 10 1 13 12 11",
+            "card 10 0 10",
+            "skill 0 9 8 7",
+            "skill 0 6 5 4",
+            "skill 2 3 2 1",
+            "end",
+            "sw_char 1 15",
+            "skill 0 14 13 12",
+            "sw_char 0 11",
+            "skill 0 10 9 8",
+            "sw_char 1 7",
+            "end",
+            "skill 2 15 14 13 12",
+            "card 9 0 11",
+            "skill 2 10 9 8 7",
+            "TEST 1 19 21 30 30 15 19",
+            "sw_char 2 6",
+            "TEST 1 19 21 29 30 15 19",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "card 0 0 15 14",
+            "card 2 2 13 12",
+            "skill 0 11 10 9",
+            "skill 0 8 7 6",
+            "TEST 1 26 30 30 30 24 30",
+            "TEST 2 p0c0 charge 0",
+            "TEST 2 p0c1 charge 1",
+            "TEST 2 p0c2 charge 1",
+            "TEST 2 p1c0 charge 0",
+            "TEST 2 p1c1 charge 2",
+            "TEST 2 p1c2 charge 0",
+            "skill 2 5 4 3 2",
+            "end",
+            "sw_char 2 15",
+            "skill 0 14 13 12",
+            "sw_char 1 11",
+            "skill 0 10 9 8",
+            "sw_char 2 7",
+            "end",
+            "TEST 1 19 26 30 30 15 26",
+            "sw_char 2 15",
+            "TEST 1 19 26 30 30 15 19",
+            "skill 2 14 13 12",
+            "card 3 0 11",
+            "skill 2 10 9 8"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Venti
+        charactor:Xiangling
+        charactor:Xingqiu
+        Sweet Madame*15
+        Ornate Kabuto*5
+        Ornate Kabuto@3.7*5
+        Emblem of Severed Fate*5
+        Emblem of Severed Fate@4.0*5
+        Emblem of Severed Fate@3.7*5
+        Clax's Arts*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.max_hp = 30
+        charactor.hp = 30
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    match.config.initial_hand_size = 20
+    match.config.max_hand_size = 30
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx, cidx = get_pidx_cidx(cmd)
+                charge = int(cmd[-1])
+                assert match.player_tables[pidx].charactors[
+                    cidx].charge == charge
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # from tests.utils_for_test import enable_logging
     # enable_logging()
@@ -1031,4 +1316,6 @@ if __name__ == '__main__':
     # test_millelith()
     # test_instructor()
     # test_lucky_dog()
-    test_big_elemental_artifacts()
+    # test_big_elemental_artifacts()
+    # test_advanturer_traveling_doctor()
+    test_emblem_of_severed_fate()

@@ -2,8 +2,8 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 
@@ -1559,6 +1559,151 @@ def test_skyward():
     assert match.state != MatchState.ERROR
 
 
+def test_favonius_lighting_elegy():
+    cmd_records = [
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "TEST 2 p0c1 charge 0",
+            "TEST 2 p1c1 charge 0",
+            "card 0 0 15 14 13",
+            "card 8 0 12 11 10",
+            "TEST 2 p0c1 charge 1",
+            "sw_char 2 9",
+            "skill 0 8 7 6",
+            "sw_char 0 5",
+            "TEST 2 p1c1 charge 1",
+            "card 14 0",
+            "card 3 0 4 3 2",
+            "end",
+            "card 1 0",
+            "card 4 0 15",
+            "TEST 2 p0c1 charge 1",
+            "sw_char 1 14",
+            "skill 1 13 12 11",
+            "skill 2 10 9 8 7",
+            "sw_char 0 6",
+            "TEST 2 p1c2 charge 1",
+            "TEST 1 21 17 30 30 27 25",
+            "skill 2 5 4 3",
+            "skill 1 2 1 0",
+            "TEST 1 19 17 30 24 24 17",
+            "end",
+            "TEST 3 p0 usage 1 2",
+            "TEST 3 p1 usage 3 2",
+            "skill 0 15 14 13"
+        ],
+        [
+            "sw_card 1 2 4 3",
+            "choose 1",
+            "skill 1 15 14 13",
+            "card 0 0 12 11 10",
+            "TEST 2 p1c1 charge 1",
+            "skill 1 9 8 7",
+            "skill 2 6 5 4 3",
+            "card 13 0 2 1 0",
+            "end",
+            "sw_char 2 15",
+            "skill 1 14 13 12",
+            "TEST 2 p0c1 charge 0",
+            "skill 2 11 10 9",
+            "skill 1 8 7 6",
+            "sw_char 0 5",
+            "TEST 1 21 17 30 24 24 17",
+            "skill 1 4 3 2",
+            "end",
+            "TEST 1 17 17 30 14 24 17",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Venti
+        charactor:Xiangling
+        charactor:Xingqiu
+        Sweet Madame*15
+        Elegy for the End*5
+        Engulfing Lightning*5
+        Favonius Sword*5
+        Clax's Arts*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.max_hp = 30
+        charactor.hp = 30
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    match.config.initial_hand_size = 20
+    match.config.max_hand_size = 30
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx, cidx = get_pidx_cidx(cmd)
+                charge = int(cmd[-1])
+                assert match.player_tables[pidx].charactors[
+                    cidx].charge == charge
+            elif test_id == 3:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                status = match.player_tables[pidx].team_status
+                check_usage(status, cmd[4:])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     test_vanilla_weapons()
     # test_the_bell()
@@ -1572,4 +1717,5 @@ if __name__ == '__main__':
     # test_sacrificial()
     # test_wolf_gravestone()
     # test_aquila_favonia()
-    test_skyward()
+    # test_skyward()
+    test_favonius_lighting_elegy()
