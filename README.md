@@ -13,10 +13,11 @@ This project is under AGPL-3.0 license.
 
 ## Progress
 
-[Charactors](docs/charactors.md)
+[Charactors](docs/charactors.md) All done.
+
 [Cards](docs/cards.md)
 
-(until 4.0) Charactors 52/54, Cards 185/199
+(until 4.0) Charactors 54/54, Cards 187/199
 
 (4.1)
 
