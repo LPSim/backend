@@ -110,7 +110,7 @@ class PoeticsOfFuubutsu(SkillTalent):
     )
     skill: Chihayaburu = Chihayaburu()
 
-    swirl_element = ElementType.NONE
+    swirl_element: ElementType = ElementType.NONE
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any

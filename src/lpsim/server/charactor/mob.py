@@ -1,5 +1,5 @@
 from typing import List, Literal
-from pydantic import validator
+from pydantic import FieldValidationInfo, field_validator
 from ..consts import (
     ElementType, FactionType, WeaponType, DamageElementalType,
     ELEMENT_TO_DAMAGE_TYPE
@@ -38,11 +38,14 @@ class Mob(CharactorBase):
     faction: List[FactionType] = []
     weapon_type: WeaponType = WeaponType.OTHER
 
-    @validator('element')
-    def element_fits_name(cls, v: ElementType, values, **kwargs):
+    @field_validator('element')
+    def element_fits_name(
+        cls, v: ElementType, info: FieldValidationInfo
+    ):  # pragma: no cover
         """
         Check if element type fits name.
         """
+        values = info.data
         if 'name' not in values:
             raise AssertionError('Name not found.')
         type_in_name: str = values['name'][:-3].upper()

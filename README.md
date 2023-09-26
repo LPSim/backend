@@ -176,3 +176,8 @@ Summon, Status), please refer to `server/charactor/template.py` and implemented
 `server/charactor/electro/fischl.py` `server/charactor/hydro/mona.py`
 and `server/charactor/dendro/nahida.py`. To add a new card, please refer to
 existing card implementations in `server/card`.
+
+# Pydantic V2
+
+TypeAdapter
+model_dump

@@ -31,6 +31,8 @@ class SummonBase(ObjectBase):
     usage: int
     max_usage: int
 
+    # TODO[pydantic]: We couldn't refactor the `validator`, please replace it by `field_validator` manually.
+    # Check https://docs.pydantic.dev/dev-v2/migration/#changes-to-validators for more information.
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
         msg = 'version annotation must be Literal with one str'

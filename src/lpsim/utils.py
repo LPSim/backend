@@ -1,10 +1,10 @@
 import pydantic
 from typing import List, get_type_hints
+from pydantic import ConfigDict
 
 
 class BaseModel(pydantic.BaseModel):
-    class Config:
-        extra = pydantic.Extra.forbid  # default forbid extra fields
+    model_config = ConfigDict(extra=pydantic.Extra.forbid)
 
 
 def list_unique_range_right(data: List[int], minn: int, maxn: int) -> bool:

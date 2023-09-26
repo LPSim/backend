@@ -1,4 +1,6 @@
 import logging
+import time
+start_time = time.time()
 from typing import Literal
 from src.lpsim.server.match import Match
 from src.lpsim.utils import BaseModel
@@ -17,6 +19,7 @@ class Main(BaseModel):
 
 
 if __name__ == '__main__':
+    print('start', time.time() - start_time)
     logging.basicConfig(level = logging.WARNING)
     agent_0 = NothingAgent(player_idx = 0)
     agent_1 = RandomAgent(player_idx = 1)
@@ -32,10 +35,12 @@ if __name__ == '__main__':
         The Seed of Stored Knowledge*10
         '''
     )
+    print('deck', time.time() - start_time)
     main.match.set_deck([deck, deck])
     main.match.config.max_same_card_number = 30
     main.match.enable_history = True
     assert main.match.start()
+    print('match start', time.time() - start_time)
     main.match.step()
 
     while main.match.round_number < 100 and not main.match.is_game_end():
@@ -49,6 +54,8 @@ if __name__ == '__main__':
         assert resp is not None
         main.match.respond(resp)
         main.match.step()
+    print('end', time.time() - start_time)
 
     main.match.get_history_json(filename = 'logs.txt')
     print('game end, save to logs.txt')
+    print('end', time.time() - start_time)

@@ -10,7 +10,7 @@ import random
 from .event import UseCardEventArguments
 from ..utils import BaseModel
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
-from pydantic import validator
+from pydantic import FieldValidationInfo, field_validator
 from .action import Actions, ActionTypes, RemoveCardAction
 from .consts import (
     ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
@@ -95,8 +95,10 @@ class CardBase(ObjectBase):
     cost_label: int = CostLabels.CARD.value
     remove_when_used: bool = True
 
-    @validator('version', pre = True)
-    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
+    @field_validator('version', mode = 'before')
+    def accept_same_or_higher_version(
+        cls, v: str, info: FieldValidationInfo
+    ):  # pragma: no cover
         msg = 'version annotation must be Literal with one str'
         if not isinstance(v, str):
             raise NotImplementedError(msg)
@@ -107,6 +109,7 @@ class CardBase(ObjectBase):
         if len(version_hints) > 1:
             raise NotImplementedError(msg)
         version_hint = version_hints[0]
+        values = info.data
         if values['strict_version_validation'] and v != version_hint:
             raise ValueError(
                 f'version {v} is not equal to {version_hint}'

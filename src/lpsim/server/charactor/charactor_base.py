@@ -8,7 +8,7 @@ will break the import loop.
 
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 
-from pydantic import validator
+from pydantic import FieldValidationInfo, field_validator
 
 from ..card.equipment.artifact.base import ArtifactBase
 
@@ -589,24 +589,29 @@ class CharactorBase(ObjectBase):
     element_application: List[ElementType] = []
     is_alive: bool = True
 
-    @validator('status', each_item = True, pre = True)
+    @field_validator('status', mode = 'before')
     def parse_status(cls, v):
-        return get_instance_from_type_unions(CharactorStatus, v)
+        ret = []
+        for status in v:
+            ret.append(get_instance_from_type_unions(CharactorStatus, status))
+        return ret
 
-    @validator('weapon', pre = True)
+    @field_validator('weapon', mode = 'before')
     def parse_weapon(cls, v):
         if v is None:
             return v
         return get_instance_from_type_unions(Weapons, v)
 
-    @validator('artifact', pre = True)
+    @field_validator('artifact', mode = 'before')
     def parse_artifact(cls, v):
         if v is None:
             return v
         return get_instance_from_type_unions(Artifacts, v)
 
-    @validator('version', pre = True)
-    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
+    @field_validator('version', mode = 'before')
+    def accept_same_or_higher_version(
+        cls, v: str, info: FieldValidationInfo
+    ):  # pragma: no cover
         msg = 'version annotation must be Literal with one str'
         if not isinstance(v, str):
             raise NotImplementedError(msg)
@@ -617,6 +622,7 @@ class CharactorBase(ObjectBase):
         if len(version_hints) > 1:
             raise NotImplementedError(msg)
         version_hint = version_hints[0]
+        values = info.data
         if values['strict_version_validation'] and v != version_hint:
             raise ValueError(
                 f'version {v} is not equal to {version_hint}'
