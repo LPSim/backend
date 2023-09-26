@@ -20,20 +20,20 @@ This project is under AGPL-3.0 license.
 
 (4.1)
 
-[ ] Yaoyao
-[ ] Dehya
-[ ] Wanderer
+- [ ] Yaoyao
+- [ ] Dehya
+- [ ] Wanderer
 
-[ ] Beneficient
-[ ] Stalwart and True
-[ ] Gales of Reverie
+- [ ] Beneficient
+- [ ] Stalwart and True
+- [ ] Gales of Reverie
 
-[ ] MoonPiercer
-[ ] Crown of Watatsumi
-[ ] Yayoi Nanatsuki
-[ ] Gandharva Ville
-[ ] Fresh Wind of Freedom
-[ ] Pankration!
+- [ ] MoonPiercer
+- [ ] Crown of Watatsumi
+- [ ] Yayoi Nanatsuki
+- [ ] Gandharva Ville
+- [ ] Fresh Wind of Freedom
+- [ ] Pankration!
 
 Balance changes:
 
