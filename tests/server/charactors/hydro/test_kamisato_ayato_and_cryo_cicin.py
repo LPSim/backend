@@ -63,8 +63,8 @@ def test_ayato_fatui_cryo_cicin():
             "choose 2",
             "sw_char 0 15",
             "skill 0 14 13 12",
-            "TEST 1 8 10 10 10 6 10 8 10",
-            "TEST 2 p0c0 usage 1",
+            "TEST 1 8 10 10 10 6 11 8 10",
+            "TEST 2 p0c0 usage 2",
             "sw_char 1 11",
             "card 3 0 10 9 8",
             "skill 0 7 6 5",
@@ -129,7 +129,10 @@ def test_ayato_fatui_cryo_cicin():
         Kyouka Fuushi*10
         '''
     )
-    match.set_deck([deck, deck])
+    # bug in usage, so modify deck p1c1 max hp.
+    deck2 = deck.copy(deep = True)
+    deck2.charactors[1].max_hp = deck2.charactors[1].hp = 11
+    match.set_deck([deck, deck2])
     match.config.max_same_card_number = None
     match.config.charactor_number = None
     match.config.card_number = None
