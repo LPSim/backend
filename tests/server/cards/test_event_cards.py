@@ -3,8 +3,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, get_pidx_cidx, get_random_state, get_test_id_from_command, 
+    make_respond, set_16_omni
 )
 
 
@@ -1303,7 +1303,7 @@ def test_plunge_strike():
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == len(cnum)
                         for t, c in zip(req.targets, cnum):
-                            assert t.charactor_idx == c
+                            assert t.charactor_idx == c  # type: ignore
             elif test_id == 3:
                 assert len(match.player_tables[0].dice.colors) == 9
                 assert len(match.player_tables[1].dice.colors) == 12
@@ -1555,6 +1555,153 @@ def test_star_quick_dream_vennessa_exile():
     assert match.state != MatchState.ERROR
 
 
+def test_master_weapon_artifact():
+    cmd_records = [
+        [
+            "sw_card 3",
+            "choose 0",
+            "end",
+            "end",
+            "card 0 0 15 14 13",
+            "skill 1 12 11 10",
+            "sw_char 1 10",
+            "TEST 1 p1 dice 10",
+            "card 2 0",
+            "TEST 2 p0c0 no weapon",
+            "TEST 3 p0c1 has weapon",
+            "skill 1 9 8 7",
+            "sw_char 2 6",
+            "TEST 1 p1 dice 7",
+            "card 0 2 5 4 3",
+            "end",
+            "card 4 1",
+            "TEST 4 p0c1 has artifact",
+            "sw_char 1 15",
+            "TEST 1 p0 dice 16",
+            "card 0 1",
+            "sw_char 2 15",
+            "TEST 1 p0 dice 15",
+            "card 5 0 14 13 12",
+            "card 4 0",
+            "TEST 5 p0c1 usage",
+            "end",
+            "card 5 1",
+            "sw_char 1 15",
+            "card 4 1",
+            "sw_char 2 15",
+            "TEST 1 p0 dice 16",
+            "end"
+        ],
+        [
+            "sw_card 3 2",
+            "choose 2",
+            "end",
+            "end",
+            "TEST 1 p0 dice 11",
+            "card 3 1 15 14 13",
+            "sw_char 1 12",
+            "skill 1 11 10 9",
+            "TEST 1 p0 dice 7",
+            "sw_char 0 9",
+            "card 1 0",
+            "skill 1 8 7 6",
+            "card 0 1 6 5 4",
+            "sw_char 2 3",
+            "end",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "end",
+            "skill 0 15 14 13",
+            "TEST 1 p0 dice 15",
+            "skill 0 12 11 10"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Fischl
+        charactor:Collei
+        charactor:Nahida
+        Master of Weaponry*5
+        Blessing of the Divine Relic's Installation*5
+        Master of Weaponry@4.0*5
+        Blessing of the Divine Relic's Installation@3.3*5
+        King's Squire*5
+        Sacrificial Bow*5
+        Tenacity of the Millelith*5
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[
+                    pidx].dice.colors) == int(cmd[4])
+            elif test_id in [2, 3, 4, 5]:
+                cmd = cmd.split()
+                pidx, cidx = get_pidx_cidx(cmd)
+                charactor = match.player_tables[pidx].charactors[cidx]
+                if test_id == 2:
+                    assert charactor.weapon is None
+                elif test_id == 3:
+                    assert charactor.weapon is not None
+                elif test_id == 4:
+                    assert charactor.artifact is not None
+                else:
+                    assert test_id == 5
+                    assert len(charactor.status) == 0
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -1567,4 +1714,5 @@ if __name__ == '__main__':
     # test_unseen_razor()
     # test_send_off_new_and_old()
     # test_plunge_strike()
-    test_star_quick_dream_vennessa_exile()
+    # test_star_quick_dream_vennessa_exile()
+    test_master_weapon_artifact()
