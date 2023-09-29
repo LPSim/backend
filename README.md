@@ -17,7 +17,7 @@ This project is under AGPL-3.0 license.
 
 [Cards](docs/cards.md)
 
-(until 4.0) Charactors 54/54, Cards 187/199
+(until 4.0) Charactors 54/54, Cards 190/199
 
 (4.1)
 
@@ -33,12 +33,24 @@ This project is under AGPL-3.0 license.
 - [ ] Crown of Watatsumi
 - [ ] Yayoi Nanatsuki
 - [ ] Gandharva Ville
-- [ ] Fresh Wind of Freedom
+- [X] Fresh Wind of Freedom
 - [ ] Pankration!
 
 Balance changes:
 
-TBD
+- [X] Ayato
+- [X] Fatui Cryo Cicin Mage
+- [ ] Tartaglia
+- [ ] Diona
+- [ ] Xingqiu
+- [ ] NRE
+- [ ] Egg
+- [X] Wind and Freedom
+- [ ] Dunyarzad
+- [ ] Chef Mao
+- [X] Emblem of Severed Fate
+- [X] Blessing of the Divine Relic's Installation
+- [X] Master of Weaponry
 
 ## Usage
 
