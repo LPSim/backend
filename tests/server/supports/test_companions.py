@@ -5,8 +5,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    get_test_id_from_command, set_16_omni, check_hp, make_respond, 
-    get_random_state
+    check_usage, get_pidx_cidx, get_test_id_from_command, set_16_omni, 
+    check_hp, make_respond, get_random_state
 )
 
 
@@ -1178,6 +1178,173 @@ def test_master_zhang():
     assert match.state != MatchState.ERROR
 
 
+def test_katheryne_tian_ellin():
+    cmd_records = [
+        [
+            "sw_card 1 3",
+            "choose 0",
+            "skill 0 15 14 13",
+            "sw_char 2 11",
+            "skill 0 10 9 8",
+            "card 3 0 7 6",
+            "card 3 0 5 4",
+            "skill 0 3 2 1",
+            "end",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
+            "sw_char 2 0",
+            "end",
+            "TEST 1 p1 dice 10",
+            "TEST 1 p0 dice 16",
+            "card 0 0 15",
+            "end",
+            "sw_char 1 15",
+            "sw_char 2 14",
+            "skill 2 13 12 11 10",
+            "card 0 0 9 8",
+            "skill 0 7 6 5",
+            "TEST 2 p1 support 0 0 0 1",
+            "card 2 0 4 3",
+            "TEST 3 skill 0 cost 2",
+            "skill 0 2 1",
+            "end"
+        ],
+        [
+            "sw_card 1 3",
+            "choose 2",
+            "skill 0 15 14 13",
+            "sw_char 0 11",
+            "skill 0 10 9 8",
+            "card 2 0 7 6",
+            "end",
+            "TEST 2 p0 support 1 1",
+            "TEST 2 p1 support 1",
+            "end",
+            "TEST 2 p0 support 1",
+            "TEST 4 p0c0 charge 2",
+            "TEST 4 p0c1 charge 3",
+            "TEST 4 p0c2 charge 2",
+            "TEST 4 p1c0 charge 2",
+            "TEST 4 p1c1 charge 1",
+            "TEST 4 p1c2 charge 1",
+            "card 2 0 15",
+            "card 2 0 14 13",
+            "sw_char 2 12",
+            "sw_char 1 11",
+            "sw_char 0 10",
+            "sw_char 1 9",
+            "TEST 2 p0 support 1 1",
+            "card 0 0 8 7",
+            "card 0 0 6 5",
+            "card 3 1 4 3",
+            "sw_char 2 2",
+            "end",
+            "TEST 1 p0 dice 14",
+            "TEST 1 p1 dice 16",
+            "card 4 0 15 14",
+            "skill 1 12 11 10",
+            "TEST 3 skill 0 cost 3",
+            "TEST 3 skill 1 cost 0",
+            "skill 0 9 8 7",
+            "TEST 3 skill 0 cost 0",
+            "TEST 3 skill 1 cost 0",
+            "skill 0",
+            "TEST 2 p0 support 1 0 0 1",
+            "TEST 2 p1 support 0 0 0 1",
+            "TEST 3 skill 0 cost 2",
+            "TEST 3 skill 1 cost 2",
+            "TEST 3 skill 2 cost 4",
+            "end",
+            "TEST 3 skill 0 cost 3",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Ellin*10
+        Iron Tongue Tian*10
+        Katheryne*5
+        Katheryne@3.3*5
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].split()
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[pidx].dice.colors) == int(
+                    cmd[4])
+            elif test_id == 2:
+                pidx = int(cmd[2][1])
+                support = match.player_tables[pidx].supports
+                check_usage(support, cmd[4:])
+            elif test_id == 3:
+                sid = int(cmd[3])
+                cost = int(cmd[5])
+                found = False
+                for req in match.requests:
+                    if req.name == 'UseSkillRequest' and req.skill_idx == sid:
+                        found = True
+                        assert req.cost.total_dice_cost == cost
+                assert found
+            elif test_id == 4:
+                pidx, cidx = get_pidx_cidx(cmd)
+                assert match.player_tables[pidx].charactors[
+                    cidx].charge == int(cmd[4])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
@@ -1188,3 +1355,4 @@ if __name__ == '__main__':
     # test_chang_nine()
     # test_paimon_kujirai()
     test_master_zhang()
+    test_katheryne_tian_ellin()
