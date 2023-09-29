@@ -151,3 +151,22 @@ class RoundEffectWeaponBase(WeaponBase):
     ) -> List[Actions]:
         self.usage = self.max_usage_per_round
         return []
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When this weapon is moved from charactor to charactor, and mark as
+        reset_usage, reset usage.
+        """
+        if (
+            event.action.object_position.id == self.id
+            and event.action.object_position.area 
+            == ObjectPositionType.CHARACTOR
+            and event.action.target_position.area 
+            == ObjectPositionType.CHARACTOR
+            and event.action.reset_usage
+        ):
+            # this weapon equipped from charactor to charactor
+            self.usage = self.max_usage_per_round
+        return super().event_handler_MOVE_OBJECT(event, match)

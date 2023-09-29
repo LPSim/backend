@@ -9,7 +9,7 @@ from .interaction import (
 )
 from .consts import DieColor, ObjectType, SkillType
 from .modifiable_values import DamageValue
-from .struct import ObjectPosition
+from .struct import MultipleObjectPosition, ObjectPosition
 
 
 class ActionTypes(str, Enum):
@@ -268,7 +268,7 @@ class UseCardAction(ActionBase):
     """
     type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
     card_position: ObjectPosition
-    target: ObjectPosition | None
+    target: ObjectPosition | MultipleObjectPosition | None
 
 
 class SkillEndAction(ActionBase):
@@ -341,6 +341,8 @@ class MoveObjectAction(ActionBase):
         ActionTypes.MOVE_OBJECT
     object_position: ObjectPosition
     target_position: ObjectPosition
+    # for Master of Weaponry etc. in 4.1, when mark true, reset round usage
+    reset_usage: bool = False
 
 
 # 20

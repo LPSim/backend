@@ -11,6 +11,8 @@ from .others import IHaventLostYet as IHLY_4_0
 from .others import SendOff as SendOff_3_7
 from .foods import MintyMeatRolls as MintyMeatRolls_3_4
 from .resonance import ThunderAndEternity as TAE_4_0
+from .others import MasterOfWeaponry as MOW_4_1
+from .others import BlessingOfTheDivineRelicsInstallation as BOTDRI_4_1
 
 
 class ThunderAndEternity_3_7(TAE_4_0):
@@ -75,7 +77,27 @@ class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
     )
 
 
+class MasterOfWeaponry_3_3(MOW_4_1):
+    desc: str = (
+        'Shift 1 Weapon Equipment Card that has been equipped to one of your '
+        'characters to another one of your characters of the same Weapon '
+        'Type.'
+    )
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
+class BlessingOfTheDivineRelicsInstallation_3_3(BOTDRI_4_1):
+    desc: str = (
+        'Shift 1 Artifact Equipment Card that has been equipped to one of '
+        'your characters to another one of your characters. '
+    )
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
 OldVersionEventCards = (
-    ThunderAndEternity_3_7 | IHaventLostYet_3_3 | SendOff_3_3 
+    ThunderAndEternity_3_7 | IHaventLostYet_3_3 | MasterOfWeaponry_3_3 
+    | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3 
     | MintyMeatRolls_3_3
 )

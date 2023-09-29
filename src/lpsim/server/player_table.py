@@ -14,7 +14,7 @@ from ..resources.consts import CharactorIcons
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
 )
-from .object_base import CardBase, ObjectBase
+from .object_base import CardBases, ObjectBase
 from .deck import Deck
 from .dice import Dice
 from . import Cards
@@ -63,8 +63,8 @@ class PlayerTable(BaseModel):
     charactors: List[CharactorBase] = []
     summons: List[SummonBase] = []
     supports: List[SupportBase] = []
-    hands: List[CardBase] = []
-    table_deck: List[CardBase] = []
+    hands: List[CardBases] = []
+    table_deck: List[CardBases] = []
     arcane_legend: bool = True
 
     charge_satisfied: bool = False

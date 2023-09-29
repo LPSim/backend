@@ -7,6 +7,7 @@ in many other places. Other objects are defined in their own files.
 
 import time
 import random
+
 from .event import UseCardEventArguments
 from ..utils import BaseModel
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
@@ -17,7 +18,7 @@ from .consts import (
 )
 from .modifiable_values import ModifiableValueTypes
 from .struct import (
-    DeckRestriction, ObjectPosition, Cost
+    DeckRestriction, MultipleObjectPosition, ObjectPosition, Cost
 )
 
 
@@ -94,6 +95,7 @@ class CardBase(ObjectBase):
     cost: Cost
     cost_label: int = CostLabels.CARD.value
     remove_when_used: bool = True
+    target_position_type_multiple: Literal[False] = False
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -144,7 +146,7 @@ class CardBase(ObjectBase):
         """
         Get the targets of the card.
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -188,8 +190,45 @@ class CardBase(ObjectBase):
                 ),
                 remove_type = 'USED',
             ))
+        # target is None, otherwise should match class
+        assert (
+            event.action.target is None
+            or (
+                isinstance(event.action.target, MultipleObjectPosition)
+                == self.target_position_type_multiple
+            )
+        )
         actions += self.get_actions(
-            target = event.action.target,
+            target = event.action.target,  # type: ignore
             match = match,
         )
         return actions
+
+
+class MultiTargetCardBase(CardBase):
+    """
+    Base class of cards that can target multiple targets.
+    """
+    target_position_type_multiple: Literal[True] = True
+
+    def get_targets(self, match: Any) -> List[MultipleObjectPosition]:
+        raise NotImplementedError()
+
+    def get_actions(
+        self, target: MultipleObjectPosition | None, match: Any
+    ) -> List[Actions]:
+        """
+        Act the card. It will return a list of actions.
+
+        Arguments:
+            target (MultipleObjectPosition | None): The target of the action.
+                for cards that do not need to specify target, target is None.
+                Note: the ID of the target may not be the same as the ID of the
+                card, e.g. equipping artifact. Reconstruct correct 
+                ObjectPosition if needed.
+            match (Any): The match object.
+        """
+        raise NotImplementedError()
+
+
+CardBases = CardBase | MultiTargetCardBase

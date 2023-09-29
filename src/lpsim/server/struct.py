@@ -140,6 +140,10 @@ class ObjectPosition(BaseModel):
         return True
 
 
+class MultipleObjectPosition(BaseModel):
+    positions: List[ObjectPosition]
+
+
 class Cost(BaseModel):
     """
     The cost, which is used to define original costs of objects.

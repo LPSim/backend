@@ -7,17 +7,17 @@ from typing import Any, List, Literal, Tuple
 from ...event import RoundPrepareEventArguments
 
 from ...consts import (
-    DieColor, ObjectPositionType, PlayerActionLabels, SkillType
+    DieColor, ObjectPositionType, ObjectType, PlayerActionLabels, SkillType
 )
 
-from ...object_base import CardBase
+from ...object_base import CardBase, MultiTargetCardBase
 from ...action import (
     Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
     GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
     SkillEndAction, SwitchCharactorAction, UseSkillAction
 )
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost, MultipleObjectPosition, ObjectPosition
 
 
 class TheBestestTravelCompanion(CardBase):
@@ -311,6 +311,100 @@ class ClaxsArts(CardBase):
                 charge = -1,
             ))
         return ret
+
+
+class MasterOfWeaponry(MultiTargetCardBase):
+    name: Literal['Master of Weaponry']
+    desc: str = (
+        'Shift 1 Weapon Equipment Card that has been equipped to one of your '
+        'characters to another one of your characters of the same Weapon '
+        'Type, and reset the "usages per Round" limit on its effects.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost()
+    move_type: Literal[
+        ObjectType.WEAPON, ObjectType.ARTIFACT
+    ] = ObjectType.WEAPON
+    reset_usage: bool = True
+
+    def _move_target_id(self, charactor: Any) -> int | None:
+        """
+        If has target, return target id. otherwise return None
+        """
+        if self.move_type == ObjectType.WEAPON:
+            return None if charactor.weapon is None else charactor.weapon.id
+        elif self.move_type == ObjectType.ARTIFACT:
+            return (
+                None if charactor.artifact is None 
+                else charactor.artifact.id
+            )
+        else:
+            raise AssertionError('Unknown move type')
+
+    def get_targets(self, match: Any) -> List[MultipleObjectPosition]:
+        charactors = match.player_tables[self.position.player_idx].charactors
+        ret: List[MultipleObjectPosition] = []
+        for charactor in charactors:
+            target_id = self._move_target_id(charactor)
+            if target_id is not None:
+                for target in charactors:
+                    if target.id != charactor.id:
+                        if (
+                            self.move_type == ObjectType.WEAPON
+                            and charactor.weapon_type != target.weapon_type
+                        ):
+                            # weapon type not right
+                            continue
+                        ret.append(MultipleObjectPosition(
+                            positions = [
+                                charactor.position.set_id(target_id),
+                                target.position.set_id(target_id)
+                            ]
+                        ))
+        return ret
+
+    def is_valid(self, match: Any) -> bool:
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: MultipleObjectPosition | None, match: Any
+    ) -> List[RemoveObjectAction | MoveObjectAction]:
+        assert target is not None
+        assert len(target.positions) == 2
+        ret: List[RemoveObjectAction | MoveObjectAction] = []
+        target_charactor = match.player_tables[target.positions[
+            1].player_idx].charactors[target.positions[1].charactor_idx]
+        target_equip: Any = None
+        if self.move_type == ObjectType.WEAPON:
+            target_equip = target_charactor.weapon
+        elif self.move_type == ObjectType.ARTIFACT:
+            target_equip = target_charactor.artifact
+        else:
+            raise AssertionError('Unknown move type')
+        if target_equip is not None:
+            ret.append(RemoveObjectAction(
+                object_position = target_equip.position
+            ))
+        return ret + [MoveObjectAction(
+            object_position = target.positions[0],
+            target_position = target.positions[1],
+            reset_usage = self.reset_usage,
+        )]
+
+
+class BlessingOfTheDivineRelicsInstallation(MasterOfWeaponry):
+    name: Literal["Blessing of the Divine Relic's Installation"]
+    desc: str = (
+        'Shift 1 Artifact Equipment Card that has been equipped to one of '
+        'your characters to another one of your characters, '
+        'and reset the "usages per Round" limit on its effects.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost()
+    move_type: Literal[
+        ObjectType.WEAPON, ObjectType.ARTIFACT
+    ] = ObjectType.ARTIFACT
+    reset_usage: bool = True
 
 
 class QuickKnit(CardBase):
@@ -659,7 +753,8 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | Starsigns | ClaxsArts | QuickKnit 
+    | IHaventLostYet | LeaveItToMe | Starsigns | ClaxsArts | MasterOfWeaponry
+    | BlessingOfTheDivineRelicsInstallation | QuickKnit 
     | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
     | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
     | WhereIstheUnseenRazor

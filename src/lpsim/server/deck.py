@@ -2,7 +2,7 @@ import logging
 
 from pydantic import validator
 
-from .object_base import CardBase
+from .object_base import CardBases
 
 from .charactor.charactor_base import CharactorBase
 
@@ -15,7 +15,7 @@ from . import Charactors
 class Deck(BaseModel):
     name: Literal['Deck'] = 'Deck'
     charactors: List[CharactorBase] = []
-    cards: List[CardBase] = []
+    cards: List[CardBases] = []
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):

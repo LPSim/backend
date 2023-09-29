@@ -85,7 +85,7 @@ from .event import (
     UseCardEventArguments,
     UseSkillEventArguments,
 )
-from .object_base import CardBase, ObjectBase
+from .object_base import CardBases, ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
@@ -1123,7 +1123,7 @@ class Match(BaseModel):
                         card_idx = cid,
                         dice_colors = dice_colors.copy(),
                         cost = cost_value.cost,
-                        targets = card.get_targets(self)
+                        targets = list(card.get_targets(self))
                     ))
 
     """
@@ -1490,8 +1490,8 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
-        draw_cards: List[CardBase] = []
-        blacklist: List[CardBase] = []
+        draw_cards: List[CardBases] = []
+        blacklist: List[CardBases] = []
         if self.version <= '0.0.1':
             # in 0.0.1, whitelist and blacklist are not supported
             # no filter
@@ -1581,7 +1581,7 @@ class Match(BaseModel):
         card_idxs = action.card_idxs[:]
         card_idxs.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cidx].name for cidx in card_idxs]
-        restore_cards: List[CardBase] = []
+        restore_cards: List[CardBases] = []
         for cidx in card_idxs:
             restore_cards.append(table.hands[cidx])
             table.hands = table.hands[:cidx] + table.hands[cidx + 1:]
@@ -2301,9 +2301,6 @@ class Match(BaseModel):
                 current_name = 'weapon'
             elif artifact is not None and artifact.id == \
                     action.object_position.id:
-                raise NotImplementedError(
-                    'Artifact cannot be moved now.'
-                )
                 charactor.artifact = None
                 current_list = [artifact]
                 current_name = 'artifact'
