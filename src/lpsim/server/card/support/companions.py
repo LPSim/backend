@@ -1,6 +1,6 @@
-from typing import Any, Literal, List
+from typing import Any, Dict, Literal, List
 
-from ...modifiable_values import CostValue
+from ...modifiable_values import CombatActionValue, CostValue
 
 from ...dice import Dice
 
@@ -10,7 +10,7 @@ from .base import (
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
     DieColor, ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
-    ObjectPositionType, SkillType
+    ObjectPositionType, PlayerActionLabels, SkillType
 )
 from ...struct import Cost, ObjectPosition
 from ...action import (
@@ -59,6 +59,47 @@ class Paimon(CompanionBase):
             number = 2,
             color = DieColor.OMNI,
         )] + self.check_should_remove()
+
+
+class Katheryne(RoundEffectCompanionBase):
+    name: Literal['Katheryne']
+    desc: str = (
+        'When you perform "Switch Character": The switch is considered a Fast '
+        'Action instead of a Combat Action. (Once per Round)'
+    )
+    version: Literal['3.6'] = '3.6'
+    cost: Cost = Cost(same_dice_number = 1)
+    max_usage_per_round: int = 1
+
+    def value_modifier_COMBAT_ACTION(
+        self, value: CombatActionValue, match: Any,
+        mode: Literal['TEST', 'REAL']
+    ) -> CombatActionValue:
+        """
+        Copied from team status Leave It to Me!
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if self.usage <= 0:
+            # no usage
+            return value
+        if not self.position.check_position_valid(
+            value.position, match, player_idx_same = True,
+        ):
+            # not self switch charactor, do nothing
+            return value
+        if value.action_label & PlayerActionLabels.SWITCH.value == 0:
+            # not switch charactor, do nothing
+            return value
+        if not value.do_combat_action:
+            # already quick action, do nothing
+            return value
+        # self switch charactor, change to quick action
+        value.do_combat_action = False
+        assert mode == 'REAL'
+        self.usage -= 1
+        return value
 
 
 class Tubby(RoundEffectCompanionBase):
@@ -321,6 +362,98 @@ class ChangTheNinth(CompanionBase):
         return []
 
 
+class Ellin(RoundEffectCompanionBase):
+    name: Literal['Ellin']
+    desc: str = (
+        'When you use a Skill that has already been used in this Round: Spend '
+        '1 less Elemental Die. (Once per Round)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 0
+    max_usage_per_round: int = 1
+    recorded_skill_ids: Dict[int, None] = {}
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.recorded_skill_ids.clear()
+        return super().event_handler_ROUND_PREPARE(event, match)
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Record skill id when skill end.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if event.action.position.player_idx != self.position.player_idx:
+            # not self player
+            return []
+        self.recorded_skill_ids[event.action.position.id] = None
+        return []
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> CostValue:
+        """
+        When a skill id is recorded, and has usage, decrease cost.
+        """
+        if (
+            self.position.area != ObjectPositionType.SUPPORT
+            or self.usage <= 0
+            or value.position.id not in self.recorded_skill_ids
+            or value.position.player_idx != self.position.player_idx
+            or value.cost.label & (
+                CostLabels.NORMAL_ATTACK.value
+                | CostLabels.ELEMENTAL_SKILL.value
+                | CostLabels.ELEMENTAL_BURST.value
+            ) == 0
+        ):
+            # no usage, not self player, not recorded skill id or not skill
+            return value
+        # decrease
+        if value.cost.decrease_cost(value.cost.elemental_dice_color):
+            if mode == 'REAL':
+                self.usage -= 1
+        return value
+
+
+class IronTongueTian(CompanionBase):
+    name: Literal['Iron Tongue Tian']
+    desc: str = (
+        'End Phase: One of your characters without maximum Energy gains 1 '
+        'Energy. (Active Character prioritized)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(any_dice_number = 2)
+    usage: int = 2
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[ChargeAction | RemoveObjectAction]:
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        table = match.player_tables[self.position.player_idx]
+        charactors = [table.get_active_charactor()]
+        for c in match.player_tables[self.position.player_idx].charactors:
+            if c.position.id != charactors[0].position.id:
+                charactors.append(c)
+        for c in charactors:
+            if c.is_alive and c.charge < c.max_charge:
+                assert self.usage > 0
+                self.usage -= 1
+                return [ChargeAction(
+                    player_idx = c.position.player_idx,
+                    charactor_idx = c.position.charactor_idx,
+                    charge = 1,
+                )] + self.check_should_remove()
+        return []
+
+
 class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Liu Su']
     desc: str = (
@@ -531,6 +664,6 @@ class Setaria(CompanionBase):
 
 
 Companions = (
-    Paimon | Tubby | Timmie | Liben | ChangTheNinth | LiuSu | KidKujirai 
-    | Rana | MasterZhang | Setaria
+    Paimon | Katheryne | Tubby | Timmie | Liben | ChangTheNinth | Ellin 
+    | IronTongueTian | LiuSu | KidKujirai | Rana | MasterZhang | Setaria
 )
