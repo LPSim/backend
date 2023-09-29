@@ -13,7 +13,8 @@ from ...action import (
 
 from ...struct import Cost, ObjectPosition
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, ObjectType
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
+    ObjectPositionType, ObjectType
 )
 from ...object_base import CardBase
 
@@ -183,4 +184,39 @@ class JoyousCelebration(ArcaneLegendBase):
         return ret + [damage_action]
 
 
-ArcaneLegendCards = AncientCourtyard | CovenantOfRock | JoyousCelebration
+class FreshWindOfFreedom(ArcaneLegendBase):
+    name: Literal['Fresh Wind of Freedom']
+    desc: str = (
+        'In this Round, when an opposing character is defeated during your '
+        'Action, you can continue to act again when that Action ends.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(arcane_legend = True)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ConsumeArcaneLegendAction | CreateObjectAction]:
+        """
+        Create Wind and Freedom team status.
+        """
+        assert target is None
+        return super().get_actions(target, match) + [
+            CreateObjectAction(
+                object_name = self.name,
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = -1,
+                ),
+                object_arguments = {},
+            )
+        ]
+
+
+ArcaneLegendCards = (
+    AncientCourtyard | CovenantOfRock | JoyousCelebration
+    | FreshWindOfFreedom
+)

@@ -449,7 +449,7 @@ class WindAndFreedom(NationResonanceCardBase):
         'In this Round, when an opposing character is defeated during your '
         'Action, you can continue to act again when that Action ends. '
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     faction: FactionType = FactionType.MONDSTADT
 
@@ -470,7 +470,9 @@ class WindAndFreedom(NationResonanceCardBase):
                 area = ObjectPositionType.TEAM_STATUS,
                 id = -1,
             ),
-            object_arguments = {},
+            object_arguments = {
+                'version': self.version
+            },
         )]
 
 

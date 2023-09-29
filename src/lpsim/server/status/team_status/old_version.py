@@ -4,6 +4,8 @@ by default to avoid using it accidently.
 """
 
 from typing import Any, List, Literal
+
+from .event_cards import FreshWindOfFreedom
 from .base import ExtraAttackTeamStatus, UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
 from ...consts import DamageElementalType, DamageType, SkillType
@@ -78,4 +80,13 @@ class RainbowBladework_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
     decrease_usage: bool = True
 
 
-OldVersionTeamStatus = CatalyzingField_3_3 | RainbowBladework_3_3
+class WindAndFreedom_3_7(FreshWindOfFreedom):
+    name: Literal['Wind and Freedom'] = 'Wind and Freedom'
+    version: Literal['3.7']
+
+
+OldVersionTeamStatus = (
+    WindAndFreedom_3_7
+
+    | CatalyzingField_3_3 | RainbowBladework_3_3
+)

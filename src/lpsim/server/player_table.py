@@ -154,7 +154,6 @@ class PlayerTable(BaseModel):
             for status in self.team_status:
                 if status.id == position.id:
                     return status
-            raise NotImplementedError('Not tested part')
             return None
         elif position.area in [
             ObjectPositionType.CHARACTOR,

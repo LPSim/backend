@@ -55,6 +55,17 @@ class ChangingShifts(CardBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
+    def is_valid(self, match: Any) -> bool:
+        """
+        When only one charactor is alive, cannot use this card.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        counter = 0
+        for charactor in charactors:
+            if charactor.is_alive:
+                counter += 1
+        return counter > 1
+
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
         return []
@@ -206,6 +217,59 @@ class LeaveItToMe(CardBase):
     )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        When only one charactor is alive, cannot use this card.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        counter = 0
+        for charactor in charactors:
+            if charactor.is_alive:
+                counter += 1
+        return counter > 1
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        # no targets
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is None  # no targets
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = -1,
+            ),
+            object_arguments = {}
+        )]
+
+
+class WhenTheCraneReturned(CardBase):
+    name: Literal['When the Crane Returned']
+    desc: str = (
+        'The next time you use a Skill: Switch your next character in to be '
+        'the active character.'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 1)
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        When only one charactor is alive, cannot use this card.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        counter = 0
+        for charactor in charactors:
+            if charactor.is_alive:
+                counter += 1
+        return counter > 1
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
@@ -753,9 +817,9 @@ class WhereIstheUnseenRazor(CardBase):
 
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | Starsigns | ClaxsArts | MasterOfWeaponry
-    | BlessingOfTheDivineRelicsInstallation | QuickKnit 
-    | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
+    | IHaventLostYet | LeaveItToMe | WhenTheCraneReturned | Starsigns 
+    | ClaxsArts | MasterOfWeaponry | BlessingOfTheDivineRelicsInstallation 
+    | QuickKnit | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
     | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
     | WhereIstheUnseenRazor
 )

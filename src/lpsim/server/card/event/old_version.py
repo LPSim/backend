@@ -13,6 +13,7 @@ from .foods import MintyMeatRolls as MintyMeatRolls_3_4
 from .resonance import ThunderAndEternity as TAE_4_0
 from .others import MasterOfWeaponry as MOW_4_1
 from .others import BlessingOfTheDivineRelicsInstallation as BOTDRI_4_1
+from .resonance import WindAndFreedom as WAF_4_1
 
 
 class ThunderAndEternity_3_7(TAE_4_0):
@@ -96,8 +97,19 @@ class BlessingOfTheDivineRelicsInstallation_3_3(BOTDRI_4_1):
     reset_usage: bool = False
 
 
+class WindAndFreedom_3_7(WAF_4_1):
+    name: Literal['Wind and Freedom']
+    desc: str = (
+        'In this Round, when an opposing character is defeated during your '
+        'Action, you can continue to act again when that Action ends. '
+    )
+    version: Literal['3.7']
+
+
 OldVersionEventCards = (
-    ThunderAndEternity_3_7 | IHaventLostYet_3_3 | MasterOfWeaponry_3_3 
+    WindAndFreedom_3_7 | ThunderAndEternity_3_7 
+
+    | IHaventLostYet_3_3 | MasterOfWeaponry_3_3 
     | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3 
     | MintyMeatRolls_3_3
 )

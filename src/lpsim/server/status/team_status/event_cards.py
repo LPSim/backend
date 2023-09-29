@@ -11,7 +11,7 @@ from ...consts import (
 
 from ...action import (
     Actions, ChangeObjectUsageAction, CreateDiceAction, MakeDamageAction, 
-    RemoveObjectAction
+    RemoveObjectAction, SwitchCharactorAction
 )
 
 from ...event import (
@@ -75,14 +75,14 @@ class IHaventLostYet(RoundTeamStatus):
     max_usage: int = 1
 
 
-class WindAndFreedom(RoundTeamStatus):
-    name: Literal['Wind and Freedom'] = 'Wind and Freedom'
+class FreshWindOfFreedom(RoundTeamStatus):
+    name: Literal['Fresh Wind of Freedom'] = 'Fresh Wind of Freedom'
     desc: str = (
         'In this Round, when an opposing character is defeated during your '
         'Action, you can continue to act again when that Action ends. '
         'Usage(s): 1 '
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
     usage: int = 1
     max_usage: int = 1
     activated: bool = False
@@ -530,9 +530,59 @@ class RhythmOfTheGreatDream(UsageTeamStatus):
         return self.check_should_remove()
 
 
+class WhenTheCraneReturned(UsageTeamStatus):
+    name: Literal['When the Crane Returned']
+    desc: str = (
+        'The next time you use a Skill: Switch your next character in to be '
+        'the active character.'
+    )
+    version: Literal['3.3'] = '3.3'
+    usage: int = 1
+    max_usage: int = 1
+    decrease_usage_when_trigger: bool = True
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[SwitchCharactorAction]:
+        """
+        when our charactor used skill, switch to next charactor
+        """
+        if self.position.player_idx != event.action.position.player_idx:
+            # not our charactor, do nothing
+            return []
+        if self.usage <= 0:  # pragma: no cover
+            return []
+        next_idx = match.player_tables[
+            self.position.player_idx].next_charactor_idx()
+        if next_idx is None:
+            # no next charactor, do nothing
+            return []
+        if self.decrease_usage_when_trigger:
+            self.usage -= 1
+        return [SwitchCharactorAction(
+            player_idx = self.position.player_idx,
+            charactor_idx = next_idx,
+        )]
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: ActionEndEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        When switch charactor end, check whether to remove.
+        """
+        return self.check_should_remove()
+
+
+class WindAndFreedom(WhenTheCraneReturned, RoundTeamStatus):
+    name: Literal['Wind and Freedom'] = 'Wind and Freedom'
+    version: Literal['4.1'] = '4.1'
+    decrease_usage_when_trigger: bool = False
+
+
 EventCardTeamStatus = (
-    WindAndFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
+    FreshWindOfFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
     | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
-    | FatuiAmbusher | RhythmOfTheGreatDream
+    | FatuiAmbusher | RhythmOfTheGreatDream | WhenTheCraneReturned
+    | WindAndFreedom
 )
