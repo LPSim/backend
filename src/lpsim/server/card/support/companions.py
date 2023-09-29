@@ -4,7 +4,9 @@ from ...modifiable_values import CostValue
 
 from ...dice import Dice
 
-from .base import RoundEffectSupportBase, SupportBase
+from .base import (
+    RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
+)
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
     DieColor, ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
@@ -319,7 +321,7 @@ class ChangTheNinth(CompanionBase):
         return []
 
 
-class LiuSu(CompanionBase):
+class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Liu Su']
     desc: str = (
         'After you switch characters: If the character you switched to does '
@@ -328,17 +330,7 @@ class LiuSu(CompanionBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 2
-    used_this_round: bool = False
-
-    def play(self, match: Any) -> List[Actions]:
-        self.used_this_round = False
-        return super().play(match)
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        self.used_this_round = False
-        return []
+    max_usage_one_round: int = 1
 
     def charge(self, charactor: Any) -> List[ChargeAction 
                                              | RemoveObjectAction]:
@@ -349,12 +341,10 @@ class LiuSu(CompanionBase):
             self.position.area == ObjectPositionType.SUPPORT
             and charactor.position.player_idx == self.position.player_idx
             and charactor.charge == 0 
-            and not self.used_this_round
+            and self.has_usage()
         ):
             # in support, and our charactor, and no energy
-            assert self.usage > 0
-            self.usage -= 1
-            self.used_this_round = True
+            self.use()
             return [ChargeAction(
                 player_idx = charactor.position.player_idx,
                 charactor_idx = charactor.position.charactor_idx,

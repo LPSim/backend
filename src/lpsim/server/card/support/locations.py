@@ -17,7 +17,9 @@ from ...consts import (
     ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, 
     DamageElementalType, DamageType, DieColor, ObjectPositionType
 )
-from .base import RoundEffectSupportBase, SupportBase
+from .base import (
+    RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
+)
 
 
 class LocationBase(SupportBase):
@@ -533,7 +535,7 @@ class ChinjuForest(LocationBase):
         )] + self.check_should_remove()
 
 
-class GoldenHouse(LocationBase):
+class GoldenHouse(LocationBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Golden House']
     desc: str = (
         'When you play a Weapon card or an Artifact card with an original '
@@ -542,20 +544,10 @@ class GoldenHouse(LocationBase):
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
     usage: int = 2
-    used_this_round: bool = False
+    max_usage_one_round: int = 1
 
     card_cost_label: int = CostLabels.WEAPON.value
     decrease_threshold: int = 3
-
-    def play(self, match: Any) -> List[Actions]:
-        self.used_this_round = False
-        return super().play(match)
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        self.used_this_round = False
-        return []
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -570,14 +562,13 @@ class GoldenHouse(LocationBase):
             and value.cost.original_value.total_dice_cost
             >= self.decrease_threshold
             and value.cost.label & self.card_cost_label != 0
-            and not self.used_this_round
+            and self.has_usage()
         ):
             # area right, player right, cost label match, cost greater than
             # threshold, and not used this round
             if value.cost.decrease_cost(None):
                 if mode == 'REAL':
-                    self.usage -= 1
-                    self.used_this_round = True
+                    self.use()
         return value
 
     def event_handler_MOVE_OBJECT(

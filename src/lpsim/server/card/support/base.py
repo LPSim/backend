@@ -138,3 +138,34 @@ class RoundEffectSupportBase(SupportBase):
     ) -> List[Actions]:
         self.usage = self.max_usage_per_round
         return []
+
+
+class UsageWithRoundRestrictionSupportBase(SupportBase):
+    """
+    Supports that has limited usage, and restricts maximum usage per round.
+    """
+    name: str
+    desc: str
+    version: str
+    cost: Cost
+    usage: int = 2
+    usage_this_round: int = 0
+    max_usage_one_round: int
+
+    def play(self, match: Any) -> List[Actions]:
+        self.usage_this_round = self.max_usage_one_round
+        return super().play(match)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.usage_this_round = self.max_usage_one_round
+        return []
+
+    def has_usage(self) -> bool:
+        return self.usage > 0 and self.usage_this_round > 0
+
+    def use(self) -> None:
+        assert self.has_usage()
+        self.usage -= 1
+        self.usage_this_round -= 1
