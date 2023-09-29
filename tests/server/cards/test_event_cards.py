@@ -3,8 +3,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_pidx_cidx, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 
@@ -1702,6 +1702,174 @@ def test_master_weapon_artifact():
     assert match.state != MatchState.ERROR
 
 
+def test_new_wind_and_freedom_and_crane():
+    cmd_records = [
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "sw_char 2 15",
+            "skill 0 14 13 12",
+            "skill 0 11 10 9",
+            "sw_char 0 8",
+            "card 0 0 7",
+            "end",
+            "sw_char 1 15",
+            "card 0 0 14",
+            "card 0 0 13",
+            "sw_char 0 12",
+            "skill 1 11 10 9",
+            "TEST 2 p0 active 0",
+            "skill 0 8 7 6",
+            "TEST 2 p0 active 1",
+            "TEST 1 4 7 7 8 3 10",
+            "skill 0 5 4 3",
+            "end",
+            "skill 2 15 14 13 12",
+            "sw_char 0 11",
+            "card 4 0 10",
+            "card 3 0 9",
+            "skill 0 8 7 6",
+            "TEST 1 4 7 5 0 2 10",
+            "TEST 2 p0 active 2",
+            "TEST 3 p0 usage 1",
+            "skill 0 5 4 3",
+            "end",
+            "TEST 4 card all can use",
+            "end",
+            "choose 2",
+            "card 4 0 15",
+            "card 3 0",
+            "sw_char 1 14",
+            "sw_char 2 13",
+            "choose 1",
+            "skill 0 0 1 2",
+            "TEST 3 p0 usage 1",
+            "end"
+        ],
+        [
+            "sw_card 1 2",
+            "choose 1",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "skill 0 9 8 7",
+            "end",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "skill 2 9 8 7",
+            "sw_char 0 6",
+            "sw_char 1 5",
+            "TEST 2 p0 active 2",
+            "end",
+            "TEST 3 p0 status",
+            "sw_char 0 15",
+            "skill 0 14 13 12",
+            "end",
+            "choose 1",
+            "choose 2",
+            "TEST 5 card cannot use except wind and freedom",
+            "end",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "skill 0 9 8 7"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        When the Crane Returned*10
+        Leave It to Me!*10
+        Wind and Freedom*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                assert match.player_tables[pidx].active_charactor_idx == int(
+                    cmd[4])
+            elif test_id == 3:
+                cmd = cmd.split()
+                pidx = int(cmd[2][1])
+                status = match.player_tables[pidx].team_status
+                check_usage(status, cmd[4:])
+            elif test_id == 4:
+                can = []
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        can.append(req.card_idx)
+                can.sort()
+                assert can == list(range(len(can)))
+            elif test_id == 5:
+                can = []
+                pidx = -1
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        pidx = req.player_idx
+                        can.append(req.card_idx)
+                hands = match.player_tables[pidx].hands
+                for cid, card in enumerate(hands):
+                    assert (card.name == 'Wind and Freedom') == (cid in can)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -1716,3 +1884,4 @@ if __name__ == '__main__':
     # test_plunge_strike()
     # test_star_quick_dream_vennessa_exile()
     test_master_weapon_artifact()
+    test_new_wind_and_freedom_and_crane()

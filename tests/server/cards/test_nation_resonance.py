@@ -57,6 +57,7 @@ def test_wind_and_freedom():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         # charactor:Fischl
         # charactor:Mona
         charactor:Nahida*10
@@ -152,6 +153,7 @@ def test_wind_and_freedom_one_round():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
+        default_version:4.0
         # charactor:Fischl
         # charactor:Mona
         charactor:Nahida*10

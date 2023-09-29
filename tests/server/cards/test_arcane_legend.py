@@ -4,7 +4,8 @@ from src.lpsim.server.interaction import UseCardResponse
 from src.lpsim.server.match import Match, MatchState
 
 from tests.utils_for_test import (
-    get_random_state, get_test_id_from_command, make_respond, set_16_omni
+    check_hp, get_random_state, get_test_id_from_command, make_respond, 
+    set_16_omni
 )
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.agents.nothing_agent import NothingAgent
@@ -594,9 +595,117 @@ def test_jpyous_2():
     assert match.state != MatchState.ERROR
 
 
+def test_fresh_wind_of_freedom():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "skill 0 15 14 13",
+            "skill 0 12 11 10",
+            "end",
+            "skill 0 15 14 13",
+            "choose 2",
+            "TEST 1 0 10 8 10 10 4",
+            "end",
+            "card 3 0",
+            "skill 0 15 14 13",
+            "choose 1",
+            "TEST 1 0 10 0 8 10 4",
+            "skill 1 12 11 10",
+            "TEST 1 0 8 0 5 10 4",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "skill 2 9 8 7 6",
+            "skill 0 5 4 3",
+            "end",
+            "card 2 0",
+            "sw_char 1 15",
+            "sw_char 0 14",
+            "skill 0 13 12 11",
+            "skill 0 10 9 8",
+            "skill 0 7 6 5",
+            "end",
+            "skill 0 15 14 13",
+            "sw_char 1 12"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Fresh Wind of Freedom*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_covenant_of_rock()
     test_rock_dice_different_not_omni()
     # test_arcane_card_always_in_hand()
     test_ancient_courtyard()
     test_joyous()
+    test_fresh_wind_of_freedom()
