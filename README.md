@@ -15,9 +15,9 @@ This project is under AGPL-3.0 license.
 
 [Charactors](docs/charactors.md) All done.
 
-[Cards](docs/cards.md)
+[Cards](docs/cards.md) All done.
 
-(until 4.0) Charactors 54/54, Cards 190/199
+(until 4.0) All charactors and card are done.
 
 (4.1)
 
@@ -46,8 +46,8 @@ Balance changes:
 - [ ] NRE
 - [ ] Egg
 - [X] Wind and Freedom
-- [ ] Dunyarzad
-- [ ] Chef Mao
+- [X] Dunyarzad
+- [X] Chef Mao
 - [X] Emblem of Severed Fate
 - [X] Blessing of the Divine Relic's Installation
 - [X] Master of Weaponry
