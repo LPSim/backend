@@ -50,7 +50,6 @@ class Chihayaburu(ElementalSkillBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret: List[Actions] = [
-            self.charge_self(1),
             # create status first, so it can change element
             self.create_charactor_status('Midare Ranzan: New'),
         ]
@@ -67,6 +66,7 @@ class Chihayaburu(ElementalSkillBase):
                     charactor_idx = next_charactor,
                 )
             )
+        ret.append(self.charge_self(1))
         return ret
 
 
@@ -83,9 +83,9 @@ class KazuhaSlash(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         return [
-            self.charge_self(1),
             self.create_summon('Autumn Whirlwind'),
-            self.attack_opposite_active(match, self.damage, self.damage_type)
+            self.attack_opposite_active(match, self.damage, self.damage_type),
+            self.charge_self(1),
         ]
 
 

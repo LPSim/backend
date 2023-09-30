@@ -35,8 +35,8 @@ class FoulLegacyRagingTide(ElementalSkillBase):
         """
         return [
             self.create_charactor_status('Melee Stance'),
+            self.attack_opposite_active(match, self.damage, self.damage_type),
             self.charge_self(1),
-            self.attack_opposite_active(match, self.damage, self.damage_type)
         ]
 
 

@@ -48,10 +48,11 @@ class GuobaAttack(ElementalSkillBase):
         """
         Attack and create object
         """
-        ret: List[Actions] = [self.charge_self(1)]
+        ret: List[Actions] = []
         if self.is_talent_equipped(match):
             ret = super().get_actions(match)
         ret.append(self.create_summon('Guoba'))
+        ret.append(self.charge_self(1))
         return ret
 
 

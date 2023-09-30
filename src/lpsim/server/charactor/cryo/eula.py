@@ -94,6 +94,8 @@ class FavoniusBladeworkEdel(PhysicalNormalAttackBase):
                 LS_idx = sidx
                 break
         ret: List[Actions] = []
+        ret.append(self.attack_opposite_active(
+            match, self.damage, self.damage_type))
         if LS_idx != -1:
             # add LS usage
             ret.append(ChangeObjectUsageAction(
@@ -104,8 +106,6 @@ class FavoniusBladeworkEdel(PhysicalNormalAttackBase):
         else:
             # charge
             ret.append(self.charge_self(1))
-        ret.append(self.attack_opposite_active(
-            match, self.damage, self.damage_type))
         return ret
 
 
@@ -135,6 +135,8 @@ class IcetideVortex(ElementalSkillBase):
                 LS_idx = sidx
                 break
         ret: List[Actions] = []
+        ret.append(self.attack_opposite_active(
+            match, self.damage, self.damage_type))
         if LS_idx != -1:
             # add LS usage
             usage = 2
@@ -149,8 +151,6 @@ class IcetideVortex(ElementalSkillBase):
         else:
             # charge
             ret.append(self.charge_self(1))
-        ret.append(self.attack_opposite_active(
-            match, self.damage, self.damage_type))
         status = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx].status
         for s in status:
