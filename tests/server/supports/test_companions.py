@@ -1345,6 +1345,288 @@ def test_katheryne_tian_ellin():
     assert match.state != MatchState.ERROR
 
 
+def test_wagner_timaeus():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 15 14",
+            "TEST 1 card 1 cost 1",
+            "sw_char 2 13",
+            "card 3 0 12 11",
+            "end",
+            "card 4 0 15 14",
+            "TEST 2 p0 support 3 3 2",
+            "end",
+            "card 2 0 15 14",
+            "TEST 1 card 4 cost 3",
+            "card 3 0",
+            "TEST 1 card 3 cost 0",
+            "card 3 1",
+            "TEST 2 p0 support 4 4 3 0",
+            "end",
+            "end",
+            "end",
+            "card 5 0 15 14",
+            "card 0 2 13 12",
+            "card 3 3 11 10",
+            "card 3 3 9 8",
+            "card 3 3 7 6",
+            "end"
+        ],
+        [
+            "sw_card 2 1 4",
+            "choose 0",
+            "card 2 0 15 14",
+            "TEST 3 all card cost 0",
+            "card 0 1",
+            "TEST 2 p1 support 1",
+            "TEST 3 all card cost 1",
+            "card 0 1 13",
+            "end",
+            "card 2 0",
+            "card 1 1",
+            "card 0 1",
+            "TEST 2 p1 usage 1",
+            "TEST 1 card 0 usage 3",
+            "end",
+            "TEST 1 card 2 cost 3",
+            "end",
+            "card 1 0 15 14",
+            "end",
+            "card 0 1",
+            "TEST 2 p1 usage 4 0",
+            "end",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Timaeus*10
+        Wagner*10
+        Gambler's Earrings*10
+        Tenacity of the Millelith*5
+        Rhythm of the Great Dream*5
+        Sacrificial Sword*5
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].split()
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cidx = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                        assert req.cost.total_dice_cost == cost
+            elif test_id == 2:
+                pidx = int(cmd[2][1])
+                support = match.player_tables[pidx].supports
+                check_usage(support, cmd[4:])
+            elif test_id == 3:
+                cost = int(cmd[-1])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert req.cost.total_dice_cost == cost
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_chef_mao():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "skill 1 15 14 13",
+            "sw_char 0 12",
+            "skill 1 11 10 9",
+            "card 2 0 8",
+            "card 3 0 7",
+            "card 1 0",
+            "TEST 1 p0 card 4",
+            "TEST 3 p0 dice 9",
+            "end",
+            "sw_char 2 15",
+            "sw_char 1 14",
+            "sw_char 2 13",
+            "card 0 2",
+            "TEST 1 p0 card 5",
+            "TEST 3 p0 dice 15",
+            "card 0 0",
+            "card 0 0",
+            "TEST 3 p0 dice 15",
+            "card 1 0 14",
+            "card 1 0 13",
+            "end",
+            "card 1 3 15",
+            "card 0 2",
+            "TEST 1 p0 card 3",
+            "end",
+            "card 3 0 15",
+            "card 3 1 14",
+            "card 1 1",
+            "TEST 1 p0 card 4",
+            "end",
+            "card 1 1",
+            "TEST 1 p0 card 5",
+            "card 4 1 15",
+            "card 2 0",
+            "TEST 1 p0 card 3",
+            "end"
+        ],
+        [
+            "sw_card 1 2 3",
+            "choose 2",
+            "skill 1 15 14 13",
+            "card 2 0",
+            "TEST 1 p1 card 4",
+            "TEST 3 p1 dice 13",
+            "skill 1 12 11 10",
+            "card 1 0 9",
+            "card 1 1",
+            "TEST 3 p1 dice 10",
+            "TEST 1 p1 card 2",
+            "end",
+            "sw_char 1 15",
+            "sw_char 0 14",
+            "skill 0 13 12 11",
+            "card 0 0 10",
+            "card 0 1",
+            "TEST 3 p1 dice 12",
+            "TEST 1 p1 card 3",
+            "sw_char 1 11",
+            "end",
+            "end",
+            "end",
+            "TEST 2 p0 support 0 0 0 0",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Chef Mao*10
+        Chef Mao@3.3*10
+        Sweet Madame*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].split()
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[pidx].hands) == int(cmd[-1])
+            elif test_id == 2:
+                pidx = int(cmd[2][1])
+                support = match.player_tables[pidx].supports
+                check_usage(support, cmd[4:])
+            elif test_id == 3:
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[
+                    pidx].dice.colors) == int(cmd[-1])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
@@ -1354,5 +1636,7 @@ if __name__ == '__main__':
     # test_tubby()
     # test_chang_nine()
     # test_paimon_kujirai()
-    test_master_zhang()
-    test_katheryne_tian_ellin()
+    # test_master_zhang()
+    # test_katheryne_tian_ellin()
+    test_wagner_timaeus()
+    test_chef_mao()
