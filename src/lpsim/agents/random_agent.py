@@ -1,4 +1,5 @@
 import numpy as np
+from pydantic import PrivateAttr
 from .agent_base import AgentBase
 from ..server.match import Match
 from ..server.interaction import (
@@ -21,14 +22,18 @@ class RandomAgent(AgentBase):
     selected type, and randomly choose one of available options.
     """
     random_seed: int | None = None
-    _random_state: np.random.RandomState = np.random.RandomState()
+    _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
     random_state_set: bool = False
+
+    def json(self, *argv, **kwargs):
+        raise NotImplementedError('RandomAgent does not support json now')
 
     def random(self) -> float:
         """
         Return a random float between 0 and 1.
         """
         if not self.random_state_set:
+            self._random_state = np.random.RandomState()
             if self.random_seed is None:
                 self.random_seed = np.random.randint(0, 2 ** 31 - 1)
             self._random_state.seed(self.random_seed)
@@ -38,6 +43,7 @@ class RandomAgent(AgentBase):
     def generate_response(self, match: Match) -> Responses | None:
         req_names = list(set([x.name for x in match.requests 
                               if x.player_idx == self.player_idx]))
+        req_names.sort()
         if len(req_names) == 0:
             return None
         req_name = req_names[int(self.random() * len(req_names))]

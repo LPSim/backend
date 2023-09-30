@@ -284,8 +284,9 @@ def test_random_same_after_load():
     match = Match(**json.loads(initial_match.json()))
     assert match.json() == initial_match.json()
     assert match == initial_match
-    agent_0 = RandomAgent(**json.loads(initial_agent_0.json()))
-    agent_1 = RandomAgent(**json.loads(initial_agent_1.json()))
+    # random agent do not support json, use copy instead
+    agent_0 = initial_agent_0.copy()
+    agent_1 = initial_agent_1.copy()
     assert agent_0 == initial_agent_0
     assert agent_1 == initial_agent_1
     assert match.start()
