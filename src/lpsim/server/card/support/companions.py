@@ -20,8 +20,10 @@ from ...action import (
 )
 from ...event import (
     ActionEndEventArguments, ChangeObjectUsageEventArguments, 
-    ChooseCharactorEventArguments, PlayerActionStartEventArguments, 
-    ReceiveDamageEventArguments, RoundEndEventArguments, 
+    ChooseCharactorEventArguments, MoveObjectEventArguments, 
+    PlayerActionStartEventArguments, 
+    ReceiveDamageEventArguments, RemoveDiceEventArguments, 
+    RemoveObjectEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
     SwitchCharactorEventArguments, UseCardEventArguments
 )
@@ -236,12 +238,20 @@ class Tubby(RoundEffectCompanionBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
+    decrease_target: int = CostLabels.LOCATION.value
+    decrease_cost: int = 2
+
+    def used(self) -> None:
+        """
+        When used, decrease usage.
+        """
+        self.usage -= 1
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
     ) -> CostValue:
         """
-        If in support and self use location, decrease cost by 2.
+        If in support and self use target card, decrease cost by 2.
         """
         if self.usage <= 0:
             # no usage
@@ -252,17 +262,16 @@ class Tubby(RoundEffectCompanionBase):
         if value.position.player_idx != self.position.player_idx:
             # not self player
             return value
-        if value.cost.label & CostLabels.LOCATION.value == 0:
-            # not location
+        if value.cost.label & self.decrease_target == 0:
+            # not decrease target
             return value
         # decrease
         result = [
-            value.cost.decrease_cost(None),
-            value.cost.decrease_cost(None),
+            value.cost.decrease_cost(None) for _ in range(self.decrease_cost)
         ]
         if True in result:
             if mode == 'REAL':
-                self.usage -= 1
+                self.used()
         return value
 
 
@@ -625,6 +634,77 @@ class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
         return self.charge(charactor)
 
 
+class Hanachirusato(CompanionBase):
+    name: Literal['Hanachirusato']
+    desc: str = (
+        'When a Summon disappears: This card gains 1 Cleansing Ritual '
+        'Progress. (Max 3). When you play a Weapon or Artifact Card: If you '
+        'already have 3 Cleansing Ritual Progress, discard this card and '
+        'cause the card you play to cost 2 less Elemental Dice.'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost()
+    usage: int = 0
+    max_usage: int = 3
+    decrease_target: int = CostLabels.WEAPON.value | CostLabels.ARTIFACT.value
+    decrease_number: int = 2
+    effect_triggered: bool = False
+
+    def event_handler_REMOVE_OBJECT(
+        self, event: RemoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When any sommon is removed, add one usage
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if event.action.object_position.area != ObjectPositionType.SUMMON:
+            # not summon, do nothing
+            return []
+        self.usage = min(self.usage + 1, self.max_usage)
+        return []
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> CostValue:
+        """
+        When in support, and self use target card, decrease cost by 2.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return value
+        if self.usage != self.max_usage:
+            # not enough usage
+            return value
+        if value.position.player_idx != self.position.player_idx:
+            # not self player
+            return value
+        if value.cost.label & self.decrease_target == 0:
+            # not decrease target
+            return value
+        # decrease
+        result = [
+            value.cost.decrease_cost(None),
+            value.cost.decrease_cost(None),
+        ]
+        if True in result:
+            if mode == 'REAL':
+                self.effect_triggered = True
+        return value
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        if self.position.area == ObjectPositionType.SUPPORT:
+            # in support, check if effect triggered. If so, remove self.
+            if self.effect_triggered:
+                return [RemoveObjectAction(
+                    object_position = self.position,
+                )]
+        return super().event_handler_MOVE_OBJECT(event, match)
+
+
 class KidKujirai(CompanionBase):
     name: Literal['Kid Kujirai']
     desc: str = (
@@ -671,6 +751,71 @@ class KidKujirai(CompanionBase):
                 ),
             ))
         return ret
+
+
+class Xudong(Tubby):
+    name: Literal['Xudong']
+    desc: str = (
+        'When playing a Food Event Card: Spend 2 less Elemental Dice. '
+        '(Once per Round)'
+    )
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(any_dice_number = 2)
+    decrease_target: int = CostLabels.FOOD.value
+    decrease_cost: int = 2
+
+
+class Dunyarzad(Tubby, LimitedEffectSupportBase):
+    name: Literal['Dunyarzad']
+    desc: str = (
+        'When playing a Companion Support Card: Spend 1 less Elemental Dice. '
+        '(Once per Round) '
+        'The first time the effect is triggered, draw 1 random Companion '
+        'Support Card from your deck.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(same_dice_number = 1)
+    decrease_target: int = CostLabels.COMPANION.value
+    decrease_cost: int = 1
+
+    limited_usage: int = 1
+    triggered: bool = False
+
+    def _limited_action(self, match: Any) -> List[DrawCardAction]:
+        return [DrawCardAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            whitelist_cost_labels = self.decrease_target,
+            draw_if_filtered_not_enough = False,
+        )]
+
+    def used(self) -> None:
+        """
+        decrease usage, and marked as triggered.
+        """
+        self.usage -= 1
+        self.triggered = True
+
+    def event_handler_REMOVE_DICE(
+        self, event: RemoveDiceEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When effect is used, the next remove dice event should be the cost
+        decreased target. then if it is triggered, do limited action.
+
+        However, trigger here will cause hand size over maximum and newly
+        drawed card is burned.
+
+        If trigger in USE_CARD, when a support replace this card, its limited
+        effect will not trigger.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        if self.triggered:
+            self.triggered = False
+            return self.do_limited_action(match)
+        return []
 
 
 class Rana(RoundEffectCompanionBase):
@@ -790,6 +935,6 @@ class Setaria(CompanionBase):
 
 Companions = (
     Paimon | Katheryne | Timaeus | Wagner | ChefMao | Tubby | Timmie | Liben 
-    | ChangTheNinth | Ellin | IronTongueTian | LiuSu | KidKujirai | Rana 
-    | MasterZhang | Setaria
+    | ChangTheNinth | Ellin | IronTongueTian | LiuSu | Hanachirusato 
+    | KidKujirai | Xudong | Dunyarzad | Rana | MasterZhang | Setaria
 )
