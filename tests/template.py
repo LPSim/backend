@@ -85,14 +85,14 @@ def test_...():
             raise AssertionError('No need respond.')
         # do tests
         while True:
-            cmd = agent.commands[0]
+            cmd = cmd.strip().split(' ')
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[3:]
+                hps = cmd[3:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
