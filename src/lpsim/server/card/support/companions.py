@@ -5,7 +5,8 @@ from ...modifiable_values import CombatActionValue, CostValue
 from ...dice import Dice
 
 from .base import (
-    RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
+    LimitedEffectSupportBase, RoundEffectSupportBase, SupportBase, 
+    UsageWithRoundRestrictionSupportBase
 )
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
@@ -22,7 +23,7 @@ from ...event import (
     ChooseCharactorEventArguments, PlayerActionStartEventArguments, 
     ReceiveDamageEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharactorEventArguments
+    SwitchCharactorEventArguments, UseCardEventArguments
 )
 
 
@@ -100,6 +101,130 @@ class Katheryne(RoundEffectCompanionBase):
         assert mode == 'REAL'
         self.usage -= 1
         return value
+
+
+class Timaeus(UsageWithRoundRestrictionSupportBase):
+    name: Literal['Timaeus']
+    desc: str = (
+        'Comes with 2 Transmutation Materials when played. '
+        'End Phase: Gain 1 Transmutation Material. '
+        'When playing an Artifact Card: If possible, spend Transmutation '
+        'Materials equal to the total cost of the Artifact and equip this '
+        'Artifact for free. (Once per Round)'
+    )
+    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number = 2)
+    max_usage_one_round: int = 1
+    decrease_target: int = CostLabels.ARTIFACT.value
+    usage: int = 2
+
+    def play(self, match: Any) -> List[Actions]:
+        self.usage = 2
+        return []
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When in round end, increase usage.
+        """
+        if self.position.area != ObjectPositionType.SUPPORT:
+            # not in support area, do nothing
+            return []
+        self.usage += 1
+        return []
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> CostValue:
+        """
+        When in support, and self equip, and usage is enough, and has round
+        usage, decrease cost.
+        """
+        decrease_number = value.cost.total_dice_cost
+        if (
+            self.position.area != ObjectPositionType.SUPPORT
+            or self.position.player_idx != value.position.player_idx
+            or value.cost.label & self.decrease_target == 0
+            or decrease_number > self.usage
+            or decrease_number == 0
+            or self.usage_this_round <= 0
+        ):
+            # not in support, not self player, not target equip, not enough 
+            # usage this round or total usage, do nothing
+            return value
+        # decrease all cost
+        for _ in range(decrease_number):
+            value.cost.decrease_cost(None)
+        if mode == 'REAL':
+            self.usage_this_round -= 1
+            self.usage -= decrease_number
+        return value
+
+
+class Wagner(Timaeus):
+    name: Literal['Wagner']
+    desc: str = (
+        'Comes with 2 Forging Billet when played. '
+        'End Phase: Gain 1 Forging Billet. '
+        'When playing a Weapon Card: If possible, spend Forging Billet '
+        'equal to the total cost of the Weapon and equip this '
+        'Weapon for free. (Once per Round)'
+    )
+    decrease_target: int = CostLabels.WEAPON.value
+
+
+class ChefMao(RoundEffectCompanionBase, LimitedEffectSupportBase):
+    name: Literal['Chef Mao']
+    desc: str = (
+        'After playing a Food Event Card: Create 1 random Elemental Die. '
+        '(Once per Round) '
+        'The first time the effect is triggered, draw 1 random Food Event '
+        'Card from your deck.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(same_dice_number = 1)
+    max_usage_per_round: int = 1
+    limited_usage: int = 1
+
+    def _limited_action(self, match: Any) -> List[DrawCardAction]:
+        return [DrawCardAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            whitelist_cost_labels = CostLabels.FOOD.value,
+            draw_if_filtered_not_enough = False,
+        )]
+
+    def event_handler_USE_CARD(
+        self, event: UseCardEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When use food card, create one random elemental die and do limited
+        action.
+        """
+        if self.position.area == ObjectPositionType.SUPPORT:
+            # on support area, do effect
+            if self.usage <= 0:
+                # usage is 0, do nothing
+                return []
+            if (
+                event.action.card_position.player_idx 
+                != self.position.player_idx
+            ):
+                # not our charactor use card, do nothing
+                return []
+            if event.card.cost.label & CostLabels.FOOD.value == 0:
+                # not food card, do nothing
+                return []
+            # our use food card, generate die and do limited action
+            self.usage -= 1
+            return [CreateDiceAction(
+                player_idx = self.position.player_idx,
+                number = 1,
+                different = True  # use different to avoid generating OMNI
+            )] + self.do_limited_action(match)
+        # otherwise, do normal response
+        return super().event_handler_USE_CARD(event, match)
 
 
 class Tubby(RoundEffectCompanionBase):
@@ -664,6 +789,7 @@ class Setaria(CompanionBase):
 
 
 Companions = (
-    Paimon | Katheryne | Tubby | Timmie | Liben | ChangTheNinth | Ellin 
-    | IronTongueTian | LiuSu | KidKujirai | Rana | MasterZhang | Setaria
+    Paimon | Katheryne | Timaeus | Wagner | ChefMao | Tubby | Timmie | Liben 
+    | ChangTheNinth | Ellin | IronTongueTian | LiuSu | KidKujirai | Rana 
+    | MasterZhang | Setaria
 )

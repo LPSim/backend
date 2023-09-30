@@ -142,7 +142,8 @@ class RoundEffectSupportBase(SupportBase):
 
 class UsageWithRoundRestrictionSupportBase(SupportBase):
     """
-    Supports that has limited usage, and restricts maximum usage per round.
+    Supports that restricts maximum usage per round, and also has total
+    maximum usage. e.g. Liu Su has 1 usage per round and 2 total usage.
     """
     name: str
     desc: str
@@ -169,3 +170,37 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
         assert self.has_usage()
         self.usage -= 1
         self.usage_this_round -= 1
+
+
+class LimitedEffectSupportBase(SupportBase):
+    """
+    Supports that has limited effect during the game. e.g. Chef Mao in 4.1
+    will draw 1 food card when triggered only once. 
+
+    Overwrite the _limited_action function to do the limited action, and call
+    do_limited_action when the condition is satisfied.
+    """
+
+    name: str
+    desc: str
+    version: str
+    cost: Cost
+    limited_usage: int
+
+    def _limited_action(self, match: Any) -> List[Actions]:
+        """
+        return limited action.
+        """
+        raise NotImplementedError()
+
+    def do_limited_action(self, match: Any) -> List[Actions]:
+        """
+        do the limited action when has usage and is in support area.
+        """
+        if (
+            self.limited_usage <= 0 
+            or self.position.area != ObjectPositionType.SUPPORT
+        ):
+            return []
+        self.limited_usage -= 1
+        return self._limited_action(match)
