@@ -55,10 +55,10 @@ class FatalRainscreen(ElementalSkillBase):
 class Raincutter(ElementalBurstBase):
     name: Literal['Raincutter'] = 'Raincutter'
     desc: str = (
-        'Deals 1 Hydro DMG, grants this character Hydro Application, creates '
+        'Deals 2 Hydro DMG, grants this character Hydro Application, creates '
         '1 Rainbow Bladework.'
     )
-    damage: int = 1
+    damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
@@ -104,7 +104,7 @@ class TheScentRemained(SkillTalent):
 
 class Xingqiu(CharactorBase):
     name: Literal['Xingqiu']
-    version: Literal['3.6'] = '3.6'
+    version: Literal['4.1'] = '4.1'
     desc: str = '''"Juvenile Galant" Xingqiu'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10

@@ -14,6 +14,7 @@ from .resonance import ThunderAndEternity as TAE_4_0
 from .others import MasterOfWeaponry as MOW_4_1
 from .others import BlessingOfTheDivineRelicsInstallation as BOTDRI_4_1
 from .resonance import WindAndFreedom as WAF_4_1
+from .foods import TeyvatFriedEgg as TFE_4_1
 
 
 class ThunderAndEternity_3_7(TAE_4_0):
@@ -106,8 +107,13 @@ class WindAndFreedom_3_7(WAF_4_1):
     version: Literal['3.7']
 
 
+class TeyvatFriedEgg_3_7(TFE_4_1):
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 3)
+
+
 OldVersionEventCards = (
-    WindAndFreedom_3_7 | ThunderAndEternity_3_7 
+    WindAndFreedom_3_7 | ThunderAndEternity_3_7 | TeyvatFriedEgg_3_7
 
     | IHaventLostYet_3_3 | MasterOfWeaponry_3_3 
     | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3 

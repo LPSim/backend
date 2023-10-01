@@ -5,6 +5,7 @@ from .locations import JadeChamber as JC_4_0
 from .companions import Katheryne as K_3_6
 from .companions import ChefMao as CM_4_1
 from .companions import Dunyarzad as D_4_1
+from .items import NRE as NRE_4_1
 
 
 class JadeChamber_3_3(JC_4_0):
@@ -35,9 +36,15 @@ class Dunyarzad_3_7(D_4_1):
     limited_usage: int = 0
 
 
+class NRE_3_3(NRE_4_1):
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+
 OldVersionLocations = JadeChamber_3_3 | JadeChamber_3_3
 OldVersionCompanions = (
     Dunyarzad_3_7
 
     | Katheryne_3_3 | ChefMao_3_3
 )
+OldVersionItems = NRE_3_3 | NRE_3_3

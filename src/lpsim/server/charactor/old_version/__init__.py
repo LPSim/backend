@@ -11,18 +11,20 @@ from .collei_3_3 import FloralSidewinder_3_3
 from .maguu_kenki_3_3 import MaguuKenki_3_3
 from .yoimiya_3_3 import Yoimiya_3_3
 from .xingqiu_3_3 import Xingqiu_3_3
+from .xingqiu_3_6 import Xingqiu_3_6
 from .xiangling_3_3 import Xiangling_3_3
 from .ganyu_3_3 import Ganyu_3_3, UndividedHeart_3_3
 from .mirror_maiden_3_3 import MirrorMaiden_3_3
 from .fatui_cryo_cicin_mage_3_7 import FatuiCryoCicinMage_3_7, CryoCicins_3_7
 from .kamisato_ayato_3_6 import KamisatoAyato_3_6
 from .tartaglia_3_7 import Tartaglia_3_7, AbyssalMayhemHydrospout_3_7
+from .diona_3_3 import ShakenNotPurred_3_3
 
 
 OldTalents = (
     AbyssalMayhemHydrospout_3_7
 
-    | FloralSidewinder_3_3 | UndividedHeart_3_3
+    | FloralSidewinder_3_3 | UndividedHeart_3_3 | ShakenNotPurred_3_3
 )
 OldSummons = (
     CryoCicins_3_7 
@@ -32,7 +34,7 @@ OldSummons = (
 OldCharactors = (
     Tartaglia_3_7 | FatuiCryoCicinMage_3_7
 
-    | KamisatoAyato_3_6
+    | Xingqiu_3_6 | KamisatoAyato_3_6
 
     | Eula_3_5 | SangonomiyaKokomi_3_5 
 

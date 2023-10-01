@@ -108,14 +108,16 @@ class ParametricTransformer(ItemBase):
 
 
 class NRE(RoundEffectItemBase):
+    # TODO when hand full, draw card will cause hand over maximum
+    # also appear in Chef Mao, Dunyarzad?
     name: Literal['NRE']
     desc: str = (
         'When played: Draw 1 Food Event Card from your deck. '
         'When you play a Food Event Card: Draw 1 Food Event Card from your '
         'deck. (Once per Round)'
     )
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
 
     def draw_food_card(self) -> DrawCardAction:

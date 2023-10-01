@@ -293,8 +293,8 @@ class TeyvatFriedEgg(FoodCardBase):
         "(You can only revive 1 character via Food per Round, and a character "
         "can consume at most 1 Food per Round)"
     )
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 3)
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(same_dice_number = 2)
 
     can_eat_only_if_damaged: bool = False
 

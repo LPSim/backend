@@ -127,11 +127,11 @@ class ShakenNotPurred(SkillTalent):
         'When your Diona, who has this card equipped, creates a Cat-Claw '
         'Shield, its Shield points +1.'
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Diona'] = 'Diona'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.CRYO,
-        elemental_dice_number = 4
+        elemental_dice_number = 3
     )
     skill: IcyPaws = IcyPaws()
 
