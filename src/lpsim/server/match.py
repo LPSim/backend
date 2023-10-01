@@ -1907,6 +1907,7 @@ class Match(BaseModel):
             # apply elemental reaction, update damage and append new damages
             damage, new_damages = apply_elemental_reaction(
                 table.charactors,
+                table.active_charactor_idx,
                 damage, 
                 elemental_reaction, 
                 reacted_elements,

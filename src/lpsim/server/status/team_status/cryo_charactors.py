@@ -90,6 +90,9 @@ class IcyQuill(UsageTeamStatus):
         If our charactor skill or summon deal corresponding elemental DMG, 
         increase DMG.
         """
+        if self.usage <= 0:
+            # no usage, do nothing
+            return value
         if value.damage_type != DamageType.DAMAGE:
             # not damage, do nothing
             return value

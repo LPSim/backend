@@ -254,6 +254,7 @@ def check_elemental_reaction(
 
 def apply_elemental_reaction(
         target_charactors: List[CharactorBase],
+        active_charactor_idx: int,
         damage: DamageElementEnhanceValue,
         reaction: ElementalReactionType,
         reacted_elements: List[ElementType]
@@ -286,8 +287,10 @@ def apply_elemental_reaction(
         assert element_type != ElementType.ANEMO, \
             'Anemo should always be first'
         attack_target = damage.target_position.charactor_idx
-        for cnum in range(1, len(target_charactors)):
-            cnum = (cnum + attack_target) % len(target_charactors)
+        for cnum in range(0, len(target_charactors)):
+            cnum = (cnum + active_charactor_idx) % len(target_charactors)
+            if cnum == attack_target:
+                continue
             c = target_charactors[cnum]
             if c.is_alive:
                 res.append(DamageElementEnhanceValue(
@@ -313,9 +316,11 @@ def apply_elemental_reaction(
             # 1 piercing dmg for other charactors
             damage_type = DamageElementalType.PIERCING
             attack_target = damage.target_position.charactor_idx
-            for cnum, c in enumerate(target_charactors):
+            for cnum in range(0, len(target_charactors)):
+                cnum = (cnum + active_charactor_idx) % len(target_charactors)
                 if cnum == attack_target:
                     continue
+                c = target_charactors[cnum]
                 if c.is_alive:
                     res.append(DamageElementEnhanceValue(
                         position = damage.position,

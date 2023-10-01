@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The first three numbers in the version number are the same as the version of 
 the game, and the last number is the patch version.
 
+## [Unreleased]
+
+### Added
+- IconType for Summons, Status, and Supports.
+
+### Fixed
+- Icyquill with only one usage will affect multiple times.
+- 1 usage Icyquill with Wanderer will cause wrong damage calculation.
+
 ## [0.4.1.0] - 2023-10-01
 
 ### Added
