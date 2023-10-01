@@ -28,7 +28,7 @@ def test_...():
             "choose 0",
             "skill 1 0 1 2",
             "end",
-            "TEST 1 HP: 9 10 10 10 9 10",
+            "TEST 1 9 10 10 10 9 10",
             ...
         ],
         [
@@ -37,7 +37,7 @@ def test_...():
             "skill 1 0 1 2",
             "end",
             "end",
-            "TEST 1 HP: 9 10 10 9 8 9",
+            "TEST 1 9 10 10 9 8 9",
         ]
     ]
     agent_0 = InteractionAgent(
@@ -85,14 +85,14 @@ def test_...():
             raise AssertionError('No need respond.')
         # do tests
         while True:
-            cmd = cmd.strip().split(' ')
+            cmd = agent.commands[0].strip().split(' ')
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd[3:]
+                hps = cmd[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
