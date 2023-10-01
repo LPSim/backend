@@ -14,17 +14,50 @@ from ...consts import (
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
+    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillBase, 
+    SkillTalent
 )
 
 
 # Skills
 
 
-class FoulLegacyRagingTide(ElementalSkillBase):
+class AttachRiptideWhenSkillEnd(SkillBase):
+    version: str
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When skill end, if is this skill, and target
+        is alive, attach riptide to target.
+        """
+        if event.action.position.id != self.id:
+            # not self skill
+            return []
+        target = match.player_tables[1 - self.position.player_idx].charactors[
+            event.action.target_position.charactor_idx]
+        if target.is_defeated:
+            # target is defeated
+            return []
+        # attach riptide to target
+        return [
+            CreateObjectAction(
+                object_name = 'Riptide',
+                object_position = event.action.target_position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS),
+                object_arguments = { 'version': self.version }
+            )
+        ]
+
+
+class FoulLegacyRagingTide(ElementalSkillBase, AttachRiptideWhenSkillEnd):
     name: Literal['Foul Legacy: Raging Tide'] = 'Foul Legacy: Raging Tide'
-    desc: str = '''Switches to Melee Stance and deals 2 Hydro DMG.'''
-    version: Literal['3.7'] = '3.7' 
+    desc: str = (
+        'Switches to Melee Stance and deals 2 Hydro DMG, '
+        'and attach Riptide to the target charactor.'
+    )
+    version: Literal['4.1'] = '4.1' 
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -37,23 +70,26 @@ class FoulLegacyRagingTide(ElementalSkillBase):
         create object then attack
         """
         return [
-            self.create_charactor_status('Melee Stance'),
+            self.create_charactor_status(
+                'Melee Stance',
+                { 'version': self.version }
+            ),
             self.attack_opposite_active(match, self.damage, self.damage_type),
             self.charge_self(1),
         ]
 
 
-class HavocObliteration(ElementalBurstBase):
+class HavocObliteration(ElementalBurstBase, AttachRiptideWhenSkillEnd):
     name: Literal['Havoc: Obliteration'] = 'Havoc: Obliteration'
     desc: str = (
         'Performs different attacks based on the current stance that '
-        'Tartaglia is in. Ranged Stance - Flash of Havoc: Deal 4 Hydro DMG, '
+        'Tartaglia is in. Ranged Stance - Flash of Havoc: Deal 5 Hydro DMG, '
         'reclaim 2 Energy, and apply Riptide to the target character. '
         'Melee Stance - Light of Obliteration: Deal 7 Hydro DMG.'
     )
-    version: Literal['3.7'] = '3.7' 
+    version: Literal['4.1'] = '4.1' 
     damage: int = 7
-    ranged_damage: int = 4
+    ranged_damage: int = 5
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
@@ -92,12 +128,8 @@ class HavocObliteration(ElementalBurstBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        When skill end, if is this skill, and in ranged stance, and target
-        is alive, attach riptide to target.
+        If ranged stance, call super() to attach riptide.
         """
-        if event.action.position.id != self.id:
-            # not self skill
-            return []
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         ranged_found: bool = False
@@ -108,20 +140,7 @@ class HavocObliteration(ElementalBurstBase):
         if not ranged_found:
             # not ranged stance
             return []
-        target = match.player_tables[1 - self.position.player_idx].charactors[
-            event.action.target_position.charactor_idx]
-        if target.is_defeated:
-            # target is defeated
-            return []
-        # attach riptide to target
-        return [
-            CreateObjectAction(
-                object_name = 'Riptide',
-                object_position = event.action.target_position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = { 'version': self.version }
-            )
-        ]
+        return super().event_handler_SKILL_END(event, match)
 
 
 class TideWithholder(PassiveSkillBase):
@@ -136,7 +155,7 @@ class TideWithholder(PassiveSkillBase):
         'Stance. Once the Melee Stance attached to the character ends, '
         'reapplies Ranged Stance.'
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -145,7 +164,10 @@ class TideWithholder(PassiveSkillBase):
         When game begin, gain ranged stance and system handler
         """
         return [
-            self.create_charactor_status('Ranged Stance'),
+            self.create_charactor_status(
+                'Ranged Stance',
+                { 'version': self.version }
+            ),
             CreateObjectAction(
                 object_name = 'Riptide',
                 object_position = ObjectPosition(
@@ -166,30 +188,37 @@ class AbyssalMayhemHydrospout(SkillTalent):
     desc: str = (
         'Combat Action: When your active character is Tartaglia, equip this '
         'card. After Tartaglia equips this card, immediately use Foul Legacy: '
-        'Raging Tide once. End Phase: Deals 1 Piercing DMG to all opposing '
-        'characters affected by Riptide.'
+        'Raging Tide once. End Phase: Deals 1 Piercing DMG to the opponent '
+        'active character if they have Riptide attached.'
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Tartaglia'] = 'Tartaglia'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4,
+        elemental_dice_number = 3,
     )
     skill: FoulLegacyRagingTide = FoulLegacyRagingTide()
+    only_active_charactor: bool = True
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         """
-        Make 1 damage to all opposing characters affected by Riptide.
+        Make 1 damage to character if affected by Riptide. When only active
+        charactor (after 4.1), only check active charactor. Otherwise,
+        check all charactors.
         """
         if self.position.area != ObjectPositionType.CHARACTOR:
             # not equipped
             return []
         ret: List[MakeDamageAction] = []
-        for charactor in (
+        active_idx = match.player_tables[
+            1 - self.position.player_idx].active_charactor_idx
+        for cidx, charactor in enumerate(
             match.player_tables[1 - self.position.player_idx].charactors
         ):
+            if self.only_active_charactor and cidx != active_idx:
+                continue
             for status in charactor.status:
                 if status.name == 'Riptide':
                     ret.append(MakeDamageAction(
@@ -216,7 +245,7 @@ class AbyssalMayhemHydrospout(SkillTalent):
 
 class Tartaglia(CharactorBase):
     name: Literal['Tartaglia']
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
     desc: str = '"Childe" Tartaglia'
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10

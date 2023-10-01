@@ -43,7 +43,10 @@ class Riptide(CharactorStatusBase):
         'will attach real Riptide for active charactor, and all virtual '
         'Riptide will be removed.'
     )
-    version: Literal['4.1'] = '4.1'
+    # As Riptide has changed, all status it related to should have different
+    # version. To avoid using wrong version of status, related status have
+    # not default value.
+    version: Literal['4.1']
     usage: int = 1
     max_usage: int = 1
 
@@ -54,7 +57,10 @@ class RangedStance(CharactorStatusBase):
         'After the character to which this is attached uses Charged Attack: '
         'Apply Riptide to target character.'
     )
-    version: Literal['3.7'] = '3.7'
+    # As Riptide has changed, all status it related to should have different
+    # version. To avoid using wrong version of status, related status have
+    # not default value.
+    version: Literal['4.1']
     usage: int = 1
     max_usage: int = 1
 
@@ -115,7 +121,7 @@ class RangedStance(CharactorStatusBase):
 class MeleeStance(ElementalInfusionCharactorStatus,
                   RoundCharactorStatus):
     name: Literal['Melee Stance'] = 'Melee Stance'
-    buff_desc: str = (
+    desc: str = (
         'Physical DMG dealt by character is converted to Hydro DMG. '
         'After the character uses Charged Attack: Apply Riptide to target '
         'character. Character deals +1 DMG to target characters with Riptide '
@@ -124,7 +130,10 @@ class MeleeStance(ElementalInfusionCharactorStatus,
         'Deal 1 Piercing DMG to the next opposing off-field character. '
         '(Twice per Round)'
     )
-    version: Literal['3.7'] = '3.7'
+    # As Riptide has changed, all status it related to should have different
+    # version. To avoid using wrong version of status, related status have
+    # not default value.
+    version: Literal['4.1']
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -268,7 +277,7 @@ class MeleeStance(ElementalInfusionCharactorStatus,
                 CreateObjectAction(
                     object_name = 'Ranged Stance',
                     object_position = self.position,
-                    object_arguments = {}
+                    object_arguments = { 'version': self.version }
                 )
             )
         return ret

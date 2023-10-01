@@ -16,10 +16,13 @@ from .ganyu_3_3 import Ganyu_3_3, UndividedHeart_3_3
 from .mirror_maiden_3_3 import MirrorMaiden_3_3
 from .fatui_cryo_cicin_mage_3_7 import FatuiCryoCicinMage_3_7, CryoCicins_3_7
 from .kamisato_ayato_3_6 import KamisatoAyato_3_6
+from .tartaglia_3_7 import Tartaglia_3_7, AbyssalMayhemHydrospout_3_7
 
 
 OldTalents = (
-    FloralSidewinder_3_3 | UndividedHeart_3_3
+    AbyssalMayhemHydrospout_3_7
+
+    | FloralSidewinder_3_3 | UndividedHeart_3_3
 )
 OldSummons = (
     CryoCicins_3_7 
@@ -27,7 +30,7 @@ OldSummons = (
     | LightfallSword_3_5
 )
 OldCharactors = (
-    FatuiCryoCicinMage_3_7
+    Tartaglia_3_7 | FatuiCryoCicinMage_3_7
 
     | KamisatoAyato_3_6
 

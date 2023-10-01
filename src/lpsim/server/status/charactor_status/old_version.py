@@ -3,6 +3,7 @@ from typing import Literal
 from .base import RoundCharactorStatus
 from .cryo_charactors import Grimheart as G_3_8
 from .foods import MintyMeatRolls as MMR_3_4
+from .hydro_charactors import RangedStance as RS_4_1, MeleeStance as MS_4_1
 
 
 class Grimheart_3_5(G_3_8):
@@ -37,8 +38,16 @@ class Riptide_3_7(RoundCharactorStatus):
     max_usage: int = 2
 
 
+class RangedStance_3_7(RS_4_1):
+    version: Literal['3.7']
+
+
+class MeleeStance_3_7(MS_4_1):
+    version: Literal['3.7']
+
+
 OldVersionCharactorStatus = (
-    Riptide_3_7
+    Riptide_3_7 | RangedStance_3_7 | MeleeStance_3_7
 
     | Grimheart_3_5 
 
