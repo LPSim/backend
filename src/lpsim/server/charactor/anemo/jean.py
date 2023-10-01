@@ -1,13 +1,12 @@
 from typing import Any, List, Literal
 
-from src.lpsim.server.action import MakeDamageAction
-from src.lpsim.server.event import RoundEndEventArguments
+from ...event import RoundEndEventArguments
 
 from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 
-from ...action import ActionTypes, Actions
+from ...action import ActionTypes, Actions, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
