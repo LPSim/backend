@@ -3,54 +3,16 @@
 ---
 
 [![Coverage Status](https://coveralls.io/repos/github/zyr17/GITCG/badge.svg?branch=master)](https://coveralls.io/github/zyr17/GITCG?branch=master)
+[![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?style=flat-square&color=blue)](https://pypi.org/project/lpsim/)
 
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
 TCG, written with Python 3.10 using Pydantic and FastAPI.
-
-This project is created for leisure, no guarantee for progress and quality.
 
 This project is under AGPL-3.0 license.
 
 ## Progress
 
-[Charactors](docs/charactors.md) All done.
-
-[Cards](docs/cards.md) All done.
-
-(until 4.0) All charactors and card are done.
-
-(4.1)
-
-- [ ] Yaoyao
-- [ ] Dehya
-- [ ] Wanderer
-
-- [ ] Beneficient
-- [ ] Stalwart and True
-- [ ] Gales of Reverie
-
-- [ ] MoonPiercer
-- [ ] Crown of Watatsumi
-- [ ] Yayoi Nanatsuki
-- [ ] Gandharva Ville
-- [X] Fresh Wind of Freedom
-- [ ] Pankration!
-
-Balance changes:
-
-- [X] Ayato
-- [X] Fatui Cryo Cicin Mage
-- [ ] Tartaglia
-- [ ] Diona
-- [ ] Xingqiu
-- [ ] NRE
-- [ ] Egg
-- [X] Wind and Freedom
-- [X] Dunyarzad
-- [X] Chef Mao
-- [X] Emblem of Severed Fate
-- [X] Blessing of the Divine Relic's Installation
-- [X] Master of Weaponry
+All charactors and cards with their balance changes until 4.1 are done.
 
 ## Usage
 
@@ -58,41 +20,75 @@ This project works with Python 3.10, and requires packages listed in
 `requirements.txt`. To install the packages, use 
 `pip install -r requirements.txt`.
 
+### Mini server
+
 A FastAPI server is provided, which can be used to interact with the match.
-Its requirements are listed in `network/requirements.txt`.
+Its requirements are listed in `network/requirements.txt`. Currently FastAPI
+server do not support running on package installation, as it requires
+some functions used in tests. Please clone this repository, install 
+requirements and run the server.
 
-TODO: package-like usage is suppoted, need to update README
+When mini server is running, it will open a FastAPI server on `localhost:8000`,
+and you can start a [frontend](https://github.com/zyr17/GITCG-frontend)
+on `localhost:4000` to interact with the server. 
+For details, please refer to FastAPI section and readme of frontend.
 
-Currently package-like usage is not supported, please follow the following
-instructions to run the project. 
-This project support a frontend `zyr17/GITCG-frontend`. To use the frontend, 
-please refer FastAPI section and readme of frontend.
 
-Define decks for both players. Supports text-based or json-based deck 
-definition. Refer to `server/deck.py` for details.
+### Installation by pip
 
-The outlines:
+To install the newest release version, use `pip install lpsim`. You can find
+the newest release version on [PyPI](https://pypi.org/project/lpsim/), and
+you can find the change log on [CHANGELOG.md](CHANGELOG.md).
+
+To install the newest development version, use 
+`pip install lpsim -i https://test.pypi.org/simple/`. When new commits are
+pushed to `master` branch and pass all tests, a new version will be released 
+on test PyPI.
+
+### Installation by source
+
+Clone this repository and install the package by `pip install .`. 
+
+### Start a match
+
+#### Define the deck
+
+To start a match, you should firstly 
+define decks for both players. Supports text-based or json-based deck 
+definition. Usually, `Deck.from_str` is enough to define a deck, which contains
+charactors and cards definition, and can control their versions. The deck 
+string in the following sample code shows the syntax of deck definition,
+all cards are based on 4.1 version, except Wind and Freedom, which is based on
+4.0 version (As it has not changed after 3.7, when specify version 4.0, deck
+will automatically choose 3.7 version).
+Refer to `server/deck.py` for details.
+
+#### Run the match
 
 1. Initialize a fresh `server.Match` instance.
 2. Use the `set_deck` function to assign decks for players.
 3. Modify the `Match.config` if specific configurations are necessary.
 4. Once the decks are set, initiate the match using the `Match.start` function. 
    This initializes the match according to the configurations and decks.
+   If error occured (e.g. deck is not valid), it will print error message and
+   return False.
 5. Progress through the match by employing the `Match.step` function. 
    By default, the step function will continually execute until the match 
-   either ends or generates requests requiring responses.
+   either ends or generates requests requiring responses, or the match ends.
 
 In order to manage responses, the project includes a selection of simple 
 agents within the `agents` module. These agents can generate 
 responses to various requests. Notably, the `InteractionAgent` is equipped 
-to interpret command lines and formulate responses. This proves useful both 
+to interpret command lines and formulate responses. This is useful both 
 in console environments and within frontend interfaces.
 
+#### Sample code
 
 ```python
 from lpsim import Match, Deck
 from lpsim.agents import RandomAgent
 deck_string = '''
+default_version:4.1
 charactor:Fischl
 charactor:Mona
 charactor:Nahida
@@ -102,7 +98,7 @@ Vanarana
 Timmie*2
 Rana*2
 Covenant of Rock
-Wind and Freedom
+Wind and Freedom@4.0
 The Bestest Travel Companion!*2
 Changing Shifts*2
 Toss-Up
@@ -135,7 +131,7 @@ while not match.is_game_end():
 print(f'winner is {match.winner}')
 ```
 
-## FastAPI
+### FastAPI
 
 Use FastAPI to provide a web server, which can be used to interact with the
 match. To run a server, use the following command:
@@ -146,7 +142,7 @@ uvicorn network:app --reload
 It will open a FastAPI server on `localhost:8000`, and accepts connections
 on `localhost:4000`, which is the port of frontend. Currently exception
 management is chaos, errors may set game state to ERROR, raise Exception on
-server side, make empty response on agent, return 404, or run JS failed on
+server side, make empty response on agent, return 404/500, or run JS failed on
 frontend. Please open console of frontend and check the error message on both
 sides.
 
@@ -186,6 +182,6 @@ should be passed without modification.
 Contributions are welcomed, however, currently there is no detailed guide for
 contribution. To add new charactor related objects (Charactor, Skill, Talent,
 Summon, Status), please refer to `server/charactor/template.py` and implemented
-`server/charactor/electro/fischl.py` `server/charactor/hydro/mona.py`
-and `server/charactor/dendro/nahida.py`. To add a new card, please refer to
-existing card implementations in `server/card`.
+charactors.
+To add a new card, please refer to existing card implementations in 
+`server/card`.
