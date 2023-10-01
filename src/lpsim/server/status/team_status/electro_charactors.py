@@ -3,7 +3,7 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...consts import DamageElementalType, DamageType, SkillType
+from ...consts import DamageElementalType, DamageType, IconType, SkillType
 
 from ...modifiable_values import DamageDecreaseValue, DamageValue
 
@@ -19,6 +19,7 @@ class TenkoThunderbolts(UsageTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any
@@ -58,6 +59,7 @@ class ThunderbeastsTarge(RoundTeamStatus, ExtraAttackTeamStatus):
     version: Literal['3.4'] = '3.4'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
     damage: int = 1

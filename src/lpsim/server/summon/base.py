@@ -5,7 +5,7 @@ from pydantic import validator
 from ..object_base import ObjectBase
 
 from ..consts import (
-    ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, 
+    ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, IconType, 
     ObjectPositionType, ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
@@ -30,6 +30,13 @@ class SummonBase(ObjectBase):
     version: str
     usage: int
     max_usage: int
+
+    # icon type is used to show the icon on the summon top right. 
+    icon_type: Literal[
+        IconType.SHIELD, IconType.BARRIER, IconType.TIMESTATE, IconType.COUNTER
+    ]
+    # when status icon type is not none, it will show in team status area
+    status_icon_type: Literal[IconType.NONE] = IconType.NONE
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -88,6 +95,8 @@ class AttackerSummonBase(SummonBase):
     max_usage: int
     damage_elemental_type: DamageElementalType
     damage: int
+
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def __init__(self, *argv, **kwargs) -> None:
         super().__init__(*argv, **kwargs)
@@ -239,6 +248,8 @@ class DefendSummonBase(SummonBase):
     max_in_one_time: int
     decrease_usage_by_damage: bool = False
 
+    icon_type: Literal[IconType.BARRIER] = IconType.BARRIER
+
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction | RemoveObjectAction]:
@@ -329,6 +340,8 @@ class ShieldSummonBase(DefendSummonBase):
     damage_elemental_type: DamageElementalType
     damage: int
     attack_until_run_out_of_usage: bool
+
+    icon_type: Literal[IconType.SHIELD] = IconType.SHIELD
 
     # papams passing to apply_shield is fixed
     min_damage_to_trigger: int = 0

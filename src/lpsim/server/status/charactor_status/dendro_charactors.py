@@ -8,7 +8,7 @@ from ...modifiable_values import (
 
 from ...consts import (
     CostLabels, DamageElementalType, DamageType, ElementType, 
-    ElementalReactionType, ObjectPositionType, SkillType
+    ElementalReactionType, IconType, ObjectPositionType, SkillType
 )
 
 from ...action import (
@@ -36,6 +36,7 @@ class SeedOfSkandha(UsageCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Any
@@ -206,6 +207,7 @@ class RadicalVitality(CharactorStatusBase):
     usage: int = 0
     max_usage: int = 3
     element_damage_triggered: bool = False
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

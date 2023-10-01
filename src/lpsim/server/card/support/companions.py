@@ -11,7 +11,7 @@ from .base import (
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
     DieColor, ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
-    ObjectPositionType, PlayerActionLabels, SkillType
+    IconType, ObjectPositionType, PlayerActionLabels, SkillType
 )
 from ...struct import Cost, ObjectPosition
 from ...action import (
@@ -45,6 +45,7 @@ class Paimon(CompanionBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 3)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -119,6 +120,7 @@ class Timaeus(UsageWithRoundRestrictionSupportBase):
     max_usage_one_round: int = 1
     decrease_target: int = CostLabels.ARTIFACT.value
     usage: int = 2
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def play(self, match: Any) -> List[Actions]:
         self.usage = 2
@@ -286,6 +288,7 @@ class Timmie(CompanionBase):
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def play(self, match: Any) -> List[ChangeObjectUsageAction]:
         """
@@ -360,6 +363,7 @@ class Liben(CompanionBase):
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def play(self, match: Any) -> List[Actions]:
         self.usage = 0
@@ -437,6 +441,7 @@ class ChangTheNinth(CompanionBase):
     usage: int = 0
     max_usage: int = 3
     inspiration_got: bool = False
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any
@@ -564,6 +569,7 @@ class IronTongueTian(CompanionBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -598,6 +604,7 @@ class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 2
     max_usage_one_round: int = 1
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def charge(self, charactor: Any) -> List[ChargeAction 
                                              | RemoveObjectAction]:
@@ -649,6 +656,7 @@ class Hanachirusato(CompanionBase):
     decrease_target: int = CostLabels.WEAPON.value | CostLabels.ARTIFACT.value
     decrease_number: int = 2
     effect_triggered: bool = False
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def event_handler_REMOVE_OBJECT(
         self, event: RemoveObjectEventArguments, match: Any
@@ -715,6 +723,7 @@ class KidKujirai(CompanionBase):
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost()
     usage: int = 0
+    icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -914,6 +923,7 @@ class Setaria(CompanionBase):
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ACTION_END(
         self, event: ActionEndEventArguments, match: Any

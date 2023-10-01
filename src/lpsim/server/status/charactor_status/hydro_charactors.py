@@ -5,7 +5,8 @@ from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, ObjectPositionType, SkillType
+    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
+    SkillType
 )
 
 from ...action import (
@@ -49,6 +50,7 @@ class Riptide(CharactorStatusBase):
     version: Literal['4.1']
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
 class RangedStance(CharactorStatusBase):
@@ -61,6 +63,7 @@ class RangedStance(CharactorStatusBase):
     # version. To avoid using wrong version of status, related status have
     # not default value.
     version: Literal['4.1']
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
     usage: int = 1
     max_usage: int = 1
 
@@ -134,6 +137,7 @@ class MeleeStance(ElementalInfusionCharactorStatus,
     # version. To avoid using wrong version of status, related status have
     # not default value.
     version: Literal['4.1']
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -293,6 +297,7 @@ class CeremonialGarment(RoundCharactorStatus):
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -345,7 +350,7 @@ class CeremonialGarment(RoundCharactorStatus):
         return [action]
 
 
-class HeronShield(PrepareCharactorStatus, ShieldCharactorStatus):
+class HeronShield(ShieldCharactorStatus, PrepareCharactorStatus):
     name: Literal['Heron Shield'] = 'Heron Shield'
     desc: str = (
         'The next time this character acts, they will immediately use the '
@@ -380,6 +385,7 @@ class Refraction(RoundCharactorStatus):
     is_talent_activated: bool = False
     cost_increase_usage: int = 1
     cost_increase_max_usage: int = 1
+    icon_type: Literal[IconType.DEBUFF] = IconType.DEBUFF
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -442,6 +448,7 @@ class TakimeguriKanka(ElementalInfusionCharactorStatus, UsageCharactorStatus):
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+    icon_type: Literal[IconType.ATK_UP_WATER] = IconType.ATK_UP_WATER
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

@@ -1,5 +1,7 @@
 from typing import Any, Literal
 
+from ...consts import IconType
+
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundTeamStatus, ShieldTeamStatus
 
@@ -23,6 +25,7 @@ class MillennialMovementFarewellSong(RoundTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

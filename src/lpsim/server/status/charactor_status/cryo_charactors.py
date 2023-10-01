@@ -1,7 +1,7 @@
 
 from typing import Any, Literal
 
-from ...consts import DamageElementalType, SkillType
+from ...consts import DamageElementalType, IconType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import (
@@ -20,6 +20,7 @@ class Grimheart(UsageCharactorStatus):
     damage: int = 3
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP_ICE] = IconType.ATK_UP_ICE
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

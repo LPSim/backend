@@ -5,7 +5,7 @@ from ...struct import Cost
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 
 from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, IconType, ObjectPositionType, SkillType
 )
 
 from ...action import MakeDamageAction
@@ -23,6 +23,7 @@ class SparksNSplash(UsageTeamStatus):
     version: Literal['3.4'] = '3.4'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
@@ -72,6 +73,7 @@ class InspirationField(RoundTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     talent_activated: bool = False
 
@@ -150,6 +152,7 @@ class AurousBlaze(RoundTeamStatus, ExtraAttackTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = None
     damage: int = 1
@@ -178,6 +181,7 @@ class Pyronado(UsageTeamStatus, ExtraAttackTeamStatus):
     usage: int = 2
     max_usage: int = 2
     newly_created: bool = True
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = None
     damage: int = 2

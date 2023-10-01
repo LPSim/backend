@@ -1,5 +1,5 @@
 from typing import Literal
-from ..consts import ObjectType
+from ..consts import IconType, ObjectType
 from ..object_base import ObjectBase
 
 
@@ -15,6 +15,8 @@ class StatusBase(ObjectBase):
     max_usage: int
     type: Literal[ObjectType.CHARACTOR_STATUS, ObjectType.TEAM_STATUS]
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'ADD'
+
+    icon_type: IconType
 
     def renew(self, new_status: 'StatusBase') -> None:
         """

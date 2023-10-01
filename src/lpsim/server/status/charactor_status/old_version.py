@@ -1,5 +1,7 @@
 from typing import Literal
 
+from ...consts import IconType
+
 from .base import RoundCharactorStatus
 from .cryo_charactors import Grimheart as G_3_8
 from .foods import MintyMeatRolls as MMR_3_4
@@ -36,6 +38,7 @@ class Riptide_3_7(RoundCharactorStatus):
     version: Literal['3.7']
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
 class RangedStance_3_7(RS_4_1):

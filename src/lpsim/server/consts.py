@@ -307,38 +307,87 @@ class CostLabels(int, Enum):
 
 class IconType(str, Enum):
     """
-    Icon types of objects. Used for display, and also for some effects, e.g.
-    Vortex Vanquisher will increase 1 damage when any status, summons or 
-    supports has shield icon.
+    Icon types of objects. Used for display. All summons, status, and supports
+    should have one of these types.
     """
 
-    # e.g. Changing Shifts
+    # e.g. ???
     BUFF = 'BUFF'
     # e.g. I Haven't lost yet used
     DEBUFF = 'DEBUFF'
+    # e.g. Changing Shifts
+    SPECIAL = 'SPECIAL'
+    # e.g. enemy hydro abyss mage
+    DAZE = 'DAZE'
+    # e.g. enemy dog
+    DOT = 'DOT'
+    # Frozen
+    FROZEN = 'FROZEN'
 
+    # e.g. Collei talent
+    ATK_SELF = 'ATK_SELF'
     # e.g. Tandoori Chicken
-    ATTACK = 'ATTACK'
+    ATK_UP = 'ATK_UP'
+    # e.g. kazuha talent
+    ATK_UP_FIRE = 'ATK_UP_FIRE'
+    ATK_UP_ELEC = 'ATK_UP_ELEC'
+    ATK_UP_ICE = 'ATK_UP_ICE'
+    ATK_UP_WATER = 'ATK_UP_WATER'
+    ATK_UP_WIND = 'ATK_UP_WIND'
+    ATK_UP_ROCK = 'ATK_UP_ROCK'
+    ATK_UP_GRASS = 'ATK_UP_GRASS'
+    # e.g. keqing, ayaka
+    ELEMENT_ENCHANT_FIRE = 'ELEMENT_ENCHANT_FIRE'
+    ELEMENT_ENCHANT_ELEC = 'ELEMENT_ENCHANT_ELEC'
+    ELEMENT_ENCHANT_ICE = 'ELEMENT_ENCHANT_ICE'
+    ELEMENT_ENCHANT_WATER = 'ELEMENT_ENCHANT_WATER'
+    ELEMENT_ENCHANT_WIND = 'ELEMENT_ENCHANT_WIND'
+    ELEMENT_ENCHANT_ROCK = 'ELEMENT_ENCHANT_ROCK'
+    ELEMENT_ENCHANT_GRASS = 'ELEMENT_ENCHANT_GRASS'
     # e.g. Lotus Flower Crisp, Ushi
-    DEFEND = 'DEFEND'
+    BARRIER = 'BARRIER'
     # e.g. Crystallize, Unmovable Mountain
     SHIELD = 'SHIELD'
+    # e.g. pizza
+    HEAL = 'HEAL'
+    # e.g. Electro Hypostasis
+    REVIVE = 'REVIVE'
 
     # food card used for charactor, or egg used for team.
-    SATIATED = 'SATIATED'
+    FOOD = 'FOOD'
 
     # e.g. most of summons
-    SANDGLASS = 'SANDGLASS'
+    TIMESTATE = 'TIMESTATE'
     # e.g. Timmie, Liben
-    STOPWATCH = 'STOPWATCH'
+    COUNTER = 'COUNTER'
 
-    # e.g. Rana, Sumeru City
-    AVAILABLE = 'AVAILABLE'
     # e.g. Jade Chamber, Traveler's Handy Sword
     NONE = 'NONE'
 
-    # with others, the status has its special icon.
+    # with others, the status has its special icon based on its name
     OTHERS = 'OTHERS'
+
+
+ELEMENT_TO_ATK_UP_ICON = {
+    ElementType.CRYO: IconType.ATK_UP_ICE,
+    ElementType.HYDRO: IconType.ATK_UP_WATER,
+    ElementType.PYRO: IconType.ATK_UP_FIRE,
+    ElementType.ELECTRO: IconType.ATK_UP_ELEC,
+    ElementType.GEO: IconType.ATK_UP_ROCK,
+    ElementType.DENDRO: IconType.ATK_UP_GRASS,
+    ElementType.ANEMO: IconType.ATK_UP_WIND,
+}
+
+
+ELEMENT_TO_ENCHANT_ICON = {
+    ElementType.CRYO: IconType.ELEMENT_ENCHANT_ICE,
+    ElementType.HYDRO: IconType.ELEMENT_ENCHANT_WATER,
+    ElementType.PYRO: IconType.ELEMENT_ENCHANT_FIRE,
+    ElementType.ELECTRO: IconType.ELEMENT_ENCHANT_ELEC,
+    ElementType.GEO: IconType.ELEMENT_ENCHANT_ROCK,
+    ElementType.DENDRO: IconType.ELEMENT_ENCHANT_GRASS,
+    ElementType.ANEMO: IconType.ELEMENT_ENCHANT_WIND,
+}
 
 
 class PlayerActionLabels(int, Enum):

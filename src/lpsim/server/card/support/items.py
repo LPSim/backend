@@ -15,7 +15,7 @@ from ...event import (
 
 from ...struct import Cost
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, ObjectPositionType, 
+    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
     PlayerActionLabels
 )
 from .base import RoundEffectSupportBase, SupportBase
@@ -48,6 +48,7 @@ class ParametricTransformer(ItemBase):
     max_usage: int = 3
     create_dice_number: int = 3
     progress_got: bool = False
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any
@@ -261,6 +262,7 @@ class TreasureSeekingSeelie(ItemBase):
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0
     max_usage: int = 3
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any

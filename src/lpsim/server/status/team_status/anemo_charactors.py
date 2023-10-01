@@ -4,8 +4,8 @@ from typing import Any, List, Literal
 from ...event import SkillEndEventArguments
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
-    ObjectPositionType, SkillType
+    ELEMENT_TO_ATK_UP_ICON, ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, 
+    ElementType, IconType, ObjectPositionType, SkillType
 )
 
 from ...action import CreateObjectAction, RemoveObjectAction
@@ -24,6 +24,7 @@ class Stormzone(UsageTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     talent_activated: bool = False
     decrease_cost_success: bool = False
@@ -98,6 +99,7 @@ class WindsOfHarmony(RoundTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode = Literal['TEST', 'REAL']
@@ -140,6 +142,13 @@ class PoeticsOfFuubutsu(UsageTeamStatus):
     usage: int = 2
     max_usage: int = 2
     element: ElementType = ElementType.NONE
+    icon_type: Literal[
+        IconType.ATK_UP_FIRE,
+        IconType.ATK_UP_WATER,
+        IconType.ATK_UP_ELEC,
+        IconType.ATK_UP_ICE,
+        IconType.ATK_UP
+    ] = IconType.ATK_UP
 
     def __init__(self, *argv, **kwargs) -> None:
         super().__init__(*argv, **kwargs)
@@ -147,6 +156,7 @@ class PoeticsOfFuubutsu(UsageTeamStatus):
         element = ElementType[element_name.upper()]
         self.element = element
         self.desc = self.desc.replace('_ELEMENT_', element.name.capitalize())
+        self.icon_type = ELEMENT_TO_ATK_UP_ICON[element]  # type: ignore
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

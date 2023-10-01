@@ -8,7 +8,7 @@ from typing import Any, List, Literal
 from .event_cards import FreshWindOfFreedom
 from .base import ExtraAttackTeamStatus, UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
-from ...consts import DamageElementalType, DamageType, SkillType
+from ...consts import DamageElementalType, DamageType, IconType, SkillType
 from ...event import AfterMakeDamageEventArguments
 from ...action import RemoveObjectAction
 
@@ -25,6 +25,7 @@ class CatalyzingField_3_3(UsageTeamStatus):
     version: Literal['3.3']
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def value_modifier_DAMAGE_INCREASE(
             self, value: DamageIncreaseValue, match: Any,
@@ -73,6 +74,7 @@ class RainbowBladework_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
     version: Literal['3.3']
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
     damage: int = 2

@@ -4,7 +4,7 @@ from ...action import RemoveObjectAction
 
 from ...event import MakeDamageEventArguments
 
-from ...consts import ElementType, SkillType
+from ...consts import ElementType, IconType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus
@@ -20,6 +20,7 @@ class HeavyStrike(RoundCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -64,6 +65,7 @@ class ShatteringIce(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -106,6 +108,7 @@ class FerventFlames(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

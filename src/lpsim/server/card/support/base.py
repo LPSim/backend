@@ -2,7 +2,7 @@ from typing import Literal, List, Any
 
 from ...event import MoveObjectEventArguments, RoundPrepareEventArguments
 from ...object_base import CardBase
-from ...consts import ObjectType, ObjectPositionType, CostLabels
+from ...consts import IconType, ObjectType, ObjectPositionType, CostLabels
 from ...struct import Cost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
 from ...struct import ObjectPosition
@@ -23,6 +23,14 @@ class SupportBase(CardBase):
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     cost_label: int = CostLabels.CARD.value
     remove_when_used: bool = False
+
+    # icon type is used to show the icon on the summon top right. 
+    icon_type: Literal[
+        IconType.SHIELD, IconType.BARRIER, IconType.TIMESTATE, 
+        IconType.COUNTER, IconType.NONE
+    ]
+    # when status icon type is not none, it will show in team status area
+    status_icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def check_should_remove(self) -> List[RemoveObjectAction]:
         """
@@ -129,6 +137,8 @@ class RoundEffectSupportBase(SupportBase):
 
     usage: int = 0
 
+    icon_type: Literal[IconType.NONE] = IconType.NONE
+
     def play(self, match: Any) -> List[Actions]:
         self.usage = self.max_usage_per_round
         return []
@@ -152,6 +162,8 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     usage: int = 2
     usage_this_round: int = 0
     max_usage_one_round: int
+
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def play(self, match: Any) -> List[Actions]:
         self.usage_this_round = self.max_usage_one_round

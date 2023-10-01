@@ -7,7 +7,7 @@ from ...action import Actions, CreateObjectAction
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 from ...consts import (
-    DamageElementalType, DieColor, ObjectPositionType, SkillType
+    DamageElementalType, DieColor, IconType, ObjectPositionType, SkillType
 )
 from ...modifiable_values import (
     CostValue, DamageDecreaseValue, DamageElementEnhanceValue, 
@@ -34,6 +34,7 @@ class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     max_usage: int = 2
     cost_decrease_usage: int = 1
     infused_elemental_type: DamageElementalType = DamageElementalType.GEO
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def renew(self, new_status: StatusBase) -> None:
         super().renew(new_status)
@@ -116,6 +117,7 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     version: Literal['3.6'] = '3.6'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     infused_elemental_type: DamageElementalType = DamageElementalType.GEO
 
@@ -201,6 +203,7 @@ class SuperlativeSuperstrength(UsageCharactorStatus):
     version: Literal['3.6'] = '3.6'
     usage: int = 1
     max_usage: int = 3
+    icon_type: Literal[IconType.ATK_UP_ROCK] = IconType.ATK_UP_ROCK
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -274,6 +277,7 @@ class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
     decrease_usage_by_damage: bool = False
 
     infused_elemental_type: DamageElementalType = DamageElementalType.GEO
+    icon_type: Literal[IconType.BARRIER] = IconType.BARRIER
 
     damage_increase_usage: int = 1
     damage_increase_usage_max: int = 1
@@ -336,6 +340,7 @@ class Petrification(RoundCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
 GeoCharactorStatus = (

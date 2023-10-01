@@ -6,7 +6,8 @@ from ...modifiable_values import (
     DamageDecreaseValue, DamageElementEnhanceValue, DamageValue
 )
 from ...consts import (
-    DamageElementalType, DamageType, ObjectType, PlayerActionLabels
+    ELEMENT_TO_ENCHANT_ICON, DamageElementalType, DamageType, ElementType, 
+    IconType, ObjectType, PlayerActionLabels
 )
 from ..base import StatusBase
 from ...action import (
@@ -122,6 +123,8 @@ class DefendCharactorStatus(UsageCharactorStatus):
     max_in_one_time: int
     decrease_usage_by_damage: bool = False
 
+    icon_type: Literal[IconType.BARRIER] = IconType.BARRIER
+
     def value_modifier_DAMAGE_DECREASE(
             self, value: DamageDecreaseValue, match: Any,
             mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
@@ -155,6 +158,8 @@ class ShieldCharactorStatus(DefendCharactorStatus):
     usage: int
     max_usage: int
 
+    icon_type: Literal[IconType.SHIELD] = IconType.SHIELD
+
     # papams passing to apply_shield is fixed
     min_damage_to_trigger: int = 0
     max_in_one_time: int = 0
@@ -183,6 +188,17 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
     )
     infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
+    icon_type: Literal[
+        IconType.ELEMENT_ENCHANT_ELEC,
+        IconType.ELEMENT_ENCHANT_FIRE,
+        IconType.ELEMENT_ENCHANT_WATER,
+        IconType.ELEMENT_ENCHANT_ICE,
+        IconType.ELEMENT_ENCHANT_WIND,
+        IconType.ELEMENT_ENCHANT_ROCK,
+        IconType.ELEMENT_ENCHANT_GRASS,
+        IconType.ATK_UP,
+    ] = IconType.ATK_UP
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.infused_elemental_type == DamageElementalType.PHYSICAL:
@@ -194,6 +210,9 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
             assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
             self.infused_elemental_type = DamageElementalType(element)
             self.desc = self.desc.replace('XXX', element)
+        if self.icon_type == IconType.ATK_UP:
+            self.icon_type = ELEMENT_TO_ENCHANT_ICON[
+                ElementType(self.infused_elemental_type.value)]  # type: ignore
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
         self, value: DamageElementEnhanceValue, match: Any,
@@ -234,6 +253,7 @@ class PrepareCharactorStatus(CharactorStatusBase):
 
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def event_handler_SWITCH_CHARACTOR(
         self, event: SwitchCharactorEventArguments, match: Any
@@ -325,6 +345,7 @@ class ReviveCharactorStatus(UsageCharactorStatus):
     )
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.REVIVE] = IconType.REVIVE
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any

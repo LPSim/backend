@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from ...consts import SkillType
+from ...consts import IconType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus, ShieldCharactorStatus
@@ -20,6 +20,7 @@ class VermillionHereafter(RoundCharactorStatus):
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

@@ -13,8 +13,8 @@ from ...event import (
 )
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, ObjectPositionType,
-    SkillType
+    DamageElementalType, DamageType, DieColor, ElementType, IconType, 
+    ObjectPositionType, SkillType
 )
 
 from ...modifiable_values import (
@@ -127,6 +127,7 @@ class ChakraDesiderata(CharactorStatusBase):
     version: Literal['3.7'] = '3.7'
     usage: int = 0
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
@@ -178,6 +179,7 @@ class TheShrinesSacredShade(RoundCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
@@ -218,6 +220,7 @@ class TheWolfWithin(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
@@ -255,7 +258,7 @@ class TheWolfWithin(RoundCharactorStatus):
         )]
 
 
-class TidecallerSurfEmbrace(PrepareCharactorStatus, ShieldCharactorStatus):
+class TidecallerSurfEmbrace(ShieldCharactorStatus, PrepareCharactorStatus):
     name: Literal['Tidecaller: Surf Embrace'] = 'Tidecaller: Surf Embrace'
     desc: str = (
         'The next time this character acts, they will immediately use the '
@@ -287,6 +290,7 @@ class CrowfeatherCover(UsageCharactorStatus):
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -347,6 +351,7 @@ class PactswornPathclearer(ElementalInfusionCharactorStatus):
     usage: int = 0
     max_usage: int = 999
     infused_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
         self, value: DamageElementEnhanceValue, match: Any, 
@@ -413,6 +418,7 @@ class Conductive(CharactorStatusBase):
     version: Literal['4.0'] = '4.0'
     usage: int = 2
     max_usage: int = 4
+    icon_type: Literal[IconType.DEBUFF] = IconType.DEBUFF
 
     def renew(self, new_status: 'Conductive'):
         """

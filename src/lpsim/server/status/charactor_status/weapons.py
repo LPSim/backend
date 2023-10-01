@@ -4,7 +4,7 @@ from ...action import RemoveObjectAction
 
 from ...event import MoveObjectEventArguments, UseSkillEventArguments
 
-from ...consts import CostLabels, ObjectPositionType
+from ...consts import CostLabels, IconType, ObjectPositionType
 
 from ...modifiable_values import CostValue
 from .base import RoundCharactorStatus, ShieldCharactorStatus
@@ -40,6 +40,7 @@ class KingsSquire(RoundCharactorStatus):
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']

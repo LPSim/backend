@@ -15,7 +15,7 @@ from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 from ...struct import Cost
 from ...consts import (
     ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, 
-    DamageElementalType, DamageType, DieColor, ObjectPositionType
+    DamageElementalType, DamageType, DieColor, IconType, ObjectPositionType
 )
 from .base import (
     RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
@@ -36,6 +36,7 @@ class LiyueHarborWharf(LocationBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -65,6 +66,7 @@ class KnightsOfFavoniusLibrary(LocationBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0
+    icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def play(self, match: Any) -> List[GenerateRerollDiceRequestAction]:
         return [GenerateRerollDiceRequestAction(
@@ -94,6 +96,7 @@ class JadeChamber(LocationBase):
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
     usage: int = 0
+    icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def value_modifier_INITIAL_DICE_COLOR(
             self, value: InitialDiceColorValue, 
@@ -155,6 +158,7 @@ class WangshuInn(LocationBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -204,6 +208,7 @@ class FavoniusCathedral(LocationBase):
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -245,6 +250,7 @@ class Tenshukaku(LocationBase):
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
+    icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -282,6 +288,7 @@ class GrandNarukamiShrine(LocationBase):
     version: Literal['3.6'] = '3.6'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 3
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def play(self, match: Any) -> List[Actions]:
         """
@@ -317,6 +324,7 @@ class SangonomiyaShrine(LocationBase):
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -418,6 +426,7 @@ class Vanarana(LocationBase):
     cost: Cost = Cost()
     usage: int = 0
     colors: List[DieColor] = []
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def play(self, match: Any) -> List[Actions]:
         self.usage = 0
@@ -507,6 +516,7 @@ class ChinjuForest(LocationBase):
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -545,6 +555,7 @@ class GoldenHouse(LocationBase, UsageWithRoundRestrictionSupportBase):
     cost: Cost = Cost()
     usage: int = 2
     max_usage_one_round: int = 1
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     card_cost_label: int = CostLabels.WEAPON.value
     decrease_threshold: int = 3
@@ -591,6 +602,7 @@ class GandharvaVille(LocationBase, UsageWithRoundRestrictionSupportBase):
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
     max_usage_one_round: int = 1
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any

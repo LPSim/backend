@@ -3,7 +3,8 @@ from typing import Any, List, Literal
 from ...struct import Cost
 
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, ObjectPositionType, SkillType
+    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
+    SkillType
 )
 
 from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
@@ -22,6 +23,7 @@ class Satiated(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.FOOD] = IconType.FOOD
 
 
 class JueyunGuoba(RoundCharactorStatus, UsageCharactorStatus):
@@ -33,6 +35,7 @@ class JueyunGuoba(RoundCharactorStatus, UsageCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -69,6 +72,7 @@ class AdeptusTemptation(RoundCharactorStatus, UsageCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -96,7 +100,7 @@ class AdeptusTemptation(RoundCharactorStatus, UsageCharactorStatus):
         return value
 
 
-class LotusFlowerCrisp(RoundCharactorStatus, DefendCharactorStatus):
+class LotusFlowerCrisp(DefendCharactorStatus, RoundCharactorStatus):
     name: Literal['Lotus Flower Crisp'] = 'Lotus Flower Crisp'
     desc: str = (
         "During this Round, the target character takes -3 DMG the next time."
@@ -117,6 +121,7 @@ class NorthernSmokedChicken(RoundCharactorStatus, UsageCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -153,6 +158,7 @@ class MushroomPizza(RoundCharactorStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.HEAL] = IconType.HEAL
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -184,6 +190,7 @@ class MintyMeatRolls(RoundCharactorStatus):
     version: Literal['3.4'] = '3.4'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     decrease_usage: int = 3
 
@@ -229,6 +236,7 @@ class SashiMiPlatter(RoundCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -265,6 +273,7 @@ class TandooriRoastChicken(RoundCharactorStatus):
         "deal +2 DMG."
     )
     version: Literal['3.7'] = '3.7'
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     usage: int = 1
     max_usage: int = 1
@@ -297,7 +306,7 @@ class TandooriRoastChicken(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class ButterCrab(RoundCharactorStatus, DefendCharactorStatus):
+class ButterCrab(DefendCharactorStatus, RoundCharactorStatus):
     name: Literal['Butter Crab'] = 'Butter Crab'
     desc: str = (
         "During this Round, the target character takes -2 DMG the next time."

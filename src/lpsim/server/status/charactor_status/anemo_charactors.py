@@ -9,8 +9,9 @@ from ...event import (
     SkillEndEventArguments
 )
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DieColor, 
-    ElementType, ElementalReactionType, ObjectPositionType, SkillType
+    ELEMENT_TO_DAMAGE_TYPE, ELEMENT_TO_ENCHANT_ICON, CostLabels, 
+    DamageElementalType, DieColor, ElementType, ElementalReactionType, 
+    IconType, ObjectPositionType, SkillType
 )
 from .base import (
     CharactorStatusBase, ElementalInfusionCharactorStatus, RoundCharactorStatus
@@ -40,6 +41,13 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
     usage: int = 1
     max_usage: int = 1
     newly_created: bool = True
+    icon_type: Literal[
+        IconType.ELEMENT_ENCHANT_ELEC,
+        IconType.ELEMENT_ENCHANT_FIRE,
+        IconType.ELEMENT_ENCHANT_WATER,
+        IconType.ELEMENT_ENCHANT_ICE,
+        IconType.ELEMENT_ENCHANT_WIND
+    ] = IconType.ELEMENT_ENCHANT_WIND
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """
@@ -122,6 +130,8 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
             )  # type: ignore
             self.desc = self.desc.replace('_ELEMENT_', 
                                           self.element.name.capitalize())
+            self.icon_type = ELEMENT_TO_ENCHANT_ICON[
+                self.element]  # type: ignore
         else:
             assert skill_used, 'kazuha elemental skill damage not found'
             if self.element == ElementType.NONE:
@@ -170,6 +180,7 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.ANEMO
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
     switch_cost_decrease_usage: int = 1
     switch_cost_decrease_max_usage: int = 1
 
@@ -260,6 +271,7 @@ class Windfavored(CharactorStatusBase):
     version: Literal['4.1'] = '4.1'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any

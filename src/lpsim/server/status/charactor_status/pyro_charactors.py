@@ -11,7 +11,8 @@ from ...event import (
 )
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ObjectPositionType, SkillType
+    DamageElementalType, DamageType, DieColor, IconType, ObjectPositionType, 
+    SkillType
 )
 
 from ...modifiable_values import (
@@ -85,6 +86,7 @@ class ExplosiveSpark(UsageCharactorStatus):
     version: Literal['3.4'] = '3.4'
     usage: int
     max_usage: int
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -145,6 +147,7 @@ class NiwabiEnshou(ElementalInfusionCharactorStatus, UsageCharactorStatus):
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
+    icon_type: Literal[IconType.ATK_UP_FIRE] = IconType.ATK_UP_FIRE
 
     effect_triggered: bool = False
 
@@ -232,6 +235,7 @@ class Brilliance(RoundCharactorStatus):
 
     decrease_cost_usage: int = 1
     decrease_cost_max_usage: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def renew(self, new_status: 'Brilliance') -> None:
         self.decrease_cost_usage = max(new_status.decrease_cost_usage, 
@@ -289,6 +293,7 @@ class ScarletSeal(UsageCharactorStatus):
     version: Literal['3.8'] = '3.8'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -320,6 +325,7 @@ class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
@@ -377,6 +383,7 @@ class BloodBlossom(UsageCharactorStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.DOT] = IconType.DOT
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any

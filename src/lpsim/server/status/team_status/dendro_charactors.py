@@ -11,7 +11,7 @@ from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, ElementType, ElementalReactionType, 
-    ObjectPositionType
+    IconType, ObjectPositionType
 )
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
@@ -27,6 +27,7 @@ class ShrineOfMaya(RoundTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any
@@ -106,6 +107,7 @@ class FloralSidewinder(RoundTeamStatus):
     usage: int = 1
     max_usage: int = 1
     dendro_reaction_made: bool = False
+    icon_type: Literal[IconType.ATK_SELF] = IconType.ATK_SELF
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Any
@@ -176,6 +178,7 @@ class AdeptalLegacy(SwitchActionTeamStatus):
     version: Literal['4.1'] = '4.1'
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def _action(self, match: Any) -> List[Actions]:
         """

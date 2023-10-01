@@ -6,7 +6,7 @@ from ...struct import Cost
 
 from ...consts import (
     CostLabels, DamageElementalType, DamageType, DieColor, ElementType, 
-    ElementalReactionType, ObjectPositionType, PlayerActionLabels
+    ElementalReactionType, IconType, ObjectPositionType, PlayerActionLabels
 )
 
 from ...action import (
@@ -38,6 +38,7 @@ class ChangingShifts(UsageTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def value_modifier_COST(
         self, value: CostValue, match: Any,
@@ -74,6 +75,7 @@ class IHaventLostYet(RoundTeamStatus):
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.DEBUFF] = IconType.DEBUFF
 
 
 class FreshWindOfFreedom(RoundTeamStatus):
@@ -87,6 +89,7 @@ class FreshWindOfFreedom(RoundTeamStatus):
     usage: int = 1
     max_usage: int = 1
     activated: bool = False
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def event_handler_CHARACTOR_DEFEATED(
         self, event: CharactorDefeatedEventArguments, match: Any
@@ -141,6 +144,7 @@ class LeaveItToMe(UsageTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def value_modifier_COMBAT_ACTION(
         self, value: CombatActionValue, match: Any,
@@ -199,6 +203,7 @@ class EnduringRock(RoundTeamStatus):
     usage: int = 1
     max_usage: int = 1
     did_geo_attack: bool = False
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -256,6 +261,7 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -296,6 +302,7 @@ class SprawlingGreenery(RoundTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -340,6 +347,7 @@ class ReviveOnCooldown(RoundTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.FOOD] = IconType.FOOD
 
 
 class StoneAndContracts(TeamStatusBase):
@@ -351,6 +359,7 @@ class StoneAndContracts(TeamStatusBase):
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def event_handler_ROUND_PREPARE(
         self, event: Any, match: Any
@@ -380,6 +389,7 @@ class AncientCourtyard(RoundTeamStatus):
     version: Literal['3.8'] = '3.8'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -430,6 +440,7 @@ class FatuiAmbusher(UsageTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     activated_this_round: bool = False
 
@@ -500,6 +511,7 @@ class RhythmOfTheGreatDream(UsageTeamStatus):
     version: Literal['3.8'] = '3.8'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -541,6 +553,7 @@ class WhenTheCraneReturned(UsageTeamStatus):
     usage: int = 1
     max_usage: int = 1
     decrease_usage_when_trigger: bool = True
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
@@ -591,6 +604,7 @@ class Pankration(TeamStatusBase):
     cost: Cost = Cost()
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
     def event_handler_DECLARE_ROUND_END(
         self, event: DeclareRoundEndEventArguments, match: Any

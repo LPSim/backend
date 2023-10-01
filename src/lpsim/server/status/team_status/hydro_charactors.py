@@ -9,7 +9,9 @@ from ...struct import Cost, ObjectPosition
 
 from ...action import Actions, MakeDamageAction
 
-from ...consts import DamageElementalType, DamageType, SkillType, WeaponType
+from ...consts import (
+    DamageElementalType, DamageType, IconType, SkillType, WeaponType
+)
 
 from ...modifiable_values import (
     DamageElementEnhanceValue, DamageIncreaseValue, DamageMultiplyValue, 
@@ -33,6 +35,7 @@ class IllusoryBubble(UsageTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def value_modifier_DAMAGE_MULTIPLY(
         self, value: DamageMultiplyValue, match: Any,
@@ -59,6 +62,7 @@ class RainbowBladework(UsageTeamStatus, ExtraAttackTeamStatus):
     version: Literal['3.6'] = '3.6'
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = SkillType.NORMAL_ATTACK
     damage: int = 1
@@ -93,6 +97,7 @@ class PrayerOfTheCrimsonCrown(ElementalInfusionTeamStatus,
     version: Literal['3.8'] = '3.8'
     usage: int = 2
     max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     switch_damage_usage: int = 1
     switch_damage_max_usage: int = 1

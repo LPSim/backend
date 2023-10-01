@@ -7,7 +7,8 @@ from ...event import (
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType, WeaponType
+    DamageElementalType, DamageType, IconType, ObjectPositionType, SkillType, 
+    WeaponType
 )
 
 from ...modifiable_values import (
@@ -27,6 +28,7 @@ class Icicle(SwitchActionTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def _action(self, match: Any) -> List[MakeDamageAction]:
         """
@@ -59,6 +61,7 @@ class IcyQuill(UsageTeamStatus):
     version: Literal['3.7'] = '3.7'
     usage: int = 3
     max_usage: int = 3
+    icon_type: Literal[IconType.ATK_UP_ICE] = IconType.ATK_UP_ICE
 
     talent_usage: int = 0
     talent_max_usage: int = 0
@@ -215,6 +218,7 @@ class FortunePreservingTalisman(UsageTeamStatus):
     usage: int = 3
     max_usage: int = 3
     newly_created: bool = True
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def renew(self, new_status: 'FortunePreservingTalisman') -> None:
         """

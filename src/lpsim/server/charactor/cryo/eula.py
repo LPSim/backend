@@ -12,7 +12,7 @@ from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    WeaponType
+    IconType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, 
@@ -41,6 +41,7 @@ class LightfallSword(SummonBase):
     max_usage: int = 999
     damage: int = 3
     damage_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
+    icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
