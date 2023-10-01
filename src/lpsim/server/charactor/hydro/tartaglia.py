@@ -2,7 +2,9 @@ from typing import Any, List, Literal
 
 
 from ...modifiable_values import DamageValue
-from ...event import GameStartEventArguments, RoundEndEventArguments
+from ...event import (
+    GameStartEventArguments, RoundEndEventArguments, SkillEndEventArguments
+)
 from ...action import Actions, CreateObjectAction, MakeDamageAction
 from ...struct import Cost, ObjectPosition
 
@@ -22,6 +24,7 @@ from ..charactor_base import (
 class FoulLegacyRagingTide(ElementalSkillBase):
     name: Literal['Foul Legacy: Raging Tide'] = 'Foul Legacy: Raging Tide'
     desc: str = '''Switches to Melee Stance and deals 2 Hydro DMG.'''
+    version: Literal['3.7'] = '3.7' 
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -48,7 +51,9 @@ class HavocObliteration(ElementalBurstBase):
         'reclaim 2 Energy, and apply Riptide to the target character. '
         'Melee Stance - Light of Obliteration: Deal 7 Hydro DMG.'
     )
+    version: Literal['3.7'] = '3.7' 
     damage: int = 7
+    ranged_damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
@@ -71,16 +76,52 @@ class HavocObliteration(ElementalBurstBase):
         if not (ranged_found or melee_found):
             raise AssertionError('Must be ranged or melee stance')
         if ranged_found:
-            # 4 damage, and reclaim 2 energy
+            # ranged damage, and reclaim 2 energy. riptide will attach in
+            # skill end.
             return [
                 self.charge_self(-3),
-                self.attack_opposite_active(match, 4, 
-                                            DamageElementalType.HYDRO),
+                self.attack_opposite_active(
+                    match, self.ranged_damage, DamageElementalType.HYDRO),
                 self.charge_self(2),
             ]
         else:
             # 7 damage
             return super().get_actions(match)
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When skill end, if is this skill, and in ranged stance, and target
+        is alive, attach riptide to target.
+        """
+        if event.action.position.id != self.id:
+            # not self skill
+            return []
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        ranged_found: bool = False
+        for status in charactor.status:
+            if status.name == 'Ranged Stance':
+                ranged_found = True
+                break
+        if not ranged_found:
+            # not ranged stance
+            return []
+        target = match.player_tables[1 - self.position.player_idx].charactors[
+            event.action.target_position.charactor_idx]
+        if target.is_defeated:
+            # target is defeated
+            return []
+        # attach riptide to target
+        return [
+            CreateObjectAction(
+                object_name = 'Riptide',
+                object_position = event.action.target_position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS),
+                object_arguments = { 'version': self.version }
+            )
+        ]
 
 
 class TideWithholder(PassiveSkillBase):
@@ -95,6 +136,7 @@ class TideWithholder(PassiveSkillBase):
         'Stance. Once the Melee Stance attached to the character ends, '
         'reapplies Ranged Stance.'
     )
+    version: Literal['3.7'] = '3.7'
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -111,7 +153,7 @@ class TideWithholder(PassiveSkillBase):
                     area = ObjectPositionType.SYSTEM,
                     id = 0
                 ),
-                object_arguments = {}
+                object_arguments = { 'version': self.version }
             )
         ]
 

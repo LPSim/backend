@@ -173,7 +173,7 @@ class RiptideEventHandler(SystemEventHandlerBase):
         'will attach real Riptide for active charactor, and all virtual '
         'Riptide will be removed.'
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.1'] = '4.1'
     usage: int = 1
     max_usage: int = 1
     has_riptide: List[ObjectPosition] = []
@@ -218,11 +218,15 @@ class RiptideEventHandler(SystemEventHandlerBase):
                 charactor_idx = match.player_tables[pidx].active_charactor_idx,
                 id = 0
             ),
-            object_arguments = {}
+            object_arguments = { 'version': self.version }
         )]
+
+
+class RiptideEventHandler_3_7(RiptideEventHandler):
+    version: Literal['3.7']
 
 
 SystemEventHandlers = (
     SystemEventHandlerBase | SystemEventHandler | OmnipotentGuideEventHandler
-    | RiptideEventHandler
+    | RiptideEventHandler | RiptideEventHandler_3_7
 )

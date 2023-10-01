@@ -2,8 +2,8 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 
@@ -195,7 +195,9 @@ def test_tartaglia_2():
             "skill 0 0 1 2",
             "end",
             "TEST 1 10 3 10 10 10 8 7 10 10 10",
-            "end"
+            "end",
+            "end",
+            "choose 2"
         ],
         [
             "sw_card",
@@ -204,6 +206,12 @@ def test_tartaglia_2():
             "card 0 0 1 2 3 4",
             "skill 0 0 1 2",
             "skill 0 0 1 2",
+            "end",
+            "end",
+            "skill 2 15 14 13",
+            "skill 0 12 11 10",
+            "skill 2 9 8 7",
+            "TEST 2 p0c2 usage 2",
             "end"
         ]
     ]
@@ -266,6 +274,11 @@ def test_tartaglia_2():
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
+            elif test_id == 2:
+                cmd = cmd.split()
+                pidx, cidx = get_pidx_cidx(cmd)
+                status = match.player_tables[pidx].charactors[cidx].status
+                check_usage(status, cmd[4:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -279,3 +292,4 @@ def test_tartaglia_2():
 
 if __name__ == '__main__':
     test_tartaglia()
+    test_tartaglia_2()

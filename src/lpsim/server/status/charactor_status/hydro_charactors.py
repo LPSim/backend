@@ -24,7 +24,7 @@ from .base import (
 )
 
 
-class Riptide(RoundCharactorStatus):
+class Riptide(CharactorStatusBase):
     """
     This status will not deal damages directly, and defeat-regenerate is 
     handled by system handler, which is created by Tartaglia'is passive skill
@@ -43,9 +43,9 @@ class Riptide(RoundCharactorStatus):
         'will attach real Riptide for active charactor, and all virtual '
         'Riptide will be removed.'
     )
-    version: Literal['3.7'] = '3.7'
-    usage: int = 2
-    max_usage: int = 2
+    version: Literal['4.1'] = '4.1'
+    usage: int = 1
+    max_usage: int = 1
 
 
 class RangedStance(CharactorStatusBase):
@@ -88,7 +88,7 @@ class RangedStance(CharactorStatusBase):
             object_name = 'Riptide',
             object_position = event.action.target_position.set_area(
                 ObjectPositionType.CHARACTOR_STATUS),
-            object_arguments = {}
+            object_arguments = { 'version': self.version }
         )]
 
     def event_handler_CREATE_OBJECT(
@@ -124,7 +124,7 @@ class MeleeStance(ElementalInfusionCharactorStatus,
         'Deal 1 Piercing DMG to the next opposing off-field character. '
         '(Twice per Round)'
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -247,7 +247,7 @@ class MeleeStance(ElementalInfusionCharactorStatus,
                     object_name = 'Riptide',
                     object_position = event.action.target_position.set_area(
                         ObjectPositionType.CHARACTOR_STATUS),
-                    object_arguments = {}
+                    object_arguments = { 'version': self.version }
                 )]
 
         return ret
