@@ -1,5 +1,4 @@
-from typing import Any, List, Literal
-from ....action import DrawCardAction
+from typing import Any, Literal
 
 from ....modifiable_values import DamageIncreaseValue
 
@@ -9,7 +8,7 @@ from ....consts import (
     CostLabels, ElementalReactionType, ObjectPositionType, ObjectType, 
     WeaponType
 )
-from .base import RoundEffectWeaponBase, WeaponBase
+from .base import RoundEffectWeaponBase
 
 
 class AThousandFloatingDreams(RoundEffectWeaponBase):
@@ -64,22 +63,4 @@ class AThousandFloatingDreams(RoundEffectWeaponBase):
         return value
 
 
-class FruitOfFulfillment(WeaponBase):
-    name: Literal['Fruit of Fulfillment']
-    desc: str = '''The character deals +1 DMG. When played: Draw 2 cards.'''
-    cost: Cost = Cost(any_dice_number = 3)
-    version: Literal['3.8'] = '3.8'
-    weapon_type: WeaponType = WeaponType.CATALYST
-
-    def equip(self, match: Any) -> List[DrawCardAction]:
-        """
-        draw 2 cards
-        """
-        return [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 2,
-            draw_if_filtered_not_enough = True
-        )]
-
-
-Catalysts = AThousandFloatingDreams | FruitOfFulfillment
+Catalysts = AThousandFloatingDreams | AThousandFloatingDreams

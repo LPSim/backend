@@ -10,12 +10,13 @@ from ...consts import (
 )
 
 from ...action import (
-    Actions, ChangeObjectUsageAction, CreateDiceAction, MakeDamageAction, 
-    RemoveObjectAction, SwitchCharactorAction
+    Actions, ChangeObjectUsageAction, CreateDiceAction, DrawCardAction, 
+    MakeDamageAction, RemoveObjectAction, SwitchCharactorAction
 )
 
 from ...event import (
     CharactorDefeatedEventArguments, ActionEndEventArguments, 
+    DeclareRoundEndEventArguments, 
     MakeDamageEventArguments, MoveObjectEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments
 )
@@ -579,10 +580,40 @@ class WindAndFreedom(WhenTheCraneReturned, RoundTeamStatus):
     decrease_usage_when_trigger: bool = False
 
 
+class Pankration(TeamStatusBase):
+    name: Literal['Pankration!'] = 'Pankration!'
+    desc: str = (
+        'After a player announces the end of their Round first, the other '
+        'player, who has yet to announce the end of their Round, draws 2 '
+        'cards.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost()
+    usage: int = 1
+    max_usage: int = 1
+
+    def event_handler_DECLARE_ROUND_END(
+        self, event: DeclareRoundEndEventArguments, match: Any
+    ) -> List[DrawCardAction | RemoveObjectAction]:
+        """
+        When anyone declears round end, another draw 2 cards and remove self
+        """
+        return [
+            DrawCardAction(
+                player_idx = 1 - event.action.player_idx,
+                number = 2,
+                draw_if_filtered_not_enough = True
+            ),
+            RemoveObjectAction(
+                object_position = self.position,
+            )
+        ]
+
+
 EventCardTeamStatus = (
     FreshWindOfFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
     | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
     | FatuiAmbusher | RhythmOfTheGreatDream | WhenTheCraneReturned
-    | WindAndFreedom
+    | WindAndFreedom | Pankration
 )

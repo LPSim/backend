@@ -6,13 +6,14 @@ from .element_artifacts import ElementArtifacts
 from .millelith import MillelithArtifacts
 from .gamblers import Gamblers
 from .instructors_cap import InstructorsCap
+from .ocean_hued import OceanHuedArtifacts
 
 from .old_version import OldVersionArtifacts
 
 Artifacts = (
     HealBySkillArtifacts | Gamblers | InstructorsCap | ExileArtifacts
     | EmblemOfSeveredFateArtifacts | MillelithArtifacts | VermillionShimenawas 
-    | ElementArtifacts
+    | OceanHuedArtifacts | ElementArtifacts
     # finally old versions
     | OldVersionArtifacts
 )

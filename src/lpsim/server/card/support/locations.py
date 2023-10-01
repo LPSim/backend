@@ -6,7 +6,7 @@ from ...action import (
     GenerateRerollDiceRequestAction, MakeDamageAction, RemoveDiceAction, 
     RemoveObjectAction
 )
-from ...event import MoveObjectEventArguments
+from ...event import MoveObjectEventArguments, PlayerActionStartEventArguments
 from ...modifiable_values import (
     CostValue, DamageValue, InitialDiceColorValue, RerollValue
 )
@@ -581,8 +581,45 @@ class GoldenHouse(LocationBase, UsageWithRoundRestrictionSupportBase):
         return super().event_handler_MOVE_OBJECT(event, match)
 
 
+class GandharvaVille(LocationBase, UsageWithRoundRestrictionSupportBase):
+    name: Literal['Gandharva Ville']
+    desc: str = (
+        'Before you choose your action, when the number of Elemental Dice you '
+        'have is 0: Create 1 Omni Element (once per Round).'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost(same_dice_number = 1)
+    usage: int = 3
+    max_usage_one_round: int = 1
+
+    def event_handler_PLAYER_ACTION_START(
+        self, event: PlayerActionStartEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If self action start, and has usage, and no elemental dice, create
+        one omni element.
+        """
+        if not (
+            self.position.area == ObjectPositionType.SUPPORT
+            and event.player_idx == self.position.player_idx
+            and self.has_usage()
+            and len(match.player_tables[
+                self.position.player_idx].dice.colors) == 0
+        ):
+            # not equipped, or not self, or no usage, or have elemental dice
+            return []
+        # create one omni element
+        self.use()
+        return [CreateDiceAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            color = DieColor.OMNI
+        )]
+
+
 Locations = (
     LiyueHarborWharf | KnightsOfFavoniusLibrary | JadeChamber | DawnWinery 
     | WangshuInn | FavoniusCathedral | Tenshukaku | GrandNarukamiShrine 
     | SangonomiyaShrine | SumeruCity | Vanarana | ChinjuForest | GoldenHouse
+    | GandharvaVille
 )

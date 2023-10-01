@@ -96,4 +96,9 @@ class KingsSquire(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-WeaponCharactorStatus = LithicSpear | KingsSquire
+class Moonpiercer(KingsSquire):
+    name: Literal['Moonpiercer'] = 'Moonpiercer'
+    version: Literal['4.1'] = '4.1'
+
+
+WeaponCharactorStatus = LithicSpear | KingsSquire | Moonpiercer

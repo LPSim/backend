@@ -815,11 +815,52 @@ class WhereIstheUnseenRazor(CardBase):
         ]
 
 
+class Pankration(CardBase):
+    name: Literal['Pankration!']
+    desc: str = (
+        'Can only be played when you have at least 8 Elemental Dice '
+        'remaining, and your opponent has not yet ended their Round: After a '
+        'player announces the end of their Round first, the other player, who '
+        'has yet to announce the end of their Round, draws 2 cards.'
+    )
+    version: Literal['4.1'] = '4.1'
+    cost: Cost = Cost()
+
+    def is_valid(self, match: Any) -> bool:
+        return (
+            len(match.player_tables[self.position.player_idx].dice.colors) >= 8
+            and not match.player_tables[
+                1 - self.position.player_idx].has_round_ended
+        )
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        create status in our side
+        """
+        assert target is None
+        return [
+            CreateObjectAction(
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = -1,
+                ),
+                object_name = self.name,
+                object_arguments = {}
+            )
+        ]
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
     | IHaventLostYet | LeaveItToMe | WhenTheCraneReturned | Starsigns 
     | ClaxsArts | MasterOfWeaponry | BlessingOfTheDivineRelicsInstallation 
     | QuickKnit | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
     | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
-    | WhereIstheUnseenRazor
+    | WhereIstheUnseenRazor | Pankration
 )

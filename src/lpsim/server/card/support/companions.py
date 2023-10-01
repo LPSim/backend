@@ -808,6 +808,9 @@ class Dunyarzad(Tubby, LimitedEffectSupportBase):
 
         If trigger in USE_CARD, when a support replace this card, its limited
         effect will not trigger.
+
+        TODO: find a way to trigger limited effect without causing hand size
+        over maximum.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
@@ -933,8 +936,20 @@ class Setaria(CompanionBase):
         )] + self.check_should_remove()
 
 
+class YayoiNanatsuki(MasterZhang):
+    name: Literal['Yayoi Nanatsuki']
+    desc: str = (
+        'When playing an Artifact card: Spend 1 less Elemental Die. On top of '
+        'that, for each of your characters already equipped with an artifact '
+        'on the field, you spend 1 less Elemental Die. (Once per Round.)'
+    )
+    version: Literal['4.1'] = '4.1'
+    card_cost_label: int = CostLabels.ARTIFACT.value
+
+
 Companions = (
     Paimon | Katheryne | Timaeus | Wagner | ChefMao | Tubby | Timmie | Liben 
     | ChangTheNinth | Ellin | IronTongueTian | LiuSu | Hanachirusato 
     | KidKujirai | Xudong | Dunyarzad | Rana | MasterZhang | Setaria
+    | YayoiNanatsuki
 )
