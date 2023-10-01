@@ -15,7 +15,7 @@ from ...consts import (
 )
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
-from .base import RoundTeamStatus
+from .base import RoundTeamStatus, SwitchActionTeamStatus
 
 
 class ShrineOfMaya(RoundTeamStatus):
@@ -167,4 +167,54 @@ class FloralSidewinder(RoundTeamStatus):
         ] + self.check_should_remove()
 
 
-DendroTeamStatus = ShrineOfMaya | FloralSidewinder
+class AdeptalLegacy(SwitchActionTeamStatus):
+    name: Literal['Adeptal Legacy'] = 'Adeptal Legacy'
+    desc: str = (
+        'After you switch characters: Deal 1 Dendro DMG, heal your active '
+        'character for 1 HP.'
+    )
+    version: Literal['4.1'] = '4.1'
+    usage: int = 3
+    max_usage: int = 3
+
+    def _action(self, match: Any) -> List[Actions]:
+        """
+        attack enemy active charactor and heal our active charactor.
+        """
+        enemy_active_charactor = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        our_active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        return [
+            MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = 1 - self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.DAMAGE,
+                        target_position = enemy_active_charactor.position,
+                        damage = 1,
+                        damage_elemental_type = DamageElementalType.DENDRO,
+                        cost = Cost()
+                    )
+                ]
+            ),
+            MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.HEAL,
+                        target_position = our_active_charactor.position,
+                        damage = -1,
+                        damage_elemental_type = DamageElementalType.HEAL,
+                        cost = Cost()
+                    )
+                ]
+            ),
+        ]
+
+
+DendroTeamStatus = ShrineOfMaya | FloralSidewinder | AdeptalLegacy

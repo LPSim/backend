@@ -9,10 +9,11 @@ from .kaedehara_kazuha import (
 from .sucrose import Sucrose, LargeWindSpirit, ChaoticEntropy
 from .jean import Jean, DandelionField, LandsOfDandelion
 from .xiao import Xiao, ConquerorOfEvilGuardianYaksha
+from .wanderer import Wanderer, GalesOfReverie
 
 
 AnemoCharactors = (
-    Sucrose | Jean | Venti | Xiao | KaedeharaKazuha 
+    Sucrose | Jean | Venti | Xiao | KaedeharaKazuha | Wanderer
     # finally monsters
     | MaguuKenki
 )
@@ -23,7 +24,7 @@ SummonsOfAnemoCharactors = (
 )
 AnemoCharactorTalents = (
     ChaoticEntropy | LandsOfDandelion | EmbraceOfWinds 
-    | ConquerorOfEvilGuardianYaksha | PoeticsOfFuubutsu
+    | ConquerorOfEvilGuardianYaksha | PoeticsOfFuubutsu | GalesOfReverie
     # finally monsters
     | TranscendentAutomaton
 )

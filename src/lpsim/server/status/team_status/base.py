@@ -9,8 +9,9 @@ from ..base import StatusBase
 from ...consts import DamageElementalType, DamageType, ObjectType, SkillType
 from ...action import MakeDamageAction, RemoveObjectAction, Actions
 from ...event import (
-    MakeDamageEventArguments, RoundPrepareEventArguments, 
-    SkillEndEventArguments
+    ChooseCharactorEventArguments, MakeDamageEventArguments, 
+    RoundPrepareEventArguments, SkillEndEventArguments, 
+    SwitchCharactorEventArguments
 )
 
 
@@ -260,3 +261,43 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
         if value.damage_elemental_type == DamageElementalType.PHYSICAL:
             value.damage_elemental_type = self.infused_elemental_type
         return value
+
+
+class SwitchActionTeamStatus(UsageTeamStatus):
+    name: str
+    desc: str
+    version: str
+    usage: int
+    max_usage: int
+
+    def _action(self, match: Any) -> List[Actions]:
+        """
+        action to perform when switch charactor
+        """
+        raise NotImplementedError()
+
+    def _check(self, match: Any, event_player_idx: int) -> List[Actions]:
+        if event_player_idx != self.position.player_idx:
+            # not self switch charactor
+            return []
+        if self.usage <= 0:  # pragma: no cover
+            # no usage
+            return []
+        self.usage -= 1
+        return self._action(match)
+
+    def event_handler_SWITCH_CHARACTOR(
+        self, event: SwitchCharactorEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If self switch charactor, perform attack
+        """
+        return self._check(match, event.action.player_idx)
+
+    def event_handler_CHOOSE_CHARACTOR(
+        self, event: ChooseCharactorEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If self choose charactor (when ally defeated), perform attack
+        """
+        return self._check(match, event.action.player_idx)

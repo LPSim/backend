@@ -12,7 +12,9 @@ from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DieColor, 
     ElementType, ElementalReactionType, ObjectPositionType, SkillType
 )
-from .base import ElementalInfusionCharactorStatus, RoundCharactorStatus
+from .base import (
+    CharactorStatusBase, ElementalInfusionCharactorStatus, RoundCharactorStatus
+)
 
 
 class MidareRanzan(ElementalInfusionCharactorStatus):
@@ -241,4 +243,37 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         return value
 
 
-AnemoCharactorStatus = MidareRanzan | YakshasMask
+class Windfavored(CharactorStatusBase):
+    """
+    As attack target will be changed, we do not contain triggers for this
+    status; instead, maintenance its usage by normal attack. The only exception
+    is remove self, when its usage becomes zero in skill end, we will remove
+    self.
+    """
+    name: Literal['Windfavored'] = 'Windfavored'
+    desc: str = (
+        'When the character to which this is attached performs a Normal '
+        'Attack: DMG dealt +2. If the opponent has characters on standby, '
+        'then this Skill will deal damage to the next opposing character on '
+        'standby instead.'
+    )
+    version: Literal['4.1'] = '4.1'
+    usage: int = 2
+    max_usage: int = 2
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        If out of usage, remove self. We do not remove it when usage changes
+        because talent card should check whether this status exists. As it is
+        triggered after talent card, even its usage becomes zero, talent card
+        will still be triggered. Usage change should only happen when this
+        charactor performs normal attack.
+        """
+        if self.usage <= 0:
+            return [RemoveObjectAction(object_position = self.position)]
+        return []
+
+
+AnemoCharactorStatus = MidareRanzan | YakshasMask | Windfavored

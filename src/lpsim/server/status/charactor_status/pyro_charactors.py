@@ -19,8 +19,8 @@ from ...modifiable_values import (
 )
 from .base import (
     DefendCharactorStatus, ElementalInfusionCharactorStatus, 
-    ReviveCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus, 
-    UsageCharactorStatus
+    PrepareCharactorStatus, ReviveCharactorStatus, RoundCharactorStatus, 
+    ShieldCharactorStatus, UsageCharactorStatus
 )
 
 
@@ -443,8 +443,18 @@ class AegisOfAbyssalFlame(ShieldCharactorStatus):
         return value
 
 
+class IncinerationDrive(PrepareCharactorStatus):
+    name: Literal['Incineration Drive'] = 'Incineration Drive'
+    desc: str = (
+        'Prepare Skill Incineration Drive. '
+    )
+    version: Literal['4.1'] = '4.1'
+    charactor_name: Literal['Dehya'] = 'Dehya'
+    skill_name: Literal['Incineration Drive'] = 'Incineration Drive'
+
+
 PyroCharactorStatus = (
     Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
     | ParamitaPapilio | BloodBlossom | DilucInfusion | FieryRebirth
-    | AegisOfAbyssalFlame
+    | AegisOfAbyssalFlame | IncinerationDrive
 )
