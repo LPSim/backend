@@ -1735,7 +1735,7 @@ def test_dunyazard():
         Dunyarzad*10
         Dunyarzad@3.7*10
         Paimon*10
-        NRE*10
+        NRE@3.3*10
         '''
     )
     match.set_deck([deck, deck])
@@ -1851,7 +1851,7 @@ def test_xudong():
         Adeptus' Temptation*10
         Sweet Madame*10
         Lotus Flower Crisp*10
-        Teyvat Fried Egg*10
+        Teyvat Fried Egg@3.7*10
         # Hanachirusato*10
         # Guardian's Oath*10
         '''

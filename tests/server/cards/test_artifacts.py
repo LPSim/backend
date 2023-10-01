@@ -1241,7 +1241,7 @@ def test_emblem_of_severed_fate():
         default_version:4.1
         charactor:Venti
         charactor:Xiangling
-        charactor:Xingqiu
+        charactor:Xingqiu@4.0
         Sweet Madame*15
         Ornate Kabuto*5
         Ornate Kabuto@3.7*5
