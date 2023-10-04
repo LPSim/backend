@@ -790,7 +790,7 @@ def test_lucky_dog():
             "skill 3 2 1 0",
             "end",
             "skill 2 15 14 13 12 11",
-            "TEST 1 10 3 10 5 6 6",
+            "TEST 1 10 3 10 6 5 6",
             "sw_char 0 10",
             "card 2 0 9 8",
             "skill 1 7 6 5",
@@ -805,14 +805,14 @@ def test_lucky_dog():
             "sw_char 2 5",
             "sw_char 1 4",
             "skill 0 3 2 1",
-            "TEST 1 10 8 10 6 9 9",
+            "TEST 1 10 8 10 7 8 9",
             "end",
             "sw_char 0 15",
-            "TEST 1 10 3 10 3 6 6",
+            "TEST 1 10 3 10 4 5 6",
             "skill 1 14 13 12",
             "sw_char 2 11",
             "skill 0 10 9 8",
-            "TEST 1 9 3 10 5 6 6",
+            "TEST 1 9 3 10 6 5 6",
             "end"
         ]
     ]
@@ -1315,7 +1315,7 @@ if __name__ == '__main__':
     # test_old_gambler()
     # test_millelith()
     # test_instructor()
-    # test_lucky_dog()
+    test_lucky_dog()
     # test_big_elemental_artifacts()
     # test_advanturer_traveling_doctor()
-    test_emblem_of_severed_fate()
+    # test_emblem_of_severed_fate()

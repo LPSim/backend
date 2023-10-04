@@ -97,8 +97,8 @@ class RhodeiaElementSkill(ElementalSkillBase):
         self.desc = self.desc.replace('XX', str(self.summon_number))
 
     def get_next_summon_names(
-        self, match: Any, number: int
-    ) -> List[int]:
+        self, match: Any, occupied: List[int]
+    ) -> int:
         """
         Get next summon names randomly, but fit the rule that try to avoid
         summoning the same type.
@@ -107,27 +107,21 @@ class RhodeiaElementSkill(ElementalSkillBase):
         summon_names = [x.name for x in summons]
         select_idx = []
         for idx, name in enumerate(mimic_names):
-            if name not in summon_names:
+            if name not in summon_names and idx not in occupied:
                 select_idx.append(idx)
-        if len(select_idx) > number:
-            match._random_shuffle(select_idx)
-            select_idx = select_idx[:number]
-        elif len(select_idx) < number:
-            other_idx = [x for x in range(len(mimic_names)) 
-                         if x not in select_idx]
-            match._random_shuffle(other_idx)
-            select_idx += other_idx[:number - len(select_idx)]
-        else:
-            if len(select_idx) > 1:
-                match._random_shuffle(select_idx)
-        return select_idx
+        if len(select_idx) == 0:
+            # all exist, get one from not occupied
+            select_idx = [x for x in range(3) if x not in occupied]
+        return select_idx[int(match._random() * len(select_idx))]
 
     def get_actions(
             self, match: Any) -> List[ChargeAction | CreateObjectAction]:
         """
         create object
         """
-        name_idxs = self.get_next_summon_names(match, self.summon_number)
+        name_idxs = []
+        for _ in range(self.summon_number):
+            name_idxs.append(self.get_next_summon_names(match, name_idxs))
         ret: List[ChargeAction | CreateObjectAction] = []
         for idx in name_idxs:
             ret.append(self.create_summon(mimic_names[idx]))

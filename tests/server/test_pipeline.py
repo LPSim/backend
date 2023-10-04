@@ -564,7 +564,7 @@ def test_summon_over_maximum():
             "sw_char 2 0",
             "skill 1 0 1 2",
             "skill 2 0 1 2 3 4",
-            "TEST 1 rap squi frog oz rap squi oz ref",
+            "TEST 1 frog squi rap oz rap squi oz ref",
             "end"
         ]
     ]
@@ -808,7 +808,7 @@ if __name__ == '__main__':
     # test_copy_speed()
     # test_save_load_same()
     # test_support_over_maximum_and_error_tests()
-    # test_summon_over_maximum()
+    test_summon_over_maximum()
     # test_plunge_mark()
     # test_higher_version_compatible()
-    test_save_history()
+    # test_save_history()

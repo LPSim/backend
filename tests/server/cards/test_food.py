@@ -827,7 +827,7 @@ def test_full_and_tandoori():
             "skill 0 0 1 2",
             "sw_char 0 0",
             "skill 1 0 1 2",
-            "TEST 1 9 5 9 7 4 9",
+            "TEST 1 9 7 9 8 6 10",
             "end"
         ]
     ]
@@ -1488,9 +1488,9 @@ if __name__ == '__main__':
     # test_mond_hash()
     # test_tandoori()
     # test_pizza()
-    # test_full_and_tandoori()
+    test_full_and_tandoori()
     # test_north_chicken()
     # test_north_chicken_2()
-    test_guoba_meatroll_egg_sashimi_crab()
-    test_meatroll()
-    test_guoba_egg()
+    # test_guoba_meatroll_egg_sashimi_crab()
+    # test_meatroll()
+    # test_guoba_egg()

@@ -1103,31 +1103,26 @@ def test_send_off_new_and_old():
             "sw_card",
             "choose 0",
             "TEST 1 no card can use",
-            "skill 2 0 1 2 3 4",
+            "skill 2 15 14 13 12 11",
             "TEST 1 no card can use",
-            "sw_char 1 0",
-            "sw_char 0 0",
-            "sw_char 1 0",
-            "end",
-            "card 2 0 0 1",
-            "TEST 3 p1 usage 2",
+            "sw_char 1 10",
+            "TEST 3 p1 usage 2 3",
+            "card 2 1 9 8",
+            "TEST 3 p1 usage 2 1",
             "end"
         ],
         [
-            "sw_card 0 1 2",
-            "choose 0",
+            "sw_card 2 3 4",
+            "choose 1",
+            "sw_char 0 15",
             "TEST 2 card can use",
-            "sw_char 1 0",
-            "card 0 0 0 1",
-            "skill 0 0 1 2",
-            "skill 0 0 1 2",
-            "card 0 0 0 1",
+            "card 0 0 14 13",
+            "TEST 3 p0 usage 0 2",
+            "card 0 1 12 11",
             "TEST 3 p0 usage 0",
-            "TEST 0 1 0 1",
-            "card 0 0 0 1",
+            "card 2 0 10 9",
             "TEST 3 p0 usage",
-            "end",
-            "skill 2 0 1 2 3 4"
+            "skill 2 8 7 6 5 4"
         ]
     ]
     agent_0 = InteractionAgent(
@@ -1151,13 +1146,10 @@ def test_send_off_new_and_old():
         default_version:4.0
         charactor:Rhodeia of Loch*3
         Send Off*15
+        Send Off@3.3*15
         '''
     )
     # use old version cards
-    old = {'name': 'Send Off', 'version': '3.3'}
-    deck_dict = deck.dict()
-    deck_dict['cards'] += [old] * 15
-    deck = Deck(**deck_dict)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
     match.config.charactor_number = None
