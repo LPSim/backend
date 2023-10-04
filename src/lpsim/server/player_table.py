@@ -47,7 +47,7 @@ class PlayerTable(BaseModel):
         table_deck (List[Cards]): The list of cards in the table deck.
     """
     name: Literal['PlayerTable'] = 'PlayerTable'
-    version: Literal['0.0.1', '0.0.2', '0.0.3']
+    version: Literal['0.0.1', '0.0.2', '0.0.3', '0.0.4']
 
     # player information
     player_name: str = 'Nahida'

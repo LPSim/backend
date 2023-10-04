@@ -184,7 +184,7 @@ def test_fischl_mona_nahida_no_talent():
     agent_1.commands = ['skill 1 0 1 2']
     make_respond(agent_1, match)
     assert match.state == MatchState.ENDED
-    assert match.step()
+    assert not match.step()
 
 
 def test_nahida_talents():
@@ -947,8 +947,9 @@ def test_seed_with_element_application():
 
 
 if __name__ == '__main__':
-    test_fischl_mona_nahida()
-    test_seed_not_first_status()
-    test_talent_enemy_has_other_charactor_status()
-    test_nahida_talents()
-    test_seed_with_element_application()
+    # test_fischl_mona_nahida()
+    # test_seed_not_first_status()
+    # test_talent_enemy_has_other_charactor_status()
+    # test_nahida_talents()
+    # test_seed_with_element_application()
+    test_fischl_mona_nahida_no_talent()

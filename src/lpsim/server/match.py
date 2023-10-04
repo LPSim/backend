@@ -9,7 +9,7 @@ from ..utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
-    ActionBase, Actions,
+    ActionBase, ActionTypes, Actions,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -232,13 +232,14 @@ class Match(BaseModel):
 
     name: Literal['Match'] = 'Match'
 
-    version: Literal['0.0.1', '0.0.2', '0.0.3'] = '0.0.3'
+    version: Literal['0.0.1', '0.0.2', '0.0.3', '0.0.4'] = '0.0.4'
 
     config: MatchConfig = MatchConfig()
 
-    # history logger
+    # history logger and last action recorder
     _history: List['Match'] = PrivateAttr(default_factory = list)
-    enable_history: bool = False
+    history_level: int = 0
+    last_action: ActionBase = ActionBase()
 
     # random state
     random_state: List[Any] = []
@@ -266,6 +267,10 @@ class Match(BaseModel):
     @validator('requests', each_item = True, pre = True)
     def parse_requests(cls, v):
         return get_instance_from_type_unions(Requests, v)
+
+    @validator('last_action', pre = True)
+    def parse_last_action(cls, v):
+        return get_instance_from_type_unions(Actions, v, 'type')
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -298,6 +303,16 @@ class Match(BaseModel):
             # affecting other matches.
             self._random_state = np.random.RandomState()
             self._save_random_state()
+
+    def _save_history(self) -> None:
+        """
+        Save the current match to history.
+        """
+        hist = self._history[:]
+        self._history.clear()
+        copy = self.copy(deep = True)
+        self._history += hist
+        self._history.append(copy)
 
     def set_deck(self, decks: List[Deck]):
         """
@@ -488,8 +503,13 @@ class Match(BaseModel):
         while True:
             # check if game reaches end condition
             if self.is_game_end():
-                self._set_match_state(MatchState.ENDED)
-                return True
+                if self.state != MatchState.ENDED:  # pragma: no cover
+                    self._set_match_state(MatchState.ENDED)
+                    self._save_history()
+                    return True
+                else:
+                    logging.error('Match has already ended.')
+                    return False
             # check if it need response
             elif len(self.requests) != 0:
                 logging.info('There are still requests not responded.')
@@ -502,10 +522,14 @@ class Match(BaseModel):
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
                 for player_idx in range(len(self.player_tables)):
                     self._request_switch_card(player_idx)
+                if self.history_level > 0:
+                    self._save_history()
             elif self.state == MatchState.STARTING_CARD_SWITCH:
                 self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
                 for player_idx in range(len(self.player_tables)):
                     self._request_choose_charactor(player_idx)
+                if self.history_level > 0:
+                    self._save_history()
             elif self.state == MatchState.STARTING_CHOOSE_CHARACTOR:
                 self._set_match_state(MatchState.GAME_START)
                 self._game_start()
@@ -533,13 +557,19 @@ class Match(BaseModel):
             else:
                 raise NotImplementedError(
                     f'Match state {self.state} not implemented.')
-            if self.enable_history:  # pragma: no cover
-                hist = self._history[:]
-                self._history.clear()
-                copy = self.copy(deep = True)
-                self._history += hist
-                self._history.append(copy)
-                # self._history.append(self.copy(deep = True))
+            """
+            Record history.
+            When history level is 0, no information will be recorded.
+            With higher history level, more information will be recorded.
+            By default, all actions have history level 100.
+            """
+            if (
+                self.history_level >= self.last_action.record_level
+                and self.last_action.type != ActionTypes.EMPTY
+            ):  # pragma: no cover
+                self._save_history()
+            # after potential history recording, reset last action
+            self.last_action = ActionBase()
             if len(self.requests) or not run_continuously:
                 if len(self.requests):
                     logging.info(
@@ -754,6 +784,8 @@ class Match(BaseModel):
             self._modify_value(reroll_value, mode = 'REAL')
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
+        if self.history_level > 0:
+            self._save_history()
         # can use GenerateRerollDiceRequest to generate reroll dice request
         # and add RoundStart event if needed
 
@@ -812,6 +844,8 @@ class Match(BaseModel):
         self._request_declare_round_end(self.current_player)
         self._request_use_skill(self.current_player)
         self._request_use_card(self.current_player)
+        if self.history_level > 0:
+            self._save_history()
 
     def _player_action_end(self):
         """
@@ -1208,6 +1242,10 @@ class Match(BaseModel):
                     else:
                         self.requests.pop(num)
                     break
+        # after reroll, should save history so that next reroll will see newest
+        # dice colors.
+        if self.history_level > 0:
+            self._save_history()
 
     def _respond_switch_charactor(self, response: SwitchCharactorResponse):
         """
@@ -1419,6 +1457,7 @@ class Match(BaseModel):
             A list of triggered event arguments. We wrap the returned event 
             arguments of action functions in a list to avoid error from linter.
         """
+        self.last_action = action
         if isinstance(action, ChooseCharactorAction):
             return list(self._action_choose_charactor(action))
         elif isinstance(action, CreateDiceAction):

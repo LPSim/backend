@@ -30,10 +30,10 @@ name.
 _union_dict = {}
 
 
-def _create_new_dict(types):
+def _create_new_dict(types, key: str):
     new_dict = {}
     for type in types.__args__:
-        name_hints = get_type_hints(type)['name']
+        name_hints = get_type_hints(type)[key]
         for name in name_hints.__args__:
             if name not in new_dict:
                 new_dict[name] = type
@@ -41,14 +41,14 @@ def _create_new_dict(types):
     _union_dict[types] = new_dict
 
 
-def get_instance_from_type_unions(types, args):
+def get_instance_from_type_unions(types, args, key = 'name'):
     """
     Get instance from type unions.
     """
     if types not in _union_dict:
         # print('new', args['name'])
-        _create_new_dict(types)
-    target_types = _union_dict[types][args['name']]
+        _create_new_dict(types, key)
+    target_types = _union_dict[types][args[key]]
     return pydantic.parse_obj_as(target_types, args)
 
 

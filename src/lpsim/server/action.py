@@ -63,8 +63,12 @@ class ActionBase(BaseModel):
 
     Attributes:
         action_type (Literal[ActionTypes]): The type of the action.
+        record_level (int): The level of the action to record in match.history,
+            lower level means more important. It should be a positive number.
     """
     type: Literal[ActionTypes.EMPTY] = ActionTypes.EMPTY
+
+    record_level: int = 100
 
 
 class DrawCardAction(ActionBase):
@@ -72,6 +76,7 @@ class DrawCardAction(ActionBase):
     Action for drawing cards.
     """
     type: Literal[ActionTypes.DRAW_CARD] = ActionTypes.DRAW_CARD
+    record_level: int = 10
     player_idx: int
     number: int
     blacklist_names: List[str] = []
@@ -97,6 +102,7 @@ class RemoveCardAction(ActionBase):
     Action for removing cards.
     """
     type: Literal[ActionTypes.REMOVE_CARD] = ActionTypes.REMOVE_CARD
+    record_level: int = 20
     position: ObjectPosition
     remove_type: Literal['USED', 'BURNED']
 
@@ -106,6 +112,7 @@ class ChooseCharactorAction(ActionBase):
     Action for choosing charactors.
     """
     type: Literal[ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
+    record_level: int = 10
     player_idx: int
     charactor_idx: int
 
@@ -172,6 +179,7 @@ class DeclareRoundEndAction(ActionBase):
     """
     type: Literal[ActionTypes.DECLARE_ROUND_END] = \
         ActionTypes.DECLARE_ROUND_END
+    record_level: int = 10
     player_idx: int
 
     @classmethod
@@ -201,6 +209,7 @@ class SwitchCharactorAction(ActionBase):
     Action for switching charactor.
     """
     type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
+    record_level: int = 10
     player_idx: int
     charactor_idx: int
 
@@ -235,6 +244,7 @@ class MakeDamageAction(ActionBase):
         players? (e.g. Kokomi's elemental burst)
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
+    record_level: int = 10
     source_player_idx: int
     damage_value_list: List[DamageValue]
     target_player_idx: int
@@ -259,6 +269,7 @@ class UseSkillAction(ActionBase):
     Action for using skill.
     """
     type: Literal[ActionTypes.USE_SKILL] = ActionTypes.USE_SKILL
+    record_level: int = 10
     skill_position: ObjectPosition
 
 
@@ -267,6 +278,7 @@ class UseCardAction(ActionBase):
     Action for using card.
     """
     type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
+    record_level: int = 10
     card_position: ObjectPosition
     target: ObjectPosition | MultipleObjectPosition | None
 
@@ -339,6 +351,7 @@ class MoveObjectAction(ActionBase):
     """
     type: Literal[ActionTypes.MOVE_OBJECT] = \
         ActionTypes.MOVE_OBJECT
+    record_level: int = 10
     object_position: ObjectPosition
     target_position: ObjectPosition
     # for Master of Weaponry etc. in 4.1, when mark true, reset round usage
@@ -389,6 +402,7 @@ class CharactorReviveAction(ActionBase):
     Action for charactor revive.
     """
     type: Literal[ActionTypes.CHARACTOR_REVIVE] = ActionTypes.CHARACTOR_REVIVE
+    record_level: int = 10
     player_idx: int
     charactor_idx: int
     revive_hp: int
