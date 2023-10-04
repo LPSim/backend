@@ -9,10 +9,13 @@ the game, and the last number is the patch version.
 
 ### Added
 - IconType for Summons, Status, and Supports.
+- Histories by action level, now important actions will generate a history,
+  and frontend can see what happened during two requests.
 
 ### Fixed
 - Icyquill with only one usage will affect multiple times.
 - 1 usage Icyquill with Wanderer will cause wrong damage calculation.
+- I Haven't Lost Yet will activate even if opponent charactor is defeated.
 
 ## [0.4.1.0] - 2023-10-01
 
