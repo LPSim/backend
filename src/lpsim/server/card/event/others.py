@@ -4,7 +4,9 @@ Event cards that not belong to any other categories.
 
 from typing import Any, List, Literal, Tuple
 
-from ...event import RoundPrepareEventArguments
+from ...event import (
+    CharactorDefeatedEventArguments, RoundPrepareEventArguments
+)
 
 from ...consts import (
     DieColor, ObjectPositionType, ObjectType, PlayerActionLabels, SkillType
@@ -12,7 +14,7 @@ from ...consts import (
 
 from ...object_base import CardBase, MultiTargetCardBase
 from ...action import (
-    Actions, ChangeObjectUsageAction, CharactorDefeatedAction, ChargeAction, 
+    Actions, ChangeObjectUsageAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
     GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
     SkillEndAction, SwitchCharactorAction, UseSkillAction
@@ -199,11 +201,13 @@ class IHaventLostYet(CardBase):
         return []
 
     def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedAction, match: Any
+        self, event: CharactorDefeatedEventArguments, match: Any
     ) -> List[Actions]:
         """
         Mark activated.
         """
+        if self.position.player_idx != event.action.player_idx:
+            return []
         self.activated = True
         return []
 
