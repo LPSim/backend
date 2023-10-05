@@ -10,12 +10,12 @@ from ...action import Actions, ChargeAction, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, SkillType, WeaponType
+    DamageElementalType, DieColor, ElementType, FactionType, 
+    SkillType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, PhysicalNormalAttackBase, 
-    PassiveSkillBase, CharactorBase, SkillBase, SkillTalent
+    PassiveSkillBase, CharactorBase, SkillTalent
 )
 
 
@@ -40,18 +40,14 @@ class EyeOfStormyJudgment(AttackerSummonBase):
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
         assert mode == 'REAL'
-        if value.position.player_idx != self.position.player_idx:
-            # not self, not modify
-            return value
-        if value.position.area != ObjectPositionType.SKILL:
-            # not skill, not modify
-            return value
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage, not modify
-            return value
-        skill: SkillBase = match.get_object(value.position)
-        if skill.skill_type != SkillType.ELEMENTAL_BURST:
-            # not burst, not modify
+        if (
+            not value.is_corresponding_charactor_use_damage_skill(
+                self.position, match, SkillType.ELEMENTAL_BURST) 
+            or value.damage_elemental_type == DamageElementalType.PIERCING
+            or value.damage_from_element_reaction
+        ):
+            # not corresponding charactor use elemental burst, or is piercing
+            # damage, or damage is from element reaction
             return value
         # add damage
         value.damage += 1
