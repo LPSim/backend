@@ -112,6 +112,24 @@ class RhodeiaElementSkill(ElementalSkillBase):
         if len(select_idx) == 0:
             # all exist, get one from not occupied
             select_idx = [x for x in range(3) if x not in occupied]
+        if match.config.recreate_mode:
+            """
+            in recreate mode, the number should always be 1. read name from
+            config.
+
+            the key in information is `rhodeia`, name can be one of three
+            summons, and can use short names (i.e. frog, raptor, squirrel).
+            """
+            sname = match.config.random_object_information['rhodeia'].pop(0)
+            s_idx = -1
+            for idx, name in enumerate(mimic_names):
+                if sname.lower() in name.lower():
+                    s_idx = idx
+                    break
+            else:
+                raise AssertionError(f'Unknown summon name {sname}')
+            assert s_idx in select_idx
+            return s_idx
         return select_idx[int(match._random() * len(select_idx))]
 
     def get_actions(

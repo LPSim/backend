@@ -168,6 +168,7 @@ class MatchConfig(BaseModel):
     """
     """
     random_first_player: bool = True
+    player_go_first: Literal[0, 1] = 0
     check_deck_restriction: bool = True
     initial_hand_size: int = 5
     initial_card_draw: int = 2
@@ -181,6 +182,25 @@ class MatchConfig(BaseModel):
     max_dice_number: int = 16
     max_summon_number: int = 4
     max_support_number: int = 4
+
+    """
+    config that used to re-create the match easier. when replay mode is 
+    activated, randomness will be disabled. If self._random or 
+    self._random_shuffle is called, it will raise error.
+    For dice colors, all generated color will be omni and omni dice is able 
+    to be tuned.
+    For cards, card shuffle will be disabled. Drawing card with card 
+    filters, e.g. NRE, will only draw top card, and if top card is not target,
+    it stops drawing. Drawing card with replacement will put the replaced
+    card into the bottom of table deck.
+    For random effects, e.g. Abyss Sommon, or Rhodeia's skill, they will read
+    orders from random_object_information. The key is defined by the skill,
+    usually the skill name, refer to source code to check. The value is a list
+    of created object names, it will check whether the first name of current 
+    list is valid, remove the name and generate corresponding object. 
+    """
+    recreate_mode: bool = False
+    random_object_information: Dict[str, List[str]] = {}
 
     def check_config(self) -> bool:
         """
@@ -294,6 +314,9 @@ class Match(BaseModel):
         return ret
 
     def _init_random_state(self):
+        if self.config.recreate_mode:
+            # no need to init random state
+            return
         if self.random_state:
             random_state = self.random_state[:]
             random_state[1] = np.array(random_state[1], dtype = 'uint32')
@@ -359,6 +382,9 @@ class Match(BaseModel):
         Return a random number ranges 0-1 based on random_state, and save new
         random state.
         """
+        assert not self.config.recreate_mode, (
+            'In recreate mode, random functions should not be called.'
+        )
         ret = self._random_state.random()
         self._save_random_state()
         return ret
@@ -367,6 +393,9 @@ class Match(BaseModel):
         """
         Shuffle the array based on random_state.
         """
+        assert not self.config.recreate_mode, (
+            'In recreate mode, random functions should not be called.'
+        )
         self._random_state.shuffle(array)
         self._save_random_state()
 
@@ -407,10 +436,10 @@ class Match(BaseModel):
         self._set_match_state(MatchState.STARTING)
 
         # choose first player
-        if self.config.random_first_player:
+        if self.config.random_first_player and not self.config.recreate_mode:
             self.current_player = int(self._random() > 0.5)
         else:
-            self.current_player = 0
+            self.current_player = self.config.player_go_first
         logging.info(f'Player {self.current_player} is the first player')
 
         # copy and randomize based on deck
@@ -428,35 +457,51 @@ class Match(BaseModel):
                 charactor_copy.renew_id()
                 player_table.charactors.append(charactor_copy)
             # copy cards
-            arcane_legend_cards = []
-            for card in player_table.player_deck_information.cards:
-                card_copy = card.copy(deep = True)
-                card_copy.position = ObjectPosition(
-                    player_idx = pnum,
-                    area = ObjectPositionType.DECK,
-                    id = card_copy.id
-                )
-                card_copy.renew_id()
-                if card_copy.type == ObjectType.ARCANE:
-                    arcane_legend_cards.append(card_copy)
-                else:
+            if self.config.recreate_mode:
+                # in recreate mode, do not shuffle cards, only copy to table
+                # deck
+                for card in player_table.player_deck_information.cards:
+                    card_copy = card.copy(deep = True)
+                    card_copy.position = ObjectPosition(
+                        player_idx = pnum,
+                        area = ObjectPositionType.DECK,
+                        id = card_copy.id
+                    )
+                    card_copy.renew_id()
                     player_table.table_deck.append(card_copy)
-            if len(arcane_legend_cards):
-                # have arcane legend cards, they must in hand
-                if len(arcane_legend_cards) > self.config.initial_hand_size:
-                    # shuffle arcane legend cards, and put over-maximum
-                    # into table deck
-                    self._random_shuffle(arcane_legend_cards)
-                    player_table.table_deck += arcane_legend_cards[
-                        self.config.initial_hand_size:]
-                    arcane_legend_cards = arcane_legend_cards[
-                        :self.config.initial_hand_size]
-            # shuffle deck
-            self._random_shuffle(player_table.table_deck)
-            # prepend arcane legend cards
-            player_table.table_deck = (
-                arcane_legend_cards + player_table.table_deck
-            )
+            else:
+                arcane_legend_cards = []
+                for card in player_table.player_deck_information.cards:
+                    card_copy = card.copy(deep = True)
+                    card_copy.position = ObjectPosition(
+                        player_idx = pnum,
+                        area = ObjectPositionType.DECK,
+                        id = card_copy.id
+                    )
+                    card_copy.renew_id()
+                    if card_copy.type == ObjectType.ARCANE:
+                        arcane_legend_cards.append(card_copy)
+                    else:
+                        player_table.table_deck.append(card_copy)
+                if len(arcane_legend_cards):
+                    # have arcane legend cards, they must in hand
+                    if (
+                        len(arcane_legend_cards) 
+                        > self.config.initial_hand_size
+                    ):
+                        # shuffle arcane legend cards, and put over-maximum
+                        # into table deck
+                        self._random_shuffle(arcane_legend_cards)
+                        player_table.table_deck += arcane_legend_cards[
+                            self.config.initial_hand_size:]
+                        arcane_legend_cards = arcane_legend_cards[
+                            :self.config.initial_hand_size]
+                # shuffle deck
+                self._random_shuffle(player_table.table_deck)
+                # prepend arcane legend cards
+                player_table.table_deck = (
+                    arcane_legend_cards + player_table.table_deck
+                )
             # add draw initial cards action
             event_args = self._act(DrawCardAction(
                 player_idx = pnum, 
@@ -762,12 +807,10 @@ class Match(BaseModel):
         event_frame = EventFrame(
             events = event_args,
         )
-        while len(event_frame.events):
-            self._trigger_event(event_frame)
-            if len(event_frame.triggered_objects) != 0:
-                self._set_match_state(MatchState.ERROR)  # pragma no cover
-                raise AssertionError(
-                    'Create dice should not trigger objects.')
+        self.empty_frame_assertion(
+            event_frame, 
+            'Create dice in round start should not trigger actions.'
+        )
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
@@ -1071,6 +1114,9 @@ class Match(BaseModel):
             didx for didx, color in enumerate(table.dice.colors)
             if color != target_color and color != DieColor.OMNI
         ]
+        if self.config.recreate_mode:
+            # in recreate mode, all dice can be tuned
+            available_dice_idx = list(range(len(table.dice.colors)))
         available_card_idxs = list(range(len(table.hands)))
         if len(available_dice_idx) and len(available_card_idxs):
             self.requests.append(ElementalTuningRequest(
@@ -1215,24 +1261,20 @@ class Match(BaseModel):
             response
         ))
         event_frame = self._stack_events(list(event_args))
-        while len(event_frame.events):
-            self._trigger_event(event_frame)
-            if len(event_frame.triggered_objects) != 0:
-                self._set_match_state(MatchState.ERROR)  # pragma no cover
-                raise AssertionError('Removing dice in Reroll Dice should not '
-                                     'trigger actions.')
+        self.empty_frame_assertion(
+            event_frame, 
+            'Removing dice in Reroll Dice should not trigger actions.'
+        )
         event_args = self._action_create_dice(CreateDiceAction(
             player_idx = response.player_idx,
             number = len(response.reroll_dice_idxs),
             random = True,
         ))
         event_frame = self._stack_events(list(event_args))
-        while len(event_frame.events):
-            self._trigger_event(event_frame)
-            if len(event_frame.triggered_objects) != 0:
-                self._set_match_state(MatchState.ERROR)  # pragma no cover
-                raise AssertionError('Creating dice in Reroll Dice should not '
-                                     'trigger actions.')
+        self.empty_frame_assertion(
+            event_frame, 
+            'Creating dice in Reroll Dice should not trigger actions.'
+        )
         # modify request
         for num, req in enumerate(self.requests):  # pragma: no branch
             if isinstance(req, RerollDiceRequest):  # pragma: no branch
@@ -1560,11 +1602,16 @@ class Match(BaseModel):
                     draw_cards.append(card)
                 else:
                     blacklist.append(card)
+            assert not self.config.recreate_mode or len(blacklist) == 0, (
+                'Blacklist should be empty in recreate mode. Please check '
+                'card order.'
+            )
             if len(draw_cards) < number and action.draw_if_filtered_not_enough:
                 # draw blacklist cards
                 raise NotImplementedError('Not tested part.')
-                draw_cards += blacklist[:number - len(draw_cards)]
-                blacklist = blacklist[number - len(draw_cards):]
+                length = number - len(draw_cards)
+                draw_cards += blacklist[:length]
+                blacklist = blacklist[length:]
         elif (
             action.blacklist_cost_labels > 0
             or len(action.blacklist_names) > 0
@@ -1581,6 +1628,10 @@ class Match(BaseModel):
                     draw_cards.append(card)
                 else:
                     blacklist.append(card)
+            assert not self.config.recreate_mode or len(blacklist) == 0, (
+                'Blacklist should be empty in recreate mode. Please check '
+                'card order.'
+            )
             if len(draw_cards) < number and action.draw_if_filtered_not_enough:
                 # draw blacklist cards
                 length = number - len(draw_cards)
@@ -1627,7 +1678,7 @@ class Match(BaseModel):
         for card in restore_cards:
             card.position = card.position.set_area(ObjectPositionType.DECK)
         table.table_deck.extend(restore_cards)
-        if self.version >= '0.0.2':
+        if self.version >= '0.0.2' and not self.config.recreate_mode:
             # after 0.0.2, deck is shuffled after restore cards
             self._random_shuffle(table.table_deck)
         logging.info(
@@ -1712,6 +1763,11 @@ class Match(BaseModel):
         color = action.color
         is_random = action.random
         is_different = action.different
+        if self.config.recreate_mode:
+            # in recreate mode, all dice created is OMNI
+            is_random = False
+            is_different = False
+            color = DieColor.OMNI
         if is_random and is_different:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise ValueError('Dice cannot be both random and different.')
@@ -2515,18 +2571,24 @@ class Match(BaseModel):
         self, action: GenerateChooseCharactorRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_choose_charactor(action.player_idx)
+        if self.history_level > 0:
+            self._save_history()
         return []
 
     def _action_generate_reroll_dice_request(
         self, action: GenerateRerollDiceRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_reroll_dice(action.player_idx, action.reroll_times)
+        if self.history_level > 0:
+            self._save_history()
         return []
 
     def _action_generate_switch_card_request(
         self, action: GenerateSwitchCardRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_switch_card(action.player_idx)
+        if self.history_level > 0:
+            self._save_history()
         return []
 
     """

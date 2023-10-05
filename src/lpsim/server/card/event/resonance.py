@@ -600,6 +600,9 @@ class AbyssalSummons(NationResonanceCardBase):
         Create 1 Random Hilichurl Summon!
         """
         assert target is None
+        assert not match.config.recreate_mode, (
+            'Currently not support recreate mode.'
+        )
         hilichurl_names = [
             'Cryo Hilichurl Shooter',
             'Electro Hilichurl Shooter',
@@ -644,6 +647,9 @@ class FatuiConspiracy(NationResonanceCardBase):
         Create 1 Random Status
         """
         assert target is None
+        assert not match.config.recreate_mode, (
+            'Currently not support recreate mode.'
+        )
         fatui_names = [
             'Fatui Ambusher: Cryo Cicin Mage',
             'Fatui Ambusher: Mirror Maiden',
