@@ -789,7 +789,7 @@ def test_save_history():
     match.config.card_number = None
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
-    match.history_level = 10  # record important history
+    match.config.history_level = 10  # record important history
     test_step = 100
     assert match.start()
     match.step()
@@ -822,7 +822,7 @@ def test_save_history_2():
     match.config.card_number = None
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
-    match.history_level = 10  # record important history
+    match.config.history_level = 10  # record important history
     test_step = 10
     assert match.start()
     match.step()

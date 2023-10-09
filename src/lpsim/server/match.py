@@ -1,3 +1,4 @@
+import os
 import logging
 
 import numpy as np
@@ -166,6 +167,7 @@ class MatchState(str, Enum):
 
 class MatchConfig(BaseModel):
     """
+    Basic configs for the match.
     """
     random_first_player: bool = True
     player_go_first: Literal[0, 1] = 0
@@ -182,6 +184,16 @@ class MatchConfig(BaseModel):
     max_dice_number: int = 16
     max_summon_number: int = 4
     max_support_number: int = 4
+
+    """
+    When history level is greater than 0, histories will be recorded when 
+    certain action is done or need response from player. For requests, 
+    histories will be recorded after the request is generated, and history
+    level is positive; for actions, histories will be recorded after the 
+    action is done, and the record_level of the action is lower or equal to
+    history level. 
+    """
+    history_level: int = 0
 
     """
     config that used to re-create the match easier. when replay mode is 
@@ -243,6 +255,9 @@ class MatchConfig(BaseModel):
             logging.error('initial dice number should not be greater than '
                           'max dice number')
             return False
+        if self.history_level < 0:
+            logging.error('history level should not be less than 0')
+            return False
         return True
 
 
@@ -258,7 +273,6 @@ class Match(BaseModel):
 
     # history logger and last action recorder
     _history: List['Match'] = PrivateAttr(default_factory = list)
-    history_level: int = 0
     last_action: ActionBase = ActionBase()
 
     # random state
@@ -279,6 +293,11 @@ class Match(BaseModel):
     event_frames: List[EventFrame] = []
     requests: List[Requests] = []
     winner: int = -1
+
+    # debug params
+    _debug_save_appeared_object_names: bool = PrivateAttr(True)
+    _debug_appeared_object_names_descs: Any = PrivateAttr({})
+    _debug_save_file_name: str = PrivateAttr('')
 
     @validator('event_handlers', each_item = True, pre = True)
     def parse_event_handlers(cls, v):
@@ -336,6 +355,41 @@ class Match(BaseModel):
         copy = self.copy(deep = True)
         self._history += hist
         self._history.append(copy)
+
+    def _debug_save_appeared_object_names_to_file(self):  # pragma: no cover
+        # save appeared object names and descs
+        if self._debug_save_file_name == '':
+            import time
+            self._debug_save_file_name = str(time.time())
+        for obj in self.get_object_list():
+            name = obj.name  # type: ignore
+            type = obj.type
+            desc = ''
+            if hasattr(obj, 'desc'):
+                desc = obj.desc  # type: ignore
+            if type == ObjectType.SKILL:
+                # record skill type and its corresponding charactor
+                charactor_name = self.player_tables[
+                    obj.position.player_idx].charactors[
+                        obj.position.charactor_idx].name
+                skill_type = obj.skill_type  # type: ignore
+                type = f'{type}_{charactor_name}_{skill_type}'
+            elif type == ObjectType.TALENT:
+                # record its corresponding charactor
+                type = f'{type}_{obj.charactor_name}'  # type: ignore
+            if type not in self._debug_appeared_object_names_descs:
+                self._debug_appeared_object_names_descs[type] = {}
+            if name not in self._debug_appeared_object_names_descs[type]:
+                self._debug_appeared_object_names_descs[type][name] = {}
+            self._debug_appeared_object_names_descs[
+                type][name][desc] = 1
+        import json
+        target_folder = 'logs/obj_name_descs'
+        if not os.path.exists(target_folder):
+            os.makedirs(target_folder)
+        open(f'{target_folder}/{self._debug_save_file_name}.txt', 'w').write(
+            json.dumps(self._debug_appeared_object_names_descs, indent = 2)
+        )
 
     def set_deck(self, decks: List[Deck]):
         """
@@ -567,13 +621,13 @@ class Match(BaseModel):
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
                 for player_idx in range(len(self.player_tables)):
                     self._request_switch_card(player_idx)
-                if self.history_level > 0:
+                if self.config.history_level > 0:
                     self._save_history()
             elif self.state == MatchState.STARTING_CARD_SWITCH:
                 self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
                 for player_idx in range(len(self.player_tables)):
                     self._request_choose_charactor(player_idx)
-                if self.history_level > 0:
+                if self.config.history_level > 0:
                     self._save_history()
             elif self.state == MatchState.STARTING_CHOOSE_CHARACTOR:
                 self._set_match_state(MatchState.GAME_START)
@@ -609,12 +663,14 @@ class Match(BaseModel):
             By default, all actions have history level 100.
             """
             if (
-                self.history_level >= self.last_action.record_level
+                self.config.history_level >= self.last_action.record_level
                 and self.last_action.type != ActionTypes.EMPTY
             ):  # pragma: no cover
                 self._save_history()
             # after potential history recording, reset last action
             self.last_action = ActionBase()
+            if self._debug_save_appeared_object_names:  # pragma: no cover
+                self._debug_save_appeared_object_names_to_file()
             if len(self.requests) or not run_continuously:
                 if len(self.requests):
                     logging.info(
@@ -827,7 +883,7 @@ class Match(BaseModel):
             self._modify_value(reroll_value, mode = 'REAL')
             self._request_reroll_dice(pnum, reroll_value.value)
         self._set_match_state(MatchState.ROUND_ROLL_DICE)
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
         # can use GenerateRerollDiceRequest to generate reroll dice request
         # and add RoundStart event if needed
@@ -887,7 +943,7 @@ class Match(BaseModel):
         self._request_declare_round_end(self.current_player)
         self._request_use_skill(self.current_player)
         self._request_use_card(self.current_player)
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
 
     def _player_action_end(self):
@@ -1286,7 +1342,7 @@ class Match(BaseModel):
                     break
         # after reroll, should save history so that next reroll will see newest
         # dice colors.
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
 
     def _respond_switch_charactor(self, response: SwitchCharactorResponse):
@@ -2571,7 +2627,7 @@ class Match(BaseModel):
         self, action: GenerateChooseCharactorRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_choose_charactor(action.player_idx)
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
         return []
 
@@ -2579,7 +2635,7 @@ class Match(BaseModel):
         self, action: GenerateRerollDiceRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_reroll_dice(action.player_idx, action.reroll_times)
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
         return []
 
@@ -2587,7 +2643,7 @@ class Match(BaseModel):
         self, action: GenerateSwitchCardRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_switch_card(action.player_idx)
-        if self.history_level > 0:
+        if self.config.history_level > 0:
             self._save_history()
         return []
 

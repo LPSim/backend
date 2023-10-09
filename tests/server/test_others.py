@@ -131,6 +131,8 @@ def test_match_config_and_match_errors():
     assert not config.check_config()
     config = MatchConfig(max_support_number = -1)
     assert not config.check_config()
+    config = MatchConfig(history_level = -1)
+    assert not config.check_config()
     match = Match()
     match.config = config
     assert not match.start()
