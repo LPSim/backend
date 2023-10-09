@@ -48,11 +48,9 @@ from .interaction import (
     UseCardRequest, UseCardResponse,
 )
 from .consts import (
-    CostLabels, DieColor, ELEMENT_TO_DIE_COLOR,
-    DAMAGE_TYPE_TO_ELEMENT,
-    ElementalReactionType,
-    ObjectPositionType,
-    ObjectType, PlayerActionLabels, SkillType,
+    CostLabels, DamageElementalType, DamageType, DieColor, 
+    ELEMENT_TO_DIE_COLOR, DAMAGE_TYPE_TO_ELEMENT, ElementalReactionType,
+    ObjectPositionType, ObjectType, PlayerActionLabels, SkillType,
 )
 from .event import (
     CharactorReviveEventArguments,
@@ -271,9 +269,15 @@ class Match(BaseModel):
 
     config: MatchConfig = MatchConfig()
 
-    # history logger and last action recorder
+    '''
+    history logger and last action recorder. action_info is used to record
+    information that generated during the action, e.g. for MakeDamageAction,
+    it will record the detailed damage information, which has applied elemental
+    reaction and value modification.
+    '''
     _history: List['Match'] = PrivateAttr(default_factory = list)
     last_action: ActionBase = ActionBase()
+    action_info: Any = {}
 
     # random state
     random_state: List[Any] = []
@@ -1556,6 +1560,7 @@ class Match(BaseModel):
             arguments of action functions in a list to avoid error from linter.
         """
         self.last_action = action
+        self.action_info = {}
         if isinstance(action, ChooseCharactorAction):
             return list(self._action_choose_charactor(action))
         elif isinstance(action, CreateDiceAction):
@@ -2087,6 +2092,25 @@ class Match(BaseModel):
                 elemental_reaction = elemental_reaction,
                 reacted_elements = reacted_elements,
             ))
+        for info in infos:
+            if info.final_damage.damage_type == DamageType.ELEMENT_APPLICATION:
+                # ignore element application
+                continue
+            target = info.final_damage.target_position
+            pidx = target.player_idx
+            cidx = target.charactor_idx
+            if pidx not in self.action_info:
+                self.action_info[pidx] = {}
+            if cidx not in self.action_info[pidx]:
+                self.action_info[pidx][cidx] = []
+            damage_type = info.final_damage.damage_elemental_type
+            damage = info.final_damage.damage
+            if damage_type == DamageElementalType.HEAL:
+                damage = - damage
+            self.action_info[pidx][cidx].append({
+                'type': damage_type,
+                'damage': damage,
+            })
         make_damage_event = MakeDamageEventArguments(
             action = action,
             damages = infos,
