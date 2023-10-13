@@ -833,6 +833,44 @@ def test_save_history_2():
     assert match.state != MatchState.ERROR
 
 
+def test_generate_unused_cards():
+    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
+    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    match = Match(random_state = get_random_state(100))
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:AnemoMob
+        charactor:PyroMob
+        charactor:DendroMob
+        charactor:ElectroMob
+        charactor:HydroMob
+        charactor:CryoMob
+        charactor:GeoMob
+        Elemental Resonance: Woven Stone
+        Skyward Harp
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = charactor.max_hp = 1
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 10
+    match.config.card_number = None
+    match.config.charactor_number = None
+    match.config.check_deck_restriction = False
+    match.config.history_level = 10  # record important history
+    test_step = 10
+    assert match.start()
+    match.step()
+    for _ in range(test_step):
+        make_respond(agent_0, match, assertion = False)
+        make_respond(agent_1, match, assertion = False)
+    assert len(match._history) > test_step  # should record history
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -844,4 +882,5 @@ if __name__ == '__main__':
     # test_summon_over_maximum()
     # test_plunge_mark()
     # test_higher_version_compatible()
-    test_save_history_2()
+    test_save_history()
+    test_generate_unused_cards()
