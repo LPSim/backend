@@ -253,6 +253,12 @@ class MakeDamageAction(ActionBase):
     do_charactor_change: bool = False
     charactor_change_idx: int = -1
 
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        for damage_value in self.damage_value_list:
+            assert damage_value.position.id == self.damage_value_list[
+                0].position.id, 'all damage should from same source'
+
 
 class ChargeAction(ActionBase):
     """
