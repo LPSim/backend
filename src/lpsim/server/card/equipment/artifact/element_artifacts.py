@@ -24,7 +24,7 @@ class SmallElementalArtifact(RoundEffectArtifactBase):
     ]
 
     desc: str = (
-        'When the character uses a Skill or equips a Talent: Spend 1 less'
+        'When the character uses a Skill or equips a Talent: Spend 1 less '
         'XXX Die. (Once per Round)'
     )
     version: Literal["4.0"] = "4.0"
@@ -124,7 +124,7 @@ class BigElementalArtifact(SmallElementalArtifact):
         "Crimson Witch of Flames",  # pyro
     ]
     desc: str = (
-        'When the character uses a Skill or equips a Talent: Spend 1 less'
+        'When the character uses a Skill or equips a Talent: Spend 1 less '
         'XXX Die. (Once per Round) '
         'Roll Phase: 2 of the starting Elemental Dice you roll are always '
         'guaranteed to be XXX Dice.'
