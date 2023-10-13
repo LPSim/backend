@@ -300,7 +300,7 @@ class Match(BaseModel):
 
     # debug params
     _debug_save_appeared_object_names: bool = PrivateAttr(True)
-    _debug_appeared_object_names_descs: Any = PrivateAttr({})
+    _debug_appeared_object_names_versions: Any = PrivateAttr({})
     _debug_save_file_name: str = PrivateAttr('')
 
     @validator('event_handlers', each_item = True, pre = True)
@@ -368,31 +368,36 @@ class Match(BaseModel):
         for obj in self.get_object_list():
             name = obj.name  # type: ignore
             type = obj.type
+            version = ''
+            if hasattr(obj, 'version'):
+                version = obj.version  # type: ignore
             desc = ''
             if hasattr(obj, 'desc'):
                 desc = obj.desc  # type: ignore
             if type == ObjectType.SKILL:
-                # record skill type and its corresponding charactor
-                charactor_name = self.player_tables[
+                # record skill type and its corresponding charactor and 
+                # charactor's version
+                charactor = self.player_tables[
                     obj.position.player_idx].charactors[
-                        obj.position.charactor_idx].name
+                        obj.position.charactor_idx]
                 skill_type = obj.skill_type  # type: ignore
-                type = f'{type}_{charactor_name}_{skill_type}'
+                type = f'{type}_{charactor.name}_{skill_type}'
+                version = charactor.version
             elif type == ObjectType.TALENT:
                 # record its corresponding charactor
                 type = f'{type}_{obj.charactor_name}'  # type: ignore
-            if type not in self._debug_appeared_object_names_descs:
-                self._debug_appeared_object_names_descs[type] = {}
-            if name not in self._debug_appeared_object_names_descs[type]:
-                self._debug_appeared_object_names_descs[type][name] = {}
-            self._debug_appeared_object_names_descs[
-                type][name][desc] = 1
+            if type not in self._debug_appeared_object_names_versions:
+                self._debug_appeared_object_names_versions[type] = {}
+            if name not in self._debug_appeared_object_names_versions[type]:
+                self._debug_appeared_object_names_versions[type][name] = {}
+            self._debug_appeared_object_names_versions[
+                type][name][version] = desc
         import json
         target_folder = 'logs/obj_name_descs'
         if not os.path.exists(target_folder):
             os.makedirs(target_folder)
         open(f'{target_folder}/{self._debug_save_file_name}.txt', 'w').write(
-            json.dumps(self._debug_appeared_object_names_descs, indent = 2)
+            json.dumps(self._debug_appeared_object_names_versions, indent = 2)
         )
 
     def set_deck(self, decks: List[Deck]):
