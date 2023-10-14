@@ -110,7 +110,7 @@ def get_new_match(seed: Any = None, rich: bool = False):
     match.config.check_deck_restriction = False
     match.config.recreate_mode = True
     match.config.random_object_information = {
-        'rhodeia': ['frog', 'raptor', 'frog', 'squirrel']
+        'rhodeia': ['frog', 'raptor', 'frog', 'squirrel', 'raptor']
     }
     match.config.player_go_first = 0
     if rich:
@@ -167,7 +167,7 @@ async def reset(data: ResetData):
         history = match._history[:]
         if len(history) <= match_state_idx or match_state_idx < 0:
             raise HTTPException(status_code = 404, detail = 'State not found')
-        match = history[match_state_idx]
+        match = history[match_state_idx].copy(deep = True)
         match._history = history[:match_state_idx + 1]
     elif match_state is not None:
         match = match_state
