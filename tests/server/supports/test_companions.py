@@ -1650,7 +1650,7 @@ def test_dunyazard():
             "card 0 3",
             "end",
             "card 0 0",
-            "TEST 3 p0 hand 8",
+            "TEST 3 p0 hand 9",
             "TEST 2 p0 support 0 0 1 2",
             "card 1 2",
             "TEST 3 p0 hand 8",
@@ -1661,7 +1661,7 @@ def test_dunyazard():
             "card 4 3 15 14",
             "card 7 3 13 12",
             "card 3 3",
-            "TEST 3 p0 hand 6",
+            "TEST 3 p0 hand 7",
             "card 0 0 11",
             "TEST 3 p0 hand 7",
             "end",
@@ -2026,6 +2026,124 @@ def test_hanachirusato():
     assert match.state != MatchState.ERROR
 
 
+def test_chefmao_dunyarzad():
+    cmd_records = [
+        [
+            "sw_card 2",
+            "choose 0",
+            "card 2 0 15",
+            "TEST 1 p0 hand 4",
+            "card 1 0",
+            "TEST 1 p0 hand 4",
+            "card 3 0",
+            "TEST 1 p0 hand 3",
+            "skill 0 14 13 12",
+            "end",
+            "end",
+            "card 3 0",
+            "TEST 1 p0 hand 7",
+            "card 5 0",
+            "TEST 1 p0 hand 7",
+            "card 3 3",
+            "TEST 1 p0 hand 7",
+            "card 0 0",
+            "TEST 1 p0 hand 8",
+            "sw_char 1 15",
+            "card 0 0",
+            "TEST 1 p0 hand 7",
+            "end"
+        ],
+        [
+            "sw_card 2 1",
+            "choose 0",
+            "card 1 0 15",
+            "card 3 0 14",
+            "TEST 1 p1 hand 3",
+            "card 1 0",
+            "card 0 0",
+            "TEST 1 p1 hand 3",
+            "skill 0 13 15 14",
+            "end",
+            "end",
+            "card 6 0 15",
+            "card 0 0",
+            "TEST 1 p1 hand 7",
+            "card 4 3",
+            "TEST 1 p1 hand 6",
+            "card 1 0",
+            "TEST 1 p1 hand 6",
+            "skill 0 14 15 13"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Dunyarzad*10
+        Chef Mao*10
+        Timmie*10
+        Sweet Madame*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].strip().split(' ')
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                pidx = int(cmd[2][1])
+                hand = int(cmd[4])
+                assert hand == len(match.player_tables[pidx].hands)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
@@ -2039,6 +2157,7 @@ if __name__ == '__main__':
     # test_katheryne_tian_ellin()
     # test_wagner_timaeus()
     # test_chef_mao()
-    test_dunyazard()
-    test_xudong()
-    test_hanachirusato()
+    # test_dunyazard()
+    # test_xudong()
+    # test_hanachirusato()
+    test_chefmao_dunyarzad()

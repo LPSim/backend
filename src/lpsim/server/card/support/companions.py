@@ -243,11 +243,13 @@ class Tubby(RoundEffectCompanionBase):
     decrease_target: int = CostLabels.LOCATION.value
     decrease_cost: int = 2
 
-    def used(self) -> None:
+    def use(self, mode: Literal['REAL', 'TEST'], result: List[bool]) -> None:
         """
-        When used, decrease usage.
+        When used, check whether need to decrease usage.
         """
-        self.usage -= 1
+        if True in result:
+            if mode == 'REAL':
+                self.usage -= 1
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
@@ -271,9 +273,7 @@ class Tubby(RoundEffectCompanionBase):
         result = [
             value.cost.decrease_cost(None) for _ in range(self.decrease_cost)
         ]
-        if True in result:
-            if mode == 'REAL':
-                self.used()
+        self.use(mode, result)
         return value
 
 
@@ -798,11 +798,13 @@ class Dunyarzad(Tubby, LimitedEffectSupportBase):
             draw_if_filtered_not_enough = False,
         )]
 
-    def used(self) -> None:
+    def use(self, mode: Literal['REAL', 'TEST'], result: List[bool]) -> None:
         """
-        decrease usage, and marked as triggered.
+        decrease usage if needed, and marked as triggered.
         """
-        self.usage -= 1
+        if True in result:
+            if mode == 'REAL':
+                self.usage -= 1
         self.triggered = True
 
     def event_handler_REMOVE_DICE(
