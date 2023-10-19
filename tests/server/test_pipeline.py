@@ -1,5 +1,6 @@
 import time
 import json
+import dictdiffer
 
 import pytest
 from src.lpsim.agents.nothing_agent import NothingAgent
@@ -797,6 +798,26 @@ def test_save_history():
         make_respond(agent_0, match, assertion = False)
         make_respond(agent_1, match, assertion = False)
     assert len(match._history) > test_step  # should record history
+    match_dict = match._history[0].copy(deep = True).dict()
+    starttime = time.time()
+    for patch in match._history_diff[1:]:
+        match_dict = dictdiffer.patch(patch, match_dict)
+    print('patch speed', (time.time() - starttime) / len(match._history_diff))
+    assert match._history[-1].dict() == match_dict
+
+    match_dict = match._history[0].copy(deep = True).dict()
+    starttime = time.time()
+    for patch in match._history_diff[1:]:
+        dictdiffer.patch(patch, match_dict, in_place = True)
+    print('patch speed in-place', 
+          (time.time() - starttime) / len(match._history_diff))
+    assert match._history[-1].dict() == match_dict
+
+    # for prev, next, diff in zip(match._history[:-1], match._history[1:],
+    #                             match._history_diff[1:]):
+    #     assert next.dict() == dictdiffer.patch(diff, prev.dict())
+    #     assert next.dict() == Match(**next.dict()).dict()
+    #     assert next == Match(**dictdiffer.patch(diff, prev.dict()))
     assert match.state != MatchState.ERROR
 
 

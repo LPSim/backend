@@ -5,6 +5,7 @@ import numpy as np
 from typing import Literal, List, Any, Dict
 from enum import Enum
 from pydantic import PrivateAttr, validator
+import dictdiffer
 
 from ..utils import BaseModel, get_instance_from_type_unions
 from .deck import Deck
@@ -208,6 +209,9 @@ class MatchConfig(BaseModel):
     usually the skill name, refer to source code to check. The value is a list
     of created object names, it will check whether the first name of current 
     list is valid, remove the name and generate corresponding object. 
+
+    TODO: As all dice are omni, Liben and Vanarana may have non-reproducible
+    results. Need to fix it.
     """
     recreate_mode: bool = False
     random_object_information: Dict[str, List[str]] = {}
@@ -270,12 +274,15 @@ class Match(BaseModel):
     config: MatchConfig = MatchConfig()
 
     '''
-    history logger and last action recorder. action_info is used to record
-    information that generated during the action, e.g. for MakeDamageAction,
-    it will record the detailed damage information, which has applied elemental
-    reaction and value modification.
+    history logger and last action recorder. 
+    history_diff[i] records the difference between _history[i - 1] and 
+    _history[i], which is used in data transmission.
+    action_info is used to record information that generated during the action,
+    e.g. for MakeDamageAction, it will record the detailed damage information, 
+    which has applied elemental reaction and value modification.
     '''
     _history: List['Match'] = PrivateAttr(default_factory = list)
+    _history_diff: List = PrivateAttr(default_factory = list)
     last_action: ActionBase = ActionBase()
     action_info: Any = {}
 
@@ -355,10 +362,26 @@ class Match(BaseModel):
         Save the current match to history.
         """
         hist = self._history[:]
+        hist_diff = self._history_diff[:]
         self._history.clear()
+        self._history_diff.clear()
         copy = self.copy(deep = True)
         self._history += hist
+        self._history_diff += hist_diff
         self._history.append(copy)
+        if len(self._history) == 1:
+            self._history_diff.append(None)
+        else:
+            self._history_diff.append(list(
+                dictdiffer.diff(self._history[-2].dict(), 
+                                self._history[-1].dict())
+            ))
+            # remove prev values of 'remove' in diff
+            diff = self._history_diff[-1]
+            for d in diff:
+                if d[0] == 'remove':
+                    for i in range(len(d[2])):
+                        d[2][i] = (d[2][i][0], None)
 
     def _debug_save_appeared_object_names_to_file(self):  # pragma: no cover
         # save appeared object names and descs

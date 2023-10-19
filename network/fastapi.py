@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Literal
+import dictdiffer
+from typing import Any, Dict, Literal, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,12 +15,14 @@ logging.basicConfig(level = logging.INFO)
 
 
 default_deck_str = '''
-        default_version:4.0
-        charactor:Fischl
-        charactor:Rhodeia of Loch
-        charactor:Nahida
-        # Mushroom Pizza*30
-        Streaming Surge*30
+        default_version:4.1
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Dunyarzad*10
+        Chef Mao*10
+        Timmie*10
+        Sweet Madame*10
 '''
 deck_str_1 = '''
 charactor:Dehya@4.1
@@ -92,6 +95,25 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*'],
 )
+
+
+def match_full_list_to_diff_list(match_list: List[Dict]) -> List[Dict]:
+    """
+    input list of full match, change match to diff match for match_list[1:].
+    """
+    if len(match_list) == 0:
+        return match_list
+    result = [match_list[0]]
+    for prev_match, next_match in zip(match_list[:-1], match_list[1:]):
+        diff = list(dictdiffer.diff(prev_match['match'], next_match['match']))
+        # TODO: remove unused data for 'remove'?
+        result.append({
+            'idx': next_match['idx'],
+            'match_diff': diff,
+            # 'match': next_match['match'],  # for debug, remove after debug
+            'type': 'DIFF',
+        })
+    return result
 
 
 def get_new_match(seed: Any = None, rich: bool = False):
@@ -180,7 +202,8 @@ async def reset(data: ResetData):
         match = get_new_match(seed = random_seed, rich = rich)
     return {
         'idx': match_state_idx,
-        'match': match.dict()
+        'match': match.dict(),
+        'type': 'FULL',
     }
 
 
@@ -261,14 +284,16 @@ async def get_game_state(
         return JSONResponse([])
     result = [{
         'idx': state_idx,
-        'match': match._history[state_idx].dict()
+        'match': match._history[state_idx].dict(),
+        'type': 'FULL',
     }]
     if mode == 'after':
         result += [{
             'idx': state_idx + 1 + idx,
-            'match': state.dict()
+            'match': state.dict(),
+            'type': 'FULL',
         } for idx, state in enumerate(match._history[state_idx + 1:])]
-    return JSONResponse(result)
+    return JSONResponse(match_full_list_to_diff_list(result))
 
 
 @app.get('/request/{player_idx}')
@@ -323,6 +348,7 @@ async def post_respond(data: RespondData):
     for idx, state in enumerate(match._history[current_history_length:]):
         ret.append({
             'idx': idx + current_history_length,
-            'match': state.dict()
+            'match': state.dict(),
+            'type': 'FULL',
         })
-    return JSONResponse(ret)
+    return JSONResponse(match_full_list_to_diff_list(ret))
