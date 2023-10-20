@@ -25,52 +25,42 @@ default_deck_str = '''
         Sweet Madame*10
 '''
 deck_str_1 = '''
-charactor:Dehya@4.1
-charactor:Noelle@3.3
-charactor:Arataki Itto@3.6
-Dunyarzad@4.1
-Liben@3.3
-The Bell@3.7
-Elemental Resonance: Woven Stone@3.3
+charactor:Fischl@3.3
+charactor:Rhodeia of Loch@3.3
+charactor:Fatui Pyro Agent@3.3
+Tubby@3.3
+Sumeru City@3.7
+Lucky Dog's Silver Circlet@3.3
 Strategize@3.3
-Paimon@3.3
-Chef Mao@4.1
-Mondstadt Hash Brown@3.3
-Gambler's Earrings@3.8
-Dunyarzad@4.1
-Chef Mao@4.1
-Sweet Madame@3.3
-Elemental Resonance: Enduring Rock@3.3
-Strategize@3.3
+Leave It to Me!@3.3
+Paid in Full@3.3
+Sangonomiya Shrine@3.7
 Lotus Flower Crisp@3.3
-Lotus Flower Crisp@3.3
-Elemental Resonance: Enduring Rock@3.3
-Liben@3.3
-Adeptus' Temptation@3.3
-Magic Guide@3.3*11
+Mushroom Pizza@3.3
+Favonius Cathedral@3.3
+Mushroom Pizza@3.3
+Magic Guide@3.3*19
 '''
 deck_str_2 = '''
 charactor:Nahida@3.7
 charactor:Rhodeia of Loch@3.3
 charactor:Fischl@3.3
+Gambler's Earrings@3.8
 Paimon@3.3
 Chef Mao@4.1
+Dunyarzad@4.1
+The Bestest Travel Companion!@3.3
+Paimon@3.3
+Liben@3.3
 Liben@3.3
 Send Off@3.7
-Sweet Madame@3.3
-Gambler's Earrings@3.8
-Dunyarzad@4.1
 Teyvat Fried Egg@4.1
-Toss-Up@3.3
-Lotus Flower Crisp@3.3
-Leave It to Me!@3.3
-Send Off@3.7
 Dunyarzad@4.1
 Sweet Madame@3.3
-Chef Mao@4.1
-Liben@3.3
+I Haven't Lost Yet!@4.0
+Send Off@3.7
 Lotus Flower Crisp@3.3
-Magic Guide@3.3*13
+Magic Guide@3.3*15
 '''
 # deck_str_1 = default_deck_str
 # deck_str_2 = default_deck_str
@@ -97,25 +87,6 @@ app.add_middleware(
 )
 
 
-def match_full_list_to_diff_list(match_list: List[Dict]) -> List[Dict]:
-    """
-    input list of full match, change match to diff match for match_list[1:].
-    """
-    if len(match_list) == 0:
-        return match_list
-    result = [match_list[0]]
-    for prev_match, next_match in zip(match_list[:-1], match_list[1:]):
-        diff = list(dictdiffer.diff(prev_match['match'], next_match['match']))
-        # TODO: remove unused data for 'remove'?
-        result.append({
-            'idx': next_match['idx'],
-            'match_diff': diff,
-            # 'match': next_match['match'],  # for debug, remove after debug
-            'type': 'DIFF',
-        })
-    return result
-
-
 def get_new_match(seed: Any = None, rich: bool = False):
     if seed:
         match: Match = Match(random_state = seed)
@@ -132,9 +103,10 @@ def get_new_match(seed: Any = None, rich: bool = False):
     match.config.check_deck_restriction = False
     match.config.recreate_mode = True
     match.config.random_object_information = {
-        'rhodeia': ['frog', 'raptor', 'frog', 'squirrel', 'raptor']
+        'rhodeia': ['squirrel', 'raptor', 'frog', 'squirrel', 'raptor', 'frog',
+                    'frog', 'squirrel', 'squirrel']
     }
-    match.config.player_go_first = 0
+    match.config.player_go_first = 1
     if rich:
         set_16_omni(match)
     match.start()
@@ -187,10 +159,12 @@ async def reset(data: ResetData):
     match_state_idx = data.match_state_idx
     if match_state_idx is not None:
         history = match._history[:]
+        history_diff = match._history_diff[:]
         if len(history) <= match_state_idx or match_state_idx < 0:
             raise HTTPException(status_code = 404, detail = 'State not found')
         match = history[match_state_idx].copy(deep = True)
         match._history = history[:match_state_idx + 1]
+        match._history_diff = history_diff[:match_state_idx + 1]
     elif match_state is not None:
         match = match_state
         match._save_history()
@@ -290,10 +264,11 @@ async def get_game_state(
     if mode == 'after':
         result += [{
             'idx': state_idx + 1 + idx,
-            'match': state.dict(),
-            'type': 'FULL',
-        } for idx, state in enumerate(match._history[state_idx + 1:])]
-    return JSONResponse(match_full_list_to_diff_list(result))
+            'match_diff': diff,
+            'type': 'DIFF',
+        } for idx, diff in enumerate(match._history_diff[state_idx + 1:])]
+    print('state output length', len(result))
+    return JSONResponse(result)
 
 
 @app.get('/request/{player_idx}')
@@ -345,10 +320,19 @@ async def post_respond(data: RespondData):
             while match.need_respond(agent.player_idx):
                 make_respond(agent, match)
     ret = []
-    for idx, state in enumerate(match._history[current_history_length:]):
-        ret.append({
-            'idx': idx + current_history_length,
-            'match': state.dict(),
-            'type': 'FULL',
-        })
-    return JSONResponse(match_full_list_to_diff_list(ret))
+    for idx, [state, diff] in enumerate(zip(
+            match._history[current_history_length:],
+            match._history_diff[current_history_length:],)):
+        if idx == 0:
+            ret.append({
+                'idx': idx + current_history_length,
+                'match': state.dict(),
+                'type': 'FULL',
+            })
+        else:
+            ret.append({
+                'idx': idx + current_history_length,
+                'match_diff': diff,
+                'type': 'DIFF',
+            })
+    return JSONResponse(ret)
