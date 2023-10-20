@@ -336,30 +336,30 @@ class SangonomiyaShrine(LocationBase):
             # not in support area, do nothing
             return []
         charactors = match.player_tables[self.position.player_idx].charactors
-        ret: List[MakeDamageAction] = []
+        damage_action = MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [],
+        )
         for charactor in charactors:
             if charactor.is_defeated or charactor.damage_taken <= 0:
                 # full hp or defeated, do nothing
                 continue
-            ret.append(MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
-                damage_value_list = [
-                    DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = charactor.position,
-                        damage = -1,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = self.cost.copy()
-                    )
-                ],
-            ))
-        if len(ret) == 0:
+            damage_action.damage_value_list.append(
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = charactor.position,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = self.cost.copy()
+                )
+            )
+        if len(damage_action.damage_value_list) == 0:
             # no charactor to heal, do nothing
             return []
         self.usage -= 1
-        return ret + self.check_should_remove()
+        return [damage_action] + self.check_should_remove()
 
 
 class SumeruCity(RoundEffectLocationBase):
