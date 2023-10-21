@@ -13,17 +13,23 @@ the game, and the last number is the patch version.
   and frontend can see what happened during two requests.
 - Re-create mode is added to Match, in this mode, all randomness is removed,
   which can be used to re-create existing matchs.
+- Add `Match.last_action` and `Match.action_info` to get information for 
+  frontend.
 
 ### Changed
 - Ocean Mimic generation logic of Rhodeia has changed. Both old and new logics
   are valid, but they will generate different Ocean Mimics with the same random
   state, and the number of times that random function called is different. 
+- `Match.history_level` is moved into `Match.config`.
+- Location Sangonomiya will heal all charactors in one action.
 
 ### Fixed
 - Icyquill with only one usage will affect multiple times.
 - 1 usage Icyquill with Wanderer will cause wrong damage calculation.
 - I Haven't Lost Yet will activate even if opponent charactor is defeated.
 - Wrong damage increase with back damage of Eye of Stormy Judgement.
+- Typo in element artifact descriptions.
+- Chef Mao and Dunyarzad's draw-card effect not trigger with zero-cost cards.
 
 ## [0.4.1.0] - 2023-10-01
 
