@@ -185,12 +185,22 @@ class MatchConfig(BaseModel):
     max_support_number: int = 4
 
     """
+    When set True, if it is player turn, the predictions of using skills will
+    be generated. The predictions will be stored in Match.skill_predictions.
+    NOTE: It is slow to generate predictions, normally should not use it in
+    non-frontend tasks.
+    """
+    make_skill_prediction: bool = False
+
+    """
     When history level is greater than 0, histories will be recorded when 
     certain action is done or need response from player. For requests, 
     histories will be recorded after the request is generated, and history
     level is positive; for actions, histories will be recorded after the 
     action is done, and the record_level of the action is lower or equal to
     history level. 
+    NOTE: It is slow to save history, normally should not use it in
+    non-frontend tasks.
     """
     history_level: int = 0
 
@@ -286,6 +296,13 @@ class Match(BaseModel):
     last_action: ActionBase = ActionBase()
     action_info: Any = {}
 
+    # skill prediction results. It will generate in player action request.
+    # check _predict_skill for detailed logics.
+    # if _skill_prediction_mode is True, it will have different behavior in
+    # some functions.
+    _prediction_mode: bool = PrivateAttr(False)
+    skill_predictions: List[Any] = []
+
     # random state
     random_state: List[Any] = []
     _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
@@ -361,6 +378,9 @@ class Match(BaseModel):
         """
         Save the current match to history.
         """
+        if self._prediction_mode:
+            # do not save history in prediction mode
+            return
         hist = self._history[:]
         hist_diff = self._history_diff[:]
         self._history.clear()
@@ -722,13 +742,14 @@ class Match(BaseModel):
 
     def respond(self, response: Responses) -> None:
         """
-        Deal with the response. After start, the match will simulate 
-        until it needs response from player, and `self.requests` will have
-        requests for all players. A player should choose all requests
-        related to him and respond one of them. Different requests will use
+        Deal with the response. When self.requests is not empty, at least one 
+        player should make response with this function based on requests.
+        A player should choose all requests related to him and respond one of 
+        them. Different requests will use
         different respond function to deal with, and remove requests that do
-        not need to respond or have responded. If all requests have been
-        removed, call `self.step()` manually to continue simulation. 
+        not need to respond or have responded. 
+        When respond is done, it will generate event frames. Once there is no
+        request, Call `self.step()` to continue simulation. 
         """
         logging.info(f'Response received: {response}')
         if len(self.requests) == 0:
@@ -975,6 +996,7 @@ class Match(BaseModel):
         self._request_declare_round_end(self.current_player)
         self._request_use_skill(self.current_player)
         self._request_use_card(self.current_player)
+        self._predict_skill(self.current_player)
         if self.config.history_level > 0:
             self._save_history()
 
@@ -1118,6 +1140,62 @@ class Match(BaseModel):
             if func is not None:
                 logging.debug(f'Modify value {value.type.name} for {name}.')
                 value = func(value, self, mode)
+
+    def _predict_skill(self, player_idx: int) -> None:
+        """
+        Predict skill results of a player. If config.make_skill_prediction,
+        it will predict the results when a skill is used, regardless of the
+        skill availability, except for skills that can never be used by player.
+        The predict results are saved in self.skill_predictions, with the 
+        player idx, charactor idx, skill idx, and diff of the match after
+        using the skill.
+        """
+        self.skill_predictions = []
+        if not self.config.make_skill_prediction or self._prediction_mode:
+            # do not predict
+            return
+        # get copy of current match, but except histories.
+        history = self._history
+        history_diff = self._history_diff
+        self._history.clear()
+        self._history_diff.clear()
+        copy = self.copy(deep = True, exclude = {'_history', '_history_diff'})
+        self._history += history
+        self._history_diff += history_diff
+        # disable history logging and skill prediction for copy
+        copy._prediction_mode = True
+        table = copy.player_tables[player_idx]
+        charactor = table.charactors[table.active_charactor_idx]
+        skills = charactor.skills
+        for sidx, skill in enumerate(skills):
+            if not skill.is_valid(self):
+                continue
+            # a valid skill, try to use it
+            one_copy = copy.copy(deep = True)
+            one_copy._respond_use_skill(UseSkillResponse(
+                request = UseSkillRequest(
+                    player_idx = player_idx,
+                    charactor_idx = table.active_charactor_idx,
+                    skill_idx = sidx,
+                    dice_colors = [],
+                    cost = Cost(original_value = Cost()),
+                ),
+                dice_idxs = []
+            ))
+            one_copy.step()
+            # get diff after prediction
+            diff = list(dictdiffer.diff(copy.dict(), one_copy.dict()))
+            # remove prev values of 'remove' in diff
+            for d in diff:
+                if d[0] == 'remove':
+                    for i in range(len(d[2])):
+                        d[2][i] = (d[2][i][0], None)
+            self.skill_predictions.append({
+                'player_idx': player_idx,
+                'charactor_idx': table.active_charactor_idx,
+                'skill_idx': sidx,
+                'diff': diff
+            })
 
     """
     Request functions. To generate specific requests.
@@ -2182,7 +2260,12 @@ class Match(BaseModel):
         charactor.charge += action.charge
         if charactor.charge > charactor.max_charge:
             charactor.charge = charactor.max_charge
-        assert charactor.charge >= 0
+        # charge should not be negative, unless in prediction mode
+        if self._prediction_mode:
+            if charactor.charge < 0:
+                charactor.charge = 0
+        else:
+            assert charactor.charge >= 0
         return [ChargeEventArguments(
             action = action,
             charge_before = old_charge,
