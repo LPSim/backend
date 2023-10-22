@@ -2,7 +2,7 @@
 
 ---
 
-[![Coverage Status](https://coveralls.io/repos/github/zyr17/GITCG/badge.svg?branch=master)](https://coveralls.io/github/zyr17/GITCG?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?style=flat-square&color=blue)](https://pypi.org/project/lpsim/)
 
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
@@ -29,7 +29,7 @@ some functions used in tests. Please clone this repository, install
 requirements and run the server.
 
 When mini server is running, it will open a FastAPI server on `localhost:8000`,
-and you can start a [frontend](https://github.com/zyr17/GITCG-frontend)
+and you can start a [frontend](https://github.com/LPSim/backend-frontend)
 on `localhost:4000` to interact with the server. 
 For details, please refer to FastAPI section and readme of frontend.
 

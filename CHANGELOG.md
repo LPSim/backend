@@ -102,7 +102,7 @@ the game, and the last number is the patch version.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/zyr17/GITCG/compare/v0.4.1.0...HEAD
-[0.4.1.0]: https://github.com/zyr17/GITCG/releases/tag/v0.4.1.0
-[0.4.0.0]: https://github.com/zyr17/GITCG/releases/tag/v0.4.0.0
-[0.1.0]: https://github.com/zyr17/GITCG/releases/tag/v0.1.0
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.0...HEAD
+[0.4.1.0]: https://github.com/LPSim/backend/releases/tag/v0.4.1.0
+[0.4.0.0]: https://github.com/LPSim/backend/releases/tag/v0.4.0.0
+[0.1.0]: https://github.com/LPSim/backend/releases/tag/v0.1.0

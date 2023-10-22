@@ -24,8 +24,8 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/zyr17/GITCG"
-"Bug Tracker" = "https://github.com/zyr17/GITCG/issues"
+"Homepage" = "https://github.com/LPSim/backend"
+"Bug Tracker" = "https://github.com/LPSim/backend/issues"
 
 [tool.setuptools_scm]
 write_to = "src/lpsim/_version.py"
