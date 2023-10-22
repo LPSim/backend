@@ -15,6 +15,10 @@ the game, and the last number is the patch version.
   which can be used to re-create existing matchs.
 - Add `Match.last_action` and `Match.action_info` to get information for 
   frontend.
+- Skill prediction support is added. When it is player's turn, regardless of 
+  the skill is able to use or not (except skill the cannot use at all, e.g. 
+  passive skills and prepare skills), the diff of Match after using a skill 
+  will be calculated and saved in `Match.skill_prediction`.
 
 ### Changed
 - Ocean Mimic generation logic of Rhodeia has changed. Both old and new logics
