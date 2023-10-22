@@ -892,6 +892,134 @@ def test_generate_unused_cards():
     assert match.state != MatchState.ERROR
 
 
+def test_prediction():
+    """
+    3335 + E + talent
+    """
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = [
+            "sw_card",
+            "choose 0",
+            "card 1 0 0 1",
+            "skill 1 0 1 2",
+            "sw_char 1 1",
+            "skill 1 omni omni hydro",
+            "end",
+            "TEST 1 hp 4 8 8",
+            "skill 1 0 1 2",
+            "sw_char 2 0",
+            "skill 2 omni omni dendro omni omni",
+            "TEST 2 hp 0 7 7 and 1 seed for alive",
+            "end",
+            "TEST 3 hp 0 1 5",
+            "skill 1 0 1 2",
+            "card 0 0 0 1 2"
+        ],
+        only_use_command = True
+    )
+    match = Match(random_state = get_random_state())
+    deck = Deck.from_str(
+        """
+        charactor:Fischl
+        charactor:Mona
+        charactor:Nahida
+        Rana*10
+        Wine-Stained Tricorne*10
+        The Seed of Stored Knowledge*10
+        """
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.make_skill_prediction = True
+    match.config.history_level = 10
+    set_16_omni(match)
+    assert match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            make_respond(agent_0, match)
+        elif match.need_respond(1):
+            while True:
+                test_id = get_test_id_from_command(agent_1)
+                if test_id == 1:
+                    check_hp(match, [[4, 8, 8], [10, 10, 10]])
+                elif test_id == 2:
+                    check_hp(match, [[0, 7, 7], [10, 10, 10]])
+                    for charactor in match.player_tables[0].charactors:
+                        if charactor.is_alive:
+                            assert len(charactor.status) == 1
+                            assert charactor.status[
+                                0].name == "Seed of Skandha"
+                        else:
+                            assert len(charactor.status) == 0
+                elif test_id == 3:
+                    check_hp(match, [[0, 1, 5], [10, 10, 10]])
+                else:
+                    break
+            prediction_found = None
+            prediction_all = None
+            if (
+                len(agent_1.commands) > 0 
+                and agent_1.commands[0][:5] == 'skill'
+            ):
+                # is skill, check prediction
+                prediction_all = match.skill_predictions
+                for p in prediction_all:
+                    assert p['player_idx'] == 1
+                    assert (p['charactor_idx'] 
+                            == match.player_tables[1].active_charactor_idx)
+                    skill_idx = int(agent_1.commands[0].split()[1])
+                    if skill_idx == p['skill_idx']:
+                        prediction_found = p
+            if prediction_all is not None:
+                assert prediction_found is not None
+                prediction_found['current_dict'] = match.dict(
+                    exclude = {'skill_predictions'}
+                )
+            make_respond(agent_1, match)
+            after_dict = match.dict(exclude = {'skill_predictions'})
+            if prediction_found is not None:
+                patch_dict = dictdiffer.patch(
+                    prediction_found['diff'],
+                    prediction_found['current_dict']
+                )
+                # remove ids, as newly created ids may differ
+                patch_match = Match(**patch_dict)
+                after_match = Match(**after_dict)
+                remove_ids(patch_match)
+                remove_ids(after_match)
+                for d in (patch_match, after_match):
+                    for tb in d.player_tables:
+                        # remove dice, as prediction will not use dice
+                        tb.dice.colors = []
+                        tb.dice.colors = []
+                        # as dice number may differ, charge may differ
+                        tb.charge_satisfied = False
+                    # remove requests, as prediction will not use requests
+                    d.requests = []
+                    # remove event frames, as it contains ids in some action,
+                    # which is hard to remove
+                    d.event_frames = []
+                assert after_match == patch_match
+        else:
+            raise AssertionError('No need respond.')
+        if len(agent_1.commands) == 0:
+            break
+
+    assert len(agent_1.commands) == 0
+    assert match.round_number == 3
+    check_hp(match, [[0, 0, 1], [10, 10, 10]])
+    assert len(match.player_tables[1].team_status) == 1
+    assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
+    assert match.player_tables[1].team_status[0].usage == 3
+
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -903,5 +1031,6 @@ if __name__ == '__main__':
     # test_summon_over_maximum()
     # test_plunge_mark()
     # test_higher_version_compatible()
-    test_save_history()
-    test_generate_unused_cards()
+    # test_save_history()
+    # test_generate_unused_cards()
+    test_prediction()
