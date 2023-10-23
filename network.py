@@ -1,16 +1,15 @@
 import logging
-import dictdiffer
-from typing import Any, Dict, Literal, List
+from typing import Any, Literal
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from src.lpsim import Match, Deck, MatchState
+from src.lpsim import Match, Deck
 from tests.utils_for_test import get_random_state, set_16_omni, make_respond
 from src.lpsim.agents import NothingAgent, InteractionAgent
 
 
-app = FastAPI()
+HTTPServer = FastAPI()
 logging.basicConfig(level = logging.INFO)
 
 
@@ -74,7 +73,7 @@ decks: list[Deck] = [Deck.from_str(deck_str_1),
 
 
 # Add the CORSMiddleware to the app
-app.add_middleware(
+HTTPServer.add_middleware(
     CORSMiddleware,
     allow_origins=[
         'http://localhost:4000', 'https://localhost:4000', 
@@ -98,6 +97,7 @@ def get_new_match(seed: Any = None, rich: bool = False):
     match.config.card_number = None
     match.config.random_first_player = False
     match.config.history_level = 10
+    match.config.make_skill_prediction = True
     # match.config.initial_hand_size = 20
     # match.config.max_hand_size = 30
     match.config.check_deck_restriction = False
@@ -123,7 +123,7 @@ agent_0 = InteractionAgent(player_idx = 0, only_use_command = True)
 agent_1 = InteractionAgent(player_idx = 1, only_use_command = True)
 
 
-@app.on_event('startup')
+@HTTPServer.on_event('startup')
 async def startup_event():
     global match
     match = get_new_match(seed = get_random_state(), rich = False)
@@ -137,7 +137,7 @@ class ResetData(BaseModel):
     match_state_idx: int | None = None
 
 
-@app.post('/reset')
+@HTTPServer.post('/reset')
 async def reset(data: ResetData):
     """
     Reset the match. 
@@ -181,7 +181,7 @@ async def reset(data: ResetData):
     }
 
 
-@app.get('/deck/{player_idx}')
+@HTTPServer.get('/deck/{player_idx}')
 async def get_deck(player_idx: int):
     """
     get deck of a player.
@@ -191,7 +191,7 @@ async def get_deck(player_idx: int):
     return decks[player_idx].dict()
 
 
-@app.get('/decks')
+@HTTPServer.get('/decks')
 async def get_decks():
     """
     get decks of both players.
@@ -204,7 +204,7 @@ class DeckData(BaseModel):
     player_idx: int
 
 
-@app.post('/deck')
+@HTTPServer.post('/deck')
 async def post_deck(data: DeckData):
     """
     Set deck.
@@ -227,7 +227,7 @@ async def post_deck(data: DeckData):
     decks[player_idx] = deck
 
 
-@app.get('/state/{mode}/{state_idx}/{player_idx}')
+@HTTPServer.get('/state/{mode}/{state_idx}/{player_idx}')
 async def get_game_state(
     mode: Literal['one', 'after'], state_idx: int, player_idx: int
 ):
@@ -271,7 +271,7 @@ async def get_game_state(
     return JSONResponse(result)
 
 
-@app.get('/request/{player_idx}')
+@HTTPServer.get('/request/{player_idx}')
 async def get_request(player_idx: int):
     """
     Return the requests of player_idx. if player_idx is -1, return all 
@@ -290,7 +290,7 @@ class RespondData(BaseModel):
     command: str
 
 
-@app.post('/respond')
+@HTTPServer.post('/respond')
 async def post_respond(data: RespondData):
     player_idx = data.player_idx
     command = data.command
