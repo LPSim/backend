@@ -760,6 +760,8 @@ class Match(BaseModel):
         # check if the request exist
         if not self.check_request_exist(response.request):
             raise ValueError('Request does not exist.')
+        # clear prediction after receiving response
+        self.skill_predictions.clear()
         # call different respond functions based on the type of response
         if isinstance(response, SwitchCharactorResponse):
             self._respond_switch_charactor(response)
