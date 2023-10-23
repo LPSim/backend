@@ -1155,8 +1155,8 @@ class Match(BaseModel):
             # do not predict
             return
         # get copy of current match, but except histories.
-        history = self._history
-        history_diff = self._history_diff
+        history = self._history[:]
+        history_diff = self._history_diff[:]
         self._history.clear()
         self._history_diff.clear()
         copy = self.copy(deep = True, exclude = {'_history', '_history_diff'})
