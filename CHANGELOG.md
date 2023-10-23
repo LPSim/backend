@@ -19,6 +19,7 @@ the game, and the last number is the patch version.
   the skill is able to use or not (except skill the cannot use at all, e.g. 
   passive skills and prepare skills), the diff of Match after using a skill 
   will be calculated and saved in `Match.skill_prediction`.
+- Add submodule `frontend` to match frontend commits with backend commits.
 
 ### Changed
 - Ocean Mimic generation logic of Rhodeia has changed. Both old and new logics
@@ -26,6 +27,7 @@ the game, and the last number is the patch version.
   state, and the number of times that random function called is different. 
 - `Match.history_level` is moved into `Match.config`.
 - Location Sangonomiya will heal all charactors in one action.
+- Move repo from zyr17/GITCG to LPSim/backend.
 
 ### Fixed
 - Icyquill with only one usage will affect multiple times.
