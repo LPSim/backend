@@ -1,4 +1,4 @@
-# Genius Invokation TCG Simulator
+# Lochfolk Prinzessin Simulator (LPSim): A Genius Invokation TCG Simulator
 
 ---
 
