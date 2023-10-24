@@ -7,6 +7,11 @@ the game, and the last number is the patch version.
 
 ## [Unreleased]
 
+## [0.4.1.2] - 2023-10-24
+
+### Fixed
+- Added dictdiff, fastapi and uvicorn into dependencies.
+
 ## [0.4.1.1] - 2023-10-24
 
 ### Added
@@ -107,7 +112,8 @@ the game, and the last number is the patch version.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.1...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.2...HEAD
+[0.4.1.2]: https://github.com/LPSim/backend/releases/tag/v0.4.1.2
 [0.4.1.1]: https://github.com/LPSim/backend/releases/tag/v0.4.1.1
 [0.4.1.0]: https://github.com/LPSim/backend/releases/tag/v0.4.1.0
 [0.4.0.0]: https://github.com/LPSim/backend/releases/tag/v0.4.0.0
