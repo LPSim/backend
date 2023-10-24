@@ -25,23 +25,7 @@ All charactors and cards with their balance changes until 4.1 are done.
 
 ## Usage
 
-This project works with Python 3.10, and requires packages listed in
-`requirements.txt`. To install the packages, use 
-`pip install -r requirements.txt`.
-
-### Mini server
-
-A FastAPI server is provided, which can be used to interact with the match.
-Its requirements are listed in `network/requirements.txt`. Currently FastAPI
-server do not support running on package installation, as it requires
-some functions used in tests. Please clone this repository, install 
-requirements and run the server.
-
-When mini server is running, it will open a FastAPI server on `localhost:8000`,
-and you can start a [frontend](https://github.com/LPSim/backend-frontend)
-on `localhost:4000` to interact with the server. 
-For details, please refer to FastAPI section and readme of frontend.
-
+This project works with Python 3.10 or newer.
 
 ### Installation by pip
 
@@ -58,7 +42,32 @@ on test PyPI.
 
 Clone this repository and install the package by `pip install .`. 
 
-### Start a match
+### HTTP Server
+
+Use FastAPI to provide a HTTP server, which can be used to interact with the
+match. To run a server, use the following command:
+```
+from lpsim.network import HTTPServer
+server = HTTPServer()
+server.run()
+```
+
+It will open a FastAPI server on `localhost:8000`, and accept connections
+from anywhere. When initialize HTTPServer, you can set decks and match configs
+to create a match with specified rules.
+
+To start the match, open a 
+[frontend web page](https://lpsim.zyr17.cn/index.html), change server
+URL on top right (default is `http://localhost:8000`), and follow the 
+instructions on the page to set Deck and start match between two players.
+
+Currently exception
+management is chaos, errors may set game state to ERROR, raise Exception on
+server side, make empty response on agent, return 404/500, or run JS failed on
+frontend. Please open console of frontend and check the error message on both
+sides.
+
+### Start a match non-interactively
 
 #### Define the deck
 
@@ -139,31 +148,6 @@ while not match.is_game_end():
 
 print(f'winner is {match.winner}')
 ```
-
-### FastAPI
-
-Use FastAPI to provide a HTTP server, which can be used to interact with the
-match. To run a server, use the following command:
-```
-from lpsim.network import HTTPServer
-server = HTTPServer()
-server.run()
-```
-
-It will open a FastAPI server on `localhost:8000`, and accept connections
-from anywhere. When initialize HTTPServer, you can set decks and match configs
-to create a match with specified rules.
-
-To start the match, open a 
-[frontend web page](https://lpsim.zyr17.cn/index.html), change server
-URL on top right (default is `http://localhost:8000`), and follow the 
-instructions on the page to set Deck and start match between two players.
-
-Currently exception
-management is chaos, errors may set game state to ERROR, raise Exception on
-server side, make empty response on agent, return 404/500, or run JS failed on
-frontend. Please open console of frontend and check the error message on both
-sides.
 
 ## Details
 
