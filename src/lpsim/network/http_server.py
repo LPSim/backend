@@ -1,3 +1,4 @@
+import json
 from typing import Literal, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -61,6 +62,12 @@ class HTTPServer():
             # no deck input at init, create two empty decks.
             self.decks = [Deck.from_str('''''') for _ in range(2)]
 
+        # attrs to save history. command is saved separately for two players,
+        # and each line contains [idx, command], idx is idx of last history.
+        self.command_history = [[], []]
+        self.match_random_state = self.match.random_state
+        self.start_deck = self.decks[:]
+
         app = self.app
         # Add the CORSMiddleware to the app
         app.add_middleware(
@@ -118,10 +125,26 @@ class HTTPServer():
                 match._history = history[:match_state_idx + 1]
                 match._history_diff = history_diff[:match_state_idx + 1]
                 self.match = match
+                # remove command history that after match_state_idx. No need to
+                # change match random state and start deck.
+                current_cmd_hist = self.command_history[:]
+                self.command_history = [[], []]
+                for source, target in zip(current_cmd_hist,
+                                          self.command_history):
+                    for idx, cmd in source:
+                        if idx >= match_state_idx:
+                            break
+                        target.append([idx, cmd])
             elif match_state is not None:
                 match = match_state
                 match._save_history()
                 match_state_idx = len(match._history) - 1
+                # when reset by match_state, cannot record history with only
+                # match random state, set to None to notify that cannot save.
+                self.command_history = [[], []]
+                self.match_random_state = None
+                self.start_deck = [x.player_deck_information 
+                                   for x in match.player_tables]
             else:
                 self.match = get_new_match(
                     decks = self.decks,
@@ -130,6 +153,10 @@ class HTTPServer():
                 )
                 match_state_idx = 0
                 match = self.match
+                self.command_history = [[], []]
+                self.match_random_state = self.match.random_state
+                self.start_deck = [x.player_deck_information 
+                                   for x in match.player_tables]
             return {
                 'idx': match_state_idx,
                 'match': match.dict(),
@@ -275,6 +302,11 @@ class HTTPServer():
                         assert resp is not None
                         match.respond(resp)
                         match.step()
+            # after success respond, save command into command history
+            self.command_history[player_idx].append([
+                current_history_length - 1, command
+            ])
+            # generate response
             ret = []
             for idx, [state, diff] in enumerate(zip(
                     match._history[current_history_length:],
@@ -293,10 +325,49 @@ class HTTPServer():
                     })
             return JSONResponse(ret)
 
-    def run(self, *argv, host: str = 'localhost', port: int = 8000, **kwargs):
+        @app.get('/log')
+        def get_log():
+            """
+            Return the log of the match. It is encoded in json.
+            """
+            try:
+                log = self.save_log()
+                return json.loads(log)
+            except Exception as e:
+                raise HTTPException(status_code = 500, detail = str(e))
+
+    def run(self, *argv, **kwargs):
         """
-        A wrapper of uvicorn.run.
+        A wrapper of uvicorn.run
         """
-        kwargs['host'] = host
-        kwargs['port'] = port
+        if len(argv):
+            raise ValueError('positional arguments not supported')
         uvicorn.run(self.app, **kwargs)
+
+    def save_log(self, file_path: str | None = None) -> str:
+        """
+        Save the log to specified file and return log str.
+        If file path not specified, only return log str.
+        log str is encoded in json.
+
+        log format:
+            match_random_state: initial random state of match
+            start_deck: start deck string of players
+            command_history: command history of players, different from
+                self.command_history, it do not contain idx of history.
+        """
+        if self.match_random_state is None:
+            raise RuntimeError('Cannot save log when match random state is '
+                               'None. This may caused by reset match by '
+                               'match_state.')
+        data = {
+            'match_random_state': self.match_random_state,
+            'start_deck': [x.dict() for x in self.start_deck],
+            'command_history': [[y[1] for y in x] 
+                                for x in self.command_history],
+        }
+        data_str = json.dumps(data)
+        if file_path is not None:
+            with open(file_path, 'w') as f:
+                f.write(data_str)
+        return data_str
