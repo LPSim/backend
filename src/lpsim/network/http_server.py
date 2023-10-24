@@ -2,7 +2,6 @@ from typing import Literal, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.utils import match_pydantic_error_url
 from pydantic import BaseModel
 import uvicorn
 
@@ -36,6 +35,8 @@ class HTTPServer():
     Simple HTTP server based on HTTP API. No safety protocol and data 
     visibility support now, i.e. everyone can get full information of opponent
     player and system states.
+
+    To check APIs, use /docs or /redoc after run the server.
     """
     def __init__(
         self, 
@@ -55,6 +56,10 @@ class HTTPServer():
                                         only_use_command = True)
         self.agent_1 = InteractionAgent(player_idx = 1, 
                                         only_use_command = True)
+
+        if len(self.decks) == 0:
+            # no deck input at init, create two empty decks.
+            self.decks = [Deck.from_str('''''') for _ in range(2)]
 
         app = self.app
         # Add the CORSMiddleware to the app
@@ -112,15 +117,19 @@ class HTTPServer():
                 match = history[match_state_idx].copy(deep = True)
                 match._history = history[:match_state_idx + 1]
                 match._history_diff = history_diff[:match_state_idx + 1]
+                self.match = match
             elif match_state is not None:
                 match = match_state
                 match._save_history()
+                match_state_idx = len(match._history) - 1
             else:
                 self.match = get_new_match(
                     decks = self.decks,
                     rich_mode = rich,
                     match_config = match_config,
                 )
+                match_state_idx = 0
+                match = self.match
             return {
                 'idx': match_state_idx,
                 'match': match.dict(),

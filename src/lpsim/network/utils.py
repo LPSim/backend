@@ -17,7 +17,8 @@ def get_new_match(
     Generate new match with given conditions.
 
     Args:
-        decks: The decks of players.
+        decks: The decks of players. If its length is zero, will not set decks
+            or start the match.
         seed: The random seed. It should follow the format of numpy.random.
         rich_mode: If True, use rich mode, at round start, players is given
             16 omni dice. Mainly used in code testing.
@@ -36,7 +37,6 @@ def get_new_match(
         match: Match = Match(random_state = seed)
     else:
         match: Match = Match()
-    match.set_deck(decks)
 
     if match_config:
         match.config = match_config
@@ -48,9 +48,11 @@ def get_new_match(
         match.config.initial_dice_number = 16
         match.event_handlers.append(OmnipotentGuideEventHandler())
 
-    start_result = match.start()
-    if not start_result:
-        raise RuntimeError('Match start failed.')
+    if len(decks) > 0:
+        match.set_deck(decks)
+        start_result = match.start()
+        if not start_result:
+            raise RuntimeError('Match start failed.')
 
     if auto_step:
         match._save_history()
