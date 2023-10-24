@@ -20,7 +20,10 @@ classifiers = [
 dependencies = [
     "numpy",
     "pydantic==1.10.8",
-    "typing_extensions"
+    "typing_extensions",
+    "dictdiffer",
+    "fastapi",
+    "uvicorn[standard]"
 ]
 
 [project.urls]
