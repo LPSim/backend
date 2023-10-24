@@ -14,6 +14,15 @@ This project is under AGPL-3.0 license.
 
 All charactors and cards with their balance changes until 4.1 are done.
 
+## Feature
+
+- All charactors and cards until 4.1 are implemented.
+- Support using different version of charactors and cards in a same deck.
+- Support serve as a mini server to interact with the match.
+- A frontend is provided to interact with the server.
+- Consistent when load from a state and continue running.
+- 100% Coverage of codes.
+
 ## Usage
 
 This project works with Python 3.10, and requires packages listed in
@@ -133,22 +142,32 @@ print(f'winner is {match.winner}')
 
 ### FastAPI
 
-Use FastAPI to provide a web server, which can be used to interact with the
+Use FastAPI to provide a HTTP server, which can be used to interact with the
 match. To run a server, use the following command:
-```bash
-uvicorn network:app --reload
+```
+from lpsim.network import HTTPServer
+server = HTTPServer()
+server.run()
 ```
 
-It will open a FastAPI server on `localhost:8000`, and accepts connections
-on `localhost:4000`, which is the port of frontend. Currently exception
+It will open a FastAPI server on `localhost:8000`, and accept connections
+from anywhere. When initialize HTTPServer, you can set decks and match configs
+to create a match with specified rules.
+
+To start the match, open a 
+[frontend web page](https://lpsim.zyr17.cn/index.html), change server
+URL on top right (default is `http://localhost:8000`), and follow the 
+instructions on the page to set Deck and start match between two players.
+
+Currently exception
 management is chaos, errors may set game state to ERROR, raise Exception on
 server side, make empty response on agent, return 404/500, or run JS failed on
 frontend. Please open console of frontend and check the error message on both
 sides.
 
-## Feature
+## Details
 
-Pydantic to save & load states of match, exported data is complete to restore 
+Pydantic to save & load states of match, exported data is complete to restore
 from certain state and continue running, and also easy for frontend to render
 the game states.
 

@@ -7,6 +7,8 @@ the game, and the last number is the patch version.
 
 ## [Unreleased]
 
+## [0.4.1.1] - 2023-10-24
+
 ### Added
 - IconType for Summons, Status, and Supports.
 - Histories by action level, now important actions will generate a history,
@@ -20,6 +22,7 @@ the game, and the last number is the patch version.
   passive skills and prepare skills), the diff of Match after using a skill 
   will be calculated and saved in `Match.skill_prediction`.
 - Add submodule `frontend` to match frontend commits with backend commits.
+- Add HTTP server to serve match.
 
 ### Changed
 - Ocean Mimic generation logic of Rhodeia has changed. Both old and new logics
@@ -104,7 +107,8 @@ the game, and the last number is the patch version.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.0...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.1...HEAD
+[0.4.1.1]: https://github.com/LPSim/backend/releases/tag/v0.4.1.1
 [0.4.1.0]: https://github.com/LPSim/backend/releases/tag/v0.4.1.0
 [0.4.0.0]: https://github.com/LPSim/backend/releases/tag/v0.4.0.0
 [0.1.0]: https://github.com/LPSim/backend/releases/tag/v0.1.0
