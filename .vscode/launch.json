@@ -20,7 +20,7 @@
             "name": "Uvicorn",
             "type": "python",
             "request": "launch",
-            "program": "http_serve.py",
+            "program": "http_test_serve.py",
             "args": [
             ],
             "console": "integratedTerminal",
