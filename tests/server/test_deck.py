@@ -292,6 +292,21 @@ def test_deck_restriction():
     )
 
 
+def test_deck_to_str_to_deck():
+    deck = Deck.from_str('''
+        default_version:4.0
+        charactor:Nahida
+        charactor:Mona
+        charactor:Barbara
+        The Seed of Stored Knowledge*5
+        Prophecy of Submersion*5
+        Grand Expectation*5
+    ''')
+    deck2 = Deck.from_str(deck.to_str())
+    assert remove_ids(deck) == remove_ids(deck2)
+
+
 if __name__ == '__main__':
     test_deck_string()
     test_deck_restriction()
+    test_deck_to_str_to_deck()
