@@ -134,7 +134,7 @@ class AttackerSummonBase(SummonBase):
             )
         ]
 
-    def _remove(self) -> List[RemoveObjectAction]:
+    def _remove(self, match: Any) -> List[RemoveObjectAction]:
         """
         Remove the summon.
         """
@@ -151,7 +151,7 @@ class AttackerSummonBase(SummonBase):
         When usage is 0, remove the summon.
         """
         if self.usage <= 0:
-            return self._remove()
+            return self._remove(match)
         return []
 
     def event_handler_MAKE_DAMAGE(
@@ -161,7 +161,7 @@ class AttackerSummonBase(SummonBase):
         When usage is 0, remove the summon.
         """
         if self.usage <= 0:
-            return self._remove()
+            return self._remove(match)
         return []
 
 
@@ -278,9 +278,9 @@ class DefendSummonBase(SummonBase):
                     )
                 ],
             )
-        ] + self._remove()
+        ] + self._remove(match)
 
-    def _remove(self) -> List[RemoveObjectAction]:
+    def _remove(self, match: Any) -> List[RemoveObjectAction]:
         """
         Remove the summon.
         """

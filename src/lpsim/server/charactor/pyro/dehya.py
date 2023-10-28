@@ -2,14 +2,16 @@ from typing import Any, List, Literal
 
 from ...summon.base import AttackerSummonBase
 
-from ...modifiable_values import DamageDecreaseValue, DamageValue
+from ...modifiable_values import DamageValue
 from ...event import (
-    MakeDamageEventArguments, RoundEndEventArguments, 
+    CreateObjectEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments
 )
 
-from ...action import Actions, MakeDamageAction, RemoveObjectAction
-from ...struct import Cost
+from ...action import (
+    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
+)
+from ...struct import Cost, ObjectPosition
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, 
@@ -41,94 +43,67 @@ class FierySanctumField(AttackerSummonBase):
     shield_usage: int = 1
     shield_triggered: bool = False
 
-    def _find_dehya(self, match: Any) -> int:
+    def _create_status(self, match: Any) -> List[CreateObjectAction]:
         """
-        Find first alive dehya. If not found, return -1.
+        Create status
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
-        active_idx = match.player_tables[
-            self.position.player_idx].active_charactor_idx
-        for cidx, charactor in enumerate(charactors):
-            if (
-                charactor.name == 'Dehya'
-                and charactor.is_alive
-                and cidx != active_idx
-            ):
-                return cidx
-        return -1
+        return [CreateObjectAction(
+            object_name = self.name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = 0,
+            ),
+            object_arguments = {}
+        )]
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When created object is self, and not renew, also create teams status
+        """
+        if event.create_result == 'RENEW':
+            # renew, do nothing
+            return []
+        if (
+            event.action.object_name == self.name
+            and self.position.check_position_valid(
+                event.action.object_position, match, player_idx_same = True,
+                area_same = True
+            )
+        ):
+            # name same, and position same, is self created
+            return self._create_status(match)
+        return []
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        # reset shield usage
+    ) -> List[CreateObjectAction]:
+        # re-generate status
         self.shield_usage = 1
         self.shield_triggered = False
-        return []
+        return self._create_status(match)
 
-    def value_modifier_DAMAGE_DECREASE(
-        self, value: DamageDecreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
-    ) -> DamageDecreaseValue:
+    def _remove(self, match: Any) -> List[RemoveObjectAction]:
         """
-        When has shield usage, and Dehya alive, and active is not Dehya, and
-        our active charactor took damage, decrease damage by 1 and mark shield
-        triggered.
+        If self should remove, and has generated status, remove together.
         """
-        if not value.is_corresponding_charactor_receive_damage(
-            self.position, match
-        ):
-            # not corresponding charactor receive damage
-            return value
-        if self.shield_usage <= 0:
-            # out of shield usage
-            return value
-        dehya_idx = self._find_dehya(match)
-        if dehya_idx == -1:
-            # not found dehya
-            return value
-        # decrease damage, usage and mark shield triggered
-        assert mode == 'REAL'
-        value.damage -= 1
-        self.shield_usage -= 1
-        self.shield_triggered = True
-        return value
-
-    def event_handler_MAKE_DAMAGE(
-        self, event: MakeDamageEventArguments, match: Any
-    ) -> List[MakeDamageAction | RemoveObjectAction]:
-        """
-        If self.shield_triggered, then check whether need to deal 1 piercing
-        damage to dehya.
-        """
-        ret: List[MakeDamageAction | RemoveObjectAction] = []
-        if self.shield_triggered:
-            self.shield_triggered = False
-            dehya_idx = self._find_dehya(match)
-            dehya = match.player_tables[
-                self.position.player_idx].charactors[dehya_idx]
-            if (
-                dehya.hp >= 7
-                and dehya.is_alive
-            ):
-                # after shield triggered, dehya has at least 7 hp and alive,
-                # make 1 piercing damage to dehya
-                ret.append(MakeDamageAction(
-                    source_player_idx = self.position.player_idx,
-                    target_player_idx = self.position.player_idx,
-                    damage_value_list = [
-                        DamageValue(
-                            position = self.position,
-                            target_position = dehya.position,
-                            damage = 1,
-                            damage_type = DamageType.DAMAGE,
-                            damage_elemental_type 
-                            = DamageElementalType.PIERCING,
-                            cost = Cost(),
-                        )
-                    ]
-                ))
-        return ret + super().event_handler_MAKE_DAMAGE(event, match)
-
+        status = match.player_tables[
+            self.position.player_idx].team_status
+        target_status = None
+        for s in status:
+            if s.name == self.name:
+                target_status = s
+                break
+        ret: List[RemoveObjectAction] = [RemoveObjectAction(
+            object_position = self.position,
+        )]
+        if target_status is not None:
+            ret.append(RemoveObjectAction(
+                object_position = target_status.position
+            ))
+        return ret
 
 # Skills
 

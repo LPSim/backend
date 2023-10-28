@@ -2,16 +2,20 @@ from typing import Any, List, Literal
 
 from ...struct import Cost
 
-from ...modifiable_values import DamageIncreaseValue, DamageValue
+from ...modifiable_values import (
+    DamageDecreaseValue, DamageIncreaseValue, DamageValue
+)
 
 from ...consts import (
     DamageElementalType, DamageType, IconType, ObjectPositionType, SkillType
 )
 
-from ...action import MakeDamageAction
+from ...action import MakeDamageAction, RemoveObjectAction
 
-from ...event import SkillEndEventArguments
-from .base import ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
+from ...event import MakeDamageEventArguments, SkillEndEventArguments
+from .base import (
+    DefendTeamStatus, ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
+)
 
 
 class SparksNSplash(UsageTeamStatus):
@@ -200,4 +204,94 @@ class Pyronado(UsageTeamStatus, ExtraAttackTeamStatus):
         return super().event_handler_SKILL_END(event, match)
 
 
-PyroTeamStatus = SparksNSplash | InspirationField | AurousBlaze | Pyronado
+class FierySanctumField(DefendTeamStatus):
+    name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
+    desc: str = (
+        'When Dehya is on standby on your '
+        'side, then when your active character takes damage: Decrease DMG '
+        'taken by 1, and if Dehya has at least 7 HP, deal 1 Piercing DMG to '
+        'her (once per round).'
+    )
+    version: Literal['4.1'] = '4.1'
+    usage: int = 1
+    max_usage: int = 1
+    min_damage_to_trigger: int = 1
+    max_in_one_time: int = 1
+    decrease_usage_by_damage: bool = False
+    remove_triggered: bool = False
+
+    def _find_dehya(self, match: Any) -> int:
+        """
+        Find first alive and standby dehya. If not found, return -1.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        active_idx = match.player_tables[
+            self.position.player_idx].active_charactor_idx
+        for cidx, charactor in enumerate(charactors):
+            if (
+                charactor.name == 'Dehya'
+                and charactor.is_alive
+                and cidx != active_idx
+            ):
+                return cidx
+        return -1
+
+    def value_modifier_DAMAGE_DECREASE(
+        self, value: DamageDecreaseValue, match: Any, 
+        mode: Literal['TEST', 'REAL']
+    ) -> DamageDecreaseValue:
+        """
+        Check if have alive dehya on standby, if not, no effect.
+        """
+        dehya_idx = self._find_dehya(match)
+        if dehya_idx == -1:
+            # not found dehya
+            return value
+        return super().value_modifier_DAMAGE_DECREASE(value, match, mode)
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        If self.shield_triggered, then check whether need to deal 1 piercing
+        damage to dehya.
+        """
+        ret: List[MakeDamageAction | RemoveObjectAction] = []
+        if self.usage == 0:
+            if self.remove_triggered:
+                # has triggered remove, do nothing
+                return []
+            self.remove_triggered = True
+            # check if should attack dehya
+            dehya_idx = self._find_dehya(match)
+            assert dehya_idx != -1
+            dehya = match.player_tables[
+                self.position.player_idx].charactors[dehya_idx]
+            if (
+                dehya.hp >= 7
+                and dehya.is_alive
+            ):
+                # after shield triggered, dehya has at least 7 hp and alive,
+                # make 1 piercing damage to dehya
+                ret.append(MakeDamageAction(
+                    source_player_idx = self.position.player_idx,
+                    target_player_idx = self.position.player_idx,
+                    damage_value_list = [
+                        DamageValue(
+                            position = self.position,
+                            target_position = dehya.position,
+                            damage = 1,
+                            damage_type = DamageType.DAMAGE,
+                            damage_elemental_type 
+                            = DamageElementalType.PIERCING,
+                            cost = Cost(),
+                        )
+                    ]
+                ))
+        return ret + super().event_handler_MAKE_DAMAGE(event, match)
+
+
+PyroTeamStatus = (
+    SparksNSplash | InspirationField | AurousBlaze | Pyronado 
+    | FierySanctumField
+)
