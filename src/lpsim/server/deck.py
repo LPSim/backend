@@ -178,3 +178,20 @@ class Deck(BaseModel):
                         )
                     )
         return deck
+
+    def to_str(self) -> str:
+        """
+        Convert deck object to deck string.
+        """
+        deck_str = ''
+        for charactor in self.charactors:
+            deck_str += f'charactor:{charactor.name}'
+            if charactor.version is not None:
+                deck_str += f'@{charactor.version}'
+            deck_str += '\n'
+        for card in self.cards:
+            deck_str += card.name
+            if card.version is not None:
+                deck_str += f'@{card.version}'
+            deck_str += '\n'
+        return deck_str

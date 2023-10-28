@@ -362,7 +362,7 @@ class HTTPServer():
                                'match_state.')
         data = {
             'match_random_state': self.match_random_state,
-            'start_deck': [x.dict() for x in self.start_deck],
+            'start_deck': [x.to_str() for x in self.start_deck],
             'command_history': [[y[1] for y in x] 
                                 for x in self.command_history],
         }
