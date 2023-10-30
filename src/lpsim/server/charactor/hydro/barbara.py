@@ -40,46 +40,38 @@ class MelodyLoop(AttackerSummonBase):
         assert self.usage > 0
         self.usage -= 1
         target_table = match.player_tables[player_idx]
-        ret: List[MakeDamageAction] = []
+        damage_action = MakeDamageAction(
+            source_player_idx = player_idx,
+            target_player_idx = player_idx,
+            damage_value_list = [],
+        )
         for cid, charactor in enumerate(target_table.charactors):
             if charactor.is_alive:
-                ret.append(
-                    MakeDamageAction(
-                        source_player_idx = player_idx,
-                        target_player_idx = player_idx,
-                        damage_value_list = [
-                            DamageValue(
-                                position = self.position,
-                                damage_type = DamageType.HEAL,
-                                target_position = charactor.position,
-                                damage = self.damage,
-                                damage_elemental_type 
-                                = self.damage_elemental_type,
-                                cost = Cost(),
-                            )
-                        ],
+                damage_action.damage_value_list.append(
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.HEAL,
+                        target_position = charactor.position,
+                        damage = self.damage,
+                        damage_elemental_type 
+                        = self.damage_elemental_type,
+                        cost = Cost(),
                     )
                 )
             if target_table.active_charactor_idx == cid:
                 assert charactor.is_alive
-                ret.append(
-                    MakeDamageAction(
-                        source_player_idx = player_idx,
-                        target_player_idx = player_idx,
-                        damage_value_list = [
-                            DamageValue(
-                                position = self.position,
-                                damage_type = DamageType.ELEMENT_APPLICATION,
-                                target_position = charactor.position,
-                                damage = 0,
-                                damage_elemental_type
-                                = DamageElementalType.HYDRO,
-                                cost = Cost(),
-                            )
-                        ],
+                damage_action.damage_value_list.append(
+                    DamageValue(
+                        position = self.position,
+                        damage_type = DamageType.ELEMENT_APPLICATION,
+                        target_position = charactor.position,
+                        damage = 0,
+                        damage_elemental_type
+                        = DamageElementalType.HYDRO,
+                        cost = Cost(),
                     )
                 )
-        return ret
+        return [damage_action]
 
 
 class LetTheShowBegin(ElementalSkillBase):
