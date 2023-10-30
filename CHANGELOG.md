@@ -2,10 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-The first three numbers in the version number are the same as the version of 
-the game, and the last number is the patch version.
+The second and third number in the version number are the same as the version 
+of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
+
+## [0.4.1.3] - 2023-10-31
+
+### Added
+- Add `Deck.deck_to_str` function.
+- Add object trashbin to make objects able to trigger events when they are 
+  removed. #2
+
+### Changed
+- Melody loop now heal and make elemental application in one action.
+- When a card is used, now it will be firstly moved into table.using_hand.
+- Riptide and Dunyarzad are now implemented based on new object trashbin.
+- Decks in logs of HTTPServer will save deck string instead of dict.
+
+### Fixed
+- Dehya summon logic bug. #1
+- Keqing can use Lightning Stiletto when she is frozen.
 
 ## [0.4.1.2] - 2023-10-24
 
@@ -112,7 +129,8 @@ the game, and the last number is the patch version.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.2...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.3...HEAD
+[0.4.1.3]: https://github.com/LPSim/backend/releases/tag/v0.4.1.3
 [0.4.1.2]: https://github.com/LPSim/backend/releases/tag/v0.4.1.2
 [0.4.1.1]: https://github.com/LPSim/backend/releases/tag/v0.4.1.1
 [0.4.1.0]: https://github.com/LPSim/backend/releases/tag/v0.4.1.0
