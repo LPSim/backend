@@ -36,7 +36,10 @@ class StellarRestoration(ElementalSkillBase):
         If Lightning Stiletto in hand, do not create another one.
         """
         ret = super().get_actions(match)
-        hands = match.player_tables[self.position.player_idx].hands
+        table = match.player_tables[self.position.player_idx]
+        hands = table.hands[:]
+        if table.using_hand is not None:
+            hands.append(table.using_hand)
         found_stiletto = False
         for card in hands:
             if card.name == 'Lightning Stiletto':
@@ -124,7 +127,11 @@ class LightningStiletto(SkillTalent):
         """
         charactors = match.player_tables[self.position.player_idx].charactors
         for charactor in charactors:
-            if charactor.name == self.charactor_name and charactor.is_alive:
+            if (
+                charactor.name == self.charactor_name 
+                and charactor.is_alive
+                and not charactor.is_stunned
+            ):
                 return charactor.position
         return None
 
@@ -200,7 +207,10 @@ class LightningStiletto(SkillTalent):
             self.newly_created = False
             return []
         # remove this card
-        hands = match.player_tables[self.position.player_idx].hands
+        table = match.player_tables[self.position.player_idx]
+        hands = table.hands[:]
+        if table.using_hand is not None:
+            hands.append(table.using_hand)
         for i, card in enumerate(hands):
             if card.id == self.id:
                 ret.append(RemoveCardAction(

@@ -155,11 +155,6 @@ def test_keqing():
 
 def test_keqing_2():
     """
-    Note currently adding Lightning Stiletto into deck directly will cause
-    a bug that using skill first time will not remove itself and add buff.
-    As it is not a normal way to get this card, currently it is not fixed,
-    and this test is based on this bug, so it will fail if this bug is fixed.
-
     This test mainly tests the following:
         1. when hands have multiple Lightning Stiletto, use skill will remove
             all of them (to get multiple Lightning Stiletto, use Nature and 
@@ -170,32 +165,75 @@ def test_keqing_2():
     """
     cmd_records = [
         [
-            "sw_card",
-            "choose 0",
-            "card 0 1 0 1",
-            "card 1 0 0 1",
-            "sw_char 0 0",
-            "card 1 0 0 1 2",
-            "skill 1 0 1 2",
-            "skill 1 0 1 2",
+            "sw_card 1 3",
+            "choose 1",
+            "card 0 1 15 14",
+            "skill 1 13 12",
+            "sw_char 0 11",
             "end",
-            "sw_char 0 0",
-            "skill 1 0 1 2",
-            "card 2 0 0 1"
+            "card 4 0 15 14",
+            "sw_char 2 13",
+            "card 3 0 12",
+            "sw_card 0 1 2 4 5 3",
+            "sw_char 1 11",
+            "skill 1 10 9 8",
+            "card 1 0 7",
+            "sw_card 5 3 2 1 0",
+            "end",
+            "sw_char 2 15",
+            "sw_char 0 14",
+            "sw_char 1 13",
+            "skill 1 12 11",
+            "card 7 0 10",
+            "sw_card 7 8 9",
+            "card 6 2 9 8",
+            "card 7 0 7",
+            "sw_card 6 7",
+            "end",
+            "card 7 0 15",
+            "sw_card 8 7 6 5 4 3 2 1 0",
+            "end",
+            "choose 2",
+            "TEST 3 card 0 1 cannot use",
+            "end"
         ],
         [
-            "sw_card 0 1 2",
+            "sw_card 1",
             "choose 1",
-            "skill 1 0 1 2",
-            "sw_char 0 0",
-            "card 0 0 0 1 2",
-            "skill 1 0 1 2",
+            "skill 1 15 14 13",
+            "card 4 1 12 11",
+            "TEST 2 card 4 cost 2",
+            "card 3 0 10",
+            "sw_card 3",
+            "skill 1 9 8",
+            "card 4 0 7",
+            "sw_card 4 5",
+            "skill 1 6 5 4",
+            "card 5 0 3",
+            "sw_card 5",
+            "skill 1 2 1 0",
             "end",
-            "sw_char 0 0",
-            "skill 1 0 1 2",
-            "TEST 1 4 use card req",
             "end",
-            "choose 2"
+            "card 5 0 15",
+            "sw_card 5 6 7 9",
+            "skill 1 14 13",
+            "card 9 0 12",
+            "sw_card",
+            "card 9 2 11 10",
+            "skill 1 9 8 7",
+            "sw_char 0 6",
+            "card 8 0 5",
+            "sw_card 8 7",
+            "card 8 2 4 3",
+            "card 8 0 2 1",
+            "end",
+            "sw_char 1 15",
+            "card 8 0 14",
+            "sw_card 7 6 9 5 4 3 2 1 0",
+            "card 3 0 13 12",
+            "TEST 1 p1 hand 5",
+            "skill 2 11 10 9 8",
+            "end"
         ]
     ]
     agent_0 = InteractionAgent(
@@ -220,7 +258,7 @@ def test_keqing_2():
         charactor:Kaeya
         charactor:Keqing
         charactor:Fischl
-        Lightning Stiletto*15
+        Nature and Wisdom*15
         Thunder Summoner's Crown*15
         '''
     )
@@ -250,12 +288,123 @@ def test_keqing_2():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
-                # a sample of HP check based on the command string.
-                counter = 0
+                assert len(match.player_tables[1].hands) == 5
+            elif test_id == 2:
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == 4:
+                        assert req.cost.total_dice_cost == 2
+            elif test_id == 3:
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
-                        counter += 1
-                assert counter == 4
+                        assert req.card_idx not in [0, 1]
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+def test_keqing_freeze():
+    """
+    If keqing is frozen, it cannot use Lightning Stiletto.
+    """
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "skill 1 15 14 13",
+            "sw_char 2 12",
+            "sw_char 1 11",
+            "sw_char 2 10",
+            "skill 1 9 8 7",
+            "end",
+            "sw_char 0 15",
+            "skill 1 14 13 12"
+        ],
+        [
+            "sw_card 1 2",
+            "choose 1",
+            "skill 1 15 14 13",
+            "TEST 1 card 5 can use",
+            "sw_char 0 12",
+            "TEST 1 card 5 can use",
+            "sw_char 1 11",
+            "TEST 2 card 5 cannot use",
+            "sw_char 0 10",
+            "TEST 2 card 5 cannot use",
+            "end",
+            "TEST 1 card 5 can use",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Kaeya
+        charactor:Keqing
+        charactor:Mona
+        Nature and Wisdom*15
+        Thunder Summoner's Crown*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            test_cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cidx = int(test_cmd.split()[3])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                        break
+                else:
+                    raise AssertionError('Request not found')
+            elif test_id == 2:
+                cidx = int(test_cmd.split()[3])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert req.card_idx != cidx
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -268,4 +417,6 @@ def test_keqing_2():
 
 
 if __name__ == '__main__':
-    test_keqing()
+    # test_keqing()
+    test_keqing_2()
+    # test_keqing_freeze()

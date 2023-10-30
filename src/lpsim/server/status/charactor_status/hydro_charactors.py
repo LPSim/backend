@@ -15,8 +15,9 @@ from ...action import (
 )
 
 from ...event import (
-    CreateObjectEventArguments, MakeDamageEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments
+    CharactorDefeatedEventArguments, CreateObjectEventArguments, 
+    MakeDamageEventArguments, RoundPrepareEventArguments, 
+    SkillEndEventArguments
 )
 from .base import (
     CharactorStatusBase, ElementalInfusionCharactorStatus, 
@@ -38,12 +39,6 @@ class Riptide(CharactorStatusBase):
         'When Tartaglia is in Melee Stance, he will deal additional DMG when '
         'attacking the character to which this is attached.'
     )
-    desc_virtual: str = (
-        'Virtual Riptide which will be applied to all allies when charactor '
-        'defeated with Riptide. After choosing active charactor, the virtual '
-        'will attach real Riptide for active charactor, and all virtual '
-        'Riptide will be removed.'
-    )
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
@@ -51,6 +46,37 @@ class Riptide(CharactorStatusBase):
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+
+    available_handler_in_trashbin: List[ActionTypes] = [
+        ActionTypes.CHARACTOR_DEFEATED
+    ]
+
+    def event_handler_CHARACTOR_DEFEATED(
+        self, event: CharactorDefeatedEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        If defeated charactor has Riptide, the next active charactor will get
+        Riptide. As this event triggers later than CHOOSE_CHARACTOR, current
+        active charactor is set.
+        """
+        pidx = event.action.player_idx
+        cidx = event.action.charactor_idx
+        if (
+            pidx != self.position.player_idx 
+            or cidx != self.position.charactor_idx
+        ):
+            # defeated charactor not self charactor
+            return []
+        return [CreateObjectAction(
+            object_name = 'Riptide',
+            object_position = ObjectPosition(
+                player_idx = pidx,
+                area = ObjectPositionType.CHARACTOR_STATUS,
+                charactor_idx = match.player_tables[pidx].active_charactor_idx,
+                id = 0
+            ),
+            object_arguments = { 'version': self.version }
+        )]
 
 
 class RangedStance(CharactorStatusBase):

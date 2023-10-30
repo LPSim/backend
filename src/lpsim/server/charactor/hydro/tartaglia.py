@@ -6,7 +6,7 @@ from ...event import (
     GameStartEventArguments, RoundEndEventArguments, SkillEndEventArguments
 )
 from ...action import Actions, CreateObjectAction, MakeDamageAction
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
@@ -168,15 +168,6 @@ class TideWithholder(PassiveSkillBase):
                 'Ranged Stance',
                 { 'version': self.version }
             ),
-            CreateObjectAction(
-                object_name = 'Riptide',
-                object_position = ObjectPosition(
-                    player_idx = -1,
-                    area = ObjectPositionType.SYSTEM,
-                    id = 0
-                ),
-                object_arguments = { 'version': self.version }
-            )
         ]
 
 

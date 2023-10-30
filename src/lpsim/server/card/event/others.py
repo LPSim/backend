@@ -723,10 +723,6 @@ class FriendshipEternal(CardBase):
         ret: List[DrawCardAction] = []
         for pidx, table in enumerate(match.player_tables):
             target_number = 4
-            if pidx == self.position.player_idx:
-                # as for self, this card is still in hand, so target number
-                # should be 5
-                target_number += 1
             if len(table.hands) >= target_number:
                 # already have enough cards, do nothing
                 continue

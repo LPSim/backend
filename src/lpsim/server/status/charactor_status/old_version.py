@@ -1,11 +1,13 @@
 from typing import Literal
 
+
 from ...consts import IconType
 
 from .base import RoundCharactorStatus
 from .cryo_charactors import Grimheart as G_3_8
 from .foods import MintyMeatRolls as MMR_3_4
 from .hydro_charactors import RangedStance as RS_4_1, MeleeStance as MS_4_1
+from .hydro_charactors import Riptide as Riptide_4_1
 
 
 class Grimheart_3_5(G_3_8):
@@ -22,7 +24,7 @@ class MintyMeatRolls_3_3(MMR_3_4):
     decrease_usage: int = 999
 
 
-class Riptide_3_7(RoundCharactorStatus):
+class Riptide_3_7(Riptide_4_1, RoundCharactorStatus):
     """
     This status will not deal damages directly, and defeat-regenerate is 
     handled by system handler, which is created by Tartaglia'is passive skill

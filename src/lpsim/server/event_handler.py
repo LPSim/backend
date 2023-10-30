@@ -6,7 +6,6 @@ from .object_base import ObjectBase
 from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor
 from .event import (
-    MakeDamageEventArguments,
     ReceiveDamageEventArguments,
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
@@ -16,7 +15,6 @@ from .event import (
 from .action import (
     Actions,
     CharactorDefeatedAction,
-    CreateObjectAction,
     GenerateChooseCharactorRequestAction,
     DrawCardAction,
     RemoveCardAction
@@ -38,7 +36,9 @@ class SystemEventHandlerBase(ObjectBase):
         id = -1,
     )
 
-    def renew(self, target: 'SystemEventHandlerBase') -> None:
+    def renew(
+        self, target: 'SystemEventHandlerBase'
+    ) -> None:  # pragma: no cover
         """
         No need to renew.
         """
@@ -162,71 +162,6 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
         return value
 
 
-class RiptideEventHandler(SystemEventHandlerBase):
-    name: Literal['Riptide'] = 'Riptide'
-    desc: str = (
-        'Riptide system handler is used to handle Riptide when charactor '
-        'defeated. Before make damage, it will record who has Riptide, and if'
-        'charactor defeated event happens, if defeated charactor has Riptide, '
-        'the next active charactor will get Riptide. Note if during the '
-        'defeated with Riptide. After choosing active charactor, the virtual '
-        'will attach real Riptide for active charactor, and all virtual '
-        'Riptide will be removed.'
-    )
-    version: Literal['4.1'] = '4.1'
-    usage: int = 1
-    max_usage: int = 1
-    has_riptide: List[ObjectPosition] = []
-
-    def event_handler_MAKE_DAMAGE(
-        self, event: MakeDamageEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        record who has Riptide before make damage.
-        """
-        self.has_riptide = []
-        for table in match.player_tables:
-            for charactor in table.charactors:
-                for status in charactor.status:
-                    if status.name == 'Riptide':
-                        self.has_riptide.append(charactor.position)
-        return []
-
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        If defeated charactor has Riptide, the next active charactor will get
-        Riptide. As this event triggers later than CHOOSE_CHARACTOR, current
-        active charactor is set.
-        """
-        pidx = event.action.player_idx
-        cidx = event.action.charactor_idx
-        found: bool = False
-        for position in self.has_riptide:
-            if position.player_idx == pidx and position.charactor_idx == cidx:
-                found = True
-                break
-        if not found:
-            # defeated charactor does not have Riptide
-            return []
-        return [CreateObjectAction(
-            object_name = 'Riptide',
-            object_position = ObjectPosition(
-                player_idx = pidx,
-                area = ObjectPositionType.CHARACTOR_STATUS,
-                charactor_idx = match.player_tables[pidx].active_charactor_idx,
-                id = 0
-            ),
-            object_arguments = { 'version': self.version }
-        )]
-
-
-class RiptideEventHandler_3_7(RiptideEventHandler):
-    version: Literal['3.7']
-
-
 SystemEventHandlers = (
     SystemEventHandlerBase | SystemEventHandler | OmnipotentGuideEventHandler
-    | RiptideEventHandler | RiptideEventHandler_3_7
 )

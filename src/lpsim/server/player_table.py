@@ -70,6 +70,10 @@ class PlayerTable(BaseModel):
     charge_satisfied: bool = False
     plunge_satisfied: bool = False
 
+    # when a card is used, it will firstly be moved to using_hand, then it will
+    # be moved or removed.
+    using_hand: CardBases | None = None
+
     @validator('team_status', each_item = True, pre = True)
     def parse_team_status(cls, v):
         return get_instance_from_type_unions(TeamStatus, v)
@@ -174,6 +178,11 @@ class PlayerTable(BaseModel):
             raise NotImplementedError('Not tested part')
             return None
         elif position.area == ObjectPositionType.HAND:
+            if (
+                self.using_hand is not None 
+                and self.using_hand.id == position.id
+            ):
+                return self.using_hand
             for card in self.hands:
                 if card.id == position.id:
                     return card
@@ -215,6 +224,8 @@ class PlayerTable(BaseModel):
         result += self.team_status
         result += self.summons
         result += self.supports
+        if self.using_hand is not None:
+            result.append(self.using_hand)
         result += self.hands
 
         # disable them because currently no dice and deck cards will trigger

@@ -37,6 +37,10 @@ class ObjectBase(BaseModel):
     position: ObjectPosition
     id: int = -1
 
+    # If the object is in trashbin, event handlers except those in this list
+    # will not available.
+    available_handler_in_trashbin: List[ActionTypes] = []
+
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         # check event handler name valid

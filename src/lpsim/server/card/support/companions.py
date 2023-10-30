@@ -22,7 +22,7 @@ from ...event import (
     ActionEndEventArguments, ChangeObjectUsageEventArguments, 
     ChooseCharactorEventArguments, MoveObjectEventArguments, 
     PlayerActionStartEventArguments, 
-    ReceiveDamageEventArguments, RemoveDiceEventArguments, 
+    ReceiveDamageEventArguments,
     RemoveObjectEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
     SwitchCharactorEventArguments, UseCardEventArguments
@@ -798,38 +798,27 @@ class Dunyarzad(Tubby, LimitedEffectSupportBase):
             draw_if_filtered_not_enough = False,
         )]
 
-    def use(self, mode: Literal['REAL', 'TEST'], result: List[bool]) -> None:
-        """
-        decrease usage if needed, and marked as triggered.
-        """
-        if True in result:
-            if mode == 'REAL':
-                self.usage -= 1
-        self.triggered = True
-
-    def event_handler_REMOVE_DICE(
-        self, event: RemoveDiceEventArguments, match: Any
+    def event_handler_USE_CARD(
+        self, event: UseCardEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When effect is used, the next remove dice event should be the cost
-        decreased target. then if it is triggered, do limited action.
-
-        However, trigger here will cause hand size over maximum and newly
-        drawed card is burned.
-
-        If trigger in USE_CARD, when a support replace this card, its limited
-        effect will not trigger.
-
-        TODO: find a way to trigger limited effect without causing hand size
-        over maximum.
+        Do limited action to draw a support card if needed
         """
-        if self.position.area != ObjectPositionType.SUPPORT:
-            # not in support area, do nothing
-            return []
-        if self.triggered:
-            self.triggered = False
+        if self.position.area == ObjectPositionType.SUPPORT:
+            # on support area, do effect
+            if (
+                event.action.card_position.player_idx 
+                != self.position.player_idx
+            ):
+                # not our charactor use card, do nothing
+                return []
+            if event.card.cost.label & CostLabels.COMPANION.value == 0:
+                # not companion card, do nothing
+                return []
+            # our use companion card, do limited action
             return self.do_limited_action(match)
-        return []
+        # otherwise, do normal response
+        return super().event_handler_USE_CARD(event, match)
 
 
 class Rana(RoundEffectCompanionBase):

@@ -327,6 +327,12 @@ class Match(BaseModel):
     _debug_appeared_object_names_versions: Any = PrivateAttr({})
     _debug_save_file_name: str = PrivateAttr('')
 
+    # In event chain, all removed objects will firstly move to the trashbin. 
+    # If some object explicitly claims that some event handlers will work in
+    # trashbin, these events will be triggered in trashbin. After all event
+    # chain cleared, all objects in trashbin will be removed.
+    trashbin: List[CharactorStatus | TeamStatus | Cards | Summons] = []
+
     @validator('event_handlers', each_item = True, pre = True)
     def parse_event_handlers(cls, v):
         return get_instance_from_type_unions(SystemEventHandlers, v)
@@ -828,7 +834,7 @@ class Match(BaseModel):
                 event_arg = event_frame.processing_event
                 assert event_arg is not None
                 object_position = event_frame.triggered_objects.pop(0)
-                object = self.get_object(object_position)
+                object = self.get_object(object_position, event_arg.type)
                 object_name = object.__class__.__name__
                 if hasattr(object, 'name'):
                     object_name = object.name  # type: ignore
@@ -862,6 +868,8 @@ class Match(BaseModel):
             else:
                 # pop event frame
                 self.event_frames.pop()
+        # event frame cleared, clear trashbin
+        self.trashbin.clear()
 
     def _game_start(self):
         """
@@ -1031,9 +1039,13 @@ class Match(BaseModel):
         )
         self._stack_event(event)
 
-    def get_object(self, position: ObjectPosition) -> ObjectBase | None:
+    def get_object(
+        self, position: ObjectPosition, action: ActionTypes | None = None
+    ) -> ObjectBase | None:
         """
         Get object by its position. If obect not exist, return None.
+        When action is specified, it will check trashbin and find objects that
+        can handle the action.
         """
         assert position.area != ObjectPositionType.INVALID, 'Invalid area.'
         if position.area == ObjectPositionType.SYSTEM:
@@ -1041,7 +1053,16 @@ class Match(BaseModel):
                 if object.id == position.id:
                     return object
             raise NotImplementedError('Currently should not be None')
-        return self.player_tables[position.player_idx].get_object(position)
+        res = self.player_tables[position.player_idx].get_object(position)
+        if res is None and action is not None:
+            # not found, try to find in trashbin
+            for object in self.trashbin:
+                if (
+                    object.position.id == position.id
+                    and action in object.available_handler_in_trashbin
+                ):
+                    return object
+        return res
 
     def get_object_list(self) -> List[ObjectBase]:
         """
@@ -1100,6 +1121,10 @@ class Match(BaseModel):
         event_arg = event_frame.events.pop(0)
         event_frame.processing_event = event_arg
         object_list = self.get_object_list()
+        # add object in trashbin to list
+        for object in self.trashbin:
+            if event_arg.type in object.available_handler_in_trashbin:
+                object_list.append(object)
         handler_name = f'event_handler_{event_arg.type.name}'
         for obj in object_list:
             name = obj.__class__.__name__
@@ -1868,7 +1893,10 @@ class Match(BaseModel):
         card_id = action.position.id
         remove_type = action.remove_type  # used or burned (Keqing, EleTuning)
         table = self.player_tables[player_idx]
-        if card_position == ObjectPositionType.HAND:
+        if table.using_hand is not None and card_id == table.using_hand.id:
+            card = table.using_hand
+            table.using_hand = None
+        elif card_position == ObjectPositionType.HAND:
             match_idx = -1
             for idx, card in enumerate(table.hands):
                 if card.id == card_id:
@@ -2040,11 +2068,17 @@ class Match(BaseModel):
             # did any combat action that is not switch, remove plunging mark
             self.player_tables[player_idx].plunge_satisfied = False
         if not combat_action_value.do_combat_action:
-            logging.info(
-                f'player {player_idx} did a combat action, but is modified'
-                f'as a quick action. current player '
-                f'is {self.current_player}.'
-            )
+            if action.do_combat_action:
+                logging.info(
+                    f'player {player_idx} did a combat action, but is '
+                    f'modified as a quick action. current player '
+                    f'is {self.current_player}.'
+                )
+            else:
+                logging.info(
+                    f'player {player_idx} did a quick action, current player '
+                    f'is {self.current_player}.'
+                )
             return [ActionEndEventArguments(
                 action = action,
                 do_combat_action = False
@@ -2293,6 +2327,14 @@ class Match(BaseModel):
             f'charactor {charactor.name}:{charactor_idx} '
             f'defeated.'
         )
+        removed_objects = [
+            charactor.weapon,
+            charactor.artifact,
+            charactor.talent,
+        ] + charactor.status
+        for obj in removed_objects:
+            if obj is not None:
+                self.trashbin.append(obj)
         charactor.weapon = None
         charactor.artifact = None
         charactor.talent = None
@@ -2367,10 +2409,10 @@ class Match(BaseModel):
             target_classes = Cards
             target_list = table.hands
             target_name = 'hand'
-        elif action.object_position.area == ObjectPositionType.SYSTEM:
-            target_classes = SystemEventHandlers
-            target_list = self.event_handlers
-            target_name = 'system event handler'
+        # elif action.object_position.area == ObjectPositionType.SYSTEM:
+        #     target_classes = SystemEventHandlers
+        #     target_list = self.event_handlers
+        #     target_name = 'system event handler'
         else:
             raise NotImplementedError(
                 f'Create object action for area {action.object_position.area} '
@@ -2472,6 +2514,7 @@ class Match(BaseModel):
                     f'from charactor {charactor.name} with id '
                     f'{action.object_position.id}.'
                 )
+            self.trashbin.append(removed_equip)  # type: ignore
             return [RemoveObjectEventArguments(
                 action = action,
                 object_name = removed_equip.name,
@@ -2484,11 +2527,12 @@ class Match(BaseModel):
         for csnum, current_object in enumerate(target_list):
             if current_object.id == action.object_position.id:
                 # have same status, only update status usage
-                target_list.pop(csnum)
+                removed_object = target_list.pop(csnum)
                 logging.info(
                     f'player {player_idx} '
                     f'removed {target_name} {current_object.name}.'
                 )
+                self.trashbin.append(removed_object)  # type: ignore
                 return [RemoveObjectEventArguments(
                     action = action,
                     object_name = current_object.name,
@@ -2573,7 +2617,9 @@ class Match(BaseModel):
         )
         # charactor_idx = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.HAND:
-            current_list = table.hands
+            assert table.using_hand is not None
+            current_list = [table.using_hand]
+            table.using_hand = None
             current_name = 'hand'
         elif action.object_position.area == ObjectPositionType.SUPPORT:
             current_list = table.supports
@@ -2730,14 +2776,31 @@ class Match(BaseModel):
 
     def _action_use_card(self, action: UseCardAction) \
             -> List[UseCardEventArguments]:
-        card = self.get_object(action.card_position)
+        assert action.card_position.area == ObjectPositionType.HAND, (
+            'Card should be used from hand.'
+        )
+        table = self.player_tables[action.card_position.player_idx]
+        hands = table.hands
+        for idx, c in enumerate(hands):
+            if c.id == action.card_position.id:
+                table.using_hand = c
+                table.hands.pop(idx)
+                break
+        else:  # pragma: no cover
+            self._set_match_state(MatchState.ERROR)
+            raise AssertionError(
+                f'player {action.card_position.player_idx} '
+                f'tried to use non-exist card with id '
+                f'{action.card_position.id}.'
+            )
         logging.info(
             f'player {action.card_position.player_idx} '
-            f'use card {card.name}.'  # type: ignore
+            f'use card {table.using_hand.name}.'  # type: ignore
         )
+
         return [UseCardEventArguments(
             action = action,
-            card = card
+            card = table.using_hand
         )]
 
     def _action_skill_end(self, action: SkillEndAction) \

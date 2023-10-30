@@ -1701,7 +1701,7 @@ def test_dunyazard():
             "card 3 0 15 14",
             "end",
             "card 0 3",
-            "TEST 3 p1 hand 9",
+            "TEST 3 p1 hand 10",
             "end",
             "TEST 4 p1 deck 11",
             "card 0 3",
@@ -2146,8 +2146,8 @@ def test_chefmao_dunyarzad():
 
 if __name__ == '__main__':
     # test_rana()
-    # test_timmie()
-    # test_liben()
+    test_timmie()
+    test_liben()
     # test_setaria()
     # test_liusu()
     # test_tubby()
@@ -2156,8 +2156,8 @@ if __name__ == '__main__':
     # test_master_zhang()
     # test_katheryne_tian_ellin()
     # test_wagner_timaeus()
-    # test_chef_mao()
-    # test_dunyazard()
+    test_chef_mao()
+    test_dunyazard()
     # test_xudong()
     # test_hanachirusato()
     test_chefmao_dunyarzad()
