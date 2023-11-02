@@ -115,7 +115,11 @@ class AttackerSummonBase(SummonBase):
         player_idx = self.position.player_idx
         assert self.usage > 0
         self.usage -= 1
+        damage_type = DamageType.DAMAGE
         target_table = match.player_tables[1 - player_idx]
+        if self.damage_elemental_type == DamageElementalType.HEAL:
+            damage_type = DamageType.HEAL
+            target_table = match.player_tables[player_idx]
         target_charactor = target_table.get_active_charactor()
         return [
             MakeDamageAction(
@@ -124,7 +128,7 @@ class AttackerSummonBase(SummonBase):
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        damage_type = DamageType.DAMAGE,
+                        damage_type = damage_type,
                         target_position = target_charactor.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
