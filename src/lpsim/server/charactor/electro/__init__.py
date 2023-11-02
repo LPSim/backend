@@ -12,24 +12,26 @@ from .kujou_sara import (
 )
 from .cyno import Cyno, FeatherfallJudgment
 from .lisa import Lisa, LightningRoseSummon, PulsatingWitch
+from .dori import Dori, AfterSalesServiceRounds, Jinni, DiscretionarySupplement
 
 
 ElectroCharactors = (
     Fischl | Razor | Keqing | Cyno | Beidou | KujouSara | RaidenShogun 
-    | YaeMiko | Lisa
+    | YaeMiko | Lisa | Dori
     # finally monsters
     | ElectroHypostasis
 )
 SummonsOfElectroCharactors = (
     Oz | TenguJuuraiAmbush | TenguJuuraiStormcluster | EyeOfStormyJudgment 
-    | SesshouSakura | LightningRoseSummon
+    | SesshouSakura | LightningRoseSummon | AfterSalesServiceRounds
+    | Jinni
     # finally monsters
     | ChainsOfWardingThunder
 )
 ElectroCharactorTalents = (
     StellarPredator | Awakening | ThunderingPenance | FeatherfallJudgment 
     | LightningStorm | SinOfPride | WishesUnnumbered | TheShrinesSacredShade
-    | PulsatingWitch
+    | PulsatingWitch | DiscretionarySupplement
     # finally monsters
     | AbsorbingPrism
     # special card for Keqing, treated as a talent card.
