@@ -6,7 +6,10 @@ from ...action import (
     GenerateRerollDiceRequestAction, MakeDamageAction, RemoveDiceAction, 
     RemoveObjectAction
 )
-from ...event import MoveObjectEventArguments, PlayerActionStartEventArguments
+from ...event import (
+    MoveObjectEventArguments, PlayerActionStartEventArguments, 
+    SkillEndEventArguments, UseCardEventArguments
+)
 from ...modifiable_values import (
     CostValue, DamageValue, InitialDiceColorValue, RerollValue
 )
@@ -629,9 +632,82 @@ class GandharvaVille(LocationBase, UsageWithRoundRestrictionSupportBase):
         )]
 
 
+class StormterrorsLair(LocationBase, UsageWithRoundRestrictionSupportBase):
+    name: Literal["Stormterror's Lair"]
+    desc: str = (
+        'When played: Draw a random Talent card from your deck. '
+        'When you play a Talent card, or when your character uses a Skill '
+        'with an original cost of at least 4 Elemental Dice: Spend 1 less '
+        'Elemental Die. (Once per Round) Usage(s): 3'
+    )
+    version: Literal['4.2'] = '4.2'
+    cost: Cost = Cost(same_dice_number = 2)
+    usage: int = 3
+    max_usage_one_round: int = 1
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
+
+    card_cost_label: int = CostLabels.SKILLS.value
+    decrease_threshold: int = 4
+
+    def play(self, match: Any) -> List[DrawCardAction]:
+        """
+        Draw a talent card
+        """
+        return [DrawCardAction(
+            player_idx = self.position.player_idx,
+            number = 1,
+            whitelist_cost_labels = CostLabels.TALENT.value,
+            draw_if_filtered_not_enough = False,
+        )]
+
+    def value_modifier_COST(
+        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+    ) -> CostValue:
+        """
+        if card label match and original cost greater than threshold, 
+        or is talent cost, reduce cost.
+        """
+        if (
+            self.position.area == ObjectPositionType.SUPPORT
+            and value.position.player_idx == self.position.player_idx
+            and self.has_usage()
+        ):
+            # area right, player right, and not used this round
+            if (
+                (
+                    value.cost.original_value.total_dice_cost
+                    >= self.decrease_threshold
+                    and value.cost.label & self.card_cost_label != 0
+                )
+                or value.cost.label & CostLabels.TALENT.value != 0
+            ):
+                # cost label match, cost greater than threshold; or is talent
+                if value.cost.decrease_cost(value.cost.elemental_dice_color):
+                    if mode == 'REAL':
+                        self.use()
+        return value
+
+    def event_handler_USE_CARD(
+        self, event: UseCardEventArguments, match: Any
+    ) -> List[Actions]:
+        if self.usage == 0:
+            # if usage is zero, it run out of usage, remove it
+            return list(self.check_should_remove())
+        # otherwise, do parent event handler
+        return super().event_handler_USE_CARD(event, match)
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
+        if self.usage == 0:
+            # if usage is zero, it run out of usage, remove it
+            return list(self.check_should_remove())
+        return []
+
+
 Locations = (
     LiyueHarborWharf | KnightsOfFavoniusLibrary | JadeChamber | DawnWinery 
     | WangshuInn | FavoniusCathedral | Tenshukaku | GrandNarukamiShrine 
     | SangonomiyaShrine | SumeruCity | Vanarana | ChinjuForest | GoldenHouse
-    | GandharvaVille
+    | GandharvaVille | StormterrorsLair
 )

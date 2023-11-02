@@ -3,7 +3,6 @@ from typing import Literal
 from src.lpsim.server.match import Match
 from src.lpsim.utils import BaseModel
 from src.lpsim.server.deck import Deck
-from src.lpsim.agents import NothingAgent
 from src.lpsim.agents import RandomAgent
 
 
@@ -18,23 +17,31 @@ class Main(BaseModel):
 
 if __name__ == '__main__':
     logging.basicConfig(level = logging.WARNING)
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = RandomAgent(player_idx = 0)
     agent_1 = RandomAgent(player_idx = 1)
     main = Main()
     deck = Deck.from_str(
         '''
-        default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
-        Rana*10
-        Wine-Stained Tricorne*10
-        The Seed of Stored Knowledge*10
+        default_version:4.1
+        charactor:Rhodeia of Loch
+        charactor:Kamisato Ayaka
+        charactor:Yaoyao
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        Timmie*5
         '''
     )
     main.match.set_deck([deck, deck])
     main.match.config.max_same_card_number = 30
-    main.match.enable_history = True
+    main.match.history_level = True
+    main.match.config.check_deck_restriction = False
+    main.match.config.initial_hand_size = 20
+    main.match.config.max_hand_size = 30
+    main.match.config.card_number = None
     assert main.match.start()
     main.match.step()
 

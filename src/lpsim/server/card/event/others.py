@@ -856,11 +856,61 @@ class Pankration(CardBase):
         ]
 
 
+class Lyresong(CardBase):
+    name: Literal['Lyresong'] = 'Lyresong'
+    desc: str = (
+        'Return an Artifact card equipped by your character to your Hand. '
+        'During this Round, the next time you play an Artifact card: '
+        'Spend 2 less Elemental Dice.'
+    )
+    version: Literal['4.2'] = '4.2'
+    cost: Cost = Cost()
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        """
+        Self charactors that have artifact.
+        """
+        charactors = match.player_tables[self.position.player_idx].charactors
+        res: List[ObjectPosition] = []
+        for charactor in charactors:
+            if charactor.artifact is not None:
+                res.append(charactor.position)
+        return res
+
+    def is_valid(self, match: Any) -> bool:
+        return len(self.get_targets(match)) > 0
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[MoveObjectAction | CreateObjectAction]:
+        assert target is not None
+        charactor = match.get_object(target)
+        assert charactor is not None
+        assert charactor.artifact is not None
+        target_position = charactor.artifact.position.set_area(
+            ObjectPositionType.HAND)
+        return [
+            MoveObjectAction(
+                object_position = charactor.artifact.position,
+                target_position = target_position
+            ),
+            CreateObjectAction(
+                object_name = self.name,
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = -1,
+                ),
+                object_arguments = {}
+            )
+        ]
+
+
 OtherEventCards = (
     TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
     | IHaventLostYet | LeaveItToMe | WhenTheCraneReturned | Starsigns 
     | ClaxsArts | MasterOfWeaponry | BlessingOfTheDivineRelicsInstallation 
     | QuickKnit | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
     | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
-    | WhereIstheUnseenRazor | Pankration
+    | WhereIstheUnseenRazor | Pankration | Lyresong
 )

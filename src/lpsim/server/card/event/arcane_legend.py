@@ -8,7 +8,7 @@ from ...modifiable_values import DamageValue
 
 from ...action import (
     ConsumeArcaneLegendAction, CreateDiceAction, CreateObjectAction, 
-    MakeDamageAction
+    DrawCardAction, MakeDamageAction
 )
 
 from ...struct import Cost, ObjectPosition
@@ -216,7 +216,35 @@ class FreshWindOfFreedom(ArcaneLegendBase):
         ]
 
 
+class InEveryHouseAStove(ArcaneLegendBase):
+    name: Literal['In Every House a Stove']
+    desc: str = (
+        'Draw a number of cards equal to the current Round number. '
+        '(Up to 4 cards can be drawn in this way)'
+    )
+    version: Literal['4.2'] = '4.2'
+    cost: Cost = Cost(arcane_legend = True)
+
+    def get_targets(self, match: Any) -> List[ObjectPosition]:
+        return []
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ConsumeArcaneLegendAction | DrawCardAction]:
+        """
+        Draw cards.
+        """
+        assert target is None
+        return super().get_actions(target, match) + [
+            DrawCardAction(
+                player_idx = self.position.player_idx,
+                number = min(match.round_number, 4),
+                draw_if_filtered_not_enough = True
+            )
+        ]
+
+
 ArcaneLegendCards = (
     AncientCourtyard | CovenantOfRock | JoyousCelebration
-    | FreshWindOfFreedom
+    | FreshWindOfFreedom | InEveryHouseAStove
 )

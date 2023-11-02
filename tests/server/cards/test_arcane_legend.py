@@ -702,6 +702,175 @@ def test_fresh_wind_of_freedom():
     assert match.state != MatchState.ERROR
 
 
+def test_arcaneguoba_hairan_fenglong_lyresong():
+    cmd_records = [
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "skill 1 15 14 13",
+            "TEST 1 7 8 8 10 10 10",
+            "card 0 0",
+            "sw_char 1 12",
+            "card 2 1 11 10 9",
+            "card 0 0 8 7",
+            "card 1 0 6 5",
+            "TEST 2 skill 2 cost 3",
+            "TEST 3 card 1 cost 1",
+            "TEST 4 p0 hand 4",
+            "card 1 0 4",
+            "sw_char 1 3",
+            "skill 0 2 1 0",
+            "TEST 1 7 10 8 10 5 10",
+            "end",
+            "TEST 1 7 7 8 10 10 10",
+            "sw_char 0 15",
+            "card 0 0",
+            "card 4 0 14",
+            "skill 0 13 12 11",
+            "TEST 1 7 4 5 10 10 6",
+            "card 0 0",
+            "card 3 1 10",
+            "sw_char 1 9",
+            "end",
+            "sw_char 0 15",
+            "TEST 5 p1 support",
+            "skill 2 14 13",
+            "sw_char 2 12",
+            "end",
+            "card 0 0 15 14 13",
+            "TEST 5 p0 support",
+            "TEST 1 4 7 5 8 6 7",
+            "end"
+        ],
+        [
+            "sw_card 2 3 4",
+            "choose 2",
+            "TEST 1 10 10 10 10 10 7",
+            "card 4 2 15 14 13",
+            "card 1 0 12 11",
+            "TEST 2 skill 2 cost 4",
+            "TEST 3 card 3 cost 4",
+            "card 3 0 10 9 8 7",
+            "sw_char 1 6",
+            "TEST 2 skill 2 cost 5",
+            "end",
+            "card 4 1 15 14 13",
+            "card 1 0",
+            "card 3 1 12",
+            "skill 2 11 10 9 8",
+            "sw_char 2 7",
+            "skill 2 6 5 4 3 2",
+            "sw_char 1 1",
+            "end",
+            "skill 2 15 14 13 12",
+            "card 2 1",
+            "card 4 2 11",
+            "card 3 0",
+            "card 2 1 10",
+            "sw_char 0 9",
+            "end",
+            "card 1 1",
+            "card 4 2 15",
+            "card 3 0 14 13 12",
+            "card 2 0 11 10",
+            "end",
+            "card 0 0",
+            "TEST 4 p1 hand 7",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Keqing
+        charactor:Nahida
+        charactor:Ganyu
+        Lyresong
+        Stormterror's Lair*10
+        Ocean-Hued Clam*10
+        Lyresong*9
+        In Every House a Stove
+        Undivided Heart
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].strip().split(' ')
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                sidx = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseSkillRequest' and req.skill_idx == sidx:
+                        assert req.cost.total_dice_cost == cost
+            elif test_id == 3:
+                cidx = int(cmd[3])
+                cost = int(cmd[5])
+                for req in match.requests:
+                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                        assert req.cost.total_dice_cost == cost
+            elif test_id == 4:
+                pidx = int(cmd[2][1])
+                hnum = int(cmd[4])
+                assert len(match.player_tables[pidx].hands) == hnum
+            elif test_id == 5:
+                pidx = int(cmd[2][1])
+                assert len(match.player_tables[pidx].supports) == 0
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_covenant_of_rock()
     test_rock_dice_different_not_omni()
@@ -709,3 +878,4 @@ if __name__ == '__main__':
     test_ancient_courtyard()
     test_joyous()
     test_fresh_wind_of_freedom()
+    test_arcaneguoba_hairan_fenglong_lyresong()

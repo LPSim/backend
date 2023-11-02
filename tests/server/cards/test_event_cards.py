@@ -2105,6 +2105,82 @@ def test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration():
     assert match.state != MatchState.ERROR
 
 
+def test_lyresong():
+    """
+    When not sonsume, Lyresong status remains. No need to write test command.
+    """
+    cmd_records = [
+        [
+            "sw_card 1 2",
+            "choose 0",
+            "end"
+        ],
+        [
+            "sw_card 2 3",
+            "choose 0",
+            "card 1 1 15",
+            "card 2 0",
+            "card 1 0",
+            "card 0 0",
+            "card 1 1",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Keqing
+        charactor:Nahida
+        charactor:Ganyu
+        Gambler's Earrings*10
+        Lyresong*10
+        Rhythm of the Great Dream*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -2120,4 +2196,5 @@ if __name__ == '__main__':
     # test_star_quick_dream_vennessa_exile()
     # test_master_weapon_artifact()
     # test_new_wind_and_freedom_and_crane()
-    test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration()
+    # test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration()
+    test_lyresong()

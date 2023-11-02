@@ -298,6 +298,8 @@ class CostLabels(int, Enum):
     CHARGED_ATTACK = 0x2000
     PLUNGING_ATTACK = 0x4000
 
+    SKILLS = 0x1c00
+
     def __str__(self):
         return self.name
 

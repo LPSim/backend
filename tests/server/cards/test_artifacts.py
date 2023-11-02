@@ -1305,6 +1305,114 @@ def test_emblem_of_severed_fate():
     assert match.state != MatchState.ERROR
 
 
+def test_shadow_of_chiwang():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "sw_char 2 15",
+            "sw_char 1 14",
+            "sw_char 0 13",
+            "card 0 0 12",
+            "skill 1 11 10 9",
+            "sw_char 1 8",
+            "sw_char 2 7",
+            "sw_char 1 6",
+            "card 1 1 5",
+            "skill 1 4 3 2",
+            "TEST 1 hands 6 5",
+            "end",
+            "sw_char 2 15",
+            "skill 1 14 13 12",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "sw_char 1 15",
+            "card 1 1 14",
+            "skill 1 13 12 11",
+            "TEST 1 hands 5 5",
+            "sw_char 2 10",
+            "skill 1 9 8 7",
+            "sw_char 1 6",
+            "end",
+            "TEST 1 hands 8 8",
+            "skill 1 15 14 13",
+            "sw_char 2 12",
+            "skill 1 11 10 9",
+            "sw_char 1 8",
+            "skill 1 7 6 5",
+            "TEST 1 hand 8 9",
+            "sw_char 2 4"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Xingqiu
+        charactor:Fischl
+        charactor:Mona
+        Shadow of the Sand King*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].strip().split(' ')
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                hlen = [int(cmd[3]), int(cmd[4])]
+                assert len(match.player_tables[0].hands) == hlen[0]
+                assert len(match.player_tables[1].hands) == hlen[1]
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # from tests.utils_for_test import enable_logging
     # enable_logging()
@@ -1315,7 +1423,8 @@ if __name__ == '__main__':
     # test_old_gambler()
     # test_millelith()
     # test_instructor()
-    test_lucky_dog()
+    # test_lucky_dog()
     # test_big_elemental_artifacts()
     # test_advanturer_traveling_doctor()
     # test_emblem_of_severed_fate()
+    test_shadow_of_chiwang()

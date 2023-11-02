@@ -262,6 +262,7 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.BUFF] = IconType.BUFF
+    decrease_target: int = CostLabels.WEAPON.value
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -269,13 +270,13 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
         """
         decrease weapons cost by 2
         """
-        if not value.cost.label & CostLabels.WEAPON.value:
+        if value.cost.label & self.decrease_target == 0:
             # not weapon, do nothing
             return value
         # try decrease twice
         success = [value.cost.decrease_cost(None), 
                    value.cost.decrease_cost(None)]
-        if True in success:  # pragma: no branch
+        if True in success:
             # decrease success at least once
             if mode == 'REAL':
                 self.usage -= 1
@@ -624,10 +625,20 @@ class Pankration(TeamStatusBase):
         ]
 
 
+class Lyresong(WhereIstheUnseenRazor):
+    name: Literal['Lyresong'] = 'Lyresong'
+    desc: str = (
+        'During this Round, the next time you play an Artifact card: '
+        'Spend 2 less Elemental Dice.'
+    )
+    version: Literal['4.2'] = '4.2'
+    decrease_target: int = CostLabels.ARTIFACT.value
+
+
 EventCardTeamStatus = (
     FreshWindOfFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
     | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
     | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
     | FatuiAmbusher | RhythmOfTheGreatDream | WhenTheCraneReturned
-    | WindAndFreedom | Pankration
+    | WindAndFreedom | Pankration | Lyresong
 )

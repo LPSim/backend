@@ -1120,6 +1120,82 @@ def test_jade_dawn_narukami_chinju():
     assert match.state != MatchState.ERROR
 
 
+def test_fenglong():
+    """
+    No special tests. run code and passed.
+    """
+    cmd_records = [
+        [
+            "sw_card 3",
+            "choose 0",
+            "skill 1 15 14 13",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 0",
+            "card 0 0 15 14",
+            "card 0 0 13 12",
+            "card 0 0 11 10",
+            "card 0 0 9 8",
+            "card 2 0",
+            "card 1 0 7 6"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Keqing
+        charactor:Nahida
+        charactor:Ganyu
+        Stormterror's Lair*15
+        Thundering Penance*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_liyue_harbor()
     # test_tenshukaku()

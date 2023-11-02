@@ -1,12 +1,12 @@
 from typing import Any, List, Literal
 
-from ....consts import DamageType, ObjectPositionType
+from ....consts import DamageElementalType, DamageType, ObjectPositionType
 
-from ....action import Actions
+from ....action import Actions, MakeDamageAction
 
 from ....event import MakeDamageEventArguments
 
-from ....modifiable_values import DamageIncreaseValue
+from ....modifiable_values import DamageIncreaseValue, DamageValue
 from .base import ArtifactBase
 from ....struct import Cost
 
@@ -74,4 +74,39 @@ class CrownOfWatatsumi(ArtifactBase):
         return []
 
 
-OceanHuedArtifacts = CrownOfWatatsumi | CrownOfWatatsumi
+class OceanHuedClam(CrownOfWatatsumi):
+    name: Literal['Ocean-Hued Clam']
+    desc: str = (
+        'When played: Heal this charactor by 3 HP. '
+        'For every 3 HP of healing your characters receive, this card '
+        'accumulates 1 Sea-Dyed Foam (maximum of 2). '
+        'When this character deals DMG: Consume all Sea-Dyed Foam. DMG is '
+        'increased by 1 for each Sea-Dyed Foam consumed.'
+    )
+    version: Literal['4.2'] = '4.2'
+    cost: Cost = Cost(any_dice_number = 3)
+
+    def equip(self, match: Any) -> List[Actions]:
+        super().equip(match)
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        # heal self
+        return [
+            MakeDamageAction(
+                source_player_idx = self.position.player_idx,
+                target_player_idx = self.position.player_idx,
+                damage_value_list = [
+                    DamageValue(
+                        position = self.position,
+                        target_position = charactor.position,
+                        damage_type = DamageType.HEAL,
+                        damage = -3,
+                        damage_elemental_type = DamageElementalType.HEAL,
+                        cost = Cost()
+                    )
+                ]
+            )
+        ]
+
+
+OceanHuedArtifacts = CrownOfWatatsumi | OceanHuedClam
