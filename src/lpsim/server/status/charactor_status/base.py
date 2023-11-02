@@ -16,8 +16,8 @@ from ...action import (
 )
 from ...event import (
     ChooseCharactorEventArguments, MakeDamageEventArguments, 
-    PlayerActionStartEventArguments, RoundPrepareEventArguments, 
-    SwitchCharactorEventArguments
+    PlayerActionStartEventArguments, RoundEndEventArguments, 
+    RoundPrepareEventArguments, SwitchCharactorEventArguments
 )
 
 
@@ -381,3 +381,43 @@ class ReviveCharactorStatus(UsageCharactorStatus):
                 )
             ],
         )] + self.check_should_remove()
+
+
+class RoundEndAttackCharactorStatus(UsageCharactorStatus):
+    """
+    Make damage to this charactor at round end. It can also be heal, e.g.
+    Pizza.
+    """
+    name: str
+    desc: str
+    version: str
+    usage: int
+    max_usage: int
+    icon_type: Literal[IconType.DOT] = IconType.DOT
+    damage: int
+    damage_elemental_type: DamageElementalType
+
+    def event_handler_ROUND_END(
+        self, event: RoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        assert self.usage > 0
+        self.usage -= 1
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        damage_type = DamageType.DAMAGE
+        if self.damage < 0:
+            damage_type = DamageType.HEAL
+        return [MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = damage_type,
+                    target_position = charactor.position,
+                    damage = self.damage,
+                    damage_elemental_type = self.damage_elemental_type,
+                    cost = Cost()
+                )
+            ]
+        )]

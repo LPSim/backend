@@ -1,19 +1,18 @@
 from typing import Any, List, Literal
 
-from ...struct import Cost
-
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
+    CostLabels, DamageElementalType, IconType, ObjectPositionType, 
     SkillType
 )
 
-from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
+from ...modifiable_values import CostValue, DamageIncreaseValue
 
-from ...action import MakeDamageAction, RemoveObjectAction, SkillEndAction
+from ...action import RemoveObjectAction, SkillEndAction
 
-from ...event import MakeDamageEventArguments, RoundEndEventArguments
+from ...event import MakeDamageEventArguments
 from .base import (
-    DefendCharactorStatus, RoundCharactorStatus, UsageCharactorStatus
+    DefendCharactorStatus, RoundCharactorStatus, RoundEndAttackCharactorStatus,
+    UsageCharactorStatus
 )
 
 
@@ -149,7 +148,7 @@ class NorthernSmokedChicken(RoundCharactorStatus, UsageCharactorStatus):
         return value
 
 
-class MushroomPizza(RoundCharactorStatus):
+class MushroomPizza(RoundEndAttackCharactorStatus):
     name: Literal['Mushroom Pizza'] = 'Mushroom Pizza'
     desc: str = (
         'End Phase: Heal this charactor for 1 HP. '
@@ -159,26 +158,8 @@ class MushroomPizza(RoundCharactorStatus):
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.HEAL] = IconType.HEAL
-
-    def event_handler_ROUND_END(
-        self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
-        target_charactor = match.player_tables[
-            self.position.player_idx].charactors[self.position.charactor_idx]
-        return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = target_charactor.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost(),
-                )
-            ],
-        )]
+    damage: int = -1
+    damage_elemental_type: DamageElementalType = DamageElementalType.HEAL
 
 
 class MintyMeatRolls(RoundCharactorStatus):

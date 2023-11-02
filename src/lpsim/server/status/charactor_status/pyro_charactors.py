@@ -21,7 +21,7 @@ from ...modifiable_values import (
 from .base import (
     DefendCharactorStatus, ElementalInfusionCharactorStatus, 
     PrepareCharactorStatus, ReviveCharactorStatus, RoundCharactorStatus, 
-    ShieldCharactorStatus, UsageCharactorStatus
+    RoundEndAttackCharactorStatus, ShieldCharactorStatus, UsageCharactorStatus
 )
 
 
@@ -373,8 +373,7 @@ class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         )]
 
 
-# Usage status, will not disappear until usage is 0
-class BloodBlossom(UsageCharactorStatus):
+class BloodBlossom(RoundEndAttackCharactorStatus):
     name: Literal['Blood Blossom'] = 'Blood Blossom'
     desc: str = (
         'End Phase: Deal 1 Pyro DMG to the character to which this is '
@@ -384,28 +383,8 @@ class BloodBlossom(UsageCharactorStatus):
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.DOT] = IconType.DOT
-
-    def event_handler_ROUND_END(
-        self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
-        assert self.usage > 0
-        self.usage -= 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = charactor.position,
-                    damage = 1,
-                    damage_elemental_type = DamageElementalType.PYRO,
-                    cost = Cost()
-                )
-            ]
-        )]
+    damage: int = 1
+    damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
 
 class DilucInfusion(ElementalInfusionCharactorStatus, 
