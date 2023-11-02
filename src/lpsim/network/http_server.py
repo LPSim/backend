@@ -10,6 +10,7 @@ from ..server.match import Match, MatchConfig
 from ..server.deck import Deck
 from ..agents import InteractionAgent
 from .utils import get_new_match
+from .. import __version_tuple__, __version__  # type: ignore
 
 
 class ResetData(BaseModel):
@@ -87,6 +88,16 @@ class HTTPServer():
         #     )
 
         '''API hanlders for app'''
+
+        @app.get('/version')
+        async def get_version():
+            """
+            Return the version of lpsim.
+            """
+            return {
+                'version': __version__,
+                'version_tuple': __version_tuple__,
+            }
 
         @app.post('/reset')
         async def reset(data: ResetData):
