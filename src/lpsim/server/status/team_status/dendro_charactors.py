@@ -1,13 +1,15 @@
 from typing import Any, List, Literal
 
 from ...action import (
-    Actions, ChangeObjectUsageAction, MakeDamageAction, RemoveObjectAction
+    Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction, 
+    RemoveObjectAction
 )
 from ...event import (
-    CreateObjectEventArguments, ReceiveDamageEventArguments, 
+    CreateObjectEventArguments, MakeDamageEventArguments, 
+    ReceiveDamageEventArguments, RoundPrepareEventArguments, 
     SkillEndEventArguments
 )
-from ...struct import Cost
+from ...struct import Cost, ObjectPosition
 
 from ...consts import (
     DamageElementalType, DamageType, ElementType, ElementalReactionType, 
@@ -15,7 +17,7 @@ from ...consts import (
 )
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
-from .base import RoundTeamStatus, SwitchActionTeamStatus
+from .base import RoundTeamStatus, ShieldTeamStatus, SwitchActionTeamStatus
 
 
 class ShrineOfMaya(RoundTeamStatus):
@@ -220,4 +222,113 @@ class AdeptalLegacy(SwitchActionTeamStatus):
         ]
 
 
-DendroTeamStatus = ShrineOfMaya | FloralSidewinder | AdeptalLegacy
+class PulsingClarity(RoundTeamStatus):
+    name: Literal['Pulsing Clarity'] = 'Pulsing Clarity'
+    desc: str = '''When Action Phase begins: Create Seamless Shield.'''
+    version: Literal['4.2'] = '4.2'
+    usage: int = 2
+    max_usage: int = 2
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        ret = super().event_handler_ROUND_PREPARE(event, match)
+        return [
+            CreateObjectAction(
+                object_name = 'Seamless Shield',
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.TEAM_STATUS,
+                    id = 0
+                ),
+                object_arguments = {}
+            )
+        ] + ret
+
+
+class SeamlessShield(ShieldTeamStatus):
+    name: Literal['Seamless Shield'] = 'Seamless Shield'
+    desc: str = (
+        'Provides 1 Shield, protecting your active character. '
+        'When this effect is removed, or generated again: Deal 1 Dendro DMG, '
+        'and heal your active character for 1 HP.'
+    )
+    version: Literal['4.2'] = '4.2'
+    usage: int = 1
+    max_usage: int = 1
+    remove_triggered: bool = False
+
+    def effect_action(self, match: Any) -> MakeDamageAction:
+        """
+        make damage and heal
+        """
+        our_active_charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        opposite_active_charactor = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        return MakeDamageAction(
+            source_player_idx = self.position.player_idx,
+            target_player_idx = self.position.player_idx,
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.DAMAGE,
+                    target_position = opposite_active_charactor.position,
+                    damage = 1,
+                    damage_elemental_type = DamageElementalType.DENDRO,
+                    cost = Cost()
+                ),
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageType.HEAL,
+                    target_position = our_active_charactor.position,
+                    damage = -1,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost()
+                ),
+            ],
+        )
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        if not self.position.check_position_valid(
+            event.action.object_position, match, player_idx_same = True,
+            area_same = True,
+        ):
+            # not create on our area
+            return []
+        if (
+            event.action.object_name != self.name
+            or event.create_result != 'RENEW'
+        ):
+            # not create ourself, or not renew create
+            return []
+        # renew, make damage and heal
+        return [self.effect_action(match)]
+
+    def event_handler_MAKE_DAMAGE(
+        self, event: MakeDamageEventArguments, match: Any
+    ) -> List[MakeDamageAction | RemoveObjectAction]:
+        """
+        When damage made, check whether the team status should be removed.
+        """
+        if self.remove_triggered:
+            # already triggered, do nothing
+            return []
+        ret = super().event_handler_MAKE_DAMAGE(event, match)
+        if len(ret) > 0:
+            # should remove, remove self, then make damage and heal
+            self.remove_triggered = True
+            return [
+                self.effect_action(match),
+                RemoveObjectAction(object_position = self.position),
+            ]
+        return list(ret)
+
+
+DendroTeamStatus = (
+    ShrineOfMaya | FloralSidewinder | AdeptalLegacy | PulsingClarity
+    | SeamlessShield
+)
