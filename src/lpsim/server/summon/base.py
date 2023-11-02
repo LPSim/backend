@@ -9,6 +9,7 @@ from ..consts import (
     ObjectPositionType, ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
+    DeclareRoundEndEventArguments,
     MakeDamageEventArguments,
     ReceiveDamageEventArguments,
     RoundEndEventArguments,
@@ -211,6 +212,30 @@ class AOESummonBase(AttackerSummonBase):
                 )
             )
         return ret
+
+
+class DeclareRoundEndAttackSummonBase(AttackerSummonBase):
+    """
+    Summons that will attack when declare round end, e.g. Sesshou Sakura.
+    """
+    extra_attack_usage: int
+
+    def event_handler_DECLARE_ROUND_END(
+        self, event: DeclareRoundEndEventArguments, match: Any
+    ) -> List[MakeDamageAction]:
+        """
+        if usage larger than expected, return event_handler_ROUND_END
+        """
+        if event.action.player_idx != self.position.player_idx:
+            # not our player, do nothing
+            return []
+        if self.usage < self.extra_attack_usage:
+            # not enough usage, do nothing
+            return []
+        # as attack not use event, use fake event instead.
+        fake_event: Any = None
+        # make damage
+        return self.event_handler_ROUND_END(fake_event, match)
 
 
 class DefendSummonBase(SummonBase):

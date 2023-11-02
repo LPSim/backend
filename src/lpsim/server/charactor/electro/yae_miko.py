@@ -1,11 +1,9 @@
 from typing import Any, List, Literal
 
 from ...summon import Summons
-from ...summon.base import AttackerSummonBase
+from ...summon.base import DeclareRoundEndAttackSummonBase
 
-from ...event import DeclareRoundEndEventArguments
-
-from ...action import Actions, MakeDamageAction, RemoveObjectAction
+from ...action import Actions, RemoveObjectAction
 from ...struct import Cost
 
 from ...consts import (
@@ -20,7 +18,7 @@ from ..charactor_base import (
 # Summons
 
 
-class SesshouSakura(AttackerSummonBase):
+class SesshouSakura(DeclareRoundEndAttackSummonBase):
     name: Literal['Sesshou Sakura'] = 'Sesshou Sakura'
     desc: str = (
         'End Phase: Deal 1 Electro DMG. '
@@ -34,23 +32,7 @@ class SesshouSakura(AttackerSummonBase):
     damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
     damage: int = 1
     renew_type: Literal['ADD'] = 'ADD'
-
-    def event_handler_DECLARE_ROUND_END(
-        self, event: DeclareRoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
-        """
-        if usage larger than 4, return event_handler_ROUND_END
-        """
-        if event.action.player_idx != self.position.player_idx:
-            # not our player, do nothing
-            return []
-        if self.usage < 4:
-            # not enough usage, do nothing
-            return []
-        # as attack not use event, use fake event instead.
-        fake_event: Any = None
-        # make damage
-        return self.event_handler_ROUND_END(fake_event, match)
+    extra_attack_usage: int = 4
 
 
 # Skills
