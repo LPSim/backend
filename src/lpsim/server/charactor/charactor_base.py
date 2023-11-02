@@ -133,6 +133,18 @@ class SkillBase(ObjectBase):
             object_arguments = args
         )
 
+    def create_opposite_charactor_status(
+        self, match: Any, name: str, args: Any = {}
+    ) -> CreateObjectAction:
+        target = match.player_tables[
+            1 - self.position.player_idx].get_active_charactor()
+        return CreateObjectAction(
+            object_name = name,
+            object_position = target.position.set_area(
+                ObjectPositionType.CHARACTOR_STATUS),
+            object_arguments = args
+        )
+
     def create_summon(
         self, name: str, args: Any = {}
     ) -> CreateObjectAction:

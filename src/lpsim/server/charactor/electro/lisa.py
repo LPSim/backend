@@ -8,7 +8,7 @@ from ...event import (
 )
 
 from ...action import (
-    ActionTypes, Actions, CreateObjectAction, RemoveObjectAction
+    Actions, CreateObjectAction, RemoveObjectAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -55,15 +55,8 @@ class LightningTouch(ElementalNormalAttackBase):
         if not match.player_tables[self.position.player_idx].charge_satisfied:
             # not charged attack
             return ret
-        damage_action = ret[0]
-        assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        target_position = damage_action.damage_value_list[0].target_position
-        ret.append(CreateObjectAction(
-            object_name = 'Conductive',
-            object_position = target_position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS
-            ),
-            object_arguments = {}
+        ret.append(self.create_opposite_charactor_status(
+            match, 'Conductive', {}
         ))
         return ret
 
@@ -97,12 +90,8 @@ class VioletArc(ElementalSkillBase):
         if conductive is None:
             # no conductive
             return super().get_actions(match) + [
-                CreateObjectAction(
-                    object_name = 'Conductive',
-                    object_position = target.position.set_area(
-                        ObjectPositionType.CHARACTOR_STATUS
-                    ),
-                    object_arguments = {}
+                self.create_opposite_charactor_status(
+                    match, 'Conductive', {}
                 )
             ]
         else:

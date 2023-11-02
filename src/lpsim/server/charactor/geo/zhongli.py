@@ -8,7 +8,7 @@ from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageIncreaseValue
 
-from ...action import ActionTypes, Actions, CreateObjectAction
+from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
@@ -95,18 +95,11 @@ class PlanetBefall(ElementalBurstBase):
         """
         Attack target, and create status for target
         """
-        ret = super().get_actions(match)
-        damage_action = ret[-1]
-        assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        target = damage_action.damage_value_list[0].target_position
-        ret.append(CreateObjectAction(
-            object_name = 'Petrification',
-            object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS
-            ),
-            object_arguments = {}
-        ))
-        return ret
+        return super().get_actions(match) + [
+            self.create_opposite_charactor_status(
+                match, 'Petrification', {}
+            )
+        ]
 
 
 # Talents

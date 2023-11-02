@@ -1,11 +1,11 @@
 from typing import Any, List, Literal
 
-from ...action import Actions, CreateObjectAction, RemoveObjectAction
+from ...action import Actions, RemoveObjectAction
 from ...struct import Cost
 
 from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
-    FactionType, ObjectPositionType, WeaponType
+    FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -48,8 +48,6 @@ class InfluxBlast(ElementalSkillBase):
             ret.append(RemoveObjectAction(
                 object_position = exist_status.position
             ))
-        target_charactor = match.player_tables[
-            1 - self.position.player_idx].get_active_charactor()
         args = {}
         if self.is_talent_equipped(match):
             args = {
@@ -58,12 +56,8 @@ class InfluxBlast(ElementalSkillBase):
                 'is_talent_activated': True,
             }
         return super().get_actions(match) + ret + [
-            CreateObjectAction(
-                object_position = target_charactor.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS
-                ),
-                object_name = 'Refraction',
-                object_arguments = args
+            self.create_opposite_charactor_status(
+                match, 'Refraction', args
             )
         ]
 
