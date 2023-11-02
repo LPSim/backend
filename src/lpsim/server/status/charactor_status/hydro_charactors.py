@@ -21,8 +21,8 @@ from ...event import (
 )
 from .base import (
     CharactorStatusBase, ElementalInfusionCharactorStatus, 
-    PrepareCharactorStatus, RoundCharactorStatus, ShieldCharactorStatus, 
-    UsageCharactorStatus
+    PrepareCharactorStatus, RoundCharactorStatus, 
+    RoundEndAttackCharactorStatus, ShieldCharactorStatus, UsageCharactorStatus
 )
 
 
@@ -500,7 +500,17 @@ class TakimeguriKanka(ElementalInfusionCharactorStatus, UsageCharactorStatus):
         return value
 
 
+class LingeringAeon(RoundEndAttackCharactorStatus):
+    name: Literal['Lingering Aeon'] = 'Lingering Aeon'
+    desc: str = '''End Phase: Deal 3 Hydro DMG to affected characters.'''
+    version: Literal['4.2'] = '4.2'
+    usage: int = 1
+    max_usage: int = 1
+    damage: int = 3
+    damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
+
+
 HydroCharactorStatus = (
     Riptide | RangedStance | MeleeStance | CeremonialGarment | HeronShield
-    | Refraction | TakimeguriKanka
+    | Refraction | TakimeguriKanka | LingeringAeon
 )

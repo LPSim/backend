@@ -1,16 +1,20 @@
 from typing import Any, List, Literal
 
 from ...event import (
-    ChooseCharactorEventArguments, RoundPrepareEventArguments, 
-    SkillEndEventArguments, SwitchCharactorEventArguments
+    ChooseCharactorEventArguments, CreateObjectEventArguments, 
+    RoundPrepareEventArguments, SkillEndEventArguments, 
+    SwitchCharactorEventArguments
 )
 
 from ...struct import Cost, ObjectPosition
 
-from ...action import Actions, MakeDamageAction
+from ...action import (
+    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
+)
 
 from ...consts import (
-    DamageElementalType, DamageType, IconType, SkillType, WeaponType
+    DamageElementalType, DamageType, IconType, ObjectPositionType, SkillType, 
+    WeaponType
 )
 
 from ...modifiable_values import (
@@ -19,7 +23,7 @@ from ...modifiable_values import (
 )
 from .base import (
     DefendTeamStatus, ElementalInfusionTeamStatus, ExtraAttackTeamStatus, 
-    RoundTeamStatus, UsageTeamStatus
+    RoundTeamStatus, TeamStatusBase, UsageTeamStatus
 )
 
 
@@ -265,6 +269,61 @@ class PrayerOfTheCrimsonCrown(ElementalInfusionTeamStatus,
         return self._attack(match, 'EXTRA')
 
 
+class GoldenChalicesBounty(TeamStatusBase):
+    """
+    TODO:
+    Currently after a dendro core is generated, it removes dendro core and
+    create bountiful core. But it will clear existing dendro core. Need to be
+    fixed, as dendro core can be triggerd by Abyss Summon.
+    """
+    name: Literal["Golden Chalice's Bounty"] = "Golden Chalice's Bounty"
+    desc: str = (
+        "After opponent's characters are affected by the Bloom reaction: "
+        "Your team no longer generates Dendro Core, but instead summons "
+        "Bountiful Core."
+    )
+    version: Literal['4.2'] = '4.2'
+    usage: int = 0
+    max_usage: int = 0
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[RemoveObjectAction | CreateObjectAction]:
+        """
+        If our create dendro core, remove the dendro core and create 
+        Bountiful Core.
+        """
+        if event.action.object_position.player_idx != self.position.player_idx:
+            # not our create
+            return []
+        if (
+            event.action.object_position.area != ObjectPositionType.TEAM_STATUS
+            or event.action.object_name != 'Dendro Core'
+        ):
+            # not teams status dendro core
+            return []
+        # is dendro core, remove it and create bountiful core
+        dendro_core = match.player_tables[
+            self.position.player_idx].team_status[event.create_idx]
+        assert dendro_core.name == 'Dendro Core'
+        return [
+            RemoveObjectAction(
+                object_position = dendro_core.position,
+            ),
+            CreateObjectAction(
+                object_name = 'Bountiful Core',
+                object_position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.SUMMON,
+                    id = 0
+                ),
+                object_arguments = {}
+            )
+        ]
+
+
 HydroCharactorTeamStatus = (
     IllusoryBubble | RainbowBladework | RainSword | PrayerOfTheCrimsonCrown
+    | GoldenChalicesBounty
 )
