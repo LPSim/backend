@@ -636,8 +636,8 @@ def test_claxs_art():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
-        Clax's Arts*30
+        # Calx's Arts*2
+        Calx's Arts*30
         '''
     )
     match.set_deck([deck, deck])

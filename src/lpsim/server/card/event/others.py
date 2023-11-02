@@ -328,7 +328,7 @@ class Starsigns(CardBase):
 
 
 class ClaxsArts(CardBase):
-    name: Literal["Clax's Arts"]
+    name: Literal["Calx's Arts"]
     desc: str = (
         'Shift 1 Energy from at most 2 of your characters on standby to '
         'your active character.'

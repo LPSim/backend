@@ -1113,7 +1113,7 @@ def test_advanturer_traveling_doctor():
         Sweet Madame*15
         Adventurer's Bandana*5
         Traveling Doctor's Handkerchief*5
-        Clax's Arts*5
+        Calx's Arts*5
         '''
     )
     for charactor in deck.charactors:
@@ -1248,7 +1248,7 @@ def test_emblem_of_severed_fate():
         Emblem of Severed Fate*5
         Emblem of Severed Fate@4.0*5
         Emblem of Severed Fate@3.7*5
-        Clax's Arts*5
+        Calx's Arts*5
         '''
     )
     for charactor in deck.charactors:

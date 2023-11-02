@@ -83,7 +83,7 @@ def test_adeptus_temptation():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         Adeptus' Temptation*30
         '''
@@ -227,7 +227,7 @@ def test_lotus_flower_crisp():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         Lotus Flower Crisp*30
@@ -366,7 +366,7 @@ def test_lotus_flower_crisp_and_reflection():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         Lotus Flower Crisp*30
@@ -489,7 +489,7 @@ def test_mond_hash():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         # Mondstadt Hash Brown*2
@@ -609,7 +609,7 @@ def test_tandoori():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         # Mondstadt Hash Brown*2

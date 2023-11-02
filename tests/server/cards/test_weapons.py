@@ -1642,7 +1642,7 @@ def test_favonius_lighting_elegy():
         Elegy for the End*5
         Engulfing Lightning*5
         Favonius Sword*5
-        Clax's Arts*5
+        Calx's Arts*5
         '''
     )
     for charactor in deck.charactors:

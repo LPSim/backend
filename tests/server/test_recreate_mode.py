@@ -124,7 +124,7 @@ def test_recreate_mode():
         Timmie
         Liben
         Strategize
-        Clax's Arts
+        Calx's Arts
         Timmie
         Mushroom Pizza
         Chef Mao

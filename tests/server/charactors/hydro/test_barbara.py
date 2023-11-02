@@ -103,7 +103,7 @@ def test_barbara():
         # Strategize*2
         # I Haven't Lost Yet!*2
         # Leave It to Me!
-        # Clax's Arts*2
+        # Calx's Arts*2
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         # Mondstadt Hash Brown*2
