@@ -7,10 +7,38 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+### Added
+- All charactors and cards in 4.2 are implemented.
+  - Charactors and their talents:
+    - Nilou
+    - Dori
+    - Baizhu
+    - The Starry Skies Their Flowers Rain
+    - Discretionary Supplement
+    - All Things Are of the Earth
+  - Equipments
+    - Ocean-Hued Clam
+    - Shadow of the Sand King
+  - Supports
+    - Stormterror's Lair
+  - Event Cards
+    - Lyresong
+    - In Every House a Stove
+- Implement DeclareRoundEndAttackSummonBase, RoundEndAttackCharactorStatus,
+  and replace parent classes of related objects.
+- Added new interface for HTTPServer, so client can get current running server
+  version.
+
+### Changed
+- AttackerSummonBase support healing.
+
+### Fixed
+- Typo of Calx's Arts.
+
 ## [0.4.1.3] - 2023-10-31
 
 ### Added
-- Add `Deck.deck_to_str` function.
+- Add `Deck.to_str` function.
 - Add object trashbin to make objects able to trigger events when they are 
   removed. #2
 
