@@ -46,8 +46,6 @@ class SparksNSplash(UsageTeamStatus):
         if self.usage > 0:  # pragma: no branch
             self.usage -= 1
             return [MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
                 damage_value_list = [DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,
@@ -132,8 +130,6 @@ class InspirationField(RoundTeamStatus):
             return []
         # heal this charactor by 2
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -274,8 +270,6 @@ class FierySanctumField(DefendTeamStatus):
                 # after shield triggered, dehya has at least 7 hp and alive,
                 # make 1 piercing damage to dehya
                 ret.append(MakeDamageAction(
-                    source_player_idx = self.position.player_idx,
-                    target_player_idx = self.position.player_idx,
                     damage_value_list = [
                         DamageValue(
                             position = self.position,

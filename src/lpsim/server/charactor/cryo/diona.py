@@ -37,8 +37,6 @@ class DrunkenMist(AttackerSummonBase):
         our_active = match.player_tables[
             self.position.player_idx].get_active_charactor()
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -99,8 +97,6 @@ class SignatureMix(ElementalBurstBase):
         our_active = match.player_tables[
             self.position.player_idx].get_active_charactor()
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

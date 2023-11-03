@@ -176,8 +176,6 @@ class SkillBase(ObjectBase):
         target_charactor_idx = target_table.active_charactor_idx
         target_charactor = target_table.charactors[target_charactor_idx]
         return MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = 1 - self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -194,8 +192,6 @@ class SkillBase(ObjectBase):
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         return MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -214,8 +210,6 @@ class SkillBase(ObjectBase):
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         return MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -360,8 +354,6 @@ class AOESkillBase(SkillBase):
         target_charactor = target_table.charactors[target_charactor_idx]
         charactors = target_table.charactors
         damage_action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = 1 - self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

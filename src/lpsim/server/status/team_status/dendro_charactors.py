@@ -155,8 +155,6 @@ class FloralSidewinder(RoundTeamStatus):
         self.usage -= 1
         return [
             MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = 1 - self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -192,8 +190,6 @@ class AdeptalLegacy(SwitchActionTeamStatus):
             self.position.player_idx].get_active_charactor()
         return [
             MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = 1 - self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -206,8 +202,6 @@ class AdeptalLegacy(SwitchActionTeamStatus):
                 ]
             ),
             MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -268,8 +262,6 @@ class SeamlessShield(ShieldTeamStatus):
         opposite_active_charactor = match.player_tables[
             1 - self.position.player_idx].get_active_charactor()
         return MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

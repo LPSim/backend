@@ -3,13 +3,13 @@ from typing import Any, List, Literal
 from ...summon.base import DefendSummonBase
 
 from ...modifiable_values import DamageIncreaseValue
-from ...event import AfterMakeDamageEventArguments, RoundPrepareEventArguments
+from ...event import ReceiveDamageEventArguments, RoundPrepareEventArguments
 
 from ...action import Actions, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
+    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
     ObjectPositionType, SkillType, WeaponType
 )
 from ..charactor_base import (
@@ -43,8 +43,8 @@ class Ushi(DefendSummonBase):
 
     create_status_triggered: bool = False
 
-    def event_handler_AFTER_MAKE_DAMAGE(
-        self, event: AfterMakeDamageEventArguments, match: Any
+    def event_handler_RECEIVE_DAMAGE(
+        self, event: ReceiveDamageEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
         If any of our charactor is attacked and not triggered, Arataki Itto
@@ -53,8 +53,14 @@ class Ushi(DefendSummonBase):
         if self.create_status_triggered:
             # already triggered, no effect
             return []
-        if event.action.target_player_idx != self.position.player_idx:
+        if (
+            event.final_damage.target_position.player_idx 
+            != self.position.player_idx
+        ):
             # not attack our player, no effect
+            return []
+        if event.final_damage.damage_type != DamageType.DAMAGE:
+            # not damage, no effect
             return []
         # trigger, gain Superlative Superstrength for first Arataki Itto
         charactors = match.player_tables[self.position.player_idx].charactors

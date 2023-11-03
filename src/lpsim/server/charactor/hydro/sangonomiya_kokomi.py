@@ -120,8 +120,6 @@ class NereidsAscension(ElementalBurstBase):
         """
         ret = super().get_actions(match)
         action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = []
         )
         charactors = match.player_tables[self.position.player_idx].charactors

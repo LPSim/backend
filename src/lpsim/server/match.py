@@ -2153,11 +2153,7 @@ class Match(BaseModel):
         handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
-        target_idx = action.target_player_idx
-        next_charactor: int = self.player_tables[
-            target_idx].active_charactor_idx
-        if action.do_charactor_change:
-            next_charactor = action.charactor_change_idx
+        switch_charactor: List[int] = action.charactor_change_idx
         events: List[ReceiveDamageEventArguments | MakeDamageEventArguments 
                      | AfterMakeDamageEventArguments
                      | SwitchCharactorEventArguments] = []
@@ -2188,20 +2184,14 @@ class Match(BaseModel):
                     and damage.target_position.charactor_idx 
                     == table.active_charactor_idx):
                 # overloaded to next charactor
-                if damage.target_position.player_idx != target_idx:
-                    self._set_match_state(MatchState.ERROR)  # pragma no cover
-                    raise AssertionError(
-                        'Overloaded damage target player '
-                        f'{damage.target_position.player_idx} '
-                        f'does not match action target player {target_idx}.'
-                    )
-                assert not action.do_charactor_change, (
-                    'When overloaded to switch charactor, it should not '
-                    'contain charactor change rule.'
+                player_idx = damage.target_position.player_idx
+                assert switch_charactor[player_idx] == -1, (
+                    'When overloaded to switch charactor, which already '
+                    'contain charactor switch rule.'
                 )
                 nci = table.next_charactor_idx()
                 if nci is not None:
-                    next_charactor = nci
+                    switch_charactor[player_idx] = nci
             # apply elemental reaction, update damage and append new damages
             damage, new_damages = apply_elemental_reaction(
                 table.charactors,
@@ -2261,15 +2251,15 @@ class Match(BaseModel):
         events += infos
         events.append(AfterMakeDamageEventArguments.
                       from_make_damage_event_arguments(make_damage_event))
-        if next_charactor != self.player_tables[
-                target_idx].active_charactor_idx:
-            # charactor switch
-            sw_action = SwitchCharactorAction(
-                player_idx = target_idx,
-                charactor_idx = next_charactor,
-            )
-            sw_events = self._action_switch_charactor(sw_action)
-            events += sw_events
+        for table, sc in zip(self.player_tables, switch_charactor):
+            if sc != -1 and sc != table.active_charactor_idx:
+                # charactor switch
+                sw_action = SwitchCharactorAction(
+                    player_idx = table.player_idx,
+                    charactor_idx = sc,
+                )
+                sw_events = self._action_switch_charactor(sw_action)
+                events += sw_events
         return events
 
     def _action_charge(self, action: ChargeAction) \

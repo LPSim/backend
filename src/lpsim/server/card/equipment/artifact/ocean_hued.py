@@ -93,8 +93,6 @@ class OceanHuedClam(CrownOfWatatsumi):
         # heal self
         return [
             MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,

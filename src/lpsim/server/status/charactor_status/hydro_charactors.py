@@ -247,8 +247,6 @@ class MeleeStance(ElementalInfusionCharactorStatus,
                     1 - self.position.player_idx].charactors[next_idx]
                 self.extra_attack_usage -= 1
                 return [MakeDamageAction(
-                    source_player_idx = self.position.player_idx,
-                    target_player_idx = 1 - self.position.player_idx,
                     damage_value_list = [
                         DamageValue(
                             position = self.position,
@@ -358,8 +356,6 @@ class CeremonialGarment(RoundCharactorStatus):
             # not normal attack
             return []
         action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = []
         )
         charactors = match.player_tables[self.position.player_idx].charactors

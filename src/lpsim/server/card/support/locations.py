@@ -190,8 +190,6 @@ class WangshuInn(LocationBase):
             return []
         self.usage -= 1
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -229,8 +227,6 @@ class FavoniusCathedral(LocationBase):
             return []
         self.usage -= 1
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -340,8 +336,6 @@ class SangonomiyaShrine(LocationBase):
             return []
         charactors = match.player_tables[self.position.player_idx].charactors
         damage_action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [],
         )
         for charactor in charactors:

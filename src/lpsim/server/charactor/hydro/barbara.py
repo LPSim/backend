@@ -41,8 +41,6 @@ class MelodyLoop(AttackerSummonBase):
         self.usage -= 1
         target_table = match.player_tables[player_idx]
         damage_action = MakeDamageAction(
-            source_player_idx = player_idx,
-            target_player_idx = player_idx,
             damage_value_list = [],
         )
         for cid, charactor in enumerate(target_table.charactors):
@@ -107,8 +105,6 @@ class ShiningMiracle(ElementalBurstBase):
         ret: List[Actions] = [self.charge_self(-3)]
         charactors = match.player_tables[self.position.player_idx].charactors
         heal_action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [],
         )
         for charactor in charactors:

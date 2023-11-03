@@ -368,8 +368,6 @@ class ReviveCharactorStatus(UsageCharactorStatus):
         # heal this charactor by 1
         self.usage -= 1
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -408,8 +406,6 @@ class RoundEndAttackCharactorStatus(UsageCharactorStatus):
         if self.damage < 0:
             damage_type = DamageType.HEAL
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

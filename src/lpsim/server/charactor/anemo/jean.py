@@ -65,8 +65,6 @@ class DandelionField(AttackerSummonBase):
         our_active = match.player_tables[
             self.position.player_idx].get_active_charactor()
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -106,8 +104,8 @@ class GaleBlade(ElementalSkillBase):
         # change charactor
         attack_action = ret[0]
         assert attack_action.type == ActionTypes.MAKE_DAMAGE
-        attack_action.do_charactor_change = True
-        attack_action.charactor_change_idx = next_idx
+        attack_action.charactor_change_idx[
+            1 - self.position.player_idx] = next_idx
         return ret
 
 
@@ -128,8 +126,6 @@ class DandelionBreeze(ElementalBurstBase):
         ret: List[Actions] = [self.charge_self(-3)]
         charactors = match.player_tables[self.position.player_idx].charactors
         heal_action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [],
         )
         for charactor in charactors:

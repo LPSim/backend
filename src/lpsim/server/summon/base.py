@@ -124,8 +124,6 @@ class AttackerSummonBase(SummonBase):
         target_charactor = target_table.get_active_charactor()
         return [
             MakeDamageAction(
-                source_player_idx = player_idx,
-                target_player_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
@@ -294,8 +292,6 @@ class DefendSummonBase(SummonBase):
         target_charactor = target_table.get_active_charactor()
         return [
             MakeDamageAction(
-                source_player_idx = player_idx,
-                target_player_idx = 1 - player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,

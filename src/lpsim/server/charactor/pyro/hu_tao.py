@@ -64,8 +64,6 @@ class SpiritSoother(ElementalBurstBase):
         ret = super().get_actions(match)
         self.damage = 4
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

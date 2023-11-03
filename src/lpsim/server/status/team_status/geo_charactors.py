@@ -78,8 +78,6 @@ class FullPlate(ShieldTeamStatus):
         for charactor in table.charactors:
             if charactor.is_alive:
                 ret.append(MakeDamageAction(
-                    source_player_idx = self.position.player_idx,
-                    target_player_idx = self.position.player_idx,
                     damage_value_list = [
                         DamageValue(
                             position = self.position,

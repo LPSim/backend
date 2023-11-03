@@ -160,10 +160,7 @@ class JoyousCelebration(ArcaneLegendBase):
         ret: List[ConsumeArcaneLegendAction | MakeDamageAction] = []
         ret += super().get_actions(target, match)
         damage_action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
-            damage_value_list = [
-            ],
+            damage_value_list = [],
         )
         active_charactor = match.player_tables[
             self.position.player_idx].get_active_charactor()

@@ -35,8 +35,6 @@ class TenkoThunderbolts(UsageTeamStatus):
         target_charactor = target_table.charactors[target_charactor_idx]
         self.usage -= 1
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = 1 - self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

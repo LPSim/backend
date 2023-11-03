@@ -105,8 +105,8 @@ class AstableAnemohypostasisCreation6308(ElementalSkillBase):
         # change charactor
         attack_action = ret[0]
         assert attack_action.type == ActionTypes.MAKE_DAMAGE
-        attack_action.do_charactor_change = True
-        attack_action.charactor_change_idx = prev_idx
+        attack_action.charactor_change_idx[
+            1 - self.position.player_idx] = prev_idx
         return ret
 
 

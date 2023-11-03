@@ -211,8 +211,6 @@ class StalwartAndTrue(SkillTalent):
             self.position.player_idx].charactors[self.position.charactor_idx]
         if charactor.hp <= 6:
             return [MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
                 damage_value_list = [
                     DamageValue(
                         position = self.position,

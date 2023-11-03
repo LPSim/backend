@@ -173,8 +173,6 @@ class SweetMadame(FoodCardBase):
         assert len(ret) == 1
         assert target is not None
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -205,8 +203,6 @@ class MondstadtHashBrown(FoodCardBase):
         assert len(ret) == 1
         assert target is not None
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -240,8 +236,6 @@ class MushroomPizza(FoodCardBase):
         assert len(ret) == 1
         assert target is not None
         ret.append(MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

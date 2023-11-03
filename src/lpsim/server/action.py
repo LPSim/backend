@@ -233,25 +233,20 @@ class MakeDamageAction(ActionBase):
     applies to the charactor (e.g. Kokomi) treats as zero damage.
 
     Args:
-        source_player_idx (int): The index of the player to make damage from.
         damage_value_list (List[DamageValue]): The damage values to make.
-        target_player_idx (int): The index of the player to make damage to.
         do_charactor_change (bool): Whether to change charactor after making
             damage.
-        charactor_change_idx (int): The charactor index of the charactor who 
-            will be changed to. It should not be a defeated charactor.
-        TODO: is these two player idx necessary? Can a damage made to both
-        players? (e.g. Kokomi's elemental burst)
+        charactor_change_idx (List[int]): The charactor indices of the 
+            charactor who will be changed to for each player. If it is -1,
+            this damage will not explicitly change the charactor. It should 
+            not be a defeated charactor.
     """
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     record_level: int = 10
-    source_player_idx: int
     damage_value_list: List[DamageValue]
-    target_player_idx: int
 
     # charactor change
-    do_charactor_change: bool = False
-    charactor_change_idx: int = -1
+    charactor_change_idx: List[int] = [-1, -1]
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)

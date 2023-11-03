@@ -488,8 +488,6 @@ class FatuiAmbusher(UsageTeamStatus):
             self.usage -= 1
             self.activated_this_round = True
             return [MakeDamageAction(
-                source_player_idx = self.position.player_idx,
-                target_player_idx = self.position.player_idx,
                 damage_value_list = [DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,

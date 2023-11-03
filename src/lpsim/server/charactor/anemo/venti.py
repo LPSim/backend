@@ -55,8 +55,8 @@ class Stormeye(SwirlChangeSummonBase):
             else:
                 raise AssertionError('No charactor alive')
         assert len(ret) == 1
-        ret[0].do_charactor_change = True
-        ret[0].charactor_change_idx = target_idx
+        ret[0].charactor_change_idx[
+            1 - self.position.player_idx] = target_idx
         return ret
 
 

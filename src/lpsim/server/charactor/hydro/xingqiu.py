@@ -38,10 +38,14 @@ class FatalRainscreen(ElementalSkillBase):
         """
         Attack, application and create object
         """
-        ret = super().get_actions(match)
-        ret += [
-            self.element_application_self(match, DamageElementalType.HYDRO)
+        ret = [
+            self.attack_opposite_active(match, self.damage, self.damage_type),
+            self.charge_self(1),
         ]
+        ele_app = self.element_application_self(
+            match, DamageElementalType.HYDRO
+        )
+        ret[0].damage_value_list += ele_app.damage_value_list
         if self.is_talent_equipped(match):
             ret += [self.create_team_status('Rain Sword', {
                 'usage': 3,
@@ -70,10 +74,14 @@ class Raincutter(ElementalBurstBase):
         """
         Attack, application and create object
         """
-        ret = super().get_actions(match)
-        ret += [
-            self.element_application_self(match, DamageElementalType.HYDRO)
+        ret = [
+            self.charge_self(-self.cost.charge),
+            self.attack_opposite_active(match, self.damage, self.damage_type),
         ]
+        ele_app = self.element_application_self(
+            match, DamageElementalType.HYDRO
+        )
+        ret[1].damage_value_list += ele_app.damage_value_list
         return ret + [
             self.create_team_status('Rainbow Bladework')
         ]

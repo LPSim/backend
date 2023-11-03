@@ -55,8 +55,6 @@ class ShadowswordLoneGale(AttackerSummonBase):
         target_charactor = match.player_tables[
             1 - self.position.player_idx].get_active_charactor()
         return [MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = 1 - self.position.player_idx,
             damage_value_list = [
                 DamageValue(
                     position = self.position,

@@ -88,8 +88,6 @@ class SeedOfSkandha(UsageCharactorStatus):
                         change_usage = -1,
                     ))
                     actions.append(MakeDamageAction(
-                        source_player_idx = self.position.player_idx,
-                        target_player_idx = self.position.player_idx,
                         damage_value_list = [
                             DamageValue(
                                 position = status.position,

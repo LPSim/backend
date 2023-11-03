@@ -42,8 +42,6 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
             return []
         self.usage -= 1
         action = MakeDamageAction(
-            source_player_idx = self.position.player_idx,
-            target_player_idx = self.position.player_idx,
             damage_value_list = [],
         )
         if self.heal_target == 'SELF':
