@@ -60,7 +60,8 @@ class SeedOfSkandha(UsageCharactorStatus):
             return []
         assert self.usage > 0
         # trigger, check all seed on the same side
-        actions: List[MakeDamageAction | ChangeObjectUsageAction] = []
+        damage_actions: List[MakeDamageAction] = []
+        change_usage_actions: List[ChangeObjectUsageAction] = []
         table = match.player_tables[self.position.player_idx]
         has_pyro_charactor = False
         has_talent = False
@@ -72,7 +73,9 @@ class SeedOfSkandha(UsageCharactorStatus):
             if charactor.name == 'Nahida':
                 if charactor.talent is not None:
                     has_talent = True
-        for charactor in table.charactors:
+        aidx = table.active_charactor_idx
+        charactors = table.charactors[aidx:] + table.charactors[:aidx]
+        for charactor in charactors:
             for status in charactor.status:
                 if status.name == 'Seed of Skandha':
                     # found a seed, trigger it
@@ -82,12 +85,12 @@ class SeedOfSkandha(UsageCharactorStatus):
                         # enemy have talent nahida and pyro, dendeo damage
                         d_ele_type = DamageElementalType.DENDRO
                     # change usage first, so no need to claim new trigger
-                    actions.append(ChangeObjectUsageAction(
+                    change_usage_actions.append(ChangeObjectUsageAction(
                         object_position = status.position,
                         change_type = 'DELTA',
                         change_usage = -1,
                     ))
-                    actions.append(MakeDamageAction(
+                    damage_actions.append(MakeDamageAction(
                         damage_value_list = [
                             DamageValue(
                                 position = status.position,
@@ -99,7 +102,8 @@ class SeedOfSkandha(UsageCharactorStatus):
                             )
                         ],
                     ))
-        return actions
+        # firstly change usage, to avoid object is disappeared.
+        return change_usage_actions + damage_actions
 
 
 class VijnanaSuffusion(ElementalInfusionCharactorStatus, UsageCharactorStatus):

@@ -946,10 +946,102 @@ def test_seed_with_element_application():
     assert match.state != MatchState.ERROR
 
 
+def test_nahida_defeat_with_last_seed():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "end",
+            "end",
+            "choose 0"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "sw_char 2 9",
+            "skill 1 8 7 6",
+            "sw_char 1 5",
+            "end",
+            "skill 3 15 14 13",
+            "TEST 1 8 8 0 10 10 10",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Xingqiu@3.3
+        charactor:Nahida
+        charactor:Fischl
+        The Scent Remained*30
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd.strip().split(' ')[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_fischl_mona_nahida()
     # test_seed_not_first_status()
     # test_talent_enemy_has_other_charactor_status()
     # test_nahida_talents()
     # test_seed_with_element_application()
-    test_fischl_mona_nahida_no_talent()
+    # test_fischl_mona_nahida_no_talent()
+    test_nahida_defeat_with_last_seed()
