@@ -5,6 +5,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?style=flat-square&color=blue)](https://pypi.org/project/lpsim/)
 
+[中文简介](docs/README.ch.md)
+
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
 TCG, written with Python 3.10 using Pydantic and FastAPI.
 
@@ -13,6 +15,9 @@ This project is under AGPL-3.0 license.
 ## Progress
 
 All charactors and cards with their balance changes until 4.1 are done.
+
+:sparkles: NEW: 4.2 charactors and cards are implemented. Waiting for official 
+announcement of balance changes.
 
 ## Feature
 
@@ -36,11 +41,18 @@ you can find the change log on [CHANGELOG.md](CHANGELOG.md).
 To install the newest development version, use 
 `pip install lpsim -i https://test.pypi.org/simple/`. When new commits are
 pushed to `master` branch and pass all tests, a new version will be released 
-on test PyPI.
+on test PyPI. When new tag is pushed to `master` branch, a new version will be
+released on PyPI.
 
 ### Installation by source
 
 Clone this repository and install the package by `pip install .`. 
+Note that you may miss `src/lpsim/_version.py` and cause `setuptools-scm`
+error, you can create this file manually and write:
+```python
+__version__ = 'unknown'
+__version_tuple__ = (0, 0, 0)
+```
 
 ### HTTP Server
 
@@ -92,7 +104,7 @@ Refer to `server/deck.py` for details.
    return False.
 5. Progress through the match by employing the `Match.step` function. 
    By default, the step function will continually execute until the match 
-   either ends or generates requests requiring responses, or the match ends.
+   either ends or generates requests requiring responses.
 
 In order to manage responses, the project includes a selection of simple 
 agents within the `agents` module. These agents can generate 
@@ -155,9 +167,9 @@ Pydantic to save & load states of match, exported data is complete to restore
 from certain state and continue running, and also easy for frontend to render
 the game states.
 
-High compatible with different version of charactors or cards. (Although
-currently not implemented,) You can start a match between version 3.8 
-Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu Kenki.
+High compatible with different version of charactors or cards. You can start a
+match between version 3.8 Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu 
+Kenki.
 
 Interact by request and response. When request list is not empty, agents need
 to response to one of the request. When multiple players need to response,
@@ -167,7 +179,8 @@ their requests will be generated simultaneously.
 All modifications to the match table are orchestrated through actions. 
 Each action triggers an event and has the potential to activate subsequent 
 actions. These newly activated actions are appended to the top of the existing 
-action list, akin to a stacked-lists structure.
+action list, akin to a stacked-lists structure. Refer to definition of 
+`EventFrame`.
 
 Objects integrated into this system introduce two types of triggers: event 
 handlers and value modifiers. Event handlers function to monitor events and 
@@ -188,3 +201,6 @@ Summon, Status), please refer to `server/charactor/template.py` and implemented
 charactors.
 To add a new card, please refer to existing card implementations in 
 `server/card`.
+
+You can contact author with QQ group 945778865. The answer of the question
+to enter the group is the chinese name of the simulator 水皇模拟器.
