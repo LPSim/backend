@@ -261,7 +261,7 @@ class SeamlessShield(ShieldTeamStatus):
             self.position.player_idx].get_active_charactor()
         opposite_active_charactor = match.player_tables[
             1 - self.position.player_idx].get_active_charactor()
-        return MakeDamageAction(
+        ret = MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
@@ -271,6 +271,11 @@ class SeamlessShield(ShieldTeamStatus):
                     damage_elemental_type = DamageElementalType.DENDRO,
                     cost = Cost()
                 ),
+            ],
+        )
+        if our_active_charactor.hp > 0:
+            # when active charactor has no hp, no need to heal
+            ret.damage_value_list.append(
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
@@ -279,8 +284,8 @@ class SeamlessShield(ShieldTeamStatus):
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = Cost()
                 ),
-            ],
-        )
+            )
+        return ret
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any
@@ -309,7 +314,7 @@ class SeamlessShield(ShieldTeamStatus):
         if self.remove_triggered:
             # already triggered, do nothing
             return []
-        ret = super().event_handler_MAKE_DAMAGE(event, match)
+        ret = self.check_should_remove()
         if len(ret) > 0:
             # should remove, remove self, then make damage and heal
             self.remove_triggered = True
