@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ...modifiable_values import DamageValue
+
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 from ...action import Actions, MakeDamageAction
@@ -58,7 +60,7 @@ class ColdBloodedStrike(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 4,
     )
-    skill: Frostgnaw = Frostgnaw()
+    skill: Literal['Frostgnaw'] = 'Frostgnaw'
     usage: int = 1
 
     def equip(self, match: Any) -> List[Actions]:
@@ -102,7 +104,18 @@ class ColdBloodedStrike(SkillTalent):
             return []
         # heal itself
         self.usage -= 1
-        return [self.skill.heal_self(match, 2)]
+        return [MakeDamageAction(
+            damage_value_list = [
+                DamageValue(
+                    position = self.position,
+                    damage_type = DamageElementalType.HEAL,
+                    target_position = self.position,
+                    damage = -2,
+                    damage_elemental_type = DamageElementalType.HEAL,
+                    cost = Cost(),
+                )
+            ]
+        )]
 
 
 # charactor base

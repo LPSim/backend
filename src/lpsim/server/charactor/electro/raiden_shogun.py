@@ -140,7 +140,9 @@ class WishesUnnumbered(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: SecretArtMusouShinsetsu = SecretArtMusouShinsetsu()
+    skill: Literal[
+        'Secret Art: Musou Shinsetsu'
+    ] = 'Secret Art: Musou Shinsetsu'
 
 
 # charactor base

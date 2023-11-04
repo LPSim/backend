@@ -105,7 +105,9 @@ class TheOverflow(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: SacredRiteWagtailsTide = SacredRiteWagtailsTide()
+    skill: Literal[
+        "Sacred Rite: Wagtail's Tide"
+    ] = "Sacred Rite: Wagtail's Tide"
 
 
 # charactor base

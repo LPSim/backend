@@ -188,7 +188,7 @@ class AbyssalMayhemHydrospout(SkillTalent):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 3,
     )
-    skill: FoulLegacyRagingTide = FoulLegacyRagingTide()
+    skill: Literal['Foul Legacy: Raging Tide'] = 'Foul Legacy: Raging Tide'
     only_active_charactor: bool = True
 
     def event_handler_ROUND_END(

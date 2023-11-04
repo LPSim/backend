@@ -126,7 +126,7 @@ class ProphecyOfSubmersion(SkillTalent):
         elemental_dice_number = 3,
         charge = 3,
     )
-    skill: StellarisPhantasm = StellarisPhantasm()
+    skill: Literal['Stellaris Phantasm'] = 'Stellaris Phantasm'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, 

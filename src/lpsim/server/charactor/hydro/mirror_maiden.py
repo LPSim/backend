@@ -82,7 +82,8 @@ class MirrorCage(SkillTalent):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 4
     )
-    skill: InfluxBlast = InfluxBlast()
+    skill: Literal['Influx Blast'] = 'Influx Blast'
+
 
 # charactor base
 

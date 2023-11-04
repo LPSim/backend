@@ -510,13 +510,7 @@ class SkillTalent(TalentBase):
     saved as a private variable.
     """
 
-    skill: SkillBase
-
-    def is_valid(self, match: Any) -> bool:
-        """
-        Both TalentBase and SkillBase should be valid.
-        """
-        return super().is_valid(match) and self.skill.is_valid(match)
+    skill: str
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:
         """
@@ -540,21 +534,21 @@ class SkillTalent(TalentBase):
         ].charactors[target_position.charactor_idx]
         skills: List[SkillBase] = target_charactor.skills
         for s in skills:
-            if s.name == self.skill.name:
-                self.skill.position = s.position
+            if s.name == self.skill:
+                skill = s
                 break
         else:
             raise AssertionError('Skill not found')
         ret.append(UseSkillAction(
-            skill_position = self.skill.position
+            skill_position = skill.position
         ))
         # skill used, add SkillEndAction
         ret.append(SkillEndAction(
-            position = self.skill.position,
+            position = skill.position,
             target_position = match.player_tables[
-                1 - self.skill.position.player_idx
+                1 - skill.position.player_idx
             ].get_active_charactor().position,
-            skill_type = self.skill.skill_type,
+            skill_type = skill.skill_type,
         ))
         return ret
 

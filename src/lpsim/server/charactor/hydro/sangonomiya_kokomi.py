@@ -161,7 +161,7 @@ class TamakushiCasket(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: NereidsAscension = NereidsAscension()
+    skill: Literal["Nereid's Ascension"] = "Nereid's Ascension"
 
 
 # charactor base

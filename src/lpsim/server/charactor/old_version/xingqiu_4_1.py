@@ -110,7 +110,7 @@ class TheScentRemained_3_3(SkillTalent):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 4
     )
-    skill: FatalRainscreen = FatalRainscreen()
+    skill: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
 
 
 # charactor base

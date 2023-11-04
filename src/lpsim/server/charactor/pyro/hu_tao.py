@@ -62,20 +62,15 @@ class SpiritSoother(ElementalBurstBase):
             self.damage = 5
             heal = 3
         ret = super().get_actions(match)
+        damage_action = self.attack_opposite_active(match, self.damage, 
+                                                    self.damage_type)
+        heal_action = self.heal_self(match, heal)
+        damage_action.damage_value_list += heal_action.damage_value_list
         self.damage = 4
-        ret.append(MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
-                    damage = -heal,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost()
-                )
-            ]
-        ))
-        return ret
+        return [
+            self.charge_self(-3),
+            damage_action,
+        ]
 
 # Talents
 
@@ -94,7 +89,7 @@ class SanguineRouge(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 2
     )
-    skill: GuideToAfterlife = GuideToAfterlife()
+    skill: Literal['Guide to Afterlife'] = 'Guide to Afterlife'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

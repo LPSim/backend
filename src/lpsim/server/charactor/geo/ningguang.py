@@ -83,7 +83,7 @@ class StrategicReserve(SkillTalent):
         elemental_dice_color = DieColor.GEO,
         elemental_dice_number = 4,
     )
-    skill: JadeScreen = JadeScreen()
+    skill: Literal['Jade Screen'] = 'Jade Screen'
 
 
 # charactor base

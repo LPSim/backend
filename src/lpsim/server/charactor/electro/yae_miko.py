@@ -113,7 +113,9 @@ class TheShrinesSacredShade(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: GreatSecretArtTenkoKenshin = GreatSecretArtTenkoKenshin()
+    skill: Literal[
+        'Great Secret Art: Tenko Kenshin'
+    ] = 'Great Secret Art: Tenko Kenshin'
 
 
 # charactor base

@@ -164,7 +164,7 @@ class TheSeedOfStoredKnowledge(SkillTalent):
         elemental_dice_number = 3,
         charge = 2,
     )
-    skill: IllusoryHeart = IllusoryHeart()
+    skill: Literal['Illusory Heart'] = 'Illusory Heart'
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any

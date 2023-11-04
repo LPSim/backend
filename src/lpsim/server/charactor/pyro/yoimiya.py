@@ -82,7 +82,7 @@ class NaganoharaMeteorSwarm(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 2,
     )
-    skill: NiwabiFireDance = NiwabiFireDance()
+    skill: Literal['Niwabi Fire-Dance'] = 'Niwabi Fire-Dance'
 
 
 # charactor base

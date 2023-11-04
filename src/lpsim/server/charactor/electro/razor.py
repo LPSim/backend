@@ -61,7 +61,7 @@ class Awakening(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 4
     )
-    skill: ClawAndThunder = ClawAndThunder()
+    skill: Literal['Claw and Thunder'] = 'Claw and Thunder'
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any

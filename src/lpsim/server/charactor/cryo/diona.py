@@ -129,7 +129,7 @@ class ShakenNotPurred(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 3
     )
-    skill: IcyPaws = IcyPaws()
+    skill: Literal['Icy Paws'] = 'Icy Paws'
 
 
 # charactor base

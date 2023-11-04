@@ -59,7 +59,7 @@ class ConquerorOfEvilGuardianYaksha(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: BaneOfAllEvil = BaneOfAllEvil()
+    skill: Literal['Bane of All Evil'] = 'Bane of All Evil'
 
 
 # charactor base

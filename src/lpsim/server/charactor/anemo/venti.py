@@ -128,7 +128,7 @@ class EmbraceOfWinds(SkillTalent):
         elemental_dice_color = DieColor.ANEMO,
         elemental_dice_number = 3
     )
-    skill: SkywardSonnet = SkywardSonnet()
+    skill: Literal['Skyward Sonnet'] = 'Skyward Sonnet'
 
 
 # charactor base

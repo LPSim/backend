@@ -188,7 +188,7 @@ class StreamingSurge(SkillTalent):
         elemental_dice_number = 4,
         charge = 3
     )
-    skill: TideAndTorrent = TideAndTorrent()
+    skill: Literal['Tide and Torrent'] = 'Tide and Torrent'
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments,

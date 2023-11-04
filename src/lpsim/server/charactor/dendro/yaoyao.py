@@ -132,7 +132,7 @@ class Beneficent(SkillTalent):
         elemental_dice_color = DieColor.DENDRO,
         elemental_dice_number = 3,
     )
-    skill: RaphanusSkyCluster = RaphanusSkyCluster()
+    skill: Literal['Raphanus Sky Cluster'] = 'Raphanus Sky Cluster'
 
 
 # charactor base

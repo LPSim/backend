@@ -159,7 +159,7 @@ class AratakiIchiban(SkillTalent):
         elemental_dice_number = 1,
         any_dice_number = 2,
     )
-    skill: FightClubLegend = FightClubLegend()
+    skill: Literal['Fight Club Legend'] = 'Fight Club Legend'
 
 
 # charactor base

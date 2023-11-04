@@ -111,7 +111,7 @@ class FlowingFlame(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 3,
     )
-    skill: SearingOnslaught = SearingOnslaught()
+    skill: Literal['Searing Onslaught'] = 'Searing Onslaught'
 
 
 # charactor base

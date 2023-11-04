@@ -196,7 +196,7 @@ class StalwartAndTrue(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 4,
     )
-    skill: MoltenInferno = MoltenInferno()
+    skill: Literal['Molten Inferno'] = 'Molten Inferno'
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any

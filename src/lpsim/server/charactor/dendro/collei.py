@@ -129,7 +129,7 @@ class FloralSidewinder(SkillTalent):
         elemental_dice_color = DieColor.DENDRO,
         elemental_dice_number = 4
     )
-    skill: FloralBrush = FloralBrush()
+    skill: Literal['Floral Brush'] = 'Floral Brush'
 
 
 # charactor base

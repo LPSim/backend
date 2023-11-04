@@ -57,7 +57,7 @@ class GrandExpectation(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: FantasticVoyage = FantasticVoyage()
+    skill: Literal['Fantastic Voyage'] = 'Fantastic Voyage'
 
 
 # charactor base

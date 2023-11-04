@@ -109,7 +109,7 @@ class KyoukaFuushi(SkillTalent):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 3
     )
-    skill: KamisatoArtKyouka = KamisatoArtKyouka()
+    skill: Literal['Kamisato Art: Kyouka'] = 'Kamisato Art: Kyouka'
 
 
 # charactor base

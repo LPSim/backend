@@ -104,7 +104,7 @@ class LightningStorm(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )
-    skill: Tidecaller = Tidecaller()
+    skill: Literal['Tidecaller'] = 'Tidecaller'
 
     usage: int = 2
     max_usage: int = 2

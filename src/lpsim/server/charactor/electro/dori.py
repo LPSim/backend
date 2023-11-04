@@ -124,7 +124,7 @@ class DiscretionarySupplement(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: AlcazarzaraysExactitude = AlcazarzaraysExactitude()
+    skill: Literal["Alcazarzaray's Exactitude"] = "Alcazarzaray's Exactitude"
 
 
 # charactor base

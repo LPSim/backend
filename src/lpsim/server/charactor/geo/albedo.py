@@ -169,7 +169,7 @@ class DescentOfDivinity(SkillTalent):
         elemental_dice_color = DieColor.GEO,
         elemental_dice_number = 3
     )
-    skill: AbiogenesisSolarIsotoma = AbiogenesisSolarIsotoma()
+    skill: Literal['Abiogenesis: Solar Isotoma'] = 'Abiogenesis: Solar Isotoma'
 
 
 # charactor base

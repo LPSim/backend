@@ -82,7 +82,7 @@ class RightOfFinalInterpretation(SkillTalent):
         elemental_dice_number = 1,
         any_dice_number = 2,
     )
-    skill: SealOfApproval = SealOfApproval()
+    skill: Literal['Seal of Approval'] = 'Seal of Approval'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

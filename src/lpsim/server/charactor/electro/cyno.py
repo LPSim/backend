@@ -118,7 +118,9 @@ class FeatherfallJudgment(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )
-    skill: SecretRiteChasmicSoulfarer = SecretRiteChasmicSoulfarer()
+    skill: Literal[
+        'Secret Rite: Chasmic Soulfarer'
+    ] = 'Secret Rite: Chasmic Soulfarer'
 
 
 # charactor base

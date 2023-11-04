@@ -90,7 +90,7 @@ class PoundingSurprise(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 3,
     )
-    skill: JumpyDumpty = JumpyDumpty()
+    skill: Literal['Jumpy Dumpty'] = 'Jumpy Dumpty'
 
 
 # charactor base

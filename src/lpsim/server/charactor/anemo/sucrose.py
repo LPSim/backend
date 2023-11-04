@@ -149,7 +149,9 @@ class ChaoticEntropy(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: ForbiddenCreationIsomer75TypeII = ForbiddenCreationIsomer75TypeII()
+    skill: Literal[
+        'Forbidden Creation - Isomer 75 / Type II'
+    ] = 'Forbidden Creation - Isomer 75 / Type II'
 
 
 # charactor base

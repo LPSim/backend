@@ -70,7 +70,7 @@ class PaidinFull(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 3
     )
-    skill: Prowl = Prowl()
+    skill: Literal['Prowl'] = 'Prowl'
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any

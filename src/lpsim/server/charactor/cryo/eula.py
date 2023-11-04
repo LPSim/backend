@@ -201,7 +201,7 @@ class WellspringOfWarLust(SkillTalent):
         elemental_dice_number = 3,
         charge = 2
     )
-    skill: GlacialIllumination = GlacialIllumination()
+    skill: Literal['Glacial Illumination'] = 'Glacial Illumination'
 
 
 # charactor base

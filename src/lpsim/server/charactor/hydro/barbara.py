@@ -139,7 +139,7 @@ class GloriousSeason(SkillTalent):
         elemental_dice_number = 4,
         elemental_dice_color = DieColor.HYDRO,
     )
-    skill: LetTheShowBegin = LetTheShowBegin()
+    skill: Literal['Let the Show Begin♪'] = 'Let the Show Begin♪'
     usage: int = 1
 
     def event_handler_ROUND_PREPARE(

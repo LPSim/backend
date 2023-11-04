@@ -138,7 +138,7 @@ class GalesOfReverie(SkillTalent):
         elemental_dice_color = DieColor.ANEMO,
         elemental_dice_number = 4,
     )
-    skill: HanegaSongOfTheWind = HanegaSongOfTheWind()
+    skill: Literal['Hanega: Song of the Wind'] = 'Hanega: Song of the Wind'
 
     usage: int = 0
     switch_performed: bool = False

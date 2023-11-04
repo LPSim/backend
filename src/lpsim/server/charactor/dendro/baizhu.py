@@ -111,7 +111,7 @@ class AllThingsAreOfTheEarth(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: HolisticRevivification = HolisticRevivification()
+    skill: Literal['Holistic Revivification'] = 'Holistic Revivification'
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any

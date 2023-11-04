@@ -6,7 +6,7 @@ from ...action import Actions, ChangeObjectUsageAction, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType, DieColor, ElementType, FactionType, ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalSkillBase, PhysicalNormalAttackBase, 
@@ -103,16 +103,21 @@ class ProliferatingSpores(SkillTalent):
         elemental_dice_color = DieColor.DENDRO,
         elemental_dice_number = 3
     )
-    skill: VolatileSporeCloud = VolatileSporeCloud()
+    skill: Literal['Volatile Spore Cloud'] = 'Volatile Spore Cloud'
 
     def equip(self, match: Any) -> List[CreateObjectAction]:
         """
         When equip, re-create Radical Vitality with 1 more max usage
         """
-        return [self.skill.create_charactor_status(
-            'Radical Vitality', 
-            { 'max_usage': 4 }
-        )]
+        return [
+            CreateObjectAction(
+                object_name = 'Radical Vitality',
+                object_position = self.position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS
+                ),
+                object_arguments = { 'max_usage': 4 }
+            )
+        ]
 
 
 # charactor base

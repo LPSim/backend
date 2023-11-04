@@ -83,7 +83,7 @@ class KeenSight(SkillTalent):
         elemental_dice_color = DieColor.DENDRO,
         elemental_dice_number = 4,
     )
-    skill: VijnanaPhalaMine = VijnanaPhalaMine()
+    skill: Literal['Vijnana-Phala Mine'] = 'Vijnana-Phala Mine'
 
 
 # charactor base

@@ -155,7 +155,7 @@ class TranscendentAutomaton(SkillTalent):
         elemental_dice_color = DieColor.ANEMO,
         elemental_dice_number = 3,
     )
-    skill: BlusteringBlade = BlusteringBlade()
+    skill: Literal['Blustering Blade'] = 'Blustering Blade'
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any

@@ -209,7 +209,7 @@ class CicinsColdGlare(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 3
     )
-    skill: MistySummons = MistySummons()
+    skill: Literal['Misty Summons'] = 'Misty Summons'
 
 
 # charactor base

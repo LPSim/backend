@@ -162,7 +162,9 @@ class RiteOfResurrection(SkillTalent):
         elemental_dice_number = 5,
         charge = 3
     )
-    skill: AdeptusArtPreserverOfFortune = AdeptusArtPreserverOfFortune()
+    skill: Literal[
+        'Adeptus Art: Preserver of Fortune'
+    ] = 'Adeptus Art: Preserver of Fortune'
 
 
 # charactor base

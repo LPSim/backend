@@ -114,7 +114,7 @@ class TheStarrySkiesTheirFlowersRain(SkillTalent):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 3
     )
-    skill: DanceOfHaftkarsvar = DanceOfHaftkarsvar()
+    skill: Literal['Dance of Haftkarsvar'] = 'Dance of Haftkarsvar'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any, 

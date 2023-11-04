@@ -68,7 +68,7 @@ class StonehideReforged(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: UpaShato = UpaShato()
+    skill: Literal['Upa Shato'] = 'Upa Shato'
 
     opposite_alive: List[int] = []
 
@@ -114,7 +114,15 @@ class StonehideReforged(SkillTalent):
             # defeated charactor not in opposite_alive, return
             return []
         # re-attach Stonehide and Stone Force
-        return [self.skill.create_charactor_status('Stonehide')]
+        return [
+            CreateObjectAction(
+                object_name = 'Stonehide',
+                object_position = self.position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS
+                ),
+                object_arguments = {}
+            )
+        ]
 
 
 # charactor base

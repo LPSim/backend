@@ -124,7 +124,7 @@ class MysticalAbandon(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 3
     )
-    skill: SpringSpiritSummoning = SpringSpiritSummoning()
+    skill: Literal['Spring Spirit Summoning'] = 'Spring Spirit Summoning'
 
 
 # charactor base

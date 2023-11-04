@@ -123,7 +123,7 @@ class SinOfPride(SkillTalent):
         elemental_dice_number = 4,
         charge = 2
     )
-    skill: SubjugationKoukouSendou = SubjugationKoukouSendou()
+    skill: Literal['Subjugation: Koukou Sendou'] = 'Subjugation: Koukou Sendou'
 
 
 # charactor base

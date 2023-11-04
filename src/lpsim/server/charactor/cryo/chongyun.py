@@ -65,7 +65,7 @@ class SteadyBreathing(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 4
     )
-    skill: ChonghuasLayeredFrost = ChonghuasLayeredFrost()
+    skill: Literal["Chonghua's Layered Frost"] = "Chonghua's Layered Frost"
 
 
 # charactor base

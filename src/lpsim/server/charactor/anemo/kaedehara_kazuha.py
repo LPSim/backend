@@ -108,7 +108,7 @@ class PoeticsOfFuubutsu(SkillTalent):
         elemental_dice_color = DieColor.ANEMO,
         elemental_dice_number = 3,
     )
-    skill: Chihayaburu = Chihayaburu()
+    skill: Literal['Chihayaburu'] = 'Chihayaburu'
 
     swirl_element = ElementType.NONE
 

@@ -61,7 +61,7 @@ class IGotYourBack(SkillTalent):
         elemental_dice_number = 3,
         elemental_dice_color = DieColor.GEO
     )
-    skill: Breastplate = Breastplate()
+    skill: Literal['Breastplate'] = 'Breastplate'
 
 
 class Noelle(CharactorBase):

@@ -22,7 +22,7 @@ class TheScentRemained(TSR_4_1):
         elemental_dice_color = DieColor.HYDRO,
         elemental_dice_number = 3
     )
-    skill: FatalRainscreen = FatalRainscreen()
+    skill: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
 
 
 class Xingqiu(X_4_1):

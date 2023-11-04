@@ -90,7 +90,7 @@ class Crossfire(SkillTalent):
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 4
     )
-    skill: GuobaAttack = GuobaAttack()
+    skill: Literal['Guoba Attack'] = 'Guoba Attack'
 
 
 # charactor base

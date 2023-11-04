@@ -91,7 +91,7 @@ class ThunderingPenance(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3
     )
-    skill: StellarRestoration = StellarRestoration()
+    skill: Literal['Stellar Restoration'] = 'Stellar Restoration'
 
 
 class LightningStiletto(SkillTalent):
@@ -117,7 +117,7 @@ class LightningStiletto(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )
-    skill: StellarRestoration = StellarRestoration()
+    skill: Literal['Stellar Restoration'] = 'Stellar Restoration'
     newly_created: bool = True
     use_card: bool = False
 
@@ -154,8 +154,7 @@ class LightningStiletto(SkillTalent):
         # update skill position
         skills: List[SkillBase] = match.get_object(target).skills
         for skill in skills:
-            if skill.name == self.skill.name:
-                self.skill.position = skill.position
+            if skill.name == self.skill:
                 break
         else:
             raise AssertionError('Skill not found')
@@ -170,15 +169,15 @@ class LightningStiletto(SkillTalent):
             ))
         # use skill
         ret.append(UseSkillAction(
-            skill_position = self.skill.position,
+            skill_position = skill.position,
         ))
         # skill used, add SkillEndAction
         ret.append(SkillEndAction(
-            position = self.skill.position,
+            position = skill.position,
             target_position = match.player_tables[
-                1 - self.skill.position.player_idx
+                1 - skill.position.player_idx
             ].get_active_charactor().position,
-            skill_type = self.skill.skill_type,
+            skill_type = skill.skill_type,
         ))
         self.use_card = True
         return ret
@@ -199,7 +198,7 @@ class LightningStiletto(SkillTalent):
             # this card not in hand, or not our charactor use skill
             return []
         skill: SkillBase = match.get_object(event.action.position)
-        if skill.name != self.skill.name:
+        if skill.name != self.skill:
             # not elemental skill
             return []
         if self.newly_created:

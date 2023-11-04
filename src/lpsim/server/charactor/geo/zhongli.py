@@ -120,7 +120,9 @@ class DominanceOfEarth(SkillTalent):
         elemental_dice_color = DieColor.GEO,
         elemental_dice_number = 5
     )
-    skill: DominusLapidisStrikingStone = DominusLapidisStrikingStone()
+    skill: Literal[
+        'Dominus Lapidis: Striking Stone'
+    ] = 'Dominus Lapidis: Striking Stone'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

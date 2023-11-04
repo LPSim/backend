@@ -57,7 +57,7 @@ class StellarPredator(SkillTalent):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
     )
-    skill: Nightrider = Nightrider()
+    skill: Literal['Nightrider'] = 'Nightrider'
 
 
 class Oz(AttackerSummonBase):

@@ -163,7 +163,7 @@ class LandsOfDandelion(SkillTalent):
         elemental_dice_number = 4,
         charge = 3
     )
-    skill: DandelionBreeze = DandelionBreeze()
+    skill: Literal['Dandelion Breeze'] = 'Dandelion Breeze'
 
 
 # charactor base

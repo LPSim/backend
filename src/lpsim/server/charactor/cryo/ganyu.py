@@ -127,7 +127,7 @@ class UndividedHeart(SkillTalent):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 5,
     )
-    skill: FrostflakeArrow = FrostflakeArrow()
+    skill: Literal['Frostflake Arrow'] = 'Frostflake Arrow'
 
 
 # charactor base
