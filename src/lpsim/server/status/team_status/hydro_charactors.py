@@ -77,14 +77,19 @@ class RainbowBladework(UsageTeamStatus, ExtraAttackTeamStatus):
 class RainSword(DefendTeamStatus):
     name: Literal['Rain Sword'] = 'Rain Sword'
     desc: str = (
-        'When your active character receives at least 3 DMG: '
-        'Decrease DMG taken by 1.'
+        'When your active character receives at least _MIN_DAMAGE_TO_TRIGGER_ '
+        'DMG: Decrease DMG taken by 1.'
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['4.2'] = '4.2'
     usage: int = 2
     max_usage: int = 2
-    min_damage_to_trigger: int = 3
+    min_damage_to_trigger: int = 2
     max_in_one_time: int = 1
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_MIN_DAMAGE_TO_TRIGGER_', str(self.min_damage_to_trigger))
 
 
 class PrayerOfTheCrimsonCrown(ElementalInfusionTeamStatus, 

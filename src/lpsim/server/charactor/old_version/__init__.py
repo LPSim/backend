@@ -1,6 +1,10 @@
 """
 Old version of charactors, summons and talents. Status are not defined here,
 and old status will be implemented in their old_version.py.
+
+For versions before 3.7, it will have one file for each charactor, and they
+will related on new charactors. For versions after 3.8, newest version of
+charactors will related on old charactors.
 """
 from .beidou_3_4 import Beidou_3_4
 from .razor_3_3 import Razor_3_3
@@ -19,12 +23,14 @@ from .fatui_cryo_cicin_mage_3_7 import FatuiCryoCicinMage_3_7, CryoCicins_3_7
 from .kamisato_ayato_3_6 import KamisatoAyato_3_6
 from .tartaglia_3_7 import Tartaglia_3_7, AbyssalMayhemHydrospout_3_7
 from .diona_3_3 import ShakenNotPurred_3_3
+from .xingqiu_4_1 import Xingqiu_4_1, TheScentRemained_3_3
 
 
 OldTalents = (
     AbyssalMayhemHydrospout_3_7
 
     | FloralSidewinder_3_3 | UndividedHeart_3_3 | ShakenNotPurred_3_3
+    | TheScentRemained_3_3
 )
 OldSummons = (
     CryoCicins_3_7 
@@ -32,7 +38,9 @@ OldSummons = (
     | LightfallSword_3_5
 )
 OldCharactors = (
-    Tartaglia_3_7 | FatuiCryoCicinMage_3_7
+    Xingqiu_4_1
+
+    | Tartaglia_3_7 | FatuiCryoCicinMage_3_7
 
     | Xingqiu_3_6 | KamisatoAyato_3_6
 

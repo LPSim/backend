@@ -1,8 +1,8 @@
 from typing import List, Literal
 
-from ..hydro.xingqiu import Xingqiu as X_4_1
-from ..hydro.xingqiu import Raincutter as R_4_1
-from ..hydro.xingqiu import GuhuaStyle, FatalRainscreen
+from .xingqiu_4_1 import Xingqiu_4_1 as X_4_1
+from .xingqiu_4_1 import Raincutter as R_4_1
+from .xingqiu_4_1 import GuhuaStyle, FatalRainscreen
 
 
 class Raincutter(R_4_1):

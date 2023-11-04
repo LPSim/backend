@@ -4,7 +4,7 @@ from ...action import Actions
 from ...consts import DamageElementalType
 from .xingqiu_3_6 import Xingqiu_3_6 as X_3_6
 from .xingqiu_3_6 import Raincutter as R_3_6
-from ..hydro.xingqiu import GuhuaStyle, FatalRainscreen
+from .xingqiu_4_1 import GuhuaStyle, FatalRainscreen
 
 
 class Raincutter(R_3_6):

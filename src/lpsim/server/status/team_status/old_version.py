@@ -5,6 +5,8 @@ by default to avoid using it accidently.
 
 from typing import Any, List, Literal
 
+from .hydro_charactors import RainSword
+
 from .event_cards import FreshWindOfFreedom
 from .base import ExtraAttackTeamStatus, UsageTeamStatus
 from ...modifiable_values import DamageIncreaseValue
@@ -87,8 +89,13 @@ class WindAndFreedom_3_7(FreshWindOfFreedom):
     version: Literal['3.7']
 
 
+class RainSword_3_3(RainSword):
+    version: Literal['3.3']
+    min_damage_to_trigger: int = 3
+
+
 OldVersionTeamStatus = (
     WindAndFreedom_3_7
 
-    | CatalyzingField_3_3 | RainbowBladework_3_3
+    | CatalyzingField_3_3 | RainbowBladework_3_3 | RainSword_3_3
 )
