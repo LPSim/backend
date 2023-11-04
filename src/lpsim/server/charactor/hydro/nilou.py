@@ -131,7 +131,7 @@ class TheStarrySkiesTheirFlowersRain(SkillTalent):
             # not equipped, or source not self summon
             return value
         summon = match.get_object(value.position)
-        if summon.name != 'Bountiful Core':
+        if summon is None or summon.name != 'Bountiful Core':
             # not Bountyful Core
             return value
         # damage +1
