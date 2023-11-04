@@ -7,6 +7,8 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.2.0] - 2023-11-04
+
 ### Added
 - All charactors and cards in 4.2 are implemented.
   - Charactors and their talents:
@@ -31,9 +33,12 @@ of the game, and the last number is the patch version of this project.
 
 ### Changed
 - AttackerSummonBase support healing.
+- Remove source_player_idx and target_player_idx from MakeDamageAction, and
+  change change_charactor logic while making damages.
 
 ### Fixed
 - Typo of Calx's Arts.
+- When healing self charactor, Itto can get Superlative Superstrenth.
 
 ## [0.4.1.3] - 2023-10-31
 
@@ -157,7 +162,8 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.1.3...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.0...HEAD
+[0.4.2.0]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
 [0.4.1.3]: https://github.com/LPSim/backend/releases/tag/v0.4.1.3
 [0.4.1.2]: https://github.com/LPSim/backend/releases/tag/v0.4.1.2
 [0.4.1.1]: https://github.com/LPSim/backend/releases/tag/v0.4.1.1
