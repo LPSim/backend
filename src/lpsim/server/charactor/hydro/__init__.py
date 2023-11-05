@@ -1,6 +1,6 @@
 from .mona import Mona, ProphecyOfSubmersion, Reflection
 from .barbara import Barbara, MelodyLoop, GloriousSeason
-from .rhodeia import RhodeiaOfLoch, StreamingSurge, Frog, Squirrel, Raptor
+from .rhodeia import RhodeiaOfLoch
 from .xingqiu import Xingqiu, TheScentRemained
 from .tartaglia import Tartaglia, AbyssalMayhemHydrospout
 from .sangonomiya_kokomi import (
@@ -21,12 +21,11 @@ HydroCharactors = (
 SummonsOfHydroCharactors = (
     MelodyLoop | Reflection | BakeKurage | GardenOfPurity | BounatifulCore
     # finally monsters
-    | Frog | Squirrel | Raptor
 )
 HydroCharactorTalents = (
     GloriousSeason | TheScentRemained | ProphecyOfSubmersion
     | AbyssalMayhemHydrospout | TamakushiCasket | KyoukaFuushi | TheOverflow
     | TheStarrySkiesTheirFlowersRain
     # finally monsters
-    | StreamingSurge | MirrorCage
+    | MirrorCage
 )

@@ -1,5 +1,5 @@
 from .kaeya import Kaeya, ColdBloodedStrike
-from .shenhe import Shenhe, MysticalAbandon, TalismanSpirit
+from .shenhe import Shenhe
 from .eula import Eula, LightfallSword, WellspringOfWarLust
 from .chongyun import Chongyun, SteadyBreathing
 from .ganyu import Ganyu, SacredCryoPearl, UndividedHeart
@@ -20,13 +20,13 @@ CryoCharactors = (
 )
 SummonsOfCryoCharactors = (
     SacredCryoPearl | DrunkenMist | FrostflakeSekiNoTo | LightfallSword 
-    | TalismanSpirit | HeraldOfFrost
+    | HeraldOfFrost
     # finally monsters
     | CryoCicins
 )
 CryoCharactorTalents = (
     UndividedHeart | ShakenNotPurred | ColdBloodedStrike | SteadyBreathing 
-    | KantenSenmyouBlessing | WellspringOfWarLust | MysticalAbandon
+    | KantenSenmyouBlessing | WellspringOfWarLust
     | RiteOfResurrection
     # finally monsters
     | CicinsColdGlare

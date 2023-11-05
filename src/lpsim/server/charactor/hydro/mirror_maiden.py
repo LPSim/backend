@@ -11,6 +11,7 @@ from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
     CharactorBase, SkillTalent
 )
+from ..old_version.talent_cards_4_2 import MirrorCage_3_3 as MC_3_3
 
 
 # Skills
@@ -65,24 +66,12 @@ class InfluxBlast(ElementalSkillBase):
 # Talents
 
 
-class MirrorCage(SkillTalent):
-    name: Literal['Mirror Cage']
-    desc: str = (
-        'Combat Action: When your active character is Mirror Maiden, equip '
-        'this card. After Mirror Maiden equips this card, immediately use '
-        'Influx Blast once. When your Mirror Maiden, who has this card '
-        'equipped, creates a Refraction, it will have the following effects: '
-        'Starting Duration (Rounds) +1, will increase the Elemental Dice Cost '
-        'of switching from a character to which this is attached to another '
-        'character by 1.'
-    )
-    version: Literal['3.3'] = '3.3'
-    charactor_name: Literal['Mirror Maiden'] = 'Mirror Maiden'
+class MirrorCage(MC_3_3):
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4
+        elemental_dice_number = 3,
     )
-    skill: Literal['Influx Blast'] = 'Influx Blast'
 
 
 # charactor base

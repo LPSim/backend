@@ -36,12 +36,15 @@ class SecretRiteChasmicSoulfarer(ElementalSkillBase):
         """
         When talent equipped and level match, increase damage by 1
         """
-        if self.is_talent_equipped(match):
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        talent = charactor.talent
+        if talent is not None:
             status = match.player_tables[self.position.player_idx].charactors[
                 self.position.charactor_idx].status
             for s in status:
                 if s.name == 'Pactsworn Pathclearer':  # pragma: no branch
-                    if s.usage == 3 or s.usage == 5:
+                    if s.usage in talent.active_levels:
                         self.damage = 4
                     break
             else:
@@ -109,10 +112,10 @@ class FeatherfallJudgment(SkillTalent):
         'Combat Action: When your active character is Cyno, equip this card. '
         'After Cyno equips this card, immediately use Secret Rite: Chasmic '
         'Soulfarer once. When your Cyno, who has this card equipped, uses '
-        "Secret Rite: Chasmic Soulfarer with 3 or 5 levels of Pactsworn "
+        "Secret Rite: Chasmic Soulfarer with even levels of Pactsworn "
         "Pathclearer's Indwelling effect, deal +1 additional DMG."
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Cyno'] = 'Cyno'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
@@ -121,6 +124,7 @@ class FeatherfallJudgment(SkillTalent):
     skill: Literal[
         'Secret Rite: Chasmic Soulfarer'
     ] = 'Secret Rite: Chasmic Soulfarer'
+    active_levels: List[int] = [0, 2, 4, 6]
 
 
 # charactor base

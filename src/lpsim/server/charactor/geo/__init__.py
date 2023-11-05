@@ -1,5 +1,5 @@
 from .noelle import Noelle, IGotYourBack
-from .arataki_itto import AratakiItto, Ushi, AratakiIchiban
+from .arataki_itto import AratakiItto
 from .stonehide_lawachurl import StonehideLawachurl, StonehideReforged
 from .ningguang import Ningguang, StrategicReserve
 from .zhongli import Zhongli, StoneStele, DominanceOfEarth
@@ -11,10 +11,9 @@ GeoCharactors = (
     # finally monsters
     | StonehideLawachurl
 )
-SummonsOfGeoCharactors = StoneStele | SolarIsotoma | Ushi
+SummonsOfGeoCharactors = StoneStele | SolarIsotoma 
 GeoCharactorTalents = (
     StrategicReserve | IGotYourBack | DominanceOfEarth | DescentOfDivinity 
-    | AratakiIchiban 
     # finally monsters
     | StonehideReforged
 )

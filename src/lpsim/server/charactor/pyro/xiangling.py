@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ..old_version.talent_cards_4_2 import Crossfire_3_3
+
 from ...summon.base import AttackerSummonBase
 
 from ...action import Actions
@@ -76,21 +78,12 @@ class Pyronado(ElementalBurstBase):
 # Talents
 
 
-class Crossfire(SkillTalent):
-    name: Literal['Crossfire']
-    desc: str = (
-        'Combat Action: When your active character is Xiangling, equip this '
-        'card. After Xiangling equips this card, immediately use Guoba Attack '
-        'once. When your Xiangling, who has this card equipped, uses Guoba '
-        'Attack, she will also deal 1 Pyro DMG.'
-    )
-    version: Literal['3.3'] = '3.3'
-    charactor_name: Literal['Xiangling'] = 'Xiangling'
+class Crossfire(Crossfire_3_3):
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4
+        elemental_dice_number = 3
     )
-    skill: Literal['Guoba Attack'] = 'Guoba Attack'
 
 
 # charactor base

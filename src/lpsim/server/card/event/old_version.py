@@ -15,6 +15,7 @@ from .others import MasterOfWeaponry as MOW_4_1
 from .others import BlessingOfTheDivineRelicsInstallation as BOTDRI_4_1
 from .resonance import WindAndFreedom as WAF_4_1
 from .foods import TeyvatFriedEgg as TFE_4_1
+from .arcane_legend import JoyousCelebration as JC_4_2
 
 
 class ThunderAndEternity_3_7(TAE_4_0):
@@ -112,8 +113,21 @@ class TeyvatFriedEgg_3_7(TFE_4_1):
     cost: Cost = Cost(same_dice_number = 3)
 
 
+class JoyousCelebration_3_8(JC_4_2):
+    desc: str = (
+        'Your active character must be one of the following elemental types '
+        'to play this card: Cryo/Hydro/Pyro/Electro/Dendro: The element '
+        'corresponding to your active character\'s Elemental Type will be '
+        'applied to all your characters.'
+    )
+    version: Literal['3.8'] = '3.8'
+    apply_no_element_charactor: bool = True
+
+
 OldVersionEventCards = (
-    WindAndFreedom_3_7 | ThunderAndEternity_3_7 | TeyvatFriedEgg_3_7
+    JoyousCelebration_3_8
+
+    | WindAndFreedom_3_7 | ThunderAndEternity_3_7 | TeyvatFriedEgg_3_7
 
     | IHaventLostYet_3_3 | MasterOfWeaponry_3_3 
     | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3 

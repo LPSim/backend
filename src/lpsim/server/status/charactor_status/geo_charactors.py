@@ -109,19 +109,26 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Raging Oni King'] = 'Raging Oni King'
     desc: str = (
         'The character to which this is attached to has their Normal Attacks '
-        'deal +2 DMG, and their Physical DMG is converted to Geo DMG. '
+        'deal +_DAMAGE_ DMG, and their Physical DMG is converted to Geo DMG. '
         'After the character to which this is attached uses a Normal Attack: '
         'Gains Superlative Superstrength (Once per Round). '
         'Duration (Rounds): 2 '
     )
-    version: Literal['3.6'] = '3.6'
+    version: Literal['4.2'] = '4.2'
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+    damage_increase: int = 1
 
     infused_elemental_type: DamageElementalType = DamageElementalType.GEO
 
     status_increase_usage: int = 1
+
+    def __init__(self, *argv, **kwargs) -> None:
+        super().__init__(*argv, **kwargs)
+        self.desc = self.desc.replace(
+            '_DAMAGE_', str(self.damage_increase)
+        )
 
     def renew(self, new_status: StatusBase) -> None:
         super().renew(new_status)
@@ -159,7 +166,7 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
             # not this charactor use normal attack, not modify
             return value
         # modify damage
-        value.damage += 2
+        value.damage += self.damage_increase
         return value
 
     def event_handler_SKILL_END(

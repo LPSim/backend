@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ..old_version.talent_cards_4_2 import TheOverflow_3_8
+
 from ...action import Actions
 from ...struct import Cost
 
@@ -88,26 +90,13 @@ class SacredRiteWagtailsTide(ElementalBurstBase):
 # Talents
 
 
-class TheOverflow(SkillTalent):
-    name: Literal['The Overflow']
-    desc: str = (
-        'Combat Action: When your active character is Candace, equip this '
-        'card. After Candace equips this card, immediately use Sacred Rite: '
-        "Wagtail's Tide once. When this card is equipped by Candace, her "
-        'Prayer of the Crimson Crown has the following extra effect: After '
-        'your character uses a Normal Attack: Deals 1 Hydro DMG. (Once per '
-        'Round)'
-    )
-    version: Literal['3.8'] = '3.8'
-    charactor_name: Literal['Candace'] = 'Candace'
+class TheOverflow(TheOverflow_3_8):
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4,
+        elemental_dice_number = 3,
         charge = 2
     )
-    skill: Literal[
-        "Sacred Rite: Wagtail's Tide"
-    ] = "Sacred Rite: Wagtail's Tide"
 
 
 # charactor base

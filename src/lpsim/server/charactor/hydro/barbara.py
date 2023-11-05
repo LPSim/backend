@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ..old_version.talent_cards_4_2 import GloriousSeason_3_3
+
 from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import CostValue, DamageValue
@@ -123,68 +125,12 @@ class ShiningMiracle(ElementalBurstBase):
         return ret
 
 
-class GloriousSeason(SkillTalent):
-    name: Literal['Glorious Season'] = 'Glorious Season'
-    desc: str = (
-        'Combat Action: When your active character is Barbara, equip this '
-        'card. '
-        'After Barbara equips this card, immediately use Let the Show Begin♪ '
-        'once. When your Barbara, who has this card equipped, is on the '
-        'field, Melody Loop will allow you to spend 1 less Elemental Die the '
-        'next time you use "Switch Character." (Once per Round)'
-    )
-    version: Literal['3.3'] = '3.3'
-    charactor_name: Literal['Barbara'] = 'Barbara'
+class GloriousSeason(GloriousSeason_3_3):
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(
-        elemental_dice_number = 4,
         elemental_dice_color = DieColor.HYDRO,
+        elemental_dice_number = 3,
     )
-    skill: Literal['Let the Show Begin♪'] = 'Let the Show Begin♪'
-    usage: int = 1
-
-    def event_handler_ROUND_PREPARE(
-        self, match: Any, event_args: RoundPrepareEventArguments
-    ) -> List[Actions]:
-        """reset usage"""
-        self.usage = 1
-        return []
-
-    def value_modifier_COST(
-        self, value: CostValue, 
-        match: Any,
-        mode: Literal['TEST', 'REAL'],
-    ) -> CostValue:
-        """
-        Once per round, if summon "Melody Loop" is valid in our summon area,
-        and our do switch, and have cost, then cost -1.
-        """
-        if self.position.area != ObjectPositionType.CHARACTOR:
-            # not equipped, no effect
-            return value
-        if self.usage <= 0:
-            # no usage, no effect
-            return value
-        if value.cost.label & CostLabels.SWITCH_CHARACTOR == 0:
-            # not switch charatctor, no effect
-            return value
-        if value.position.player_idx != self.position.player_idx:
-            # not self player, no effect
-            return value
-        summons = match.player_tables[self.position.player_idx].summons
-        have_summon = False
-        for summon in summons:
-            if summon.name == 'Melody Loop':
-                have_summon = True
-                break
-        if not have_summon:
-            # not have summon, no effect
-            return value
-        # decrease 1 any cost
-        if value.cost.decrease_cost(None):
-            # decrease success
-            if mode == 'REAL':
-                self.usage -= 1
-        return value
 
 
 class Barbara(CharactorBase):

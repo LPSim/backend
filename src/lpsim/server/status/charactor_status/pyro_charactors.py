@@ -2,7 +2,7 @@ from typing import Any, List, Literal
 from ...struct import Cost
 
 from ...action import (
-    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
+    ActionTypes, Actions, CreateObjectAction, DrawCardAction, MakeDamageAction, RemoveObjectAction
 )
 
 from ...event import (
@@ -287,11 +287,17 @@ class ScarletSeal(UsageCharactorStatus):
     name: Literal['Scarlet Seal'] = 'Scarlet Seal'
     desc: str = (
         'When the character uses a Charged Attack: Damage dealt +2.'
+        '(Can stack, max 2 usages)'
     )
-    version: Literal['3.8'] = '3.8'
+    version: Literal['4.2'] = '4.2'
     usage: int = 1
-    max_usage: int = 1
+    max_usage: int = 2
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
+    triggered: bool = False
+
+    available_handler_in_trashbin: List[ActionTypes] = [
+        ActionTypes.SKILL_END
+    ]
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -308,8 +314,31 @@ class ScarletSeal(UsageCharactorStatus):
         # increase damage
         assert mode == 'REAL'
         self.usage -= 1
+        self.triggered = True
         value.damage += 2
         return value
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[DrawCardAction]:
+        """
+        When triggered, and self charactor have talent, talent need to draw,
+        then draw one card.
+        """
+        if not self.triggered:
+            # not triggered
+            return []
+        self.triggered = False
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        if charactor.talent is not None and charactor.talent.draw_card:
+            # have talent and need draw
+            return [DrawCardAction(
+                player_idx = self.position.player_idx,
+                number = 1,
+                draw_if_filtered_not_enough = True
+            )]
+        return []
 
 
 class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):

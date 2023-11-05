@@ -42,7 +42,16 @@ class NiwabiFireDance(ElementalSkillBase):
         """
         only create object
         """
-        return [self.create_charactor_status('Niwabi Enshou')]
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        talent = charactor.talent
+        max_usage = 2
+        if talent is not None:
+            max_usage = talent.status_max_usage
+        return [self.create_charactor_status('Niwabi Enshou', {
+            'usage': max_usage,
+            'max_usage': max_usage
+        })]
 
 
 class RyuukinSaxifrage(ElementalBurstBase):
@@ -74,15 +83,17 @@ class NaganoharaMeteorSwarm(SkillTalent):
         'Combat Action: When your active character is Yoimiya, equip this '
         'card. After Yoimiya equips this card, immediately use Niwabi '
         'Fire-Dance once. After your Yoimiya, who has this card equipped, '
-        'triggers Niwabi Enshou: Deal 1 additional Pyro DMG.'
+        'usage of Niwabi Enshou is increased by 1, and when '
+        'Niwabi Enshou is triggered: Deal 1 additional Pyro DMG.'
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Yoimiya'] = 'Yoimiya'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 2,
     )
     skill: Literal['Niwabi Fire-Dance'] = 'Niwabi Fire-Dance'
+    status_max_usage: int = 3
 
 
 # charactor base

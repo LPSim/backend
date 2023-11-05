@@ -1,6 +1,8 @@
 from typing import Any, List, Literal
 
-from ...event import SkillEndEventArguments
+from ..old_version.talent_cards_4_2 import Awakening_3_3
+
+from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 from ...action import Actions, ChargeAction
 from ...struct import Cost
@@ -46,70 +48,22 @@ class LightningFang(ElementalBurstBase):
 # Talents
 
 
-class Awakening(SkillTalent):
-    name: Literal['Awakening']
+class Awakening(Awakening_3_3):
+    version: Literal['4.2'] = '4.2'
     desc: str = (
         'Combat Action: When your active character is Razor, equip this card. '
         'After Razor equips this card, immediately use Claw and Thunder once. '
         'After your Razor, who has this card equipped, uses Claw and Thunder: '
         '1 of your Electro characters gains 1 Energy. '
-        '(Active Character prioritized)'
+        '(Active Character prioritized) (Once per round)'
     )
-    version: Literal['3.3'] = '3.3'
-    charactor_name: Literal['Razor'] = 'Razor'
+    usage: int = 1
+    max_usage: int = 1
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 4
+        elemental_dice_number = 3,
     )
-    skill: Literal['Claw and Thunder'] = 'Claw and Thunder'
 
-    def event_handler_SKILL_END(
-        self, event: SkillEndEventArguments, match: Any
-    ) -> List[ChargeAction]:
-        """
-        If equipped and use elemental skill, charge one of our electro 
-        charactor
-        """
-        if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
-        ):
-            # not equipped, or this charactor use skill
-            return []
-        if event.action.skill_type != SkillType.ELEMENTAL_SKILL:
-            # not elemental skill
-            return []
-        # find charge target
-        table = match.player_tables[self.position.player_idx]
-        charactors = table.charactors
-        active = charactors[table.active_charactor_idx]
-        target_idx = -1
-        if (
-            active.element == ElementType.ELECTRO
-            and active.charge < active.max_charge
-        ):
-            # active electro and not full charge
-            target_idx = table.active_charactor_idx
-        else:
-            # check other charactors
-            for chraractor_idx, charactor in enumerate(charactors):
-                if (
-                    charactor.element == ElementType.ELECTRO
-                    and charactor.charge < charactor.max_charge
-                    and charactor.is_alive
-                ):
-                    target_idx = chraractor_idx
-                    break
-        if target_idx == -1:
-            # no target
-            return []
-        # charge target
-        return [ChargeAction(
-            player_idx = self.position.player_idx,
-            charactor_idx = target_idx,
-            charge = 1
-        )]
 
 # charactor base
 

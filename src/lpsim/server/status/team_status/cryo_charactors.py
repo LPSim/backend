@@ -141,8 +141,6 @@ class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
             )
             self.desc = self.desc.replace(talent_desc, '')
             self.desc += talent_desc
-            self.max_usage = 3
-            self.usage = 3
 
     def renew(self, object: 'ChonghuasFrostField'):
         super().renew(object)

@@ -4,7 +4,6 @@ from ...struct import Cost
 from ...consts import DieColor
 from ..old_version.xingqiu_4_1 import Xingqiu_4_1 as X_4_1
 from ..old_version.xingqiu_4_1 import TheScentRemained_3_3 as TSR_4_1
-from ..old_version.xingqiu_4_1 import FatalRainscreen
 
 
 class TheScentRemained(TSR_4_1):

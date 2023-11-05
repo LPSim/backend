@@ -127,10 +127,11 @@ class JoyousCelebration(ArcaneLegendBase):
         'Your active character must be one of the following elemental types '
         'to play this card: Cryo/Hydro/Pyro/Electro/Dendro: The element '
         'corresponding to your active character\'s Elemental Type will be '
-        'applied to all your characters.'
+        'applied to your characters that already have elemental application.'
     )
-    version: Literal['3.8'] = '3.8'
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(arcane_legend = True)
+    apply_no_element_charactor: bool = False
 
     def is_valid(self, match: Any) -> bool:
         """
@@ -154,7 +155,7 @@ class JoyousCelebration(ArcaneLegendBase):
         self, target: ObjectPosition | None, match: Any
     ) -> List[ConsumeArcaneLegendAction | MakeDamageAction]:
         """
-        apply element to all your characters.
+        apply element to corresponding characters.
         """
         assert target is None
         ret: List[ConsumeArcaneLegendAction | MakeDamageAction] = []
@@ -168,6 +169,12 @@ class JoyousCelebration(ArcaneLegendBase):
         for c in match.player_tables[self.position.player_idx].charactors:
             if c.is_defeated:
                 continue
+            if (
+                (not self.apply_no_element_charactor) 
+                and len(c.element_application) == 0
+            ):
+                # not apply to no element charactor
+                continue
             damage_action.damage_value_list.append(
                 DamageValue(
                     position = self.position,
@@ -178,7 +185,9 @@ class JoyousCelebration(ArcaneLegendBase):
                     cost = self.cost.copy(),
                 )
             )
-        return ret + [damage_action]
+        if len(damage_action.damage_value_list) > 0:
+            ret.append(damage_action)
+        return ret
 
 
 class FreshWindOfFreedom(ArcaneLegendBase):

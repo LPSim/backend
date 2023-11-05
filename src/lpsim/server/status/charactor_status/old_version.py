@@ -8,6 +8,8 @@ from .cryo_charactors import Grimheart as G_3_8
 from .foods import MintyMeatRolls as MMR_3_4
 from .hydro_charactors import RangedStance as RS_4_1, MeleeStance as MS_4_1
 from .hydro_charactors import Riptide as Riptide_4_1
+from .pyro_charactors import ScarletSeal as SS_4_2
+from .geo_charactors import RagingOniKing as ROK_4_2
 
 
 class Grimheart_3_5(G_3_8):
@@ -51,8 +53,26 @@ class MeleeStance_3_7(MS_4_1):
     version: Literal['3.7']
 
 
+class ScarletSeal_3_8(SS_4_2):
+    desc: str = (
+        'When the character uses a Charged Attack: Damage dealt +2.'
+    )
+    version: Literal['3.8']
+    usage: int = 1
+    max_usage: int = 1
+
+
+class RagingOniKing_3_6(ROK_4_2):
+    version: Literal['3.6']
+    damage_increase: int = 2
+
+
 OldVersionCharactorStatus = (
-    Riptide_3_7 | RangedStance_3_7 | MeleeStance_3_7
+    ScarletSeal_3_8
+
+    | Riptide_3_7 | RangedStance_3_7 | MeleeStance_3_7
+
+    | RagingOniKing_3_6
 
     | Grimheart_3_5 
 

@@ -8,6 +8,9 @@ from ..hydro.mirror_maiden import InfluxBlast as IB_3_7
 
 
 class InfluxBlast(IB_3_7):
+    desc: str = (
+        'Deals 3 Hydro DMG. The target character receives Refraction.'
+    )
     damage: int = 3
 
 

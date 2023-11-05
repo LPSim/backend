@@ -1,5 +1,7 @@
 from typing import Any, List, Literal, Tuple
 
+from ..old_version.talent_cards_4_2 import AbsorbingPrism_3_7
+
 from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import CostValue, DamageValue
@@ -186,54 +188,12 @@ class ElectroCrystalCore(PassiveSkillBase):
 # Talents
 
 
-class AbsorbingPrism(TalentBase):
-    name: Literal['Absorbing Prism']
-    desc: str = (
-        'Combat Action: When your active character is Electro Hypostasis, '
-        'heal that character for 3 HP and attach the Electro Crystal Core to '
-        'them.'
-    )
-    version: Literal['3.7'] = '3.7'
-    charactor_name: Literal['Electro Hypostasis'] = 'Electro Hypostasis'
+class AbsorbingPrism(AbsorbingPrism_3_7):
+    version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3
+        elemental_dice_number = 2
     )
-    remove_when_used: bool = True
-
-    def get_action_type(self, match: Any) -> Tuple[int, bool]:
-        return PlayerActionLabels.CARD.value, True
-
-    def get_actions(
-        self, target: ObjectPosition | None, match: Any
-    ) -> List[MakeDamageAction | CreateObjectAction]:
-        """
-        Using this card will heal electro hypostasis by 3 hp and attach
-        electro crystal core to it. No need to equip it.
-        """
-        charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        assert charactor.name == self.charactor_name
-        return [
-            MakeDamageAction(
-                damage_value_list = [
-                    DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = charactor.position,
-                        damage = -3,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = Cost(),
-                    )
-                ],
-            ),
-            CreateObjectAction(
-                object_name = 'Electro Crystal Core',
-                object_position = charactor.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
-                object_arguments = {}
-            )
-        ]
 
 
 # charactor base

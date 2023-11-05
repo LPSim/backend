@@ -35,11 +35,14 @@ class ChonghuasLayeredFrost(ElementalSkillBase):
         Attack and create object
         """
         args = {}
-        if self.is_talent_equipped(match):
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        talent = charactor.talent
+        if talent is not None:
             args = {
                 'talent_activated': True,
-                'usage': 3,
-                'max_usage': 3
+                'usage': talent.status_max_usage,
+                'max_usage': talent.status_max_usage
             }
         return super().get_actions(match) + [
             self.create_team_status("Chonghua's Frost Field", args),
@@ -55,17 +58,17 @@ class SteadyBreathing(SkillTalent):
         'Combat Action: When your active character is Chongyun, equip this '
         "card. After Chongyun equips this card, immediately use Chonghua's "
         'Layered Frost once. When your Chongyun, who has this card equipped, '
-        'creates a Chonghua Frost Field, it will have the following effects: '
-        'Starting Duration (Rounds) +1, will cause your Sword, Claymore, and '
-        "Polearm-wielding characters' Normal Attacks to deal +1 DMG."
+        'creates a Chonghua Frost Field, it will cause your Sword, Claymore, '
+        "and Polearm-wielding characters' Normal Attacks to deal +1 DMG."
     )
-    version: Literal['3.3'] = '3.3'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Chongyun'] = 'Chongyun'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.CRYO,
-        elemental_dice_number = 4
+        elemental_dice_number = 3
     )
     skill: Literal["Chonghua's Layered Frost"] = "Chonghua's Layered Frost"
+    status_max_usage: int = 2
 
 
 # charactor base

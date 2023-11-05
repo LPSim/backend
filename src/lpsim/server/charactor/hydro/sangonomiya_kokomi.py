@@ -6,7 +6,7 @@ from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageValue
 
-from ...action import ActionTypes, Actions, MakeDamageAction
+from ...action import ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
@@ -135,9 +135,40 @@ class NereidsAscension(ElementalBurstBase):
                 ))
         ret.append(action)
         ret.append(self.create_charactor_status('Ceremonial Garment'))
-        # if has talent, re-create Bake-Kurage
-        if self.is_talent_equipped(match):
-            ret.append(self.create_summon('Bake-Kurage'))
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        summons = match.player_tables[
+            self.position.player_idx].summons
+        kurage_found = None
+        for s in summons:
+            if s.name == 'Bake-Kurage':
+                kurage_found = s
+                break
+        talent = charactor.talent
+        if talent is not None:
+            if talent.version == '3.5':
+                # if has 3.5 talent, re-create Bake-Kurage
+                if kurage_found:
+                    ret.append(self.create_summon('Bake-Kurage'))
+            elif talent.version == '4.2':
+                # with 4.2 talent
+                if kurage_found is not None:
+                    # found kurage, increase usage
+                    ret.append(
+                        ChangeObjectUsageAction(
+                            object_position = kurage_found.position,
+                            change_type = 'DELTA',
+                            change_usage = 1
+                        )
+                    )
+                else:
+                    # otherwise, create kurage with 1 usage
+                    ret.append(self.create_summon('Bake-Kurage', {
+                        'usage': 1,
+                        'max_usage': 1,
+                    }))
+            else:
+                raise NotImplementedError
         return ret
 
 
@@ -151,10 +182,12 @@ class TamakushiCasket(SkillTalent):
         'equip this card. After Sangonomiya Kokomi equips this card, '
         "immediately use Nereid's Ascension once. When your Sangonomiya "
         "Kokomi, who has this card equipped, uses Nereid's Ascension: If "
-        "Bake-Kurage is on the field, its Usage(s) will be refreshed. While "
-        'Ceremonial Garment exists, Bake-Kurage deals +1 DMG'
+        "Bake-Kurage is on the field, then increase its usage by 1. "
+        "If Bake-Kurage is not on the field, then sumon a Bake-Kurage with 1 "
+        "usage."
+        'While Ceremonial Garment exists, Bake-Kurage deals +1 DMG.'
     )
-    version: Literal['3.5'] = '3.5'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Sangonomiya Kokomi'] = 'Sangonomiya Kokomi'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,

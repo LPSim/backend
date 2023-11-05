@@ -51,7 +51,10 @@ class Sharpshooter(PhysicalNormalAttackBase):
         remove Baron Bunny.
         """
         ret = super().get_actions(match)
-        if self.is_talent_equipped(match):
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        talent = charactor.talent
+        if talent is not None:
             summons = match.player_tables[self.position.player_idx].summons
             for summon in summons:
                 if summon.name == 'Baron Bunny':
@@ -63,7 +66,7 @@ class Sharpshooter(PhysicalNormalAttackBase):
                                 position = summon.position,
                                 damage_type = DamageType.DAMAGE,
                                 target_position = target.position,
-                                damage = 3,
+                                damage = talent.damage,
                                 damage_elemental_type
                                 = DamageElementalType.PYRO,
                                 cost = Cost(),
@@ -118,15 +121,16 @@ class BunnyTriggered(SkillTalent):
         'Combat Action: When your active character is Amber, equip this card. '
         'After Amber equips this card, immediately use Explosive Puppet once. '
         'After you use a Normal Attack: If this card and Baron Bunny are '
-        'still on the field, then Baron Bunny explodes and deals 3 Pyro DMG.'
+        'still on the field, then Baron Bunny explodes and deals 4 Pyro DMG.'
     )
-    version: Literal['3.7'] = '3.7'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Amber'] = 'Amber'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 3
     )
     skill: Literal['Explosive Puppet'] = 'Explosive Puppet'
+    damage: int = 4
 
 
 # charactor base

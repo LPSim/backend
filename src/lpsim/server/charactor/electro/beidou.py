@@ -3,6 +3,8 @@
 
 from typing import Any, List, Literal
 
+from ..old_version.talent_cards_4_2 import LightningStorm_3_4
+
 from ...modifiable_values import CostValue
 from ...event import ReceiveDamageEventArguments, RoundPrepareEventArguments
 
@@ -88,87 +90,16 @@ class Stormbreaker(ElementalBurstBase):
 # Talents
 
 
-class LightningStorm(SkillTalent):
-    name: Literal['Lightning Storm']
+class LightningStorm(LightningStorm_3_4):
     desc: str = (
         'Combat Action: When your active character is Beidou, equip this '
         'card. After Beidou equips this card, immediately use Tidecaller '
         'once. When Beidou, who has this card equipped, uses Wavestrider: '
-        "If DMG is taken while Prepare Skill is active, Beidou's Normal "
-        "Attacks this Round will cost 1 less Unaligned Element. "
-        '(Can be triggered 2 times)'
+        "Beidou's Normal Attacks this Round will cost 1 less Unaligned "
+        'Element. (Can be triggered 2 times)'
     )
-    version: Literal['3.4'] = '3.4'
-    charactor_name: Literal['Beidou'] = 'Beidou'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-    )
-    skill: Literal['Tidecaller'] = 'Tidecaller'
-
-    usage: int = 2
-    max_usage: int = 2
-    activated: bool = False
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        reset usage and activate
-        """
-        self.usage = self.max_usage
-        self.activated = False
-        return []
-
-    def event_handler_RECEIVE_DAMAGE(
-        self, event: ReceiveDamageEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        If self receive damage and has status, activate
-        """
-        if self.position.area != ObjectPositionType.CHARACTOR:
-            # not equipped
-            return []
-        if not event.final_damage.is_corresponding_charactor_receive_damage(
-            self.position, match,
-        ):
-            # not corresponding charactor
-            return []
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        for status in charactor.status:
-            if status.name == 'Tidecaller: Surf Embrace':
-                self.activated = True
-                break
-        return []
-
-    def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
-    ) -> CostValue:
-        """
-        If activated, decrease self normal attack cost by 1
-        """
-        if not self.activated:
-            # not activated
-            return value
-        if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR,
-        ):
-            # not self skill
-            return value
-        if value.cost.label & CostLabels.NORMAL_ATTACK.value == 0:
-            # not normal attack
-            return value
-        if self.usage <= 0:
-            # no usage
-            return value
-        # decrease
-        if value.cost.decrease_cost(None):  # pragma: no branch
-            if mode == 'REAL':
-                self.usage -= 1
-        return value
+    version: Literal['4.2'] = '4.2'
+    need_to_activate: bool = False
 
 
 # charactor base

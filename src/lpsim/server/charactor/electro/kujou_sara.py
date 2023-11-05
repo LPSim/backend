@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ..old_version.talent_cards_4_2 import SinOfPride_3_5
+
 from ...event import RoundEndEventArguments
 
 from ...summon.base import AttackerSummonBase
@@ -111,19 +113,18 @@ class SinOfPride(SkillTalent):
     desc: str = (
         'Combat Action: When your active character is Kujou Sara, equip this '
         'card. After Kujou Sara equips this card, immediately use '
-        'Subjugation: Koukou Sendou once. When Kujou Sara is active and has '
+        'Tengu Stormcall once. When Kujou Sara is active and has '
         'this card equipped, all allied Electro characters with Crowfeather '
         'Cover will deal +1 additional Elemental Skill and Elemental Burst '
         'DMG.'
     )
-    version: Literal['3.5'] = '3.5'
+    version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Kujou Sara'] = 'Kujou Sara'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_number = 3,
     )
-    skill: Literal['Subjugation: Koukou Sendou'] = 'Subjugation: Koukou Sendou'
+    skill: Literal['Tengu Stormcall'] = 'Tengu Stormcall'
 
 
 # charactor base
