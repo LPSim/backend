@@ -1474,13 +1474,11 @@ class Match(BaseModel):
                 if req.player_idx == response.player_idx:  # pragma: no branch
                     if req.reroll_times > 1:
                         req.reroll_times -= 1
+                        req.colors = self.player_tables[
+                            response.player_idx].dice.colors.copy()
                     else:
                         self.requests.pop(num)
                     break
-        # after reroll, should save history so that next reroll will see newest
-        # dice colors.
-        if self.config.history_level > 0:
-            self._save_history()
 
     def _respond_switch_charactor(self, response: SwitchCharactorResponse):
         """
