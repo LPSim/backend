@@ -2383,10 +2383,16 @@ class Match(BaseModel):
             target_classes = CharactorStatus
             target_list = table.charactors[
                 action.object_position.charactor_idx].status
-            assert table.charactors[
-                action.object_position.charactor_idx].is_alive, (
-                'Cannot create status for defeated charactor.'
-            )
+            charactor = table.charactors[action.object_position.charactor_idx]
+            if charactor.is_defeated:
+                logging.warning(
+                    'Trying to create status for defeated charactor '
+                    f'{action.object_position.player_idx}:'
+                    f'{action.object_position.charactor_idx}:'
+                    f'{charactor.name}. Is it be defeated before creating '
+                    'or a bug?'
+                )
+                return []
             target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_classes = Summons
