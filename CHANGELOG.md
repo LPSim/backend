@@ -7,6 +7,51 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.2.1] - 2023-11-05
+
+### Changed
+- Balance changes of 4.2
+  - Charactors
+    - Arataki Itto
+    - Rhodeia of Loch
+    - Shenhe
+    - Yanfei
+    - Jean
+  - Talents
+    - Xingqiu
+    - Barbara
+    - Mirror Maiden
+    - Electro Hypostasis
+    - Chongyun
+    - Xiangling
+    - Yoimiya
+    - Candace
+    - Razor
+    - Beidou
+    - Kujou Sara
+    - Cyno
+    - Sangonomiya Kokomi
+    - Amber
+    - Jean
+    - Yanfei
+  - Cards
+    - Joyous Celebration
+- For SkillTalents, they no longer record the skill object that will trigger;
+  instead, it records the name of the skill, and find the skill object when
+  it is triggered.
+- When performing reroll-dice, instead of saving states in history for each
+  reroll, now no states will be saved during reroll, and frontend will get
+  latest dice color in the request.
+
+### Fixed
+- Bug of Seed of Skandha, which will cause match error when triggered and 
+  target is defeated.
+- Bug of shield from Baizhu, which will revive charactor.
+- Skills that will add status to target, e.g. elemental burst of Nilou, will
+  raise error when target is defeated by the skill.
+- Nilou's talent will raise error when summon disappears after attack.
+- I Haven't Lost Yet cannot use if it's not in hand when charactor is defeated.
+
 ## [0.4.2.0] - 2023-11-04
 
 ### Added
@@ -162,7 +207,8 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.0...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.1...HEAD
+[0.4.2.1]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
 [0.4.2.0]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
 [0.4.1.3]: https://github.com/LPSim/backend/releases/tag/v0.4.1.3
 [0.4.1.2]: https://github.com/LPSim/backend/releases/tag/v0.4.1.2
