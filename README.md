@@ -16,8 +16,8 @@ This project is under AGPL-3.0 license.
 
 All charactors and cards with their balance changes until 4.1 are done.
 
-:sparkles: NEW: 4.2 charactors and cards are implemented. Waiting for official 
-announcement of balance changes.
+:sparkles: NEW: 4.2 charactors and cards, as well as balance changes are 
+implemented. 
 
 ## Feature
 
