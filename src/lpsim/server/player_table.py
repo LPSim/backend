@@ -187,11 +187,14 @@ class PlayerTable(BaseModel):
                 if card.id == position.id:
                     return card
             return None
-        # elif position.area == ObjectPositionType.DECK:
-        #     for card in self.table_deck:
-        #         if card.id == position.id:
-        #             return card
-        #     return None
+        elif position.area == ObjectPositionType.DECK:
+            for card in self.table_deck:
+                if card.id == position.id:
+                    return card
+            else:
+                raise NotImplementedError('Not tested part')
+            # TODO: if charactor defeated can draw card?
+            return None
         # elif position.area == ObjectPositionType.DICE:
         #     if position.id == self.dice.id:
         #         return self.dice
@@ -227,6 +230,7 @@ class PlayerTable(BaseModel):
         if self.using_hand is not None:
             result.append(self.using_hand)
         result += self.hands
+        result += self.table_deck
 
         # disable them because currently no dice and deck cards will trigger
         # events or modify values.

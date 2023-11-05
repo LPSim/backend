@@ -2181,6 +2181,129 @@ def test_lyresong():
     assert match.state != MatchState.ERROR
 
 
+def test_i_havent_lost_yet_in_deck():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "skill 1 15 14 13",
+            "skill 1 12 11 10",
+            "skill 0 9 8",
+            "skill 2 7 6 5",
+            "end",
+            "end",
+            "sw_char 0 15",
+            "sw_char 2 14",
+            "skill 0 13 12",
+            "TEST 2 not all can use",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 2",
+            "sw_char 1 15",
+            "skill 1 14 13 12",
+            "end",
+            "end",
+            "sw_char 2 15",
+            "sw_char 0 14",
+            "sw_char 1 13",
+            "choose 0",
+            "TEST 1 all card can use",
+            "card 7 0 12",
+            "TEST 1 all card can use",
+            "card 7 0 11",
+            "card 8 0 10",
+            "card 9 0 9",
+            "TEST 1 all card can use",
+            "card 1 0",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "end",
+            "TEST 2 not all can use",
+            "card 3 0 15",
+            "card 4 0 14",
+            "TEST 2 not all can use",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Sangonomiya Kokomi
+        charactor:Fischl
+        charactor:Arataki Itto
+        I Haven't Lost Yet!@3.3*15
+        Strategize*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while True:
+            cmd = agent.commands[0].strip().split(' ')
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cards = []
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        cards.append(req.card_idx)
+                cards.sort()
+                assert cards == list(range(len(cards)))
+            elif test_id == 2:
+                for req in match.requests:
+                    if req.name == 'UseCardRequest':
+                        assert match.player_tables[req.player_idx].hands[
+                            req.card_idx].name != "I Haven't Lost Yet!"
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
+
 if __name__ == '__main__':
     # test_bestest()
     # test_changing_shifts()
@@ -2197,4 +2320,5 @@ if __name__ == '__main__':
     # test_master_weapon_artifact()
     # test_new_wind_and_freedom_and_crane()
     # test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration()
-    test_lyresong()
+    # test_lyresong()
+    test_i_havent_lost_yet_in_deck()

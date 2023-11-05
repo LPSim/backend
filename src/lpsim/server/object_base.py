@@ -41,6 +41,10 @@ class ObjectBase(BaseModel):
     # will not available.
     available_handler_in_trashbin: List[ActionTypes] = []
 
+    # If the object is in deck, event handlers except those in this list
+    # will not available.
+    available_handler_in_deck: List[ActionTypes] = []
+
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         # check event handler name valid

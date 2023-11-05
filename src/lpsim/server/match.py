@@ -1127,6 +1127,10 @@ class Match(BaseModel):
                 object_list.append(object)
         handler_name = f'event_handler_{event_arg.type.name}'
         for obj in object_list:
+            # for deck objects, check availability
+            if obj.position.area == ObjectPositionType.DECK:
+                if event_arg.type not in obj.available_handler_in_deck:
+                    continue
             name = obj.__class__.__name__
             if hasattr(obj, 'name'):  # pragma: no cover
                 name = obj.name  # type: ignore

@@ -14,7 +14,7 @@ from ...consts import (
 
 from ...object_base import CardBase, MultiTargetCardBase
 from ...action import (
-    Actions, ChangeObjectUsageAction, ChargeAction, 
+    ActionTypes, Actions, ChangeObjectUsageAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
     GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
     SkillEndAction, SwitchCharactorAction, UseSkillAction
@@ -148,6 +148,11 @@ class IHaventLostYet(CardBase):
     cost: Cost = Cost()
 
     activated: bool = False
+
+    available_handler_in_deck: List[ActionTypes] = [
+        ActionTypes.CHARACTOR_DEFEATED, 
+        ActionTypes.ROUND_PREPARE
+    ]
 
     def is_valid(self, match: Any) -> bool:
         team_status = match.player_tables[self.position.player_idx].team_status
