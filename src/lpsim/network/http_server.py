@@ -52,8 +52,10 @@ class HTTPServer():
         if match_config is not None and match_config.history_level < 10:
             raise ValueError(
                 'history_level must be at least 10 for HTTPServer')
-        self.match: Match = get_new_match(
+        match, random_state = get_new_match(
             self.decks, match_config = match_config)
+        self.match = match
+        self.match_random_state = random_state
         self.agent_0 = InteractionAgent(player_idx = 0, 
                                         only_use_command = True)
         self.agent_1 = InteractionAgent(player_idx = 1, 
@@ -66,7 +68,6 @@ class HTTPServer():
         # attrs to save history. command is saved separately for two players,
         # and each line contains [idx, command], idx is idx of last history.
         self.command_history = [[], []]
-        self.match_random_state = self.match.random_state
         self.start_deck = self.decks[:]
 
         app = self.app
@@ -157,7 +158,7 @@ class HTTPServer():
                 self.start_deck = [x.player_deck_information 
                                    for x in match.player_tables]
             else:
-                self.match = get_new_match(
+                self.match, self.match_random_state = get_new_match(
                     decks = self.decks,
                     rich_mode = rich,
                     match_config = match_config,
@@ -165,7 +166,6 @@ class HTTPServer():
                 match_state_idx = 0
                 match = self.match
                 self.command_history = [[], []]
-                self.match_random_state = self.match.random_state
                 self.start_deck = [x.player_deck_information 
                                    for x in match.player_tables]
             return {

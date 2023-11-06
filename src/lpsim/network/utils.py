@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Tuple
 from ..server.event_handler import OmnipotentGuideEventHandler
 from ..server.match import Match, MatchConfig
 from ..server.deck import Deck
@@ -12,7 +12,7 @@ def get_new_match(
     history_level: int = 10,
     make_skill_prediction: bool = True,
     auto_step: bool = True,
-):
+) -> Tuple[Match, Any]:
     """
     Generate new match with given conditions.
 
@@ -31,7 +31,8 @@ def get_new_match(
             effect when match_config is not None.
         auto_step: If True, auto step the match once.
     Returns:
-        The generated match. If generate failed or error occured, raise error.
+        The generated match and its initial random state. 
+        If generate failed or error occured, raise error.
     """
     if seed:
         match: Match = Match(random_state = seed)
@@ -48,6 +49,8 @@ def get_new_match(
         match.config.initial_dice_number = 16
         match.event_handlers.append(OmnipotentGuideEventHandler())
 
+    random_state = match.random_state
+
     if len(decks) > 0:
         match.set_deck(decks)
         start_result = match.start()
@@ -58,4 +61,4 @@ def get_new_match(
         match._save_history()
         match.step()
 
-    return match
+    return match, random_state
