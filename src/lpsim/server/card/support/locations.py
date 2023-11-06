@@ -643,11 +643,11 @@ class StormterrorsLair(LocationBase, UsageWithRoundRestrictionSupportBase):
     card_cost_label: int = CostLabels.SKILLS.value
     decrease_threshold: int = 4
 
-    def play(self, match: Any) -> List[DrawCardAction]:
+    def play(self, match: Any) -> List[Actions]:
         """
         Draw a talent card
         """
-        return [DrawCardAction(
+        return super().play(match) + [DrawCardAction(
             player_idx = self.position.player_idx,
             number = 1,
             whitelist_cost_labels = CostLabels.TALENT.value,
