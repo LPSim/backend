@@ -1,4 +1,6 @@
 import json
+import os
+import datetime
 from typing import Literal, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
@@ -39,16 +41,27 @@ class HTTPServer():
     player and system states.
 
     To check APIs, use /docs or /redoc after run the server.
+
+    Args:
+        allow_origins: list of allowed origins, default is ['*']
+        decks: list of decks of players, each element can be a string or a 
+            Deck object. If a string, it will be parsed to a Deck object.
+        match_config: match config of the match, default is None, which means
+            use default config.
+        reset_log_save_path: if not None, save the log when reset match to the
+            path. The log is encoded in json, and log name is the timestamp.
     """
     def __init__(
         self, 
         allow_origins: List[str] = ['*'], 
         decks: List[Deck | str] = [],
         match_config: MatchConfig | None = None,
+        reset_log_save_path: str | None = None,
     ):
         self.app = FastAPI()
         self.decks = [Deck.from_str(deck) if isinstance(deck, str) else deck
                       for deck in decks]
+        self.reset_log_save_path = reset_log_save_path
         if match_config is not None and match_config.history_level < 10:
             raise ValueError(
                 'history_level must be at least 10 for HTTPServer')
@@ -117,6 +130,13 @@ class HTTPServer():
             Return: The dict contains last state with its idx of the match if 
                 success.
             """
+            if self.reset_log_save_path is not None:
+                # save log
+                if not os.path.exists(self.reset_log_save_path):
+                    os.makedirs(self.reset_log_save_path)
+                filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S.%f')
+                filename += '.json'
+                self.save_log(os.path.join(self.reset_log_save_path, filename))
             match = self.match
             fixed_random_seed = data.fixed_random_seed
             if fixed_random_seed:
