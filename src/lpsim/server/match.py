@@ -323,7 +323,7 @@ class Match(BaseModel):
     winner: int = -1
 
     # debug params
-    _debug_save_appeared_object_names: bool = PrivateAttr(True)
+    _debug_save_appeared_object_names: bool = PrivateAttr(False)
     _debug_appeared_object_names_versions: Any = PrivateAttr({})
     _debug_save_file_name: str = PrivateAttr('')
 
