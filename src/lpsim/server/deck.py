@@ -2,7 +2,7 @@ import logging
 
 from pydantic import validator
 
-from .object_base import CardBases
+from .object_base import CardBase
 
 from .charactor.charactor_base import CharactorBase
 
@@ -13,7 +13,7 @@ from typing import Literal, List
 class Deck(BaseModel):
     name: Literal['Deck'] = 'Deck'
     charactors: List[CharactorBase] = []
-    cards: List[CardBases] = []
+    cards: List[CardBase] = []
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):
@@ -21,7 +21,7 @@ class Deck(BaseModel):
 
     @validator('cards', each_item = True, pre = True)
     def parse_cards(cls, v):
-        return get_instance(CardBases, v)
+        return get_instance(CardBase, v)
 
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 
@@ -166,7 +166,7 @@ class Deck(BaseModel):
                     args = { 'name': line }
                     if version is not None:
                         args['version'] = version
-                    deck.cards.append(get_instance(CardBases, args))
+                    deck.cards.append(get_instance(CardBase, args))
         return deck
 
     def to_str(self) -> str:

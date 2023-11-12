@@ -10,10 +10,10 @@ from ...modifiable_values import DamageValue
 from ...consts import (
     CostLabels, DamageElementalType, DamageType, ObjectPositionType
 )
-from ...object_base import CardBase
+from ...object_base import EventCardBase
 
 
-class FoodCardBase(CardBase):
+class FoodCardBase(EventCardBase):
     """
     Base class for food cards.
     """

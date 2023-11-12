@@ -12,6 +12,10 @@ from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
 
 import pydantic
 
+from ..server.consts import ObjectType
+
+from .desc_registry import DescDictType, desc_exist, update_desc
+
 
 """
 The dict to save all registered classes. Key is the base class, value is a dict
@@ -65,6 +69,9 @@ def register_class_one(cls: Type[Any]):
     version_hints = cls_type_hints['version']
     assert len(version_hints.__args__) == 1
     version = version_hints.__args__[0]
+    type_hints = cls_type_hints['type']
+    assert len(type_hints.__args__) == 1
+    obj_type = type_hints.__args__[0]
     names = name_hints.__args__
     # check if class name is match
     version_from_name = '.'.join(class_name.split('_')[-2:])
@@ -73,10 +80,29 @@ def register_class_one(cls: Type[Any]):
             f'Class {cls} version {version} is not equal to version '
             f'from name {version_from_name}'
         )
-    version = _version_to_int(version)
     for name in names:
-        # TODO check descs
-        ...
+        desc_type = obj_type
+        if obj_type == ObjectType.TALENT:
+            # for talent, its type name should change
+            target_charactor_names = cls_type_hints['charactor_name'].__args__
+            assert len(target_charactor_names) == 1
+            desc_type = f'TALENT_{target_charactor_names[0]}'
+        if not desc_exist(desc_type, name, version):
+            raise AssertionError(
+                f'Class {cls} name {name} version {version} is not found in '
+                'descs'
+            )
+        if obj_type == ObjectType.CHARACTOR:
+            # for charactor, also check its skill descs
+            charactor = cls(name = name, version = version)
+            for skill in charactor.skills:
+                skill_type = f'SKILL_{name}_{skill.skill_type}'
+                if not desc_exist(skill_type, skill.name, version):
+                    raise AssertionError(
+                        f'Class {cls} name {name} version {version} skill '
+                        f'{skill.name} is not found in descs'
+                    )
+    version = _version_to_int(version)
     register_success = False
     base_classes = cls.mro()
     for base_class in base_classes:
@@ -118,13 +144,16 @@ def register_class_one(cls: Type[Any]):
         )
 
 
-def register_class(classes: Type[Any], descs: Dict | None = None):
+def register_class(
+        classes: Type[Any], descs: Dict[str, DescDictType] | None = None
+):
     """
     Register classes with their descriptions. If classes is a Union, register
     all classes in the union. Otherwise, register the class itself.
     Before registering, descs will be updated first.
     """
-    ...  # TODO deal descs
+    if descs is not None:
+        update_desc(descs)
     if _is_union_type(classes):
         for type in classes.__args__:  # type: ignore
             register_class_one(type)

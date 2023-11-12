@@ -1,12 +1,14 @@
 """
 Event handlers to implement system controls and special rules 
 """
-from typing import List, Literal, Any
+from typing import Dict, List, Literal, Any
+
+from ..utils.desc_registry import DescDictType
 
 from ..utils.class_registry import register_base_class, register_class
 from .object_base import ObjectBase
 from .struct import ObjectPosition
-from .consts import ObjectPositionType, DieColor
+from .consts import ObjectPositionType, DieColor, ObjectType
 from .event import (
     ReceiveDamageEventArguments,
     AfterMakeDamageEventArguments,
@@ -31,6 +33,7 @@ class SystemEventHandlerBase(ObjectBase):
     """
 
     name: Literal['SystemEventHandlerBase']
+    type: Literal[ObjectType.SYSTEM] = ObjectType.SYSTEM
 
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
@@ -175,7 +178,34 @@ class OmnipotentGuideEventHandler_3_3(SystemEventHandlerBase):
 SystemEventHandler = SystemEventHandler_3_4
 
 
+event_handler_descs: Dict[str, DescDictType] = {
+    "SYSTEM/System": {
+        "names": {
+            "zh-CN": "系统事件",
+            "en-US": "System events"
+        },
+        "descs": {
+            "3.3": {
+            },
+            "3.4": {
+            }
+        }
+    },
+    "SYSTEM/Omnipotent Guide": {
+        "names": {
+            "zh-CN": "万能向导",
+            "en-US": "Omnipotent Guide"
+        },
+        "descs": {
+            "3.3": {
+            }
+        }
+    },
+}
+
+
 register_class(
     SystemEventHandler_3_3 | OmnipotentGuideEventHandler_3_3 
-    | SystemEventHandler_3_4
+    | SystemEventHandler_3_4,
+    event_handler_descs
 )

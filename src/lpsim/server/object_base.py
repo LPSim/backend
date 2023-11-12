@@ -215,7 +215,11 @@ class CardBase(ObjectBase):
         return actions
 
 
-class MultiTargetCardBase(CardBase):
+class EventCardBase(CardBase):
+    type: Literal[ObjectType.CARD] = ObjectType.CARD
+
+
+class MultiTargetEventCardBase(EventCardBase):
     """
     Base class of cards that can target multiple targets.
     """
@@ -241,6 +245,7 @@ class MultiTargetCardBase(CardBase):
         raise NotImplementedError()
 
 
-CardBases = CardBase | MultiTargetCardBase
+# CardBases = CardBase | MultiTargetEventCardBase
 register_base_class(CardBase)
-register_base_class(MultiTargetCardBase)
+register_base_class(EventCardBase)
+register_base_class(MultiTargetEventCardBase)

@@ -18,10 +18,10 @@ from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
     ObjectPositionType, ObjectType
 )
-from ...object_base import CardBase
+from ...object_base import EventCardBase
 
 
-class ArcaneLegendBase(CardBase):
+class ArcaneLegendBase(EventCardBase):
     type: Literal[ObjectType.ARCANE] = ObjectType.ARCANE
     cost_label: int = CostLabels.CARD.value | CostLabels.ARCANE.value
 

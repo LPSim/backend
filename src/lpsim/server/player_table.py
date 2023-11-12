@@ -14,7 +14,7 @@ from ..resources.consts import CharactorIcons
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
 )
-from .object_base import CardBase, CardBases, ObjectBase
+from .object_base import CardBase, ObjectBase
 from .deck import Deck
 from .dice import Dice
 
@@ -58,8 +58,8 @@ class PlayerTable(BaseModel):
     charactors: List[CharactorBase] = []
     summons: List[SummonBase] = []
     supports: List[SupportBase] = []
-    hands: List[CardBases] = []
-    table_deck: List[CardBases] = []
+    hands: List[CardBase] = []
+    table_deck: List[CardBase] = []
     arcane_legend: bool = True
 
     charge_satisfied: bool = False
@@ -67,7 +67,7 @@ class PlayerTable(BaseModel):
 
     # when a card is used, it will firstly be moved to using_hand, then it will
     # be moved or removed.
-    using_hand: CardBases | None = None
+    using_hand: CardBase | None = None
 
     @validator('team_status', each_item = True, pre = True)
     def parse_team_status(cls, v):

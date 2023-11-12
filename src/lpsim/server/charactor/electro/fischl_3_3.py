@@ -46,7 +46,7 @@ class MidnightPhantasmagoria(ElementalBurstBase, AOESkillBase):
 
 class StellarPredator_3_3(SkillTalent):
     name: Literal['Stellar Predator']
-    charactor_name: str = 'Fischl'
+    charactor_name: Literal['Fischl'] = 'Fischl'
     version: Literal['3.3'] = '3.3'
     desc: str = (
         'Combat Action: When your active character is Fischl, equip this '

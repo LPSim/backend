@@ -91,7 +91,7 @@ from .event import (
     UseCardEventArguments,
     UseSkillEventArguments,
 )
-from .object_base import CardBase, CardBases, ObjectBase
+from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
@@ -1774,8 +1774,8 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
-        draw_cards: List[CardBases] = []
-        blacklist: List[CardBases] = []
+        draw_cards: List[CardBase] = []
+        blacklist: List[CardBase] = []
         if self.version <= '0.0.1':
             # in 0.0.1, whitelist and blacklist are not supported
             # no filter
@@ -1874,7 +1874,7 @@ class Match(BaseModel):
         card_idxs = action.card_idxs[:]
         card_idxs.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cidx].name for cidx in card_idxs]
-        restore_cards: List[CardBases] = []
+        restore_cards: List[CardBase] = []
         for cidx in card_idxs:
             restore_cards.append(table.hands[cidx])
             table.hands = table.hands[:cidx] + table.hands[cidx + 1:]

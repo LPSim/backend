@@ -14,11 +14,11 @@ from ...consts import (
     ElementType, FactionType, ObjectPositionType
 )
 
-from ...object_base import CardBase
+from ...object_base import EventCardBase
 from ...struct import Cost, DeckRestriction, ObjectPosition
 
 
-class ElementalResonanceCardBase(CardBase):
+class ElementalResonanceCardBase(EventCardBase):
     element: ElementType
     restriction_desc: str = (
         '(You must have at least 2 XXX characters in your deck to add '
@@ -416,7 +416,7 @@ class SprawlingGreenery_3_3(ElementalResonanceCardBase):
         return ret
 
 
-class NationResonanceCardBase(CardBase):
+class NationResonanceCardBase(EventCardBase):
     faction: FactionType
     restriction_desc: str = (
         '(You must have at least 2 XXX characters in your deck to add '

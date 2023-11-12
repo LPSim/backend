@@ -165,6 +165,7 @@ class ObjectType(str, Enum):
     CHARACTOR_STATUS = 'CHARACTOR_STATUS'
     TEAM_STATUS = 'TEAM_STATUS'
     ARCANE = 'ARCANE'
+    SYSTEM = 'SYSTEM'
 
     def __str__(self) -> str:
         return self.value
