@@ -2,6 +2,8 @@
 
 from typing import Any, Literal, List
 
+from ....utils.class_registry import register_class
+
 from ...struct import Cost
 
 from ...consts import (
@@ -29,7 +31,7 @@ from .base import (
 )
 
 
-class ChangingShifts(UsageTeamStatus):
+class ChangingShifts_3_3(UsageTeamStatus):
     name: Literal['Changing Shifts'] = 'Changing Shifts'
     desc: str = (
         'The next time you perform "Switch Character": '
@@ -69,7 +71,7 @@ class ChangingShifts(UsageTeamStatus):
         return self.check_should_remove()
 
 
-class IHaventLostYet(RoundTeamStatus):
+class IHaventLostYet_4_0(RoundTeamStatus):
     name: Literal["I Haven't Lost Yet!"] = "I Haven't Lost Yet!"
     desc: str = '''You cannot play "I Haven't Lost Yet!" again this round.'''
     version: Literal['4.0'] = '4.0'
@@ -78,7 +80,7 @@ class IHaventLostYet(RoundTeamStatus):
     icon_type: Literal[IconType.DEBUFF] = IconType.DEBUFF
 
 
-class FreshWindOfFreedom(RoundTeamStatus):
+class FreshWindOfFreedom_4_1(RoundTeamStatus):
     name: Literal['Fresh Wind of Freedom'] = 'Fresh Wind of Freedom'
     desc: str = (
         'In this Round, when an opposing character is defeated during your '
@@ -134,7 +136,7 @@ class FreshWindOfFreedom(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class LeaveItToMe(UsageTeamStatus):
+class LeaveItToMe_3_3(UsageTeamStatus):
     name: Literal['Leave It to Me!']
     desc: str = (
         'The next time you perform "Switch Character": '
@@ -177,7 +179,7 @@ class LeaveItToMe(UsageTeamStatus):
         return self.check_should_remove()
 
 
-class EnduringRock(RoundTeamStatus):
+class EnduringRock_3_3(RoundTeamStatus):
     """
     Made Geo damage is determined by the following:
     in value_modifier_DAMAGE_INCREASE, check whether it is caused by our 
@@ -252,7 +254,7 @@ class EnduringRock(RoundTeamStatus):
         return list(self.check_should_remove())
 
 
-class WhereIstheUnseenRazor(RoundTeamStatus):
+class WhereIstheUnseenRazor_4_0(RoundTeamStatus):
     name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
     desc: str = (
         'During this Round, the next time you play a Weapon card: '
@@ -292,7 +294,7 @@ class WhereIstheUnseenRazor(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class SprawlingGreenery(RoundTeamStatus):
+class SprawlingGreenery_3_3(RoundTeamStatus):
     name: Literal[
         'Elemental Resonance: Sprawling Greenery'
     ] = 'Elemental Resonance: Sprawling Greenery'
@@ -342,7 +344,7 @@ class SprawlingGreenery(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class ReviveOnCooldown(RoundTeamStatus):
+class ReviveOnCooldown_3_7(RoundTeamStatus):
     name: Literal['Revive on cooldown'] = 'Revive on cooldown'
     desc: str = '''You cannot revive any charactor with food this round.'''
     version: Literal['3.7'] = '3.7'
@@ -351,7 +353,7 @@ class ReviveOnCooldown(RoundTeamStatus):
     icon_type: Literal[IconType.FOOD] = IconType.FOOD
 
 
-class StoneAndContracts(TeamStatusBase):
+class StoneAndContracts_3_7(TeamStatusBase):
     name: Literal['Stone and Contracts']
     desc: str = (
         'When the Action Phase of the next Round begins: Create 3 Omni '
@@ -380,7 +382,7 @@ class StoneAndContracts(TeamStatusBase):
         ]
 
 
-class AncientCourtyard(RoundTeamStatus):
+class AncientCourtyard_3_8(RoundTeamStatus):
     name: Literal['Ancient Courtyard']
     desc: str = (
         'You must have a character who has already equipped a Weapon or '
@@ -424,7 +426,7 @@ class AncientCourtyard(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class FatuiAmbusher(UsageTeamStatus):
+class FatuiAmbusher_3_7(UsageTeamStatus):
     name: Literal[
         'Fatui Ambusher: Cryo Cicin Mage',
         'Fatui Ambusher: Mirror Maiden',
@@ -501,7 +503,7 @@ class FatuiAmbusher(UsageTeamStatus):
             return []  # pragma: no cover
 
 
-class RhythmOfTheGreatDream(UsageTeamStatus):
+class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
     name: Literal['Rhythm of the Great Dream']
     desc: str = (
         'The next time you play a Weapon or Artifact from your hand: Spend 1 '
@@ -542,7 +544,7 @@ class RhythmOfTheGreatDream(UsageTeamStatus):
         return self.check_should_remove()
 
 
-class WhenTheCraneReturned(UsageTeamStatus):
+class WhenTheCraneReturned_3_3(UsageTeamStatus):
     name: Literal['When the Crane Returned']
     desc: str = (
         'The next time you use a Skill: Switch your next character in to be '
@@ -586,13 +588,18 @@ class WhenTheCraneReturned(UsageTeamStatus):
         return self.check_should_remove()
 
 
-class WindAndFreedom(WhenTheCraneReturned, RoundTeamStatus):
+class WindAndFreedom_4_1(WhenTheCraneReturned_3_3, RoundTeamStatus):
     name: Literal['Wind and Freedom'] = 'Wind and Freedom'
     version: Literal['4.1'] = '4.1'
     decrease_usage_when_trigger: bool = False
 
 
-class Pankration(TeamStatusBase):
+class WindAndFreedom_3_7(FreshWindOfFreedom_4_1):
+    name: Literal['Wind and Freedom'] = 'Wind and Freedom'
+    version: Literal['3.7']
+
+
+class Pankration_4_1(TeamStatusBase):
     name: Literal['Pankration!'] = 'Pankration!'
     desc: str = (
         'After a player announces the end of their Round first, the other '
@@ -623,7 +630,7 @@ class Pankration(TeamStatusBase):
         ]
 
 
-class Lyresong(WhereIstheUnseenRazor):
+class Lyresong_4_2(WhereIstheUnseenRazor_4_0):
     name: Literal['Lyresong'] = 'Lyresong'
     desc: str = (
         'During this Round, the next time you play an Artifact card: '
@@ -633,10 +640,11 @@ class Lyresong(WhereIstheUnseenRazor):
     decrease_target: int = CostLabels.ARTIFACT.value
 
 
-EventCardTeamStatus = (
-    FreshWindOfFreedom | ChangingShifts | IHaventLostYet | LeaveItToMe 
-    | EnduringRock | WhereIstheUnseenRazor | SprawlingGreenery
-    | ReviveOnCooldown | StoneAndContracts | AncientCourtyard
-    | FatuiAmbusher | RhythmOfTheGreatDream | WhenTheCraneReturned
-    | WindAndFreedom | Pankration | Lyresong
+register_class(
+    FreshWindOfFreedom_4_1 | ChangingShifts_3_3 | IHaventLostYet_4_0 
+    | LeaveItToMe_3_3 | EnduringRock_3_3 | WhereIstheUnseenRazor_4_0 
+    | SprawlingGreenery_3_3 | ReviveOnCooldown_3_7 | StoneAndContracts_3_7 
+    | AncientCourtyard_3_8 | FatuiAmbusher_3_7 | RhythmOfTheGreatDream_3_8 
+    | WhenTheCraneReturned_3_3 | WindAndFreedom_4_1 | Pankration_4_1 
+    | Lyresong_4_2 | WindAndFreedom_3_7
 )

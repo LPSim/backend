@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....modifiable_values import DamageValue
 
 from ....action import MakeDamageAction
@@ -14,7 +16,7 @@ from ....struct import Cost
 from .base import RoundEffectWeaponBase
 
 
-class AquilaFavonia(RoundEffectWeaponBase):
+class AquilaFavonia_3_3(RoundEffectWeaponBase):
     name: Literal['Aquila Favonia']
     desc: str = (
         'The character deals +1 DMG. After the opposing character uses a '
@@ -59,4 +61,4 @@ class AquilaFavonia(RoundEffectWeaponBase):
         )]
 
 
-Swords = AquilaFavonia | AquilaFavonia
+register_class(AquilaFavonia_3_3)

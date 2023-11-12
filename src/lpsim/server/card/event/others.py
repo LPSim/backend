@@ -4,6 +4,8 @@ Event cards that not belong to any other categories.
 
 from typing import Any, List, Literal, Tuple
 
+from ....utils.class_registry import register_class
+
 from ...event import (
     CharactorDefeatedEventArguments, RoundPrepareEventArguments
 )
@@ -22,7 +24,7 @@ from ...action import (
 from ...struct import Cost, MultipleObjectPosition, ObjectPosition
 
 
-class TheBestestTravelCompanion(CardBase):
+class TheBestestTravelCompanion_3_3(CardBase):
     name: Literal['The Bestest Travel Companion!']
     desc: str = '''Convert the Elemental Dice spent to Omni Element x2.'''
     version: Literal['3.3'] = '3.3'
@@ -48,7 +50,7 @@ class TheBestestTravelCompanion(CardBase):
         )]
 
 
-class ChangingShifts(CardBase):
+class ChangingShifts_3_3(CardBase):
     name: Literal['Changing Shifts']
     desc: str = (
         'The next time you perform "Switch Character": '
@@ -90,7 +92,7 @@ class ChangingShifts(CardBase):
         )]
 
 
-class TossUp(CardBase):
+class TossUp_3_3(CardBase):
     name: Literal['Toss-Up']
     desc: str = '''Select any Elemental Dice to reroll. Can reroll 2 times.'''
     version: Literal['3.3'] = '3.3'
@@ -110,7 +112,7 @@ class TossUp(CardBase):
         )]
 
 
-class Strategize(CardBase):
+class Strategize_3_3(CardBase):
     name: Literal['Strategize']
     desc: str = '''Draw 2 cards.'''
     version: Literal['3.3'] = '3.3'
@@ -136,7 +138,7 @@ class Strategize(CardBase):
         )]
 
 
-class IHaventLostYet(CardBase):
+class IHaventLostYet_4_0(CardBase):
     name: Literal["I Haven't Lost Yet!"]
     desc: str = (
         "Only playable if one of your characters is defeated this Round: "
@@ -217,7 +219,27 @@ class IHaventLostYet(CardBase):
         return []
 
 
-class LeaveItToMe(CardBase):
+class IHaventLostYet_3_3(IHaventLostYet_4_0):
+    name: Literal["I Haven't Lost Yet!"]
+    desc: str = (
+        "Only playable if one of your characters is defeated this Round: "
+        "Create Omni Element x1 and your current active character gains 1 "
+        "Energy. "
+    )
+    version: Literal['3.3']
+    cost: Cost = Cost()
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChargeAction | CreateDiceAction | CreateObjectAction]:
+        ret = super().get_actions(target, match)
+        assert ret[-1].type == ActionTypes.CREATE_OBJECT
+        # old version not adding team status
+        ret = ret[:-1]
+        return ret
+
+
+class LeaveItToMe_3_3(CardBase):
     name: Literal['Leave It to Me!']
     desc: str = (
         'The next time you perform "Switch Character": '
@@ -260,7 +282,7 @@ class LeaveItToMe(CardBase):
         )]
 
 
-class WhenTheCraneReturned(CardBase):
+class WhenTheCraneReturned_3_3(CardBase):
     name: Literal['When the Crane Returned']
     desc: str = (
         'The next time you use a Skill: Switch your next character in to be '
@@ -302,7 +324,7 @@ class WhenTheCraneReturned(CardBase):
         )]
 
 
-class Starsigns(CardBase):
+class Starsigns_3_3(CardBase):
     name: Literal['Starsigns']
     desc: str = '''Your current Active Character gains 1 Energy.'''
     version: Literal['3.3'] = '3.3'
@@ -332,7 +354,7 @@ class Starsigns(CardBase):
         )]
 
 
-class ClaxsArts(CardBase):
+class ClaxsArts_3_3(CardBase):
     name: Literal["Calx's Arts"]
     desc: str = (
         'Shift 1 Energy from at most 2 of your characters on standby to '
@@ -386,7 +408,7 @@ class ClaxsArts(CardBase):
         return ret
 
 
-class MasterOfWeaponry(MultiTargetCardBase):
+class MasterOfWeaponry_4_1(MultiTargetCardBase):
     name: Literal['Master of Weaponry']
     desc: str = (
         'Shift 1 Weapon Equipment Card that has been equipped to one of your '
@@ -465,7 +487,7 @@ class MasterOfWeaponry(MultiTargetCardBase):
         )]
 
 
-class BlessingOfTheDivineRelicsInstallation(MasterOfWeaponry):
+class BlessingOfTheDivineRelicsInstallation_4_1(MasterOfWeaponry_4_1):
     name: Literal["Blessing of the Divine Relic's Installation"]
     desc: str = (
         'Shift 1 Artifact Equipment Card that has been equipped to one of '
@@ -480,7 +502,28 @@ class BlessingOfTheDivineRelicsInstallation(MasterOfWeaponry):
     reset_usage: bool = True
 
 
-class QuickKnit(CardBase):
+class MasterOfWeaponry_3_3(MasterOfWeaponry_4_1):
+    desc: str = (
+        'Shift 1 Weapon Equipment Card that has been equipped to one of your '
+        'characters to another one of your characters of the same Weapon '
+        'Type.'
+    )
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
+class BlessingOfTheDivineRelicsInstallation_3_3(
+    BlessingOfTheDivineRelicsInstallation_4_1
+):
+    desc: str = (
+        'Shift 1 Artifact Equipment Card that has been equipped to one of '
+        'your characters to another one of your characters. '
+    )
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
+class QuickKnit_3_3(CardBase):
     name: Literal['Quick Knit']
     desc: str = '''Choose one Summon on your side and grant it +1 Usage(s).'''
     version: Literal['3.3'] = '3.3'
@@ -509,7 +552,7 @@ class QuickKnit(CardBase):
         )]
 
 
-class SendOff(CardBase):
+class SendOff_3_7(CardBase):
     name: Literal['Send Off']
     desc: str = (
         'Choose one Summon on the opposing side and cause it to lose '
@@ -542,7 +585,25 @@ class SendOff(CardBase):
         )]
 
 
-class GuardiansOath(CardBase):
+class SendOff_3_3(SendOff_3_7):
+    name: Literal['Send Off']
+    desc: str = '''Choose one Summon on the opposing side and destroy it.'''
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is not None
+        return [RemoveObjectAction(
+            object_position = target,
+        )]
+
+
+class GuardiansOath_3_3(CardBase):
     name: Literal["Guardian's Oath"]
     desc: str = (
         'Destroy all Summons. (Affects both you and your opponent.)'
@@ -576,7 +637,7 @@ class GuardiansOath(CardBase):
         return ret
 
 
-class PlungingStrike(CardBase):
+class PlungingStrike_3_7(CardBase):
     name: Literal['Plunging Strike']
     desc: str = (
         'Combat Action: Switch to the target character. '
@@ -637,7 +698,7 @@ class PlungingStrike(CardBase):
         ]
 
 
-class HeavyStrike(CardBase):
+class HeavyStrike_3_7(CardBase):
     name: Literal['Heavy Strike']
     desc: str = (
         "During this round, your current active character's next "
@@ -667,7 +728,7 @@ class HeavyStrike(CardBase):
         )]
 
 
-class TheLegendOfVennessa(CardBase):
+class TheLegendOfVennessa_3_7(CardBase):
     name: Literal['The Legend of Vennessa']
     desc: str = '''Create 4 basic Elemental Dice of different types.'''
     version: Literal['3.7'] = '3.7'
@@ -693,7 +754,7 @@ class TheLegendOfVennessa(CardBase):
         ]
 
 
-class FriendshipEternal(CardBase):
+class FriendshipEternal_3_7(CardBase):
     name: Literal['Friendship Eternal']
     desc: str = (
         'Players with less than 4 cards in their hand draw cards until their '
@@ -739,7 +800,7 @@ class FriendshipEternal(CardBase):
         return ret
 
 
-class RhythmOfTheGreatDream(CardBase):
+class RhythmOfTheGreatDream_3_8(CardBase):
     name: Literal['Rhythm of the Great Dream']
     desc: str = (
         'The next time you play a Weapon or Artifact from your hand: Spend 1 '
@@ -770,7 +831,7 @@ class RhythmOfTheGreatDream(CardBase):
         )]
 
 
-class WhereIstheUnseenRazor(CardBase):
+class WhereIstheUnseenRazor_4_0(CardBase):
     name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
     desc: str = (
         'Return a Weapon card equipped by your character to your Hand. '
@@ -820,7 +881,7 @@ class WhereIstheUnseenRazor(CardBase):
         ]
 
 
-class Pankration(CardBase):
+class Pankration_4_1(CardBase):
     name: Literal['Pankration!']
     desc: str = (
         'Can only be played when you have at least 8 Elemental Dice '
@@ -861,7 +922,7 @@ class Pankration(CardBase):
         ]
 
 
-class Lyresong(CardBase):
+class Lyresong_4_2(CardBase):
     name: Literal['Lyresong'] = 'Lyresong'
     desc: str = (
         'Return an Artifact card equipped by your character to your Hand. '
@@ -911,11 +972,14 @@ class Lyresong(CardBase):
         ]
 
 
-OtherEventCards = (
-    TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | WhenTheCraneReturned | Starsigns 
-    | ClaxsArts | MasterOfWeaponry | BlessingOfTheDivineRelicsInstallation 
-    | QuickKnit | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
-    | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
-    | WhereIstheUnseenRazor | Pankration | Lyresong
+register_class(
+    TheBestestTravelCompanion_3_3 | ChangingShifts_3_3 | TossUp_3_3 
+    | Strategize_3_3 | IHaventLostYet_4_0 | LeaveItToMe_3_3 
+    | WhenTheCraneReturned_3_3 | Starsigns_3_3 | ClaxsArts_3_3 
+    | MasterOfWeaponry_4_1 | BlessingOfTheDivineRelicsInstallation_4_1 
+    | QuickKnit_3_3 | SendOff_3_7 | GuardiansOath_3_3 | PlungingStrike_3_7 
+    | HeavyStrike_3_7 | TheLegendOfVennessa_3_7 | FriendshipEternal_3_7 
+    | RhythmOfTheGreatDream_3_8 | WhereIstheUnseenRazor_4_0 | Pankration_4_1 
+    | Lyresong_4_2 | IHaventLostYet_3_3 | MasterOfWeaponry_3_3
+    | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3
 )

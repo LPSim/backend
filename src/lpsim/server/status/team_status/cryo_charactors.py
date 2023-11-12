@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...event import (
     RoundPrepareEventArguments, SkillEndEventArguments
 )
@@ -22,7 +24,7 @@ from .base import (
 )
 
 
-class Icicle(SwitchActionTeamStatus):
+class Icicle_3_3(SwitchActionTeamStatus):
     name: Literal['Icicle'] = 'Icicle'
     desc: str = '''After you switch characters: Deal 2 Cryo DMG. Usage(s): 3'''
     version: Literal['3.3'] = '3.3'
@@ -50,7 +52,7 @@ class Icicle(SwitchActionTeamStatus):
         )]
 
 
-class IcyQuill(UsageTeamStatus):
+class IcyQuill_3_7(UsageTeamStatus):
     name: Literal['Icy Quill'] = 'Icy Quill'
     desc: str = (
         'Your character deals 1 increased Cryo DMG '
@@ -64,7 +66,7 @@ class IcyQuill(UsageTeamStatus):
     talent_usage: int = 0
     talent_max_usage: int = 0
 
-    def renew(self, new_status: 'IcyQuill') -> None:
+    def renew(self, new_status: 'IcyQuill_3_7') -> None:
         super().renew(new_status)
         self.talent_max_usage = max(
             new_status.talent_max_usage, self.talent_max_usage)
@@ -119,7 +121,7 @@ class IcyQuill(UsageTeamStatus):
         return value
 
 
-class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
+class ChonghuasFrostField_3_3(ElementalInfusionTeamStatus, RoundTeamStatus):
     name: Literal["Chonghua's Frost Field"] = "Chonghua's Frost Field"
     desc: str = (
         "Your Sword, Claymore, and Polearm-wielding characters' Physical DMG "
@@ -142,7 +144,7 @@ class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
             self.desc = self.desc.replace(talent_desc, '')
             self.desc += talent_desc
 
-    def renew(self, object: 'ChonghuasFrostField'):
+    def renew(self, object: 'ChonghuasFrostField_3_3'):
         super().renew(object)
         self.talent_activated = object.talent_activated
 
@@ -194,7 +196,7 @@ class ChonghuasFrostField(ElementalInfusionTeamStatus, RoundTeamStatus):
         return value
 
 
-class IceLotus(DefendTeamStatus):
+class IceLotus_3_3(DefendTeamStatus):
     name: Literal['Ice Lotus'] = 'Ice Lotus'
     desc: str = (
         'When your active character receives DMG: Decreases DMG taken by 1.'
@@ -206,7 +208,7 @@ class IceLotus(DefendTeamStatus):
     max_in_one_time: int = 1
 
 
-class FortunePreservingTalisman(UsageTeamStatus):
+class FortunePreservingTalisman_4_0(UsageTeamStatus):
     name: Literal[
         'Fortune-Preserving Talisman'] = 'Fortune-Preserving Talisman'
     desc: str = (
@@ -219,7 +221,7 @@ class FortunePreservingTalisman(UsageTeamStatus):
     newly_created: bool = True
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
-    def renew(self, new_status: 'FortunePreservingTalisman') -> None:
+    def renew(self, new_status: 'FortunePreservingTalisman_4_0') -> None:
         """
         Reset newly created
         """
@@ -258,7 +260,7 @@ class FortunePreservingTalisman(UsageTeamStatus):
         )]
 
 
-class CatClawShield(ShieldTeamStatus):
+class CatClawShield_3_3(ShieldTeamStatus):
     name: Literal['Cat-Claw Shield'] = 'Cat-Claw Shield'
     desc: str = '''Grants 1 Shield point for your active character.'''
     version: Literal['3.3'] = '3.3'
@@ -266,7 +268,7 @@ class CatClawShield(ShieldTeamStatus):
     max_usage: int = 1
 
 
-class FlowingCicinShield(ShieldTeamStatus):
+class FlowingCicinShield_3_7(ShieldTeamStatus):
     name: Literal['Flowing Cicin Shield'] = 'Flowing Cicin Shield'
     desc: str = (
         'Provides 1 Shield point for your active character. '
@@ -279,7 +281,8 @@ class FlowingCicinShield(ShieldTeamStatus):
     max_usage: int = 1
 
 
-CryoTeamStatus = (
-    Icicle | IcyQuill | ChonghuasFrostField | IceLotus 
-    | FortunePreservingTalisman | CatClawShield | FlowingCicinShield
+register_class(
+    Icicle_3_3 | IcyQuill_3_7 | ChonghuasFrostField_3_3 | IceLotus_3_3 
+    | FortunePreservingTalisman_4_0 | CatClawShield_3_3 
+    | FlowingCicinShield_3_7
 )

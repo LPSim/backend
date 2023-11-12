@@ -1,6 +1,8 @@
 
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...struct import Cost
 
 from ...consts import DamageElementalType, DamageType, IconType, SkillType
@@ -13,7 +15,7 @@ from ...event import PlayerActionStartEventArguments
 from .base import ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
 
 
-class TenkoThunderbolts(UsageTeamStatus):
+class TenkoThunderbolts_3_7(UsageTeamStatus):
     name: Literal['Tenko Thunderbolts'] = 'Tenko Thunderbolts'
     desc: str = '''Before you choose your action: Deal 3 Electro DMG.'''
     version: Literal['3.7'] = '3.7'
@@ -48,7 +50,7 @@ class TenkoThunderbolts(UsageTeamStatus):
         )]
 
 
-class ThunderbeastsTarge(RoundTeamStatus, ExtraAttackTeamStatus):
+class ThunderbeastsTarge_3_4(RoundTeamStatus, ExtraAttackTeamStatus):
     name: Literal["Thunderbeast's Targe"] = "Thunderbeast's Targe"
     desc: str = (
         'After your character uses a Normal Attack: Deal 1 Electro DMG. '
@@ -82,4 +84,4 @@ class ThunderbeastsTarge(RoundTeamStatus, ExtraAttackTeamStatus):
         return value
 
 
-ElectroTeamStatus = TenkoThunderbolts | ThunderbeastsTarge
+register_class(TenkoThunderbolts_3_7 | ThunderbeastsTarge_3_4)

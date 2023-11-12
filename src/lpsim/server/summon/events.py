@@ -1,10 +1,12 @@
 from typing import Literal
 
+from ...utils.class_registry import register_class
+
 from ..consts import DamageElementalType
 from .base import AttackerSummonBase
 
 
-class CryoHilichurlShooter(AttackerSummonBase):
+class CryoHilichurlShooter_3_3(AttackerSummonBase):
     name: Literal['Cryo Hilichurl Shooter'] = 'Cryo Hilichurl Shooter'
     version: Literal['3.3'] = '3.3'
     usage: int = 2
@@ -13,7 +15,7 @@ class CryoHilichurlShooter(AttackerSummonBase):
     damage: int = 1
 
 
-class ElectroHilichurlShooter(AttackerSummonBase):
+class ElectroHilichurlShooter_3_3(AttackerSummonBase):
     name: Literal['Electro Hilichurl Shooter'] = 'Electro Hilichurl Shooter'
     version: Literal['3.3'] = '3.3'
     usage: int = 2
@@ -22,7 +24,7 @@ class ElectroHilichurlShooter(AttackerSummonBase):
     damage: int = 1
 
 
-class HilichurlBerserker(AttackerSummonBase):
+class HilichurlBerserker_3_3(AttackerSummonBase):
     name: Literal['Hilichurl Berserker'] = 'Hilichurl Berserker'
     version: Literal['3.3'] = '3.3'
     usage: int = 2
@@ -31,7 +33,7 @@ class HilichurlBerserker(AttackerSummonBase):
     damage: int = 1
 
 
-class HydroSamachurl(AttackerSummonBase):
+class HydroSamachurl_3_3(AttackerSummonBase):
     name: Literal['Hydro Samachurl'] = 'Hydro Samachurl'
     version: Literal['3.3'] = '3.3'
     usage: int = 2
@@ -40,7 +42,7 @@ class HydroSamachurl(AttackerSummonBase):
     damage: int = 1
 
 
-EventSummons = (
-    CryoHilichurlShooter | ElectroHilichurlShooter | HilichurlBerserker
-    | HydroSamachurl
+register_class(
+    CryoHilichurlShooter_3_3 | ElectroHilichurlShooter_3_3 
+    | HilichurlBerserker_3_3 | HydroSamachurl_3_3
 )

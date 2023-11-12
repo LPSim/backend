@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...action import (
     ActionTypes, CharactorReviveAction, CreateObjectAction, MakeDamageAction
 )
@@ -70,7 +72,7 @@ class FoodCardBase(CardBase):
         )]
 
 
-class JueyunGuoba(FoodCardBase):
+class JueyunGuoba_3_3(FoodCardBase):
     name: Literal['Jueyun Guoba']
     desc: str = (
         "During this Round, the target character's next Normal Attack "
@@ -92,7 +94,7 @@ class JueyunGuoba(FoodCardBase):
         return ret
 
 
-class AdeptusTemptation(FoodCardBase):
+class AdeptusTemptation_3_3(FoodCardBase):
     name: Literal["Adeptus' Temptation"]
     desc: str = (
         "During this Round, the target character's next Elemental Burst "
@@ -114,7 +116,7 @@ class AdeptusTemptation(FoodCardBase):
         return ret
 
 
-class LotusFlowerCrisp(FoodCardBase):
+class LotusFlowerCrisp_3_3(FoodCardBase):
     name: Literal['Lotus Flower Crisp']
     desc: str = (
         "During this Round, the target character takes -3 DMG the next time."
@@ -135,7 +137,7 @@ class LotusFlowerCrisp(FoodCardBase):
         return ret
 
 
-class NorthernSmokedChicken(FoodCardBase):
+class NorthernSmokedChicken_3_3(FoodCardBase):
     name: Literal['Northern Smoked Chicken']
     desc: str = (
         "During this Round, the target character's next Normal Attack cost "
@@ -157,7 +159,7 @@ class NorthernSmokedChicken(FoodCardBase):
         return ret
 
 
-class SweetMadame(FoodCardBase):
+class SweetMadame_3_3(FoodCardBase):
     name: Literal['Sweet Madame']
     desc: str = '''Heal target character for 1 HP.'''
     version: Literal['3.3'] = '3.3'
@@ -187,7 +189,7 @@ class SweetMadame(FoodCardBase):
         return ret
 
 
-class MondstadtHashBrown(FoodCardBase):
+class MondstadtHashBrown_3_3(FoodCardBase):
     name: Literal['Mondstadt Hash Brown']
     desc: str = '''Heal target character for 2 HP.'''
     version: Literal['3.3'] = '3.3'
@@ -217,7 +219,7 @@ class MondstadtHashBrown(FoodCardBase):
         return ret
 
 
-class MushroomPizza(FoodCardBase):
+class MushroomPizza_3_3(FoodCardBase):
     name: Literal['Mushroom Pizza']
     desc: str = (
         'Heal target character for 1 HP. For the next two Rounds, heal this '
@@ -257,7 +259,7 @@ class MushroomPizza(FoodCardBase):
         return ret
 
 
-class MintyMeatRolls(FoodCardBase):
+class MintyMeatRolls_3_4(FoodCardBase):
     name: Literal['Minty Meat Rolls']
     desc: str = (
         "Before this Round ends, the target character's next 3 Normal Attacks "
@@ -280,7 +282,15 @@ class MintyMeatRolls(FoodCardBase):
         return ret
 
 
-class TeyvatFriedEgg(FoodCardBase):
+class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
+    version: Literal['3.3']
+    desc: str = (
+        "Before this Round ends, the target character's Normal Attacks cost 1 "
+        "less Unaligned Element."
+    )
+
+
+class TeyvatFriedEgg_4_1(FoodCardBase):
     name: Literal['Teyvat Fried Egg']
     desc: str = (
         "Revives the target character and heals that character for 1 HP. "
@@ -339,7 +349,12 @@ class TeyvatFriedEgg(FoodCardBase):
         return ret
 
 
-class SashimiPlatter(FoodCardBase):
+class TeyvatFriedEgg_3_7(TeyvatFriedEgg_4_1):
+    version: Literal['3.7'] = '3.7'
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+class SashimiPlatter_3_7(FoodCardBase):
     name: Literal['Sashimi Platter']
     desc: str = (
         "Before this Round ends, the target character's Normal Attacks "
@@ -361,7 +376,7 @@ class SashimiPlatter(FoodCardBase):
         return ret
 
 
-class TandooriRoastChicken(FoodCardBase):
+class TandooriRoastChicken_3_7(FoodCardBase):
     name: Literal['Tandoori Roast Chicken']
     desc: str = (
         "During this Round, all your characters' next Elemental Skills "
@@ -405,7 +420,7 @@ class TandooriRoastChicken(FoodCardBase):
         return ret
 
 
-class ButterCrab(FoodCardBase):
+class ButterCrab_3_7(FoodCardBase):
     name: Literal['Butter Crab']
     desc: str = (
         "During this Round, all your characters take -2 DMG the next time."
@@ -448,8 +463,10 @@ class ButterCrab(FoodCardBase):
         return ret
 
 
-FoodCards = (
-    JueyunGuoba | AdeptusTemptation | LotusFlowerCrisp | NorthernSmokedChicken
-    | SweetMadame | MondstadtHashBrown | MushroomPizza | MintyMeatRolls
-    | TeyvatFriedEgg | SashimiPlatter | TandooriRoastChicken | ButterCrab
+register_class(
+    JueyunGuoba_3_3 | AdeptusTemptation_3_3 | LotusFlowerCrisp_3_3 
+    | NorthernSmokedChicken_3_3 | SweetMadame_3_3 | MondstadtHashBrown_3_3 
+    | MushroomPizza_3_3 | MintyMeatRolls_3_4 | MintyMeatRolls_3_3
+    | TeyvatFriedEgg_4_1 | TeyvatFriedEgg_3_7 | SashimiPlatter_3_7 
+    | TandooriRoastChicken_3_7 | ButterCrab_3_7
 )

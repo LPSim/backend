@@ -2,6 +2,8 @@ from typing import List, Literal, Any, get_origin, get_type_hints
 
 from pydantic import validator
 
+from ...utils.class_registry import register_base_class
+
 from ..object_base import ObjectBase
 
 from ..consts import (
@@ -81,6 +83,9 @@ class SummonBase(ObjectBase):
         For summons, it is expected to never be used as card.
         """
         raise AssertionError('SummonBase is not expected to be used as card')
+
+
+register_base_class(SummonBase)
 
 
 class AttackerSummonBase(SummonBase):

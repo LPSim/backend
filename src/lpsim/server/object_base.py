@@ -8,6 +8,8 @@ in many other places. Other objects are defined in their own files.
 import time
 import random
 
+from ..utils.class_registry import register_base_class
+
 from .event import UseCardEventArguments
 from ..utils import BaseModel
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
@@ -240,3 +242,5 @@ class MultiTargetCardBase(CardBase):
 
 
 CardBases = CardBase | MultiTargetCardBase
+register_base_class(CardBase)
+register_base_class(MultiTargetCardBase)

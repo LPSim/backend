@@ -1,5 +1,7 @@
 from typing import Any, Literal
 
+from .....utils.class_registry import register_class
+
 from .base import RoundEffectArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue, InitialDiceColorValue
@@ -8,7 +10,7 @@ from ....consts import (
 )
 
 
-class SmallElementalArtifact(RoundEffectArtifactBase):
+class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
     """
     Seven artifacts that decrease elemental cost.
     """
@@ -109,7 +111,7 @@ class SmallElementalArtifact(RoundEffectArtifactBase):
         return value
 
 
-class BigElementalArtifact(SmallElementalArtifact):
+class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
     """
     Seven artifacts that decrease elemental cost and fix colors of two dice.
     """
@@ -136,7 +138,7 @@ class BigElementalArtifact(SmallElementalArtifact):
     max_usage_per_round: int = 1
 
     def __init__(self, *argv, **kwargs):
-        super(SmallElementalArtifact, self).__init__(*argv, **kwargs)
+        super(SmallElementalArtifact_4_0, self).__init__(*argv, **kwargs)
         if self.name == "Blizzard Strayer":
             self.element = ElementType.CRYO
         elif self.name == "Deepwood Memories":
@@ -173,4 +175,23 @@ class BigElementalArtifact(SmallElementalArtifact):
         return value
 
 
-ElementArtifacts = SmallElementalArtifact | BigElementalArtifact
+class SmallElementalArtifact_3_3(SmallElementalArtifact_4_0):
+    version: Literal['3.3']
+    cost: Cost = Cost(same_dice_number = 2)
+
+
+class BigElementalArtifact_3_6(BigElementalArtifact_4_0):
+    version: Literal['3.6']
+    cost: Cost = Cost(any_dice_number = 3)
+
+
+class BigElementalArtifact_3_3(BigElementalArtifact_4_0):
+    version: Literal['3.3']
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+register_class(
+    SmallElementalArtifact_4_0 | BigElementalArtifact_4_0
+    | BigElementalArtifact_3_6 | BigElementalArtifact_3_3
+    | SmallElementalArtifact_3_3
+)

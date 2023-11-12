@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...modifiable_values import (
     CostValue, DamageElementEnhanceValue, DamageIncreaseValue
 )
@@ -18,7 +20,7 @@ from .base import (
 )
 
 
-class MidareRanzan(ElementalInfusionCharactorStatus):
+class MidareRanzan_3_8(ElementalInfusionCharactorStatus):
     name: Literal[
         # newly created ranzan, and will change its element based on kazuha
         # skill.
@@ -166,7 +168,7 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
         )]
 
 
-class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
+class YakshasMask_3_7(ElementalInfusionCharactorStatus, RoundCharactorStatus):
     name: Literal["Yaksha's Mask"] = "Yaksha's Mask"
     desc: str = (
         'The character to which this is attached has their Physical DMG dealt '
@@ -192,7 +194,7 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         self.switch_cost_decrease_usage = self.switch_cost_decrease_max_usage
         return super().event_handler_ROUND_PREPARE(event, match)
 
-    def renew(self, new_status: 'YakshasMask') -> None:
+    def renew(self, new_status: 'YakshasMask_3_7') -> None:
         self.switch_cost_decrease_usage = new_status.switch_cost_decrease_usage
         self.skill_cost_decrease_usage = new_status.skill_cost_decrease_usage
         super().renew(new_status)
@@ -254,7 +256,7 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         return value
 
 
-class Windfavored(CharactorStatusBase):
+class Windfavored_4_1(CharactorStatusBase):
     """
     As attack target will be changed, we do not contain triggers for this
     status; instead, maintenance its usage by normal attack. The only exception
@@ -288,4 +290,4 @@ class Windfavored(CharactorStatusBase):
         return []
 
 
-AnemoCharactorStatus = MidareRanzan | YakshasMask | Windfavored
+register_class(MidareRanzan_3_8 | YakshasMask_3_7 | Windfavored_4_1)

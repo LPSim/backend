@@ -4,7 +4,7 @@ from src.lpsim.agents.interaction_agent import (
     InteractionAgent, InteractionAgent_V1_0
 )
 from src.lpsim.server.match import Match
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler
+from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.agents.agent_base import AgentBase
 from src.lpsim.server.struct import ObjectPosition
 from src.lpsim.utils import BaseModel
@@ -13,7 +13,7 @@ from tests.default_random_state import get_default_random_state
 
 def set_16_omni(match: Match):
     match.config.initial_dice_number = 16
-    match.event_handlers.append(OmnipotentGuideEventHandler())
+    match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
 
 
 def make_respond(agent: AgentBase, match: Match, assertion: bool = True):

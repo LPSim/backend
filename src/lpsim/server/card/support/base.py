@@ -1,5 +1,7 @@
 from typing import Literal, List, Any
 
+from ....utils.class_registry import register_base_class
+
 from ...event import MoveObjectEventArguments, RoundPrepareEventArguments
 from ...object_base import CardBase
 from ...consts import IconType, ObjectType, ObjectPositionType, CostLabels
@@ -121,6 +123,9 @@ class SupportBase(CardBase):
             # this artifact equipped from hand to charactor
             return self.play(match)
         return []
+
+
+register_base_class(SupportBase)
 
 
 class RoundEffectSupportBase(SupportBase):

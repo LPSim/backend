@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ObjectPositionType, SkillType, WeaponType
 
 from ....action import ChargeAction
@@ -47,10 +49,10 @@ class FavoniusBase(RoundEffectWeaponBase):
         )]
 
 
-class FavoniusSword(FavoniusBase):
+class FavoniusSword_3_7(FavoniusBase):
     name: Literal['Favonius Sword']
     version: Literal['3.7'] = '3.7'
     weapon_type: Literal[WeaponType.SWORD] = WeaponType.SWORD
 
 
-FavoniusWeapons = FavoniusSword | FavoniusSword
+register_class(FavoniusSword_3_7)

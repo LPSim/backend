@@ -89,10 +89,12 @@ def test_dead_agent():
     for table in match.player_tables:
         charactor = table.charactors[1]
         assert charactor.name == 'Fatui Pyro Agent'
-        from src.lpsim.server.charactor.pyro.fatui_pyro_agent import PaidinFull
+        from src.lpsim.server.charactor.pyro.fatui_pyro_agent_3_3 import (
+            PaidinFull_3_3
+        )
         from src.lpsim.server.consts import ObjectPositionType
         from src.lpsim.server.struct import ObjectPosition
-        charactor.talent = PaidinFull(name = 'Paid in Full')
+        charactor.talent = PaidinFull_3_3(name = 'Paid in Full')
         charactor.talent.position = ObjectPosition(
             player_idx = charactor.position.player_idx,
             charactor_idx = charactor.position.charactor_idx,

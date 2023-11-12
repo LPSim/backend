@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_base_class, register_class
+
 from ...modifiable_values import CombatActionValue, CostValue
 
 
@@ -25,6 +27,9 @@ class ItemBase(SupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.ITEM.value
 
 
+register_base_class(ItemBase)
+
+
 class RoundEffectItemBase(RoundEffectSupportBase):
     name: str
     desc: str
@@ -34,7 +39,7 @@ class RoundEffectItemBase(RoundEffectSupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.ITEM.value
 
 
-class ParametricTransformer(ItemBase):
+class ParametricTransformer_3_3(ItemBase):
     name: Literal['Parametric Transformer']
     desc: str = (
         'When either side uses a Skill: If Elemental DMG was dealt this card '
@@ -108,9 +113,7 @@ class ParametricTransformer(ItemBase):
         return []
 
 
-class NRE(RoundEffectItemBase):
-    # TODO when hand full, draw card will cause hand over maximum
-    # also appear in Chef Mao, Dunyarzad?
+class NRE_4_1(RoundEffectItemBase):
     name: Literal['NRE']
     desc: str = (
         'When played: Draw 1 Food Event Card from your deck. '
@@ -156,7 +159,12 @@ class NRE(RoundEffectItemBase):
         return super().event_handler_USE_CARD(event, match)
 
 
-class RedFeatherFan(RoundEffectItemBase):
+class NRE_3_3(NRE_4_1):
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+
+class RedFeatherFan_3_7(RoundEffectItemBase):
     name: Literal['Red Feather Fan']
     desc: str = (
         'After you switch characters: The next Switch Character action you '
@@ -251,7 +259,7 @@ class RedFeatherFan(RoundEffectItemBase):
         return value
 
 
-class TreasureSeekingSeelie(ItemBase):
+class TreasureSeekingSeelie_3_7(ItemBase):
     name: Literal['Treasure-Seeking Seelie']
     desc: str = (
         'Triggers automatically once per Round: This card gains 1 Pigeon. '
@@ -296,4 +304,7 @@ class TreasureSeekingSeelie(ItemBase):
         ]
 
 
-Items = ParametricTransformer | NRE | RedFeatherFan | TreasureSeekingSeelie
+register_class(
+    ParametricTransformer_3_3 | NRE_4_1 | NRE_3_3 | RedFeatherFan_3_7 
+    | TreasureSeekingSeelie_3_7
+)

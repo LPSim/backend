@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ObjectPositionType, SkillType
 
 from ....action import ChargeAction
@@ -10,7 +12,7 @@ from ....struct import Cost
 from .base import RoundEffectArtifactBase
 
 
-class ExilesCirclet(RoundEffectArtifactBase):
+class ExilesCirclet_3_3(RoundEffectArtifactBase):
     name: Literal["Exile's Circlet"]
     desc: str = (
         'After a character uses an Elemental Burst: All your characters on '
@@ -59,4 +61,4 @@ class ExilesCirclet(RoundEffectArtifactBase):
         return ret
 
 
-ExileArtifacts = ExilesCirclet | ExilesCirclet
+register_class(ExilesCirclet_3_3)

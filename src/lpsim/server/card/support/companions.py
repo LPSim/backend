@@ -1,5 +1,7 @@
 from typing import Any, Dict, Literal, List
 
+from ....utils.class_registry import register_base_class, register_class
+
 from ...modifiable_values import CombatActionValue, CostValue
 
 from ...dice import Dice
@@ -34,12 +36,15 @@ class CompanionBase(SupportBase):
                        | CostLabels.COMPANION.value)
 
 
+register_base_class(CompanionBase)
+
+
 class RoundEffectCompanionBase(RoundEffectSupportBase):
     cost_label: int = (CostLabels.CARD.value 
                        | CostLabels.COMPANION.value)
 
 
-class Paimon(CompanionBase):
+class Paimon_3_3(CompanionBase):
     name: Literal['Paimon']
     desc: str = '''When Action Phase begins: Create Omni Element x2.'''
     version: Literal['3.3'] = '3.3'
@@ -65,7 +70,7 @@ class Paimon(CompanionBase):
         )] + self.check_should_remove()
 
 
-class Katheryne(RoundEffectCompanionBase):
+class Katheryne_3_6(RoundEffectCompanionBase):
     name: Literal['Katheryne']
     desc: str = (
         'When you perform "Switch Character": The switch is considered a Fast '
@@ -106,7 +111,12 @@ class Katheryne(RoundEffectCompanionBase):
         return value
 
 
-class Timaeus(UsageWithRoundRestrictionSupportBase):
+class Katheryne_3_3(Katheryne_3_6):
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+
+class Timaeus_3_3(UsageWithRoundRestrictionSupportBase):
     name: Literal['Timaeus']
     desc: str = (
         'Comes with 2 Transmutation Materials when played. '
@@ -166,7 +176,7 @@ class Timaeus(UsageWithRoundRestrictionSupportBase):
         return value
 
 
-class Wagner(Timaeus):
+class Wagner_3_3(Timaeus_3_3):
     name: Literal['Wagner']
     desc: str = (
         'Comes with 2 Forging Billet when played. '
@@ -178,7 +188,7 @@ class Wagner(Timaeus):
     decrease_target: int = CostLabels.WEAPON.value
 
 
-class ChefMao(RoundEffectCompanionBase, LimitedEffectSupportBase):
+class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
     name: Literal['Chef Mao']
     desc: str = (
         'After playing a Food Event Card: Create 1 random Elemental Die. '
@@ -231,7 +241,16 @@ class ChefMao(RoundEffectCompanionBase, LimitedEffectSupportBase):
         return super().event_handler_USE_CARD(event, match)
 
 
-class Tubby(RoundEffectCompanionBase):
+class ChefMao_3_3(ChefMao_4_1):
+    desc: str = (
+        'After playing a Food Event Card: Create 1 random Elemental Die. '
+        '(Once per Round) '
+    )
+    version: Literal['3.3']
+    limited_usage: int = 0
+
+
+class Tubby_3_3(RoundEffectCompanionBase):
     name: Literal['Tubby']
     desc: str = (
         'When playing a Location Support Card: Spend 2 less Elemental Dice. '
@@ -277,7 +296,7 @@ class Tubby(RoundEffectCompanionBase):
         return value
 
 
-class Timmie(CompanionBase):
+class Timmie_3_3(CompanionBase):
     name: Literal['Timmie']
     desc: str = (
         'Triggers automatically once per Round: This card gains 1 Pigeon. '
@@ -350,7 +369,7 @@ class Timmie(CompanionBase):
         return ret
 
 
-class Liben(CompanionBase):
+class Liben_3_3(CompanionBase):
     name: Literal['Liben']
     desc: str = (
         'End Phase: Collect your unused Elemental Dice (Max 1 of each '
@@ -428,7 +447,7 @@ class Liben(CompanionBase):
         ]
 
 
-class ChangTheNinth(CompanionBase):
+class ChangTheNinth_3_3(CompanionBase):
     name: Literal['Chang the Ninth']
     desc: str = (
         'When either side uses a Skill: If Physical DMG or Piercing DMG was '
@@ -501,7 +520,10 @@ class ChangTheNinth(CompanionBase):
         return []
 
 
-class Ellin(RoundEffectCompanionBase):
+class Ellin_3_3(RoundEffectCompanionBase):
+    """
+    TODO: When draw in the round and play, should also decrease cost.
+    """
     name: Literal['Ellin']
     desc: str = (
         'When you use a Skill that has already been used in this Round: Spend '
@@ -560,7 +582,7 @@ class Ellin(RoundEffectCompanionBase):
         return value
 
 
-class IronTongueTian(CompanionBase):
+class IronTongueTian_3_3(CompanionBase):
     name: Literal['Iron Tongue Tian']
     desc: str = (
         'End Phase: One of your characters without maximum Energy gains 1 '
@@ -594,7 +616,7 @@ class IronTongueTian(CompanionBase):
         return []
 
 
-class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
+class LiuSu_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Liu Su']
     desc: str = (
         'After you switch characters: If the character you switched to does '
@@ -641,7 +663,7 @@ class LiuSu(CompanionBase, UsageWithRoundRestrictionSupportBase):
         return self.charge(charactor)
 
 
-class Hanachirusato(CompanionBase):
+class Hanachirusato_3_7(CompanionBase):
     name: Literal['Hanachirusato']
     desc: str = (
         'When a Summon disappears: This card gains 1 Cleansing Ritual '
@@ -713,7 +735,7 @@ class Hanachirusato(CompanionBase):
         return super().event_handler_MOVE_OBJECT(event, match)
 
 
-class KidKujirai(CompanionBase):
+class KidKujirai_3_7(CompanionBase):
     name: Literal['Kid Kujirai']
     desc: str = (
         "When the Action Phase begins: Create 1 Omni Element. Then if your "
@@ -762,7 +784,7 @@ class KidKujirai(CompanionBase):
         return ret
 
 
-class Xudong(Tubby):
+class Xudong_3_7(Tubby_3_3):
     name: Literal['Xudong']
     desc: str = (
         'When playing a Food Event Card: Spend 2 less Elemental Dice. '
@@ -774,7 +796,7 @@ class Xudong(Tubby):
     decrease_cost: int = 2
 
 
-class Dunyarzad(Tubby, LimitedEffectSupportBase):
+class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
     name: Literal['Dunyarzad']
     desc: str = (
         'When playing a Companion Support Card: Spend 1 less Elemental Dice. '
@@ -821,7 +843,16 @@ class Dunyarzad(Tubby, LimitedEffectSupportBase):
         return super().event_handler_USE_CARD(event, match)
 
 
-class Rana(RoundEffectCompanionBase):
+class Dunyarzad_3_7(Dunyarzad_4_1): 
+    desc: str = (
+        'When playing a Companion Support Card: Spend 1 less Elemental Dice. '
+        '(Once per Round) '
+    )
+    version: Literal['3.7']
+    limited_usage: int = 0
+
+
+class Rana_3_7(RoundEffectCompanionBase):
     name: Literal['Rana']
     desc: str = (
         'After your character uses an Elemental Skill: '
@@ -860,7 +891,7 @@ class Rana(RoundEffectCompanionBase):
         return []
 
 
-class MasterZhang(RoundEffectCompanionBase):
+class MasterZhang_3_8(RoundEffectCompanionBase):
     name: Literal['Master Zhang']
     desc: str = (
         'When playing a Weapon card: Spend 1 less Elemental Die. On top of '
@@ -905,7 +936,7 @@ class MasterZhang(RoundEffectCompanionBase):
         return value
 
 
-class Setaria(CompanionBase):
+class Setaria_4_0(CompanionBase):
     name: Literal['Setaria']
     desc: str = (
         'After you perform any action, if you have 0 cards in your hand: '
@@ -937,7 +968,7 @@ class Setaria(CompanionBase):
         )] + self.check_should_remove()
 
 
-class YayoiNanatsuki(MasterZhang):
+class YayoiNanatsuki_4_1(MasterZhang_3_8):
     name: Literal['Yayoi Nanatsuki']
     desc: str = (
         'When playing an Artifact card: Spend 1 less Elemental Die. On top of '
@@ -948,9 +979,10 @@ class YayoiNanatsuki(MasterZhang):
     card_cost_label: int = CostLabels.ARTIFACT.value
 
 
-Companions = (
-    Paimon | Katheryne | Timaeus | Wagner | ChefMao | Tubby | Timmie | Liben 
-    | ChangTheNinth | Ellin | IronTongueTian | LiuSu | Hanachirusato 
-    | KidKujirai | Xudong | Dunyarzad | Rana | MasterZhang | Setaria
-    | YayoiNanatsuki
+register_class(
+    Paimon_3_3 | Katheryne_3_6 | Timaeus_3_3 | Wagner_3_3 | ChefMao_4_1 
+    | Tubby_3_3 | Timmie_3_3 | Liben_3_3 | ChangTheNinth_3_3 | Ellin_3_3 
+    | IronTongueTian_3_3 | LiuSu_3_3 | Hanachirusato_3_7 | KidKujirai_3_7 
+    | Xudong_3_7 | Dunyarzad_4_1 | Rana_3_7 | MasterZhang_3_8 | Setaria_4_0
+    | YayoiNanatsuki_4_1 | Dunyarzad_3_7 | Katheryne_3_3 | ChefMao_3_3
 )

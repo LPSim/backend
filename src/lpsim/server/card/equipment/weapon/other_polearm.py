@@ -1,6 +1,8 @@
 
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....action import Actions, ChargeAction
 
 from ....action import ChangeObjectUsageAction, CreateObjectAction
@@ -18,7 +20,7 @@ from ....struct import Cost
 from .base import RoundEffectWeaponBase, WeaponBase
 
 
-class VortexVanquisher(RoundEffectWeaponBase):
+class VortexVanquisher_3_7(RoundEffectWeaponBase):
     name: Literal['Vortex Vanquisher']
     desc: str = (
         'The character deals +1 DMG. When your active character is protected '
@@ -101,7 +103,7 @@ class VortexVanquisher(RoundEffectWeaponBase):
         return []
 
 
-class LithicSpear(WeaponBase):
+class LithicSpear_3_7(WeaponBase):
     name: Literal['Lithic Spear']
     desc: str = (
         'The character deals +1 DMG. '
@@ -137,7 +139,26 @@ class LithicSpear(WeaponBase):
         return self.generate_shield(count)
 
 
-class EngulfingLightning(RoundEffectWeaponBase):
+class LithicSpear_3_3(LithicSpear_3_7):
+    desc: str = (
+        'The character deals +1 DMG. '
+        'When played: For each alive party member from Liyue, grant 1 Shield '
+        'point to the character to which this is attached. (Max 3 points)'
+    )
+    version: Literal['3.3']
+
+    def equip(self, match: Any) -> List[Actions]:
+        """
+        Generate shield
+        """
+        count = 0
+        for c in match.player_tables[self.position.player_idx].charactors:
+            if c.is_alive and FactionType.LIYUE in c.faction:
+                count += 1
+        return self.generate_shield(count)
+
+
+class EngulfingLightning_3_7(RoundEffectWeaponBase):
     name: Literal['Engulfing Lightning']
     desc: str = (
         'The character deals +1 DMG. '
@@ -179,4 +200,7 @@ class EngulfingLightning(RoundEffectWeaponBase):
         return ret + self._charge_one(match)
 
 
-Polearms = LithicSpear | VortexVanquisher | EngulfingLightning
+register_class(
+    LithicSpear_3_7 | VortexVanquisher_3_7 | EngulfingLightning_3_7
+    | LithicSpear_3_3
+)

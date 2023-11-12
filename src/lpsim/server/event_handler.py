@@ -2,6 +2,8 @@
 Event handlers to implement system controls and special rules 
 """
 from typing import List, Literal, Any
+
+from ..utils.class_registry import register_base_class, register_class
 from .object_base import ObjectBase
 from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor
@@ -45,10 +47,13 @@ class SystemEventHandlerBase(ObjectBase):
         pass
 
 
-class SystemEventHandler(SystemEventHandlerBase):
+register_base_class(SystemEventHandlerBase)
+
+
+class SystemEventHandler_3_3(SystemEventHandlerBase):
 
     name: Literal['System'] = 'System'
-    version: Literal['3.3', '3.4'] = '3.4'
+    version: Literal['3.3'] = '3.3'
 
     def event_handler_DRAW_CARD(
             self, event: DrawCardEventArguments, match: Any) -> List[Actions]:
@@ -137,9 +142,14 @@ class SystemEventHandler(SystemEventHandlerBase):
         return actions
 
 
-class OmnipotentGuideEventHandler(SystemEventHandlerBase):
+class SystemEventHandler_3_4(SystemEventHandler_3_3):
+    version: Literal['3.4'] = '3.4'
+
+
+class OmnipotentGuideEventHandler_3_3(SystemEventHandlerBase):
 
     name: Literal['Omnipotent Guide'] = 'Omnipotent Guide'
+    version: Literal['3.3'] = '3.3'
 
     def value_modifier_INITIAL_DICE_COLOR(
             self, value: InitialDiceColorValue, 
@@ -162,6 +172,10 @@ class OmnipotentGuideEventHandler(SystemEventHandlerBase):
         return value
 
 
-SystemEventHandlers = (
-    SystemEventHandlerBase | SystemEventHandler | OmnipotentGuideEventHandler
+SystemEventHandler = SystemEventHandler_3_4
+
+
+register_class(
+    SystemEventHandler_3_3 | OmnipotentGuideEventHandler_3_3 
+    | SystemEventHandler_3_4
 )

@@ -1,6 +1,8 @@
 
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...event import SkillEndEventArguments
 
 from ...consts import (
@@ -15,7 +17,7 @@ from ...modifiable_values import CostValue, DamageIncreaseValue
 from .base import RoundTeamStatus, UsageTeamStatus
 
 
-class Stormzone(UsageTeamStatus):
+class Stormzone_3_7(UsageTeamStatus):
     name: Literal['Stormzone'] = 'Stormzone'
     desc: str = (
         'When you perform "Switch Character": Spend 1 less Elemental Die. '
@@ -34,7 +36,7 @@ class Stormzone(UsageTeamStatus):
         'round will cost 1 less Unaligned Element. Usage(s): 2'
     )
 
-    def renew(self, new_status: 'Stormzone') -> None:
+    def renew(self, new_status: 'Stormzone_3_7') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
@@ -90,7 +92,7 @@ class Stormzone(UsageTeamStatus):
 
 
 # Usage status, will not disappear until usage is 0
-class WindsOfHarmony(RoundTeamStatus):
+class WindsOfHarmony_3_7(RoundTeamStatus):
     name: Literal['Winds of Harmony'] = 'Winds of Harmony'
     desc: str = (
         "During this round, your charactor's next Normal Attack costs 1 less "
@@ -128,7 +130,7 @@ class WindsOfHarmony(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class PoeticsOfFuubutsu(UsageTeamStatus):
+class PoeticsOfFuubutsu_3_8(UsageTeamStatus):
     name: Literal[
         'Poetics of Fuubutsu: Pyro',
         'Poetics of Fuubutsu: Hydro',
@@ -190,4 +192,4 @@ class PoeticsOfFuubutsu(UsageTeamStatus):
         return value
 
 
-AnemoTeamStatus = Stormzone | WindsOfHarmony | PoeticsOfFuubutsu
+register_class(Stormzone_3_7 | WindsOfHarmony_3_7 | PoeticsOfFuubutsu_3_8)

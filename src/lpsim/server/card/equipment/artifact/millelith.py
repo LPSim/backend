@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ELEMENT_TO_DIE_COLOR, ObjectPositionType
 
 from ....action import CreateDiceAction, CreateObjectAction
@@ -10,7 +12,7 @@ from ....struct import Cost
 from .base import ArtifactBase, RoundEffectArtifactBase
 
 
-class GeneralsAncientHelm(ArtifactBase):
+class GeneralsAncientHelm_3_5(ArtifactBase):
     name: Literal["General's Ancient Helm"]
     desc: str = (
         'When Action Phase begins: The character to which this is attached '
@@ -37,7 +39,7 @@ class GeneralsAncientHelm(ArtifactBase):
         )]
 
 
-class TenacityOfTheMillelith(RoundEffectArtifactBase):
+class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
     name: Literal['Tenacity of the Millelith']
     desc: str = (
         'When Action Phase begins: The character to which this is attached '
@@ -96,4 +98,4 @@ class TenacityOfTheMillelith(RoundEffectArtifactBase):
         )]
 
 
-MillelithArtifacts = GeneralsAncientHelm | TenacityOfTheMillelith
+register_class(GeneralsAncientHelm_3_5 | TenacityOfTheMillelith_3_7)

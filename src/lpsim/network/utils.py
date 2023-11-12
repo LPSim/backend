@@ -1,5 +1,5 @@
 from typing import Any, List, Tuple
-from ..server.event_handler import OmnipotentGuideEventHandler
+from ..server.event_handler import OmnipotentGuideEventHandler_3_3
 from ..server.match import Match, MatchConfig
 from ..server.deck import Deck
 
@@ -47,7 +47,7 @@ def get_new_match(
 
     if rich_mode:
         match.config.initial_dice_number = 16
-        match.event_handlers.append(OmnipotentGuideEventHandler())
+        match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
 
     random_state = match.random_state
 

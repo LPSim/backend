@@ -2,6 +2,8 @@
 
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....action import CreateObjectAction
@@ -15,7 +17,7 @@ from ....struct import Cost, ObjectPosition
 from ....consts import CostLabels, ObjectPositionType, ObjectType, WeaponType
 
 
-class WolfsGravestone(WeaponBase):
+class WolfsGravestone_3_3(WeaponBase):
     name: Literal["Wolf's Gravestone"] = "Wolf's Gravestone"
     desc: str = (
         "The character deals +1 DMG. Deal +2 additional DMG if the target's "
@@ -38,7 +40,7 @@ class WolfsGravestone(WeaponBase):
         return value
 
 
-class TheBell(RoundEffectWeaponBase):
+class TheBell_3_7(RoundEffectWeaponBase):
     name: Literal['The Bell']
     desc: str = (
         'The character deals +1 DMG. '
@@ -81,4 +83,4 @@ class TheBell(RoundEffectWeaponBase):
         )]
 
 
-Claymores = WolfsGravestone | TheBell
+register_class(WolfsGravestone_3_3 | TheBell_3_7)

@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...struct import Cost, ObjectPosition
 
 from ...modifiable_values import (
@@ -25,7 +27,7 @@ from .base import (
 )
 
 
-class SeedOfSkandha(UsageCharactorStatus):
+class SeedOfSkandha_3_7(UsageCharactorStatus):
     name: Literal['Seed of Skandha'] = 'Seed of Skandha'
     desc: str = (
         'After a character who has a Seed of Skandha takes Elemental Reaction '
@@ -106,7 +108,8 @@ class SeedOfSkandha(UsageCharactorStatus):
         return change_usage_actions + damage_actions
 
 
-class VijnanaSuffusion(ElementalInfusionCharactorStatus, UsageCharactorStatus):
+class VijnanaSuffusion_3_6(ElementalInfusionCharactorStatus, 
+                           UsageCharactorStatus):
     name: Literal['Vijnana Suffusion'] = 'Vijnana Suffusion'
     desc: str = (
         'When the character to which this is attached to uses a Charged '
@@ -196,7 +199,7 @@ class VijnanaSuffusion(ElementalInfusionCharactorStatus, UsageCharactorStatus):
         )] + self.check_should_remove()
 
 
-class RadicalVitality(CharactorStatusBase):
+class RadicalVitality_3_3(CharactorStatusBase):
     name: Literal['Radical Vitality'] = 'Radical Vitality'
     desc: str = ''
     desc_template: str = (
@@ -220,7 +223,7 @@ class RadicalVitality(CharactorStatusBase):
             'XXX', str(self.max_usage)
         )
 
-    def renew(self, new_status: 'RadicalVitality') -> None:
+    def renew(self, new_status: 'RadicalVitality_3_3') -> None:
         super().renew(new_status)
         self._update_desc()
 
@@ -274,4 +277,4 @@ class RadicalVitality(CharactorStatusBase):
         return []
 
 
-DendroCharactorStatus = SeedOfSkandha | VijnanaSuffusion | RadicalVitality
+register_class(SeedOfSkandha_3_7 | VijnanaSuffusion_3_6 | RadicalVitality_3_3)

@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...struct import Cost
 
 from ...action import (
@@ -27,8 +29,8 @@ from .base import (
 )
 
 
-class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
-                            RoundCharactorStatus):
+class ElectroInfusionKeqing_3_3(ElementalInfusionCharactorStatus,
+                                RoundCharactorStatus):
     """
     Inherit from vanilla elemental infusion status, and has talent activated
     argument. when talent activated, it will gain electro damage +1 buff,
@@ -52,7 +54,7 @@ class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
         if self.talent_activated:
             self.desc = self.buff_desc
 
-    def renew(self, new_status: 'ElectroInfusionKeqing') -> None:
+    def renew(self, new_status: 'ElectroInfusionKeqing_3_3') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
@@ -81,13 +83,13 @@ class ElectroInfusionKeqing(ElementalInfusionCharactorStatus,
         return value
 
 
-class ElectroCrystalCore(ReviveCharactorStatus):
+class ElectroCrystalCore_3_7(ReviveCharactorStatus):
     name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
     version: Literal['3.7'] = '3.7'
     heal: int = 1
 
 
-class RockPaperScissorsComboScissors(PrepareCharactorStatus):
+class RockPaperScissorsComboScissors_3_7(PrepareCharactorStatus):
     name: Literal[
         'Rock-Paper-Scissors Combo: Scissors'
     ] = 'Rock-Paper-Scissors Combo: Scissors'
@@ -102,7 +104,7 @@ class RockPaperScissorsComboScissors(PrepareCharactorStatus):
     ] = 'Rock-Paper-Scissors Combo: Scissors'
 
 
-class RockPaperScissorsComboPaper(PrepareCharactorStatus):
+class RockPaperScissorsComboPaper_3_7(PrepareCharactorStatus):
     name: Literal[
         'Rock-Paper-Scissors Combo: Paper'
     ] = 'Rock-Paper-Scissors Combo: Paper'
@@ -116,7 +118,7 @@ class RockPaperScissorsComboPaper(PrepareCharactorStatus):
     ] = 'Rock-Paper-Scissors Combo: Paper'
 
 
-class ChakraDesiderata(CharactorStatusBase):
+class ChakraDesiderata_3_7(CharactorStatusBase):
     name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
     desc: str = (
         'After your other characters use Elemental Bursts: Gain 1 Resolve. '
@@ -169,7 +171,7 @@ class ChakraDesiderata(CharactorStatusBase):
         return value
 
 
-class TheShrinesSacredShade(RoundCharactorStatus):
+class TheShrinesSacredShade_3_7(RoundCharactorStatus):
     name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
     desc: str = (
         'During this round, the next Yakan Evocation: Sesshou Sakura used by '
@@ -211,7 +213,7 @@ class TheShrinesSacredShade(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class TheWolfWithin(RoundCharactorStatus):
+class TheWolfWithin_3_3(RoundCharactorStatus):
     name: Literal['The Wolf Within'] = 'The Wolf Within'
     desc: str = (
         'After the character to which this is attached uses a Normal Attack '
@@ -256,7 +258,7 @@ class TheWolfWithin(RoundCharactorStatus):
         )]
 
 
-class TidecallerSurfEmbrace(ShieldCharactorStatus, PrepareCharactorStatus):
+class TidecallerSurfEmbrace_3_4(ShieldCharactorStatus, PrepareCharactorStatus):
     name: Literal['Tidecaller: Surf Embrace'] = 'Tidecaller: Surf Embrace'
     desc: str = (
         'The next time this character acts, they will immediately use the '
@@ -279,7 +281,7 @@ class TidecallerSurfEmbrace(ShieldCharactorStatus, PrepareCharactorStatus):
         return []
 
 
-class CrowfeatherCover(UsageCharactorStatus):
+class CrowfeatherCover_3_5(UsageCharactorStatus):
     name: Literal['Crowfeather Cover'] = 'Crowfeather Cover'
     desc: str = (
         'The character with this attached deals +1 Elemental Skill and '
@@ -336,7 +338,7 @@ class CrowfeatherCover(UsageCharactorStatus):
         return value
 
 
-class PactswornPathclearer(ElementalInfusionCharactorStatus):
+class PactswornPathclearer_3_3(ElementalInfusionCharactorStatus):
     name: Literal['Pactsworn Pathclearer'] = 'Pactsworn Pathclearer'
     desc: str = (
         'End Phase: Gain 1 level of Indwelling. '
@@ -400,7 +402,7 @@ class PactswornPathclearer(ElementalInfusionCharactorStatus):
         return []
 
 
-class Conductive(CharactorStatusBase):
+class Conductive_4_0(CharactorStatusBase):
     """
     repeatedly attach, end phase accumulate will perform in this status;
     damage increase will perform in elemental skill.
@@ -418,7 +420,7 @@ class Conductive(CharactorStatusBase):
     max_usage: int = 4
     icon_type: Literal[IconType.DEBUFF] = IconType.DEBUFF
 
-    def renew(self, new_status: 'Conductive'):
+    def renew(self, new_status: 'Conductive_4_0'):
         """
         Add one usage
         """
@@ -434,9 +436,10 @@ class Conductive(CharactorStatusBase):
         return []
 
 
-ElectroCharactorStatus = (
-    ElectroInfusionKeqing | RockPaperScissorsComboScissors
-    | RockPaperScissorsComboPaper | ElectroCrystalCore | ChakraDesiderata
-    | TheShrinesSacredShade | TheWolfWithin | TidecallerSurfEmbrace
-    | CrowfeatherCover | PactswornPathclearer | Conductive
+register_class(
+    ElectroInfusionKeqing_3_3 | RockPaperScissorsComboScissors_3_7
+    | RockPaperScissorsComboPaper_3_7 | ElectroCrystalCore_3_7 
+    | ChakraDesiderata_3_7 | TheShrinesSacredShade_3_7 | TheWolfWithin_3_3 
+    | TidecallerSurfEmbrace_3_4 | CrowfeatherCover_3_5 
+    | PactswornPathclearer_3_3 | Conductive_4_0
 )

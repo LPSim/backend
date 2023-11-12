@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_base_class
+
 from ...struct import Cost
 
 from ...modifiable_values import (
@@ -28,6 +30,9 @@ class TeamStatusBase(StatusBase):
     version: str
     usage: int
     max_usage: int
+
+
+register_base_class(TeamStatusBase)
 
 
 class UsageTeamStatus(TeamStatusBase):

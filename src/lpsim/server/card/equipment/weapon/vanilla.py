@@ -1,11 +1,13 @@
 from typing import Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import WeaponType
 from .base import WeaponBase
 from ....struct import Cost
 
 
-class VanillaWeapon(WeaponBase):
+class VanillaWeapon_3_3(WeaponBase):
     name: Literal[
         'Magic Guide',
         'Raven Bow',
@@ -32,3 +34,6 @@ class VanillaWeapon(WeaponBase):
         else:
             assert self.name == 'White Tassel'
             self.weapon_type = WeaponType.POLEARM
+
+
+register_class(VanillaWeapon_3_3)

@@ -1,5 +1,7 @@
 from typing import Any, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ObjectPositionType, SkillType, WeaponType
 from ....modifiable_values import DamageIncreaseValue
 from ....struct import Cost
@@ -35,36 +37,37 @@ class SkywardBase(RoundEffectWeaponBase):
         return value
 
 
-class SkywardAtlas(SkywardBase):
+class SkywardAtlas_3_3(SkywardBase):
     name: Literal['Skyward Atlas']
     version: Literal['3.3'] = '3.3'
     weapon_type: Literal[WeaponType.CATALYST] = WeaponType.CATALYST
 
 
-class SkywardHarp(SkywardBase):
+class SkywardHarp_3_3(SkywardBase):
     name: Literal['Skyward Harp']
     version: Literal['3.3'] = '3.3'
     weapon_type: Literal[WeaponType.BOW] = WeaponType.BOW
 
 
-class SkywardSpine(SkywardBase):
+class SkywardSpine_3_3(SkywardBase):
     name: Literal['Skyward Spine']
     version: Literal['3.3'] = '3.3'
     weapon_type: Literal[WeaponType.POLEARM] = WeaponType.POLEARM
 
 
-class SkywardBlade(SkywardBase):
+class SkywardBlade_3_7(SkywardBase):
     name: Literal['Skyward Blade']
     version: Literal['3.7'] = '3.7'
     weapon_type: Literal[WeaponType.SWORD] = WeaponType.SWORD
 
 
-class SkywardPride(SkywardBase):
+class SkywardPride_3_7(SkywardBase):
     name: Literal['Skyward Pride']
     version: Literal['3.7'] = '3.7'
     weapon_type: Literal[WeaponType.CLAYMORE] = WeaponType.CLAYMORE
 
 
-SkywardWeapons = (
-    SkywardAtlas | SkywardHarp | SkywardPride | SkywardSpine | SkywardBlade
+register_class(
+    SkywardAtlas_3_3 | SkywardHarp_3_3 | SkywardPride_3_7 | SkywardSpine_3_3 
+    | SkywardBlade_3_7
 )

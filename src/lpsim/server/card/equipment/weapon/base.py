@@ -1,5 +1,7 @@
 from typing import Literal, List, Any
 
+from .....utils.class_registry import register_base_class
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....event import MoveObjectEventArguments, RoundPrepareEventArguments
@@ -125,6 +127,9 @@ class WeaponBase(CardBase):
         # modify damage
         value.damage += self.damage_increase
         return value
+
+
+register_base_class(WeaponBase)
 
 
 class RoundEffectWeaponBase(WeaponBase):

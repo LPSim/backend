@@ -1,3 +1,4 @@
+from src.lpsim.server.charactor.anemo.sucrose_3_3 import LargeWindSpirit_3_3
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from src.lpsim.server.consts import DamageElementalType
@@ -136,8 +137,10 @@ def test_sucrose():
             elif test_id == 2:
                 summons = match.player_tables[1].summons
                 assert len(summons) == 1
+                summon = summons[0]
+                assert isinstance(summon, LargeWindSpirit_3_3)
                 assert (
-                    summons[0].damage_elemental_type 
+                    summon.damage_elemental_type
                     == DamageElementalType.HYDRO
                 )
             else:

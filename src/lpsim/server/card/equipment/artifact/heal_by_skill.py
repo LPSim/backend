@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....modifiable_values import DamageValue
 
 from ....consts import (
@@ -77,7 +79,7 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
         return [action]
 
 
-class AdventurersBandana(HealBySkillArtifactBase):
+class AdventurersBandana_3_3(HealBySkillArtifactBase):
     name: Literal["Adventurer's Bandana"] = "Adventurer's Bandana"
     desc: str = (
         'After a character uses a Normal Attack: Heal self for 1 HP.'
@@ -90,7 +92,7 @@ class AdventurersBandana(HealBySkillArtifactBase):
     heal_target: Literal['SELF', 'TEAM'] = 'SELF'
 
 
-class LuckyDogsSilverCirclet(HealBySkillArtifactBase):
+class LuckyDogsSilverCirclet_3_3(HealBySkillArtifactBase):
     name: Literal["Lucky Dog's Silver Circlet"]
     desc: str = (
         'After a character uses an Elemental Skill: Heal self for 2 HP. '
@@ -104,7 +106,7 @@ class LuckyDogsSilverCirclet(HealBySkillArtifactBase):
     heal_target: Literal['SELF', 'TEAM'] = 'SELF'
 
 
-class TravelingDoctorsHandkerchief(HealBySkillArtifactBase):
+class TravelingDoctorsHandkerchief_3_3(HealBySkillArtifactBase):
     name: Literal["Traveling Doctor's Handkerchief"]
     desc: str = (
         'After a character uses an Elemental Burst: Heal all your characters '
@@ -118,6 +120,7 @@ class TravelingDoctorsHandkerchief(HealBySkillArtifactBase):
     heal_target: Literal['SELF', 'TEAM'] = 'TEAM'
 
 
-HealBySkillArtifacts = (
-    AdventurersBandana | LuckyDogsSilverCirclet | TravelingDoctorsHandkerchief
+register_class(
+    AdventurersBandana_3_3 | LuckyDogsSilverCirclet_3_3 
+    | TravelingDoctorsHandkerchief_3_3
 )

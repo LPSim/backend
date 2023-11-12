@@ -1,6 +1,8 @@
 
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....event import SkillEndEventArguments
 
 from ....modifiable_values import DamageIncreaseValue
@@ -13,7 +15,7 @@ from ....struct import Cost, ObjectPosition
 from .base import RoundEffectWeaponBase, WeaponBase
 
 
-class AmosBow(RoundEffectWeaponBase):
+class AmosBow_3_7(RoundEffectWeaponBase):
     name: Literal["Amos' Bow"]
     desc: str = (
         'The character deals +1 DMG. When the character uses a Skill that '
@@ -49,7 +51,7 @@ class AmosBow(RoundEffectWeaponBase):
         return value
 
 
-class ElegyForTheEnd(WeaponBase):
+class ElegyForTheEnd_3_7(WeaponBase):
     name: Literal["Elegy for the End"]
     desc: str = (
         'The character deals +1 DMG. '
@@ -88,4 +90,4 @@ class ElegyForTheEnd(WeaponBase):
         )]
 
 
-Bows = AmosBow | ElegyForTheEnd
+register_class(AmosBow_3_7 | ElegyForTheEnd_3_7)

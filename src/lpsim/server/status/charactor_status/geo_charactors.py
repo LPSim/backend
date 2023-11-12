@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ..base import StatusBase
 
 from ...action import Actions, CreateObjectAction
@@ -20,7 +22,7 @@ from .base import (
 )
 
 
-class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
+class SweepingTime_3_3(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Sweeping Time'] = 'Sweeping Time'
     desc: str = (
         'When your character uses a Normal Attack: Consume 1 less Geo Die. '
@@ -105,7 +107,8 @@ class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
         return value
 
 
-class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
+class RagingOniKing_4_2(RoundCharactorStatus, 
+                        ElementalInfusionCharactorStatus):
     name: Literal['Raging Oni King'] = 'Raging Oni King'
     desc: str = (
         'The character to which this is attached to has their Normal Attacks '
@@ -199,7 +202,7 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
         )]
 
 
-class SuperlativeSuperstrength(UsageCharactorStatus):
+class SuperlativeSuperstrength_3_6(UsageCharactorStatus):
     name: Literal['Superlative Superstrength'] = 'Superlative Superstrength'
     desc: str = (
         'When the character to which this is attached to uses a Charged '
@@ -260,7 +263,7 @@ class SuperlativeSuperstrength(UsageCharactorStatus):
         return value
 
 
-class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
+class Stonehide_3_3(ElementalInfusionCharactorStatus, DefendCharactorStatus):
     """
     Combined Stonehide and Stone Force into one.
     """
@@ -339,7 +342,7 @@ class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
         return value
 
 
-class Petrification(RoundCharactorStatus):
+class Petrification_3_7(RoundCharactorStatus):
     name: Literal['Petrification'] = 'Petrification'
     desc: str = (
         'Character cannot use Skills.(Lasts until the end of this Round)'
@@ -350,7 +353,12 @@ class Petrification(RoundCharactorStatus):
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
-GeoCharactorStatus = (
-    SweepingTime | RagingOniKing | SuperlativeSuperstrength | Stonehide
-    | Petrification
+class RagingOniKing_3_6(RagingOniKing_4_2):
+    version: Literal['3.6']
+    damage_increase: int = 2
+
+
+register_class(
+    SweepingTime_3_3 | RagingOniKing_4_2 | SuperlativeSuperstrength_3_6 
+    | Stonehide_3_3 | Petrification_3_7 | RagingOniKing_3_6
 )

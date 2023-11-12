@@ -1,6 +1,8 @@
 
 from typing import Any, Literal
 
+from ....utils.class_registry import register_class
+
 from ...consts import DamageElementalType, IconType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
@@ -10,7 +12,7 @@ from .base import (
 )
 
 
-class Grimheart(UsageCharactorStatus):
+class Grimheart_3_8(UsageCharactorStatus):
     name: Literal['Grimheart'] = 'Grimheart'
     desc: str = (
         'After the character to which this is attached uses Icetide Vortex: '
@@ -53,8 +55,13 @@ class Grimheart(UsageCharactorStatus):
         return value
 
 
-class CryoFusionAyaka(ElementalInfusionCharactorStatus,
-                      RoundCharactorStatus):
+class Grimheart_3_5(Grimheart_3_8):
+    version: Literal['3.5']
+    damage: int = 2
+
+
+class CryoFusionAyaka_3_3(ElementalInfusionCharactorStatus,
+                          RoundCharactorStatus):
     """
     Inherit from vanilla elemental infusion status, and has talent activated
     argument. when talent activated, it will gain electro damage +1 buff,
@@ -78,7 +85,7 @@ class CryoFusionAyaka(ElementalInfusionCharactorStatus,
         if self.talent_activated:
             self.desc = self.buff_desc
 
-    def renew(self, new_status: 'CryoFusionAyaka') -> None:
+    def renew(self, new_status: 'CryoFusionAyaka_3_3') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
@@ -110,4 +117,4 @@ class CryoFusionAyaka(ElementalInfusionCharactorStatus,
         return value
 
 
-CryoCharactorStatus = Grimheart | CryoFusionAyaka
+register_class(Grimheart_3_8 | Grimheart_3_5 | CryoFusionAyaka_3_3)

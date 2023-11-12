@@ -1,3 +1,4 @@
+from src.lpsim.server.charactor.anemo.venti_3_7 import Stormeye_3_7
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
@@ -209,8 +210,9 @@ def test_venti():
                 cmd = cmd.split()
                 pidx = int(cmd[2][1])
                 element = cmd[5].upper()
-                assert match.player_tables[pidx].summons[
-                    0].damage_elemental_type == element
+                summon = match.player_tables[pidx].summons[0]
+                assert isinstance(summon, Stormeye_3_7)
+                assert summon.damage_elemental_type == element
             elif test_id == 5:
                 cmd = cmd.split()
                 pidx = int(cmd[2][1])

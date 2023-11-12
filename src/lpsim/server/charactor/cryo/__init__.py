@@ -1,33 +1,4 @@
-from .kaeya import Kaeya, ColdBloodedStrike
-from .shenhe import Shenhe
-from .eula import Eula, LightfallSword, WellspringOfWarLust
-from .chongyun import Chongyun, SteadyBreathing
-from .ganyu import Ganyu, SacredCryoPearl, UndividedHeart
-from .qiqi import Qiqi, RiteOfResurrection, HeraldOfFrost
-from .kamisato_ayaka import (
-    KamisatoAyaka, FrostflakeSekiNoTo, KantenSenmyouBlessing
-)
-from .diona import Diona, DrunkenMist, ShakenNotPurred
-from .fatui_cryo_cicin_mage import (
-    FatuiCryoCicinMage, CryoCicins, CicinsColdGlare
-)
+from ....utils import import_all_modules
 
 
-CryoCharactors = (
-    Ganyu | Diona | Kaeya | Chongyun | KamisatoAyaka | Eula | Shenhe | Qiqi
-    # finally monsters
-    | FatuiCryoCicinMage
-)
-SummonsOfCryoCharactors = (
-    SacredCryoPearl | DrunkenMist | FrostflakeSekiNoTo | LightfallSword 
-    | HeraldOfFrost
-    # finally monsters
-    | CryoCicins
-)
-CryoCharactorTalents = (
-    UndividedHeart | ShakenNotPurred | ColdBloodedStrike | SteadyBreathing 
-    | KantenSenmyouBlessing | WellspringOfWarLust
-    | RiteOfResurrection
-    # finally monsters
-    | CicinsColdGlare
-)
+import_all_modules(__file__, __name__)

@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...modifiable_values import DamageValue
 
 from ...action import (
@@ -54,7 +56,7 @@ name_to_element_type = {
 }
 
 
-class WovenCards(ElementalResonanceCardBase):
+class WovenCards_3_3(ElementalResonanceCardBase):
     name: Literal[
         'Elemental Resonance: Woven Flames', 
         'Elemental Resonance: Woven Ice',
@@ -91,7 +93,7 @@ class WovenCards(ElementalResonanceCardBase):
         )]
 
 
-class ShatteringIce(ElementalResonanceCardBase):
+class ShatteringIce_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Shattering Ice']
     desc: str = (
         'During this Round, your current active character will deal +2 DMG '
@@ -124,7 +126,7 @@ class ShatteringIce(ElementalResonanceCardBase):
         )]
 
 
-class SoothingWater(ElementalResonanceCardBase):
+class SoothingWater_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Soothing Water']
     desc: str = (
         'Heal your active character for 2 HP and all your characters on '
@@ -190,7 +192,7 @@ class SoothingWater(ElementalResonanceCardBase):
         return [damage_action]
 
 
-class FerventFlames(ElementalResonanceCardBase):
+class FerventFlames_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Fervent Flames']
     desc: str = (
         'During this round, the next instance of Pyro-Related Reactions your '
@@ -223,7 +225,7 @@ class FerventFlames(ElementalResonanceCardBase):
         )]
 
 
-class HighVoltage(ElementalResonanceCardBase):
+class HighVoltage_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: High Voltage']
     desc: str = (
         'During this round, one of your characters without maximum Energy '
@@ -280,7 +282,7 @@ class HighVoltage(ElementalResonanceCardBase):
             raise AssertionError('No charactor can be charged.')
 
 
-class ImpetuousWinds(ElementalResonanceCardBase):
+class ImpetuousWinds_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Impetuous Winds']
     desc: str = (
         'Switch to the target character and create Omni Element x1.'
@@ -323,7 +325,7 @@ class ImpetuousWinds(ElementalResonanceCardBase):
         ]
 
 
-class EnduringRock(ElementalResonanceCardBase):
+class EnduringRock_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Enduring Rock']
     desc: str = (
         'During this round, after your character deals Geo DMG next time: '
@@ -358,7 +360,7 @@ class EnduringRock(ElementalResonanceCardBase):
         )]
 
 
-class SprawlingGreenery(ElementalResonanceCardBase):
+class SprawlingGreenery_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Sprawling Greenery']
     desc: str = (
         'During this round, the next Elemental Reaction you trigger deals '
@@ -441,7 +443,7 @@ class NationResonanceCardBase(CardBase):
         )
 
 
-class WindAndFreedom(NationResonanceCardBase):
+class WindAndFreedom_4_1(NationResonanceCardBase):
     name: Literal['Wind and Freedom']
     desc: str = (
         'In this Round, when an opposing character is defeated during your '
@@ -474,7 +476,16 @@ class WindAndFreedom(NationResonanceCardBase):
         )]
 
 
-class StoneAndContracts(NationResonanceCardBase):
+class WindAndFreedom_3_7(WindAndFreedom_4_1):
+    name: Literal['Wind and Freedom']
+    desc: str = (
+        'In this Round, when an opposing character is defeated during your '
+        'Action, you can continue to act again when that Action ends. '
+    )
+    version: Literal['3.7']
+
+
+class StoneAndContracts_3_7(NationResonanceCardBase):
     name: Literal['Stone and Contracts']
     desc: str = (
         'When the Action Phase of the next Round begins: Create 3 Omni '
@@ -505,7 +516,7 @@ class StoneAndContracts(NationResonanceCardBase):
         )]
 
 
-class ThunderAndEternity(NationResonanceCardBase):
+class ThunderAndEternity_4_0(NationResonanceCardBase):
     name: Literal['Thunder and Eternity']
     desc: str = (
         'Convert all your Elemental Dice to Omni Element. '
@@ -545,7 +556,23 @@ class ThunderAndEternity(NationResonanceCardBase):
         ]
 
 
-class NatureAndWisdom(NationResonanceCardBase):
+class ThunderAndEternity_3_7(ThunderAndEternity_4_0):
+    name: Literal['Thunder and Eternity']
+    desc: str = (
+        'Convert all your Elemental Dice to the Type of the active character. '
+    )
+    version: Literal['3.7']
+
+    def get_dice_color(self, match: Any) -> str:
+        """
+        Convert all your Elemental Dice to the Type of the active character.
+        """
+        charactor = match.player_tables[
+            self.position.player_idx].get_active_charactor()
+        return ELEMENT_TO_DIE_COLOR[charactor.element]
+
+
+class NatureAndWisdom_3_7(NationResonanceCardBase):
     name: Literal['Nature and Wisdom']
     desc: str = (
         'Draw 1 card. After that, switch any cards in your hand. '
@@ -576,7 +603,7 @@ class NatureAndWisdom(NationResonanceCardBase):
         ]
 
 
-class AbyssalSummons(NationResonanceCardBase):
+class AbyssalSummons_3_3(NationResonanceCardBase):
     name: Literal['Abyssal Summons']
     desc: str = '''Summon 1 Random Hilichurl Summon! '''
     version: Literal['3.3'] = '3.3'
@@ -626,7 +653,7 @@ class AbyssalSummons(NationResonanceCardBase):
         )]
 
 
-class FatuiConspiracy(NationResonanceCardBase):
+class FatuiConspiracy_3_7(NationResonanceCardBase):
     name: Literal['Fatui Conspiracy']
     desc: str = (
         "Create 1 Fatui Ambusher of a random type on the opponent's field."
@@ -674,11 +701,13 @@ class FatuiConspiracy(NationResonanceCardBase):
         )]
 
 
-ElementResonanceCards = (
-    WovenCards | ShatteringIce | SoothingWater | FerventFlames | HighVoltage
-    | ImpetuousWinds | EnduringRock | SprawlingGreenery
+register_class(
+    WovenCards_3_3 | ShatteringIce_3_3 | SoothingWater_3_3 | FerventFlames_3_3 
+    | HighVoltage_3_3 | ImpetuousWinds_3_3 | EnduringRock_3_3 
+    | SprawlingGreenery_3_3
 )
-NationResonanceCards = (
-    WindAndFreedom | StoneAndContracts | ThunderAndEternity | NatureAndWisdom
-    | AbyssalSummons | FatuiConspiracy
+register_class(
+    WindAndFreedom_4_1 | StoneAndContracts_3_7 | ThunderAndEternity_4_0 
+    | NatureAndWisdom_3_7 | AbyssalSummons_3_3 | FatuiConspiracy_3_7
+    | WindAndFreedom_3_7 | ThunderAndEternity_3_7
 )

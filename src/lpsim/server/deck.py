@@ -6,10 +6,8 @@ from .object_base import CardBases
 
 from .charactor.charactor_base import CharactorBase
 
-from ..utils import BaseModel, get_instance_from_type_unions
+from ..utils import BaseModel, get_instance
 from typing import Literal, List
-from . import Cards
-from . import Charactors
 
 
 class Deck(BaseModel):
@@ -19,11 +17,11 @@ class Deck(BaseModel):
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):
-        return get_instance_from_type_unions(Charactors, v)
+        return get_instance(CharactorBase, v)
 
     @validator('cards', each_item = True, pre = True)
     def parse_cards(cls, v):
-        return get_instance_from_type_unions(Cards, v)
+        return get_instance(CardBases, v)
 
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 
@@ -162,21 +160,13 @@ class Deck(BaseModel):
                 if version is not None:
                     args['version'] = version
                 for _ in range(number):
-                    deck.charactors.append(
-                        get_instance_from_type_unions(
-                            Charactors, args
-                        )
-                    )
+                    deck.charactors.append(get_instance(CharactorBase, args))
             else:
                 for _ in range(number):
                     args = { 'name': line }
                     if version is not None:
                         args['version'] = version
-                    deck.cards.append(
-                        get_instance_from_type_unions(
-                            Cards, args
-                        )
-                    )
+                    deck.cards.append(get_instance(CardBases, args))
         return deck
 
     def to_str(self) -> str:

@@ -1,5 +1,7 @@
 from typing import Any, Literal, List
 
+from ....utils.class_registry import register_class
+
 from ...action import RemoveObjectAction
 
 from ...event import MakeDamageEventArguments
@@ -10,7 +12,7 @@ from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus
 
 
-class HeavyStrike(RoundCharactorStatus):
+class HeavyStrike_3_7(RoundCharactorStatus):
     name: Literal['Heavy Strike'] = 'Heavy Strike'
     desc: str = (
         "During this round, your current active character's next "
@@ -54,7 +56,7 @@ class HeavyStrike(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class ShatteringIce(RoundCharactorStatus):
+class ShatteringIce_3_3(RoundCharactorStatus):
     name: Literal[
         'Elemental Resonance: Shattering Ice'
     ] = 'Elemental Resonance: Shattering Ice'
@@ -97,7 +99,7 @@ class ShatteringIce(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class FerventFlames(RoundCharactorStatus):
+class FerventFlames_3_3(RoundCharactorStatus):
     name: Literal[
         'Elemental Resonance: Fervent Flames'
     ] = 'Elemental Resonance: Fervent Flames'
@@ -143,4 +145,4 @@ class FerventFlames(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-EventCardCharactorStatus = HeavyStrike | ShatteringIce | FerventFlames
+register_class(HeavyStrike_3_7 | ShatteringIce_3_3 | FerventFlames_3_3)

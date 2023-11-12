@@ -10,13 +10,9 @@ from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 
 from pydantic import validator
 
-from ..card.equipment.artifact.base import ArtifactBase
+from ...utils.class_registry import register_base_class
 
-from ..card.equipment.weapon.base import WeaponBase
-
-from ..status.charactor_status.base import CharactorStatusBase
-
-from ...utils import get_instance_from_type_unions
+from ...utils import get_instance
 
 from ..event import MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
@@ -29,13 +25,13 @@ from ..object_base import (
 )
 from ..struct import Cost, DeckRestriction, ObjectPosition
 from ..modifiable_values import DamageValue
-from ..status import CharactorStatus
-from ..card.equipment.artifact import Artifacts
-from ..card.equipment.weapon import Weapons
 from ..action import (
     ChargeAction, CreateObjectAction, MakeDamageAction, MoveObjectAction, 
     RemoveObjectAction, Actions, SkillEndAction, UseSkillAction
 )
+from ..status import CharactorStatusBase
+from ..card import ArtifactBase
+from ..card import WeaponBase
 
 
 class SkillBase(ObjectBase):
@@ -589,19 +585,25 @@ class CharactorBase(ObjectBase):
 
     @validator('status', each_item = True, pre = True)
     def parse_status(cls, v):
-        return get_instance_from_type_unions(CharactorStatus, v)
+        return get_instance(CharactorStatusBase, v)
 
     @validator('weapon', pre = True)
     def parse_weapon(cls, v):
         if v is None:
             return v
-        return get_instance_from_type_unions(Weapons, v)
+        return get_instance(WeaponBase, v)
 
     @validator('artifact', pre = True)
     def parse_artifact(cls, v):
         if v is None:
             return v
-        return get_instance_from_type_unions(Artifacts, v)
+        return get_instance(ArtifactBase, v)
+
+    @validator('talent', pre = True)
+    def parse_talent(cls, v):
+        if v is None:
+            return v
+        return get_instance(TalentBase, v)
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -733,3 +735,7 @@ class CharactorBase(ObjectBase):
             elif self.artifact is not None and self.artifact.id == position.id:
                 return self.artifact
             return None
+
+
+register_base_class(CharactorBase)
+register_base_class(TalentBase)

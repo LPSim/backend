@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....action import CreateDiceAction
 
 from ....event import SkillEndEventArguments
@@ -11,7 +13,7 @@ from ....struct import Cost
 from .base import RoundEffectWeaponBase
 
 
-class SacrificialWeapons(RoundEffectWeaponBase):
+class SacrificialWeapons_3_3(RoundEffectWeaponBase):
     name: Literal[
         'Sacrificial Fragments',
         'Sacrificial Greatsword',
@@ -66,3 +68,6 @@ class SacrificialWeapons(RoundEffectWeaponBase):
             number = 1,
             color = die_color,
         )]
+
+
+register_class(SacrificialWeapons_3_3)

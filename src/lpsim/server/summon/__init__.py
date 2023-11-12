@@ -1,5 +1,6 @@
-from .system import BurningFlame
-from .events import EventSummons
+from ...utils import import_all_modules
+from .base import SummonBase
 
 
-Summons = BurningFlame | EventSummons
+import_all_modules(__file__, __name__)
+__all__ = ('SummonBase',)

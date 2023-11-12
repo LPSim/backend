@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...action import (
     Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction, 
     RemoveObjectAction
@@ -20,7 +22,7 @@ from ...modifiable_values import DamageIncreaseValue, DamageValue
 from .base import RoundTeamStatus, ShieldTeamStatus, SwitchActionTeamStatus
 
 
-class ShrineOfMaya(RoundTeamStatus):
+class ShrineOfMaya_3_7(RoundTeamStatus):
     name: Literal['Shrine of Maya'] = 'Shrine of Maya'
     desc: str = (
         'When your character triggers an Elemental Reaction: +1 Additional '
@@ -95,7 +97,7 @@ class ShrineOfMaya(RoundTeamStatus):
         return value
 
 
-class FloralSidewinder(RoundTeamStatus):
+class FloralSidewinder_3_3(RoundTeamStatus):
     """
     Damage made on skill end, but need to check whether dendro reaction made
     before.
@@ -169,7 +171,7 @@ class FloralSidewinder(RoundTeamStatus):
         ] + self.check_should_remove()
 
 
-class AdeptalLegacy(SwitchActionTeamStatus):
+class AdeptalLegacy_4_1(SwitchActionTeamStatus):
     name: Literal['Adeptal Legacy'] = 'Adeptal Legacy'
     desc: str = (
         'After you switch characters: Deal 1 Dendro DMG, heal your active '
@@ -216,7 +218,7 @@ class AdeptalLegacy(SwitchActionTeamStatus):
         ]
 
 
-class PulsingClarity(RoundTeamStatus):
+class PulsingClarity_4_2(RoundTeamStatus):
     name: Literal['Pulsing Clarity'] = 'Pulsing Clarity'
     desc: str = '''When Action Phase begins: Create Seamless Shield.'''
     version: Literal['4.2'] = '4.2'
@@ -241,7 +243,7 @@ class PulsingClarity(RoundTeamStatus):
         ] + ret
 
 
-class SeamlessShield(ShieldTeamStatus):
+class SeamlessShield_4_2(ShieldTeamStatus):
     name: Literal['Seamless Shield'] = 'Seamless Shield'
     desc: str = (
         'Provides 1 Shield, protecting your active character. '
@@ -325,7 +327,7 @@ class SeamlessShield(ShieldTeamStatus):
         return list(ret)
 
 
-DendroTeamStatus = (
-    ShrineOfMaya | FloralSidewinder | AdeptalLegacy | PulsingClarity
-    | SeamlessShield
+register_class(
+    ShrineOfMaya_3_7 | FloralSidewinder_3_3 | AdeptalLegacy_4_1 
+    | PulsingClarity_4_2 | SeamlessShield_4_2
 )

@@ -1,12 +1,14 @@
 from typing import Any, Literal
 
+from ....utils.class_registry import register_class
+
 from ...consts import IconType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundTeamStatus, ShieldTeamStatus
 
 
-class RebelliousShield(ShieldTeamStatus):
+class RebelliousShield_3_7(ShieldTeamStatus):
     name: Literal['Rebellious Shield'] = 'Rebellious Shield'
     desc: str = (
         'Grants 1 Shield point to defend your active charactor. '
@@ -17,7 +19,7 @@ class RebelliousShield(ShieldTeamStatus):
     max_usage: int = 2
 
 
-class MillennialMovementFarewellSong(RoundTeamStatus):
+class MillennialMovementFarewellSong_3_7(RoundTeamStatus):
     name: Literal[
         'Millennial Movement: Farewell Song'
     ] = 'Millennial Movement: Farewell Song'
@@ -39,4 +41,4 @@ class MillennialMovementFarewellSong(RoundTeamStatus):
         return value
 
 
-WeaponTeamStatus = RebelliousShield | MillennialMovementFarewellSong
+register_class(RebelliousShield_3_7 | MillennialMovementFarewellSong_3_7)

@@ -1,5 +1,7 @@
 from typing import Any, Literal, List
 
+from ....utils.class_registry import register_base_class
+
 from ...struct import Cost
 
 from ...modifiable_values import (
@@ -31,6 +33,9 @@ class CharactorStatusBase(StatusBase):
     version: str
     usage: int
     max_usage: int
+
+
+register_base_class(CharactorStatusBase)
 
 
 class UsageCharactorStatus(CharactorStatusBase):

@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....event import SkillEndEventArguments
@@ -12,7 +14,7 @@ from ....struct import Cost
 from .base import ArtifactBase, RoundEffectArtifactBase
 
 
-class OrnateKabuto(ArtifactBase):
+class OrnateKabuto_4_0(ArtifactBase):
     name: Literal['Ornate Kabuto'] = 'Ornate Kabuto'
     desc: str = (
         'After another character of yours uses an Elemental Burst: The '
@@ -42,7 +44,12 @@ class OrnateKabuto(ArtifactBase):
         )]
 
 
-class EmblemOfSeveredFate(OrnateKabuto, RoundEffectArtifactBase):
+class OrnateKabuto_3_5(OrnateKabuto_4_0):
+    version: Literal['3.5']
+    cost: Cost = Cost(any_dice_number = 2)
+
+
+class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
     name: Literal['Emblem of Severed Fate'] = 'Emblem of Severed Fate'
     desc: str = (
         'After a character uses an Elemental Burst: The character to which '
@@ -75,4 +82,22 @@ class EmblemOfSeveredFate(OrnateKabuto, RoundEffectArtifactBase):
         return value
 
 
-EmblemOfSeveredFateArtifacts = OrnateKabuto | EmblemOfSeveredFate
+class EmblemOfSeveredFate_4_0(EmblemOfSeveredFate_4_1):
+    version: Literal['4.0']
+    desc: str = (
+        'After a character uses an Elemental Burst: The character to which '
+        'this is attached gains 1 Energy. The DMG dealt by the '
+        "character's Elemental Bursts is increased by 2. "
+    )
+    max_usage_per_round: int = 999
+
+
+class EmblemOfSeveredFate_3_7(EmblemOfSeveredFate_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(any_dice_number = 3)
+
+
+register_class(
+    OrnateKabuto_4_0 | EmblemOfSeveredFate_4_1 | EmblemOfSeveredFate_4_0
+    | EmblemOfSeveredFate_3_7 | OrnateKabuto_3_5
+)

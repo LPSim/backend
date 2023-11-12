@@ -8,20 +8,15 @@ from .charactor.charactor_base import CharactorBase
 
 from .status.team_status.base import TeamStatusBase
 from .struct import ObjectPosition
-from ..utils import BaseModel, get_instance_from_type_unions
+from ..utils import BaseModel, get_instance
 from typing import Literal, List, Tuple
 from ..resources.consts import CharactorIcons
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
 )
-from .object_base import CardBases, ObjectBase
+from .object_base import CardBase, CardBases, ObjectBase
 from .deck import Deck
 from .dice import Dice
-from . import Cards
-from . import Summons
-from . import Supports
-from . import Charactors
-from . import TeamStatus
 
 
 class PlayerTable(BaseModel):
@@ -76,23 +71,23 @@ class PlayerTable(BaseModel):
 
     @validator('team_status', each_item = True, pre = True)
     def parse_team_status(cls, v):
-        return get_instance_from_type_unions(TeamStatus, v)
+        return get_instance(TeamStatusBase, v)
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):
-        return get_instance_from_type_unions(Charactors, v)
+        return get_instance(CharactorBase, v)
 
     @validator('summons', each_item = True, pre = True)
     def parse_summons(cls, v):
-        return get_instance_from_type_unions(Summons, v)
+        return get_instance(SummonBase, v)
 
     @validator('supports', each_item = True, pre = True)
     def parse_supports(cls, v):
-        return get_instance_from_type_unions(Supports, v)
+        return get_instance(SupportBase, v)
 
     @validator('hands', 'table_deck', each_item = True, pre = True)
     def parse_cards(cls, v):
-        return get_instance_from_type_unions(Cards, v)
+        return get_instance(CardBase, v)
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)

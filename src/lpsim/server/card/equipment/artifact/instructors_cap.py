@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import (
     ELEMENT_TO_DIE_COLOR, ElementalReactionType, ObjectPositionType
 )
@@ -12,7 +14,7 @@ from ....struct import Cost
 from .base import RoundEffectArtifactBase
 
 
-class InstructorsCap(RoundEffectArtifactBase):
+class InstructorsCap_3_3(RoundEffectArtifactBase):
     name: Literal["Instructor's Cap"]
     desc: str = (
         'After a character triggers an Elemental Reaction: Create 1 Elemental '
@@ -68,3 +70,6 @@ class InstructorsCap(RoundEffectArtifactBase):
                 color = ELEMENT_TO_DIE_COLOR[charactor.element],
             )
         ]
+
+
+register_class(InstructorsCap_3_3)

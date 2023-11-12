@@ -1,3 +1,4 @@
+from src.lpsim.server.struct import ObjectPosition
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
@@ -136,16 +137,21 @@ def test_vanilla_weapons():
                         card = cards[req.card_idx]
                         targets = req.targets
                         for target in targets:
+                            assert isinstance(target, ObjectPosition)
                             assert target.charactor_idx != 3  # 3 is mob
                         if card.name == 'Magic Guide':
                             assert len(targets) == 1
+                            assert isinstance(targets[0], ObjectPosition)
                             assert targets[0].charactor_idx == 1
                         elif card.name == 'White Iron Greatsword':
                             assert len(targets) == 2
+                            assert isinstance(targets[0], ObjectPosition)
+                            assert isinstance(targets[1], ObjectPosition)
                             assert targets[0].charactor_idx == 0
                             assert targets[1].charactor_idx == 2
                         elif card.name == 'Raven Bow':
                             assert len(targets) == 1
+                            assert isinstance(targets[0], ObjectPosition)
                             assert targets[0].charactor_idx == 4
                         else:
                             raise AssertionError('Other weapon cannot use')
