@@ -2,6 +2,8 @@ import logging
 
 from pydantic import validator
 
+from ..utils.deck_code import deck_code_to_deck_str, deck_str_to_deck_code
+
 from .object_base import CardBase
 
 from .charactor.charactor_base import CharactorBase
@@ -183,3 +185,17 @@ class Deck(BaseModel):
             deck_str += f'@{card.version}'
             deck_str += '\n'
         return deck_str
+
+    @staticmethod
+    def from_deck_code(deck_code: str, version: str | None = None) -> 'Deck':
+        """
+        Convert deck code to deck object. If version is specified, 
+        default_version will be set in deck_str.
+        """
+        return Deck.from_str(deck_code_to_deck_str(deck_code, version))
+
+    def to_deck_code(self) -> str:
+        """
+        Convert deck object to deck code.
+        """
+        return deck_str_to_deck_code(self.to_str())

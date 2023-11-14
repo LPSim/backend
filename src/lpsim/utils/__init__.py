@@ -3,6 +3,13 @@ import os
 import importlib
 from typing import List
 from .class_registry import get_instance  # noqa: F401
+from .desc_registry import (  # noqa: F401
+    DescDictType, ExpectedLanguageType, update_desc, desc_exist,
+    get_desc_patch,
+)
+from .deck_code import (  # noqa: F401
+    deck_code_to_deck_str, deck_str_to_deck_code
+)
 
 
 class BaseModel(pydantic.BaseModel):
