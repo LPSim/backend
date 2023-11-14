@@ -16,9 +16,9 @@ class DescDictType(TypedDict, total = False):
     descs: Dict[str, Dict[ExpectedLanguageType, str]]
 
 
-default_json_path = __file__[:-len('desc_registry.py')] + 'default_desc.json'
+_default_json_path = __file__[:-len('desc_registry.py')] + 'default_desc.json'
 _desc_dict: Dict[str, DescDictType] = json.load(
-    open(default_json_path, 'r', encoding = 'utf-8')
+    open(_default_json_path, 'r', encoding = 'utf-8')
 )
 
 
@@ -83,6 +83,14 @@ def desc_exist(type: str, name: str, version: str) -> bool:
     )
 
 
+def get_desc_patch() -> Dict[str, DescDictType]:
+    """
+    Get desc patch.
+    """
+    return _desc_dict
+
+
 __all__ = [
-    'DescDictType', 'ExpectedLanguageType', 'update_desc', 'desc_exist'
+    'DescDictType', 'ExpectedLanguageType', 'update_desc', 'desc_exist',
+    'get_desc_patch',
 ]
