@@ -29,7 +29,6 @@ class Mob_1_0(CharactorBase):
         'DendroMob',
         'AnemoMob',
     ]
-    desc: str = 'A _NAME_.'
     version: Literal['1.0'] = '1.0'
     element: ElementType = ElementType.NONE
     max_hp: int = 10
@@ -55,10 +54,6 @@ class Mob_1_0(CharactorBase):
                 f'name {type_in_name}.'
             )
         return v
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)  # type: ignore
-        self.desc = self.desc.replace('_NAME_', self.name)
 
     def _init_skills(self):
         if self.element == ElementType.NONE:

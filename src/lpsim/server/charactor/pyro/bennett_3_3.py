@@ -20,7 +20,6 @@ from ..charactor_base import (
 
 class FantasticVoyage(ElementalBurstBase):
     name: Literal['Fantastic Voyage'] = 'Fantastic Voyage'
-    desc: str = '''Deals 2 Pyro DMG, creates 1 Inspiration Field.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -45,13 +44,6 @@ class FantasticVoyage(ElementalBurstBase):
 
 class GrandExpectation_3_3(SkillTalent):
     name: Literal['Grand Expectation']
-    desc: str = (
-        'Combat Action: When your active character is Bennett, equip this '
-        'card. After Bennett equips this card, immediately use Fantastic '
-        'Voyage once. When your Bennett, who has this card equipped, creates '
-        'an Inspiration Field, its DMG Bonus is now always active and will no '
-        'longer have an HP restriction.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Bennett'] = 'Bennett'
     cost: Cost = Cost(
@@ -68,7 +60,6 @@ class GrandExpectation_3_3(SkillTalent):
 class Bennett_3_3(CharactorBase):
     name: Literal['Bennett']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Trial by Fire" Bennett'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

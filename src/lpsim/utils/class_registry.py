@@ -8,7 +8,9 @@ corresponding class and version, and instantiate it.
 
 import logging
 import types
-from typing import Any, Dict, List, Optional, Type, Union, get_type_hints
+from typing import (
+    Any, Dict, List, Literal, Optional, Type, Union, get_type_hints, get_args
+)
 
 import pydantic
 
@@ -36,6 +38,12 @@ def _is_union_type(t) -> bool:
         getattr(t, '__class__', None) == types.UnionType
         or getattr(t, '__origin__', None) is Union 
         or getattr(t, '__origin__', None) is Optional
+    )
+
+
+def _is_literal(t) -> bool:
+    return (
+        getattr(t, '__origin__', None) is Literal
     )
 
 
@@ -67,7 +75,11 @@ def register_class_one(cls: Type[Any]):
     cls_type_hints = get_type_hints(cls)
     name_hints = cls_type_hints['name']
     version_hints = cls_type_hints['version']
-    assert len(version_hints.__args__) == 1
+    desc_hints = cls_type_hints['desc']
+    assert len(get_args(desc_hints)) > 0, (
+        f'Class {cls} desc type hint is empty or not a Literal'
+    )
+    descs = get_args(desc_hints)
     version = version_hints.__args__[0]
     type_hints = cls_type_hints['type']
     assert len(type_hints.__args__) == 1
@@ -82,16 +94,6 @@ def register_class_one(cls: Type[Any]):
         )
     for name in names:
         desc_type = obj_type
-        if obj_type == ObjectType.TALENT:
-            # for talent, its type name should change
-            target_charactor_names = cls_type_hints['charactor_name'].__args__
-            assert len(target_charactor_names) == 1
-            desc_type = f'TALENT_{target_charactor_names[0]}'
-        if not desc_exist(desc_type, name, version):
-            raise AssertionError(
-                f'Class {cls} name {name} version {version} is not found in '
-                'descs'
-            )
         if obj_type == ObjectType.CHARACTOR:
             # for charactor, also check its skill descs
             charactor = cls(name = name, version = version)
@@ -101,6 +103,26 @@ def register_class_one(cls: Type[Any]):
                     raise AssertionError(
                         f'Class {cls} name {name} version {version} skill '
                         f'{skill.name} is not found in descs'
+                    )
+        if obj_type == ObjectType.TALENT:
+            # for talent, its type name should change
+            target_charactor_names = cls_type_hints['charactor_name'].__args__
+            assert len(target_charactor_names) == 1
+            desc_type = f'TALENT_{target_charactor_names[0]}'
+        if len(descs) > 1 or descs[0] != '':
+            # has multiple descs, or has desc but not empty
+            for desc in descs:
+                if desc == '':
+                    # empty, no extra desc
+                    if not desc_exist(desc_type, name, version):
+                        raise AssertionError(
+                            f'Class {cls} name {name} version {version} is '
+                            'not found in descs'
+                        )
+                elif not desc_exist(desc_type, f'{name}_{desc}', version):
+                    raise AssertionError(
+                        f'Class {cls} name {name}(desc: {desc}) version '
+                        f'{version} is not found in descs'
                     )
     version = _version_to_int(version)
     register_success = False

@@ -8,12 +8,6 @@ from .fatui_cryo_cicin_mage_4_1 import CicinIcicle, BlizzardBranchBlossom
 
 
 class CryoCicins_3_7(CC_4_1):
-    desc: str = (
-        'End Phase: Deal 1 Cryo DMG. (Can stack. Max 3 stacks.) '
-        'After Fatui Cryo Cicin Mage performs a Normal Attack: This card '
-        'gains 1 Usage(s). After your character takes Elemental Reaction DMG: '
-        'This card loses 1 Usage(s).'
-    )
     version: Literal['3.7'] = '3.7'
     decrease_only_self_damage: bool = False
 

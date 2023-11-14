@@ -18,7 +18,6 @@ class PhysicalMob_1_0(CharactorBase):
     Their elemeny type is only used to decide dice color when using skills.
     """
     name: Literal['PhysicalMob']
-    desc: str = 'A PhysicalMob.'
     version: Literal['1.0'] = '1.0'
     element: ElementType = ElementType.PYRO
     max_hp: int = 10

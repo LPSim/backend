@@ -32,7 +32,6 @@ register_base_class(ItemBase)
 
 class RoundEffectItemBase(RoundEffectSupportBase):
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int 
@@ -41,12 +40,6 @@ class RoundEffectItemBase(RoundEffectSupportBase):
 
 class ParametricTransformer_3_3(ItemBase):
     name: Literal['Parametric Transformer']
-    desc: str = (
-        'When either side uses a Skill: If Elemental DMG was dealt this card '
-        'gains 1 Qualitative Progress. When this card gains 3 Qualitative '
-        'Progress, discard this card, then create 3 different Basic Elemental '
-        'Dice.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
     usage: int = 0
@@ -115,11 +108,6 @@ class ParametricTransformer_3_3(ItemBase):
 
 class NRE_4_1(RoundEffectItemBase):
     name: Literal['NRE']
-    desc: str = (
-        'When played: Draw 1 Food Event Card from your deck. '
-        'When you play a Food Event Card: Draw 1 Food Event Card from your '
-        'deck. (Once per Round)'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
@@ -166,12 +154,6 @@ class NRE_3_3(NRE_4_1):
 
 class RedFeatherFan_3_7(RoundEffectItemBase):
     name: Literal['Red Feather Fan']
-    desc: str = (
-        'After you switch characters: The next Switch Character action you '
-        'perform this Round will be considered a Fast Action instead of a '
-        'Combat Action. It will also cost 1 less Elemental Die. '
-        '(Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -261,11 +243,6 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
 
 class TreasureSeekingSeelie_3_7(ItemBase):
     name: Literal['Treasure-Seeking Seelie']
-    desc: str = (
-        'Triggers automatically once per Round: This card gains 1 Pigeon. '
-        'When this card gains 3 Pigeons, discard this card, then draw 1 card '
-        'and create Genius Invokation TCG Omni Dice Omni Element x1.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0

@@ -24,11 +24,6 @@ from ..charactor_base import (
 
 class GardenOfPurity_3_6(AttackerSummonBase):
     name: Literal['Garden of Purity'] = 'Garden of Purity'
-    desc: str = (
-        'End Phase: Deal 2 Hydro DMG. '
-        "When this summon is on the field: Your characters' Normal Attacks "
-        'deal +1 DMG.'
-    )
     version: Literal['3.6'] = '3.6'
     usage: int = 2
     max_usage: int = 2
@@ -52,7 +47,6 @@ class GardenOfPurity_3_6(AttackerSummonBase):
 
 class KamisatoArtKyouka(ElementalSkillBase):
     name: Literal['Kamisato Art: Kyouka'] = 'Kamisato Art: Kyouka'
-    desc: str = '''Deals 2 Hydro DMG. This Character gains Takimeguri Kanka.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -77,7 +71,6 @@ class KamisatoArtKyouka(ElementalSkillBase):
 
 class KamisatoArtSuiyuu(ElementalBurstBase):
     name: Literal['Kamisato Art: Suiyuu'] = 'Kamisato Art: Suiyuu'
-    desc: str = '''Deals 1 Hydro DMG, summons 1 Garden of Purity.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -97,14 +90,6 @@ class KamisatoArtSuiyuu(ElementalBurstBase):
 
 class KyoukaFuushi_3_6(SkillTalent):
     name: Literal['Kyouka Fuushi']
-    desc: str = (
-        'Combat Action: When your active character is Kamisato Ayato, equip '
-        'this card. After Kamisato Ayato equips this card, immediately use '
-        'Kamisato Art: Kyouka once. When your Kamisato Ayato, who has this '
-        'card equipped, triggers the effects of Takimeguri Kanka, deal +1 '
-        "additional DMG if the target's remaining HP is equal to or less "
-        'than 6.'
-    )
     version: Literal['3.6'] = '3.6'
     charactor_name: Literal['Kamisato Ayato'] = 'Kamisato Ayato'
     cost: Cost = Cost(
@@ -120,7 +105,6 @@ class KyoukaFuushi_3_6(SkillTalent):
 class KamisatoAyato_4_1(CharactorBase):
     name: Literal['Kamisato Ayato']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Pillar of Fortitude" Kamisato Ayato'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2

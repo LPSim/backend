@@ -9,8 +9,8 @@ from ...action import Actions, ChangeObjectUsageAction, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, ObjectPositionType, WeaponType
 )
 
 from ..charactor_base import (
@@ -21,11 +21,6 @@ from ..charactor_base import (
 
 class AllSchemesToKnow(ElementalSkillBase):
     name: Literal['All Schemes to Know'] = 'All Schemes to Know'
-    desc: str = (
-        'Deals 2 Dendro DMG, applies the Seed of Skandha to target character. '
-        'If the target character already has Seed of Skandha applied to them, '
-        'then apply Seed of Skandha to all opposing characters instead.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -80,10 +75,6 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
     name: Literal[
         'All Schemes to Know: Tathata'
     ] = 'All Schemes to Know: Tathata'
-    desc: str = (
-        'Deals 3 Dendro DMG, applies the Seed of Skandha to all opposing '
-        'characters.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -117,7 +108,6 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
 
 class IllusoryHeart(ElementalBurstBase):
     name: Literal['Illusory Heart'] = 'Illusory Heart'
-    desc: str = '''Deals 4 Dendro DMG, creates 1 Shrine of Maya.'''
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -146,20 +136,6 @@ class TheSeedOfStoredKnowledge_3_7(SkillTalent):
         'The Seed of Stored Knowledge'
     ] = 'The Seed of Stored Knowledge'
     charactor_name: Literal['Nahida'] = 'Nahida'
-    desc: str = (
-        'Combat Action: When your active character is Nahida, equip this '
-        'card. After Nahida equips this card, immediately use Illusory Heart '
-        'once. When your Nahida, who has this card equipped, is on the field, '
-        'the following effects will take place based on your party\'s '
-        'Elemental Types: Pyro: When the Shrine of Maya is on the field, '
-        'opposing characters who trigger the Seed of Skandha due to Elemental '
-        'Reactions they are affected by will have the Piercing DMG they take '
-        'from the Seed of Skandha converted to Dendro DMG. '
-        'Electro: When the Shrine of Maya enters the field, the Seed of '
-        'Skandha currently present of the opposition will gain 1 Usage(s). '
-        'Hydro: After your Nahida, who has this card equipped unleashes '
-        'Shrine of Maya, Duration (Rounds) +1.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.DENDRO,
@@ -209,7 +185,6 @@ class TheSeedOfStoredKnowledge_3_7(SkillTalent):
 class Nahida_3_7(CharactorBase):
     name: Literal['Nahida']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Physic of Purity" Nahida'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2
@@ -226,7 +201,7 @@ class Nahida_3_7(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Akara',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             AllSchemesToKnow(),

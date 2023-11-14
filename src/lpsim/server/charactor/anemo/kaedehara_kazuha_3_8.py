@@ -37,12 +37,6 @@ class AutumnWhirlwind_3_8(SwirlChangeSummonBase):
 
 class Chihayaburu(ElementalSkillBase):
     name: Literal['Chihayaburu'] = 'Chihayaburu'
-    desc: str = (
-        'Deals 3 Anemo DMG, attaches Midare Ranzan to this character. If this '
-        'skill triggers Swirl, Midare Ranzan is converted to the '
-        'Swirled Element. After the Skill DMG is finalized: Your team '
-        'switches to the next character.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -74,7 +68,6 @@ class Chihayaburu(ElementalSkillBase):
 
 class KazuhaSlash(ElementalBurstBase):
     name: Literal['Kazuha Slash'] = 'Kazuha Slash'
-    desc: str = '''Deals 3 Anemo DMG, summons 1 Autumn Whirlwind.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -96,14 +89,6 @@ class KazuhaSlash(ElementalBurstBase):
 
 class PoeticsOfFuubutsu_3_8(SkillTalent):
     name: Literal['Poetics of Fuubutsu']
-    desc: str = (
-        'Combat Action: When your active character is Kaedehara Kazuha, equip '
-        'this card. After Kaedehara Kazuha equips this card, immediately use '
-        'Chihayaburu once. After Kaedehara Kazuha triggers Swirl with this '
-        'card equipped: For the next 2 instances, your Characters and Summons '
-        'will deal +1 DMG for the Elemental Type Swirled. (Each Elemental '
-        'Type is counted independently)'
-    )
     version: Literal['3.8'] = '3.8'
     charactor_name: Literal['Kaedehara Kazuha'] = 'Kaedehara Kazuha'
     cost: Cost = Cost(
@@ -181,7 +166,6 @@ class PoeticsOfFuubutsu_3_8(SkillTalent):
 class KaedeharaKazuha_3_8(CharactorBase):
     name: Literal['Kaedehara Kazuha']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''Scarlet Leaves Pursue Wild Waves: Kaedehara Kazuha'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 2

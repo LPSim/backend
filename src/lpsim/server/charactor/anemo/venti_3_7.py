@@ -23,14 +23,6 @@ from ..charactor_base import (
 
 class Stormeye_3_7(SwirlChangeSummonBase):
     name: Literal['Stormeye'] = 'Stormeye'
-    desc: str = (
-        'End Phase: Deal 2 Anemo DMG. Your opponent switches to: Character '
-        'Closest to Your Current Active Character. '
-        'After your character or Summon triggers a Swirl reaction: Convert '
-        'the Elemental Type of this card and change its DMG dealt to the '
-        'element Swirled. (Can only be converted once before leaving the '
-        'field)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -67,7 +59,6 @@ class Stormeye_3_7(SwirlChangeSummonBase):
 
 class SkywardSonnet(ElementalSkillBase):
     name: Literal['Skyward Sonnet'] = 'Skyward Sonnet'
-    desc: str = '''Deals 2 Anemo DMG, creates 1 Stormzone.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -95,7 +86,6 @@ class SkywardSonnet(ElementalSkillBase):
 
 class WindsGrandOde(ElementalBurstBase):
     name: Literal["Wind's Grand Ode"] = "Wind's Grand Ode"
-    desc: str = '''Deals 2 Anemo DMG, summons 1 Stormeye.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -117,13 +107,6 @@ class WindsGrandOde(ElementalBurstBase):
 
 class EmbraceOfWinds_3_7(SkillTalent):
     name: Literal['Embrace of Winds']
-    desc: str = (
-        'Combat Action: When your active character is Venti, equip this card. '
-        'After Venti equips this card, immediately use Skyward Sonnet once. '
-        'After a Stormzone created by your Venti, who has this card equipped, '
-        'is triggered, the next Normal Attack performed by your character in '
-        'this Round will cost 1 less Unaligned Element.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Venti'] = 'Venti'
     cost: Cost = Cost(
@@ -139,7 +122,6 @@ class EmbraceOfWinds_3_7(SkillTalent):
 class Venti_3_7(CharactorBase):
     name: Literal['Venti']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Windborne Bard" Venti'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 2

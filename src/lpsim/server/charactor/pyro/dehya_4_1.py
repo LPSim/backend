@@ -30,13 +30,6 @@ from ..charactor_base import (
 
 class FierySanctumField_4_1(AttackerSummonBase):
     name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
-    desc: str = (
-        'End Phase: Deal 1 Pyro DMG. '
-        'When this Summon is on the field and Dehya is on standby on your '
-        'side, then when your active character takes damage: Decrease DMG '
-        'taken by 1, and if Dehya has at least 7 HP, deal 1 Piercing DMG to '
-        'her (once per round).'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 3
     max_usage: int = 3
@@ -112,10 +105,6 @@ class FierySanctumField_4_1(AttackerSummonBase):
 
 class MoltenInferno(ElementalSkillBase):
     name: Literal['Molten Inferno'] = 'Molten Inferno'
-    desc: str = (
-        'Summons Fiery Sanctum Field. If Fiery Sanctum Field already exists, '
-        'then first deal 1 Pyro DMG.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -147,10 +136,6 @@ class MoltenInferno(ElementalSkillBase):
 
 class LeonineBite(ElementalBurstBase):
     name: Literal['Leonine Bite'] = 'Leonine Bite'
-    desc: str = (
-        'Deals 3 Pyro DMG, then performs "Prepare Skill" for Incineration '
-        'Drive'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -167,9 +152,6 @@ class LeonineBite(ElementalBurstBase):
 
 class IncinerationDrive(ElementalBurstBase):
     name: Literal['Incineration Drive'] = 'Incineration Drive'
-    desc: str = (
-        'Deals 3 Pyro DMG.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost()
@@ -186,12 +168,6 @@ class IncinerationDrive(ElementalBurstBase):
 
 class StalwartAndTrue_4_1(SkillTalent):
     name: Literal['Stalwart and True']
-    desc: str = (
-        'Combat Action: When your active character is Dehya, equip this card. '
-        'After Dehya equips this card, immediately use Molten Inferno once. '
-        'End Phase: If your Dehya, who has this card equipped, has no more '
-        'than 6 HP, heal that character for 2 HP.'
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Dehya'] = 'Dehya'
     cost: Cost = Cost(
@@ -233,7 +209,6 @@ class StalwartAndTrue_4_1(SkillTalent):
 class Dehya_4_1(CharactorBase):
     name: Literal['Dehya']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Flame-Mane" Dehya'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

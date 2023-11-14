@@ -14,31 +14,21 @@ from .base import RoundCharactorStatus, ShieldCharactorStatus
 
 class LithicSpear_3_3(ShieldCharactorStatus):
     name: Literal['Lithic Spear'] = 'Lithic Spear'
-    desc: str = (
-        'Grants XXX Shield point to defend your active charactor. '
-    )
     version: Literal['3.3'] = '3.3'
     usage: int
     max_usage: int
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.desc = self.desc.replace('XXX', str(self.usage))
 
     def renew(self, object: 'LithicSpear_3_3') -> None:
         self.max_usage = object.max_usage
         self.usage = max(object.usage, self.usage)
         self.usage = min(self.max_usage, self.usage)
-        self.desc = object.desc
 
 
 class KingsSquire_4_0(RoundCharactorStatus):
     name: Literal["King's Squire"] = "King's Squire"
-    desc: str = (
-        'The character to which this '
-        'is attached will spend 2 less Elemental Dice next time they use an '
-        'Elemental Skill or equip a Talent card.'
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1

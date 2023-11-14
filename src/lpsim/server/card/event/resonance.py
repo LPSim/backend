@@ -20,18 +20,6 @@ from ...struct import Cost, DeckRestriction, ObjectPosition
 
 class ElementalResonanceCardBase(EventCardBase):
     element: ElementType
-    restriction_desc: str = (
-        '(You must have at least 2 XXX characters in your deck to add '
-        'this card to your deck.)'
-    )
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        restriction = self.restriction_desc.replace(
-            'XXX', self.element.name.capitalize()
-        )
-        self.desc = self.desc.replace(restriction, '')
-        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -66,7 +54,6 @@ class WovenCards_3_3(ElementalResonanceCardBase):
         'Elemental Resonance: Woven Weeds',
         'Elemental Resonance: Woven Winds'
     ]
-    desc: str = '''Create 1 XXX Die.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
     element: ElementType = ElementType.NONE  # will update element in __init__
@@ -74,7 +61,6 @@ class WovenCards_3_3(ElementalResonanceCardBase):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.element = name_to_element_type[self.name]
-        self.desc = self.desc.replace('XXX', self.element.name.capitalize())
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
@@ -95,10 +81,6 @@ class WovenCards_3_3(ElementalResonanceCardBase):
 
 class ShatteringIce_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Shattering Ice']
-    desc: str = (
-        'During this Round, your current active character will deal +2 DMG '
-        'for the next instance.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.CRYO,
@@ -128,10 +110,6 @@ class ShatteringIce_3_3(ElementalResonanceCardBase):
 
 class SoothingWater_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Soothing Water']
-    desc: str = (
-        'Heal your active character for 2 HP and all your characters on '
-        'standby for 1 HP.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,
@@ -194,10 +172,6 @@ class SoothingWater_3_3(ElementalResonanceCardBase):
 
 class FerventFlames_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Fervent Flames']
-    desc: str = (
-        'During this round, the next instance of Pyro-Related Reactions your '
-        'current active character triggers deals +3 DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
@@ -227,10 +201,6 @@ class FerventFlames_3_3(ElementalResonanceCardBase):
 
 class HighVoltage_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: High Voltage']
-    desc: str = (
-        'During this round, one of your characters without maximum Energy '
-        'gains 1 Energy. (Active Character prioritized)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
@@ -284,9 +254,6 @@ class HighVoltage_3_3(ElementalResonanceCardBase):
 
 class ImpetuousWinds_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Impetuous Winds']
-    desc: str = (
-        'Switch to the target character and create Omni Element x1.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ANEMO,
@@ -327,11 +294,6 @@ class ImpetuousWinds_3_3(ElementalResonanceCardBase):
 
 class EnduringRock_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Enduring Rock']
-    desc: str = (
-        'During this round, after your character deals Geo DMG next time: '
-        'Should there be any Combat Status on your side that provides Shield, '
-        'grant one such Status with 3 Shield points.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.GEO,
@@ -362,11 +324,6 @@ class EnduringRock_3_3(ElementalResonanceCardBase):
 
 class SprawlingGreenery_3_3(ElementalResonanceCardBase):
     name: Literal['Elemental Resonance: Sprawling Greenery']
-    desc: str = (
-        'During this round, the next Elemental Reaction you trigger deals '
-        '+2 DMG. Your Burning Flame, Dendro Core, and Catalyzing Field gain '
-        '+1 Usage(s).'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.DENDRO,
@@ -418,18 +375,6 @@ class SprawlingGreenery_3_3(ElementalResonanceCardBase):
 
 class NationResonanceCardBase(EventCardBase):
     faction: FactionType
-    restriction_desc: str = (
-        '(You must have at least 2 XXX characters in your deck to add '
-        'this card to your deck.)'
-    )
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        restriction = self.restriction_desc.replace(
-            'XXX', self.faction.name.capitalize()
-        )
-        self.desc = self.desc.replace(restriction, '')
-        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -445,10 +390,6 @@ class NationResonanceCardBase(EventCardBase):
 
 class WindAndFreedom_4_1(NationResonanceCardBase):
     name: Literal['Wind and Freedom']
-    desc: str = (
-        'In this Round, when an opposing character is defeated during your '
-        'Action, you can continue to act again when that Action ends. '
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     faction: FactionType = FactionType.MONDSTADT
@@ -478,19 +419,11 @@ class WindAndFreedom_4_1(NationResonanceCardBase):
 
 class WindAndFreedom_3_7(WindAndFreedom_4_1):
     name: Literal['Wind and Freedom']
-    desc: str = (
-        'In this Round, when an opposing character is defeated during your '
-        'Action, you can continue to act again when that Action ends. '
-    )
     version: Literal['3.7']
 
 
 class StoneAndContracts_3_7(NationResonanceCardBase):
     name: Literal['Stone and Contracts']
-    desc: str = (
-        'When the Action Phase of the next Round begins: Create 3 Omni '
-        'Element. '
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 3)
     faction: FactionType = FactionType.LIYUE
@@ -518,9 +451,6 @@ class StoneAndContracts_3_7(NationResonanceCardBase):
 
 class ThunderAndEternity_4_0(NationResonanceCardBase):
     name: Literal['Thunder and Eternity']
-    desc: str = (
-        'Convert all your Elemental Dice to Omni Element. '
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
     faction: FactionType = FactionType.INAZUMA
@@ -558,9 +488,6 @@ class ThunderAndEternity_4_0(NationResonanceCardBase):
 
 class ThunderAndEternity_3_7(ThunderAndEternity_4_0):
     name: Literal['Thunder and Eternity']
-    desc: str = (
-        'Convert all your Elemental Dice to the Type of the active character. '
-    )
     version: Literal['3.7']
 
     def get_dice_color(self, match: Any) -> str:
@@ -574,9 +501,6 @@ class ThunderAndEternity_3_7(ThunderAndEternity_4_0):
 
 class NatureAndWisdom_3_7(NationResonanceCardBase):
     name: Literal['Nature and Wisdom']
-    desc: str = (
-        'Draw 1 card. After that, switch any cards in your hand. '
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
     faction: FactionType = FactionType.SUMERU
@@ -605,7 +529,6 @@ class NatureAndWisdom_3_7(NationResonanceCardBase):
 
 class AbyssalSummons_3_3(NationResonanceCardBase):
     name: Literal['Abyssal Summons']
-    desc: str = '''Summon 1 Random Hilichurl Summon! '''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     faction: FactionType = FactionType.MONSTER
@@ -655,9 +578,6 @@ class AbyssalSummons_3_3(NationResonanceCardBase):
 
 class FatuiConspiracy_3_7(NationResonanceCardBase):
     name: Literal['Fatui Conspiracy']
-    desc: str = (
-        "Create 1 Fatui Ambusher of a random type on the opponent's field."
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     faction: FactionType = FactionType.FATUI

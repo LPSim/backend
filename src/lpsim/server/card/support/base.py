@@ -18,7 +18,6 @@ class SupportBase(CardBase):
     event triggers will work and do supports.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int
@@ -135,7 +134,6 @@ class RoundEffectSupportBase(SupportBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int 
@@ -161,7 +159,6 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     maximum usage. e.g. Liu Su has 1 usage per round and 2 total usage.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int = 2
@@ -199,7 +196,6 @@ class LimitedEffectSupportBase(SupportBase):
     """
 
     name: str
-    desc: str
     version: str
     cost: Cost
     limited_usage: int

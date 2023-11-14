@@ -29,12 +29,6 @@ from .base import (
 
 class SeedOfSkandha_3_7(UsageCharactorStatus):
     name: Literal['Seed of Skandha'] = 'Seed of Skandha'
-    desc: str = (
-        'After a character who has a Seed of Skandha takes Elemental Reaction '
-        'DMG: Deals 1 Piercing DMG to the character(s) to which the '
-        'Seed of Skandha is attached to on the same side of the field. '
-        'Usage(s): 2'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -111,11 +105,6 @@ class SeedOfSkandha_3_7(UsageCharactorStatus):
 class VijnanaSuffusion_3_6(ElementalInfusionCharactorStatus, 
                            UsageCharactorStatus):
     name: Literal['Vijnana Suffusion'] = 'Vijnana Suffusion'
-    desc: str = (
-        'When the character to which this is attached to uses a Charged '
-        'Attack: Their Physical DMG dealt will be converted to Dendro DMG and '
-        'after skill DMG is finalized, summon 1 Clusterbloom Arrow.'
-    )
     version: Literal['3.6'] = '3.6'
     usage: int = 2
     max_usage: int = 2
@@ -201,13 +190,7 @@ class VijnanaSuffusion_3_6(ElementalInfusionCharactorStatus,
 
 class RadicalVitality_3_3(CharactorStatusBase):
     name: Literal['Radical Vitality'] = 'Radical Vitality'
-    desc: str = ''
-    desc_template: str = (
-        'When this character deals or takes Elemental DMG: Gain 1 stack of '
-        'Radical Vitality. (Max XXX stacks) '
-        'End Phase: If Radical Vitality stacks reach maximum, they will be '
-        'cleared and the character will lose all Energy.'
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 0
     max_usage: int = 3
@@ -219,9 +202,11 @@ class RadicalVitality_3_3(CharactorStatusBase):
         self._update_desc()
 
     def _update_desc(self) -> None:
-        self.desc = self.desc_template.replace(
-            'XXX', str(self.max_usage)
-        )
+        if self.max_usage == 4:
+            # talent activated
+            self.desc = 'talent'
+        else:
+            self.desc = ''
 
     def renew(self, new_status: 'RadicalVitality_3_3') -> None:
         super().renew(new_status)

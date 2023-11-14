@@ -27,7 +27,6 @@ from ..charactor_base import (
 
 class ShadowswordLoneGale_3_3(AttackerSummonBase):
     name: Literal['Shadowsword: Lone Gale']
-    desc: str = '''End Phase: Deal 1 Anemo DMG. Usage(s): 2'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -72,7 +71,6 @@ class ShadowswordLoneGale_3_3(AttackerSummonBase):
 
 class ShadowswordGallopingFrost_3_3(ShadowswordLoneGale_3_3):
     name: Literal['Shadowsword: Galloping Frost']
-    desc: str = '''End Phase: Deal 1 Cryo DMG. Usage(s): 2'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -85,7 +83,6 @@ class ShadowswordGallopingFrost_3_3(ShadowswordLoneGale_3_3):
 
 class BlusteringBlade(ElementalSkillBase):
     name: Literal['Blustering Blade'] = 'Blustering Blade'
-    desc: str = '''Summons 1 Shadowsword: Lone Gale.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -105,7 +102,6 @@ class BlusteringBlade(ElementalSkillBase):
 
 class FrostyAssault(ElementalSkillBase):
     name: Literal['Frosty Assault'] = 'Frosty Assault'
-    desc: str = '''Summons 1 Shadowsword: Galloping Frost.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -125,10 +121,6 @@ class FrostyAssault(ElementalSkillBase):
 
 class PseudoTenguSweeper(ElementalBurstBase):
     name: Literal['Pseudo Tengu Sweeper'] = 'Pseudo Tengu Sweeper'
-    desc: str = (
-        'Deals 4 Anemo DMG, triggers the effect(s) of all your Shadowsword '
-        'Summon(s). (Does not consume their Usages)'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -143,14 +135,6 @@ class PseudoTenguSweeper(ElementalBurstBase):
 
 class TranscendentAutomaton_3_3(SkillTalent):
     name: Literal['Transcendent Automaton']
-    desc: str = (
-        'Combat Action: When your active character is Maguu Kenki, equip this '
-        'card. After Maguu Kenki equips this card, immediately use Blustering '
-        'Blade once. After your Maguu Kenki, who has this card equipped, uses '
-        'Blustering Blade, you will switch to your next character. You will '
-        'switch to your previous character when your Maguu Kenki, who has '
-        'this card equipped, uses Frosty Assault.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Maguu Kenki'] = 'Maguu Kenki'
     cost: Cost = Cost(
@@ -208,7 +192,6 @@ class TranscendentAutomaton_3_3(SkillTalent):
 class MaguuKenki_3_4(CharactorBase):
     name: Literal['Maguu Kenki']
     version: Literal['3.4'] = '3.4'
-    desc: str = '''"Ingenious Machine" Maguu Kenki'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 3

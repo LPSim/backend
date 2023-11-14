@@ -30,7 +30,6 @@ class Frostgnaw(ElementalSkillBase):
 
 class GlacialWaltz(ElementalBurstBase):
     name: Literal['Glacial Waltz'] = 'Glacial Waltz'
-    desc: str = '''Deals 1 Cryo DMG, creates 1 Icicle.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -50,12 +49,6 @@ class GlacialWaltz(ElementalBurstBase):
 
 class ColdBloodedStrike_3_3(SkillTalent):
     name: Literal['Cold-Blooded Strike']
-    desc: str = (
-        'Combat Action: When your active character is Kaeya, equip this card. '
-        'After Kaeya equips this card, immediately use Frostgnaw once. '
-        'After your Kaeya, who has this card equipped, uses Frostgnaw, '
-        'he heals himself for 2 HP. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Kaeya'] = 'Kaeya'
     cost: Cost = Cost(
@@ -126,7 +119,6 @@ class ColdBloodedStrike_3_3(SkillTalent):
 class Kaeya_3_3(CharactorBase):
     name: Literal['Kaeya']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Frostwind Swordsman" Kaeya'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 2

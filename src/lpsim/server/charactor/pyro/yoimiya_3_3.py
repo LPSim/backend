@@ -20,12 +20,6 @@ class RyuukinSaxifrage(RS_3_8):
 
 class NaganoharaMeteorSwarm_3_3(SkillTalent):
     name: Literal['Naganohara Meteor Swarm']
-    desc: str = (
-        'Combat Action: When your active character is Yoimiya, equip this '
-        'card. After Yoimiya equips this card, immediately use Niwabi '
-        'Fire-Dance once. After your Yoimiya, who has this card equipped, '
-        'triggers Niwabi Enshou: Deal 1 additional Pyro DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Yoimiya'] = 'Yoimiya'
     cost: Cost = Cost(

@@ -74,10 +74,6 @@ class FoodCardBase(EventCardBase):
 
 class JueyunGuoba_3_3(FoodCardBase):
     name: Literal['Jueyun Guoba']
-    desc: str = (
-        "During this Round, the target character's next Normal Attack "
-        "deals +1 DMG."
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -96,10 +92,6 @@ class JueyunGuoba_3_3(FoodCardBase):
 
 class AdeptusTemptation_3_3(FoodCardBase):
     name: Literal["Adeptus' Temptation"]
-    desc: str = (
-        "During this Round, the target character's next Elemental Burst "
-        "deals +3 DMG."
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
 
@@ -118,9 +110,6 @@ class AdeptusTemptation_3_3(FoodCardBase):
 
 class LotusFlowerCrisp_3_3(FoodCardBase):
     name: Literal['Lotus Flower Crisp']
-    desc: str = (
-        "During this Round, the target character takes -3 DMG the next time."
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -139,10 +128,6 @@ class LotusFlowerCrisp_3_3(FoodCardBase):
 
 class NorthernSmokedChicken_3_3(FoodCardBase):
     name: Literal['Northern Smoked Chicken']
-    desc: str = (
-        "During this Round, the target character's next Normal Attack cost "
-        "less 1 Unaligned Element."
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -161,7 +146,6 @@ class NorthernSmokedChicken_3_3(FoodCardBase):
 
 class SweetMadame_3_3(FoodCardBase):
     name: Literal['Sweet Madame']
-    desc: str = '''Heal target character for 1 HP.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -191,7 +175,6 @@ class SweetMadame_3_3(FoodCardBase):
 
 class MondstadtHashBrown_3_3(FoodCardBase):
     name: Literal['Mondstadt Hash Brown']
-    desc: str = '''Heal target character for 2 HP.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -221,10 +204,6 @@ class MondstadtHashBrown_3_3(FoodCardBase):
 
 class MushroomPizza_3_3(FoodCardBase):
     name: Literal['Mushroom Pizza']
-    desc: str = (
-        'Heal target character for 1 HP. For the next two Rounds, heal this '
-        'character for 1 HP again at the End Phase.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -261,10 +240,6 @@ class MushroomPizza_3_3(FoodCardBase):
 
 class MintyMeatRolls_3_4(FoodCardBase):
     name: Literal['Minty Meat Rolls']
-    desc: str = (
-        "Before this Round ends, the target character's next 3 Normal Attacks "
-        "cost 1 less Unaligned Element."
-    )
     version: Literal['3.4'] = '3.4'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -284,19 +259,10 @@ class MintyMeatRolls_3_4(FoodCardBase):
 
 class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
     version: Literal['3.3']
-    desc: str = (
-        "Before this Round ends, the target character's Normal Attacks cost 1 "
-        "less Unaligned Element."
-    )
 
 
 class TeyvatFriedEgg_4_1(FoodCardBase):
     name: Literal['Teyvat Fried Egg']
-    desc: str = (
-        "Revives the target character and heals that character for 1 HP. "
-        "(You can only revive 1 character via Food per Round, and a character "
-        "can consume at most 1 Food per Round)"
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 2)
 
@@ -356,10 +322,6 @@ class TeyvatFriedEgg_3_7(TeyvatFriedEgg_4_1):
 
 class SashimiPlatter_3_7(FoodCardBase):
     name: Literal['Sashimi Platter']
-    desc: str = (
-        "Before this Round ends, the target character's Normal Attacks "
-        "deal +1 DMG."
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -378,10 +340,6 @@ class SashimiPlatter_3_7(FoodCardBase):
 
 class TandooriRoastChicken_3_7(FoodCardBase):
     name: Literal['Tandoori Roast Chicken']
-    desc: str = (
-        "During this Round, all your characters' next Elemental Skills "
-        "deal +2 DMG."
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 2)
 
@@ -422,9 +380,6 @@ class TandooriRoastChicken_3_7(FoodCardBase):
 
 class ButterCrab_3_7(FoodCardBase):
     name: Literal['Butter Crab']
-    desc: str = (
-        "During this Round, all your characters take -2 DMG the next time."
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
 

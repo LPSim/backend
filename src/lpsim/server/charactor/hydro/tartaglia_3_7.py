@@ -23,7 +23,6 @@ from .tartaglia_4_1 import (
 
 class FoulLegacyRagingTide(ElementalSkillBase):
     name: Literal['Foul Legacy: Raging Tide'] = 'Foul Legacy: Raging Tide'
-    desc: str = '''Switches to Melee Stance and deals 2 Hydro DMG.'''
     version: Literal['3.7'] = '3.7' 
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
@@ -48,12 +47,6 @@ class FoulLegacyRagingTide(ElementalSkillBase):
 
 class HavocObliteration(HO_4_1):
     name: Literal['Havoc: Obliteration'] = 'Havoc: Obliteration'
-    desc: str = (
-        'Performs different attacks based on the current stance that '
-        'Tartaglia is in. Ranged Stance - Flash of Havoc: Deal 4 Hydro DMG, '
-        'reclaim 2 Energy, and apply Riptide to the target character. '
-        'Melee Stance - Light of Obliteration: Deal 7 Hydro DMG.'
-    )
     version: Literal['3.7'] = '3.7' 
     ranged_damage: int = 4
 

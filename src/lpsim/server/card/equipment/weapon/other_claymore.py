@@ -19,10 +19,6 @@ from ....consts import CostLabels, ObjectPositionType, ObjectType, WeaponType
 
 class WolfsGravestone_3_3(WeaponBase):
     name: Literal["Wolf's Gravestone"] = "Wolf's Gravestone"
-    desc: str = (
-        "The character deals +1 DMG. Deal +2 additional DMG if the target's "
-        'remaining HP is equal or less than 6.'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.3'] = '3.3'
     weapon_type: WeaponType = WeaponType.CLAYMORE
@@ -42,11 +38,6 @@ class WolfsGravestone_3_3(WeaponBase):
 
 class TheBell_3_7(RoundEffectWeaponBase):
     name: Literal['The Bell']
-    desc: str = (
-        'The character deals +1 DMG. '
-        'After the character uses a skill: Gives 1 Shield point to your '
-        'active character. (Once per Round, stacks up to 2 points)'
-    )
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     version: Literal['3.7'] = '3.7'
     cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value

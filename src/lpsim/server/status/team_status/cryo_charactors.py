@@ -26,7 +26,6 @@ from .base import (
 
 class Icicle_3_3(SwitchActionTeamStatus):
     name: Literal['Icicle'] = 'Icicle'
-    desc: str = '''After you switch characters: Deal 2 Cryo DMG. Usage(s): 3'''
     version: Literal['3.3'] = '3.3'
     usage: int = 3
     max_usage: int = 3
@@ -54,10 +53,6 @@ class Icicle_3_3(SwitchActionTeamStatus):
 
 class IcyQuill_3_7(UsageTeamStatus):
     name: Literal['Icy Quill'] = 'Icy Quill'
-    desc: str = (
-        'Your character deals 1 increased Cryo DMG '
-        '(Includes the DMG triggered by Cryo-infused Swirl reactions)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 3
     max_usage: int = 3
@@ -123,10 +118,7 @@ class IcyQuill_3_7(UsageTeamStatus):
 
 class ChonghuasFrostField_3_3(ElementalInfusionTeamStatus, RoundTeamStatus):
     name: Literal["Chonghua's Frost Field"] = "Chonghua's Frost Field"
-    desc: str = (
-        "Your Sword, Claymore, and Polearm-wielding characters' Physical DMG "
-        "is converted to Cryo DMG."
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -137,16 +129,13 @@ class ChonghuasFrostField_3_3(ElementalInfusionTeamStatus, RoundTeamStatus):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.talent_activated:
-            talent_desc = (
-                " And your Sword, Claymore, and Polearm-wielding character's "
-                "Normal Attacks +1 DMG."
-            )
-            self.desc = self.desc.replace(talent_desc, '')
-            self.desc += talent_desc
+            self.desc = 'talent'
 
     def renew(self, object: 'ChonghuasFrostField_3_3'):
         super().renew(object)
         self.talent_activated = object.talent_activated
+        if self.talent_activated:
+            self.desc = 'talent'
 
     def charactor_is_using_right_weapon(
         self, match: Any, position: ObjectPosition
@@ -198,9 +187,6 @@ class ChonghuasFrostField_3_3(ElementalInfusionTeamStatus, RoundTeamStatus):
 
 class IceLotus_3_3(DefendTeamStatus):
     name: Literal['Ice Lotus'] = 'Ice Lotus'
-    desc: str = (
-        'When your active character receives DMG: Decreases DMG taken by 1.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -211,10 +197,6 @@ class IceLotus_3_3(DefendTeamStatus):
 class FortunePreservingTalisman_4_0(UsageTeamStatus):
     name: Literal[
         'Fortune-Preserving Talisman'] = 'Fortune-Preserving Talisman'
-    desc: str = (
-        'After your character uses a Skill: If that character does not have '
-        'full HP, heal that character for 2 HP.'
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 3
     max_usage: int = 3
@@ -262,7 +244,6 @@ class FortunePreservingTalisman_4_0(UsageTeamStatus):
 
 class CatClawShield_3_3(ShieldTeamStatus):
     name: Literal['Cat-Claw Shield'] = 'Cat-Claw Shield'
-    desc: str = '''Grants 1 Shield point for your active character.'''
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -270,12 +251,6 @@ class CatClawShield_3_3(ShieldTeamStatus):
 
 class FlowingCicinShield_3_7(ShieldTeamStatus):
     name: Literal['Flowing Cicin Shield'] = 'Flowing Cicin Shield'
-    desc: str = (
-        'Provides 1 Shield point for your active character. '
-        'When created: If you have Cryo Cicins on the field, additionally '
-        'increase Shield by the amount of Usage(s) it has. (Adds a maximum of '
-        '3 additional Shield)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1

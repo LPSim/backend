@@ -1,5 +1,7 @@
 from typing import List, Literal
 
+from ...consts import ELEMENT_TO_DAMAGE_TYPE
+
 from ....utils.class_registry import register_class
 
 from ..charactor_base import ElementalNormalAttackBase
@@ -9,17 +11,12 @@ from .rhodeia_3_3 import (
 
 
 class TideAndTorrent(TAT_3_3):
-    desc: str = (
-        'Deals 4 Hydro DMG. For each friendly Summon on the field, '
-        'deals +1 additional DMG.'
-    )
     damage: int = 4
     damage_per_summon: int = 1
 
 
 class RhodeiaOfLoch_4_2(RhodeiaOfLoch_3_3):
     version: Literal['4.2'] = '4.2'
-    desc: str = '''"Lady of Clear Waters" Rhodeia'''
     skills: List[
         ElementalNormalAttackBase
         | RhodeiaElementSkill | TideAndTorrent
@@ -29,7 +26,7 @@ class RhodeiaOfLoch_4_2(RhodeiaOfLoch_3_3):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Surge',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             RhodeiaElementSkill(

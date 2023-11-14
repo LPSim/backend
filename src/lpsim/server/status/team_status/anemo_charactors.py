@@ -19,10 +19,7 @@ from .base import RoundTeamStatus, UsageTeamStatus
 
 class Stormzone_3_7(UsageTeamStatus):
     name: Literal['Stormzone'] = 'Stormzone'
-    desc: str = (
-        'When you perform "Switch Character": Spend 1 less Elemental Die. '
-        'Usage(s): 2'
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -30,23 +27,18 @@ class Stormzone_3_7(UsageTeamStatus):
 
     talent_activated: bool = False
     decrease_cost_success: bool = False
-    updated_desc: str = (
-        'When you perform "Switch Character": Spend 1 less Elemental Die. '
-        'After this effect is triggered, your next Normal Attack this '
-        'round will cost 1 less Unaligned Element. Usage(s): 2'
-    )
 
     def renew(self, new_status: 'Stormzone_3_7') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
-            self.desc = self.updated_desc
+            self.desc = 'talent'
 
     def __init__(self, *argv, **kwargs) -> None:
         super().__init__(*argv, **kwargs)
         if self.talent_activated:
             # change desc
-            self.desc = self.updated_desc
+            self.desc = 'talent'
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
@@ -94,10 +86,6 @@ class Stormzone_3_7(UsageTeamStatus):
 # Usage status, will not disappear until usage is 0
 class WindsOfHarmony_3_7(RoundTeamStatus):
     name: Literal['Winds of Harmony'] = 'Winds of Harmony'
-    desc: str = (
-        "During this round, your charactor's next Normal Attack costs 1 less "
-        "Unaligned Element."
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -137,9 +125,6 @@ class PoeticsOfFuubutsu_3_8(UsageTeamStatus):
         'Poetics of Fuubutsu: Electro',
         'Poetics of Fuubutsu: Cryo',
     ]
-    desc: str = (
-        'your Characters and Summons will deal +1 DMG for _ELEMENT_ DMG.'
-    )
     version: Literal['3.8'] = '3.8'
     usage: int = 2
     max_usage: int = 2
@@ -157,7 +142,6 @@ class PoeticsOfFuubutsu_3_8(UsageTeamStatus):
         element_name = self.name.split()[-1]
         element = ElementType[element_name.upper()]
         self.element = element
-        self.desc = self.desc.replace('_ELEMENT_', element.name.capitalize())
         self.icon_type = ELEMENT_TO_ATK_UP_ICON[element]  # type: ignore
 
     def value_modifier_DAMAGE_INCREASE(

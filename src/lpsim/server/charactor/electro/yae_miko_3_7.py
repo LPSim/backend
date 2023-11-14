@@ -8,7 +8,8 @@ from ...action import Actions, RemoveObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -21,12 +22,6 @@ from ..charactor_base import (
 
 class SesshouSakura_3_7(DeclareRoundEndAttackSummonBase):
     name: Literal['Sesshou Sakura'] = 'Sesshou Sakura'
-    desc: str = (
-        'End Phase: Deal 1 Electro DMG. '
-        '(Can stack. Max 6 stacks.) '
-        'When you declare the end of your Round: If this summon has at least '
-        '4 Usage(s) remaining, deal 1 Electro DMG. (Consumes Usage(s))'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 3
     max_usage: int = 6
@@ -42,7 +37,6 @@ class SesshouSakura_3_7(DeclareRoundEndAttackSummonBase):
 class YakanEvocationSesshouSakura(ElementalSkillBase):
     name: Literal[
         'Yakan Evocation: Sesshou Sakura'] = 'Yakan Evocation: Sesshou Sakura'
-    desc: str = '''Summons 1 Sesshou Sakura'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -63,10 +57,6 @@ class YakanEvocationSesshouSakura(ElementalSkillBase):
 class GreatSecretArtTenkoKenshin(ElementalBurstBase):
     name: Literal[
         'Great Secret Art: Tenko Kenshin'] = 'Great Secret Art: Tenko Kenshin'
-    desc: str = (
-        'Deals 4 Electro DMG. If your side of the field has a Sesshou Sakura, '
-        'destroy it and create Tenko Thunderbolts.'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -99,14 +89,6 @@ class GreatSecretArtTenkoKenshin(ElementalBurstBase):
 
 class TheShrinesSacredShade_3_7(SkillTalent):
     name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
-    desc: str = (
-        'Combat Action: When your active character is Yae Miko, equip this '
-        'card. After Yae Miko equips this card, immediately use Great Secret '
-        'Art: Tenko Kenshin once. After your Yae Miko, who has this card '
-        'equipped, destroys a Sesshou Sakura through Great Secret Art: Tenko '
-        'Kenshin, the next use of Yakan Evocation: Sesshou Sakura this Round '
-        'will cost 2 less Elemental Dice.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Yae Miko'] = 'Yae Miko'
     cost: Cost = Cost(
@@ -125,7 +107,6 @@ class TheShrinesSacredShade_3_7(SkillTalent):
 class YaeMiko_3_7(CharactorBase):
     name: Literal['Yae Miko']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Astute Amusement" Yae Miko'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2
@@ -142,7 +123,7 @@ class YaeMiko_3_7(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Spiritfox Sin-Eater',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             YakanEvocationSesshouSakura(),

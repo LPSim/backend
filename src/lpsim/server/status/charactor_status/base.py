@@ -29,7 +29,6 @@ class CharactorStatusBase(StatusBase):
     """
     type: Literal[ObjectType.CHARACTOR_STATUS] = ObjectType.CHARACTOR_STATUS
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -53,7 +52,6 @@ class UsageCharactorStatus(CharactorStatusBase):
     called manually.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -86,7 +84,6 @@ class RoundCharactorStatus(CharactorStatusBase):
     of usages, it will remove itself.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -120,7 +117,6 @@ class DefendCharactorStatus(UsageCharactorStatus):
     when receive damage, and decrease usage by 1.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -158,7 +154,6 @@ class ShieldCharactorStatus(DefendCharactorStatus):
     and decrease corresponding usage.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -187,10 +182,6 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
         'Geo Elemental Infusion',
         'Dendro Elemental Infusion',
     ]
-    desc: str = (
-        'When the charactor to which it is attached to deals Physical Damage, '
-        'it will be turned into XXX DMG. '
-    )
     infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
     icon_type: Literal[
@@ -214,7 +205,6 @@ class ElementalInfusionCharactorStatus(CharactorStatusBase):
             ], ('In ElementalInfusion: element not set right value')
             assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
             self.infused_elemental_type = DamageElementalType(element)
-            self.desc = self.desc.replace('XXX', element)
         if self.icon_type == IconType.ATK_UP:
             self.icon_type = ELEMENT_TO_ENCHANT_ICON[
                 ElementType(self.infused_elemental_type.value)]  # type: ignore
@@ -251,7 +241,6 @@ class PrepareCharactorStatus(CharactorStatusBase):
     When this charactor is not active charactor, it will remove itself. 
     """
     name: str
-    desc: str
     version: str
     charactor_name: str
     skill_name: str
@@ -343,11 +332,6 @@ class ReviveCharactorStatus(UsageCharactorStatus):
     version: str
     heal: int
 
-    desc: str = (
-        'When the character to which this is attached would be defeated: '
-        'Remove this effect, ensure the character will not be defeated, and '
-        'heal them to _HEAL_ HP.'
-    )
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.REVIVE] = IconType.REVIVE
@@ -392,7 +376,6 @@ class RoundEndAttackCharactorStatus(UsageCharactorStatus):
     Pizza.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int

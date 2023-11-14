@@ -20,7 +20,6 @@ from ..charactor_base import (
 
 class JumpyDumpty(ElementalSkillBase):
     name: Literal['Jumpy Dumpty'] = 'Jumpy Dumpty'
-    desc: str = '''Deals 3 Pyro DMG. This character gains Explosive Spark.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -45,10 +44,6 @@ class JumpyDumpty(ElementalSkillBase):
 
 class SparksNSplash(ElementalBurstBase):
     name: Literal["Sparks 'n' Splash"] = "Sparks 'n' Splash"
-    desc: str = (
-        "Deals 3 Pyro DMG, creates 1 Sparks 'n' Splash at the opponent's "
-        "play area."
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -80,12 +75,6 @@ class SparksNSplash(ElementalBurstBase):
 
 class PoundingSurprise_3_4(SkillTalent):
     name: Literal['Pounding Surprise']
-    desc: str = (
-        'Combat Action: When your active character is Klee, equip this card. '
-        'After Klee equips this card, immediately use Jumpy Dumpty once. '
-        'When your Klee, who has this card equipped, creates an Explosive '
-        'Spark, its Usage(s) +1.'
-    )
     version: Literal['3.4'] = '3.4'
     charactor_name: Literal['Klee'] = 'Klee'
     cost: Cost = Cost(
@@ -101,7 +90,6 @@ class PoundingSurprise_3_4(SkillTalent):
 class Klee_3_4(CharactorBase):
     name: Literal['Klee']
     version: Literal['3.4'] = '3.4'
-    desc: str = '''"Fleeing Sunlight" Klee'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 3

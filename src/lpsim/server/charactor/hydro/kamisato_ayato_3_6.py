@@ -11,7 +11,6 @@ from .kamisato_ayato_4_1 import KamisatoArtKyouka
 
 
 class KamisatoArtSuiyuu(KAS_4_1):
-    desc: str = '''Deals 3 Hydro DMG, summons 1 Garden of Purity.'''
     damage: int = 3
     cost: Cost = Cost(
         elemental_dice_color = DieColor.HYDRO,

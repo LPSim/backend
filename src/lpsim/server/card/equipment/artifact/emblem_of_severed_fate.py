@@ -16,10 +16,6 @@ from .base import ArtifactBase, RoundEffectArtifactBase
 
 class OrnateKabuto_4_0(ArtifactBase):
     name: Literal['Ornate Kabuto'] = 'Ornate Kabuto'
-    desc: str = (
-        'After another character of yours uses an Elemental Burst: The '
-        'character to which this is attached gains 1 Energy.'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0
@@ -51,11 +47,6 @@ class OrnateKabuto_3_5(OrnateKabuto_4_0):
 
 class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
     name: Literal['Emblem of Severed Fate'] = 'Emblem of Severed Fate'
-    desc: str = (
-        'After a character uses an Elemental Burst: The character to which '
-        'this is attached gains 1 Energy. The DMG dealt by the '
-        "character's Elemental Bursts is increased by 2. (Once per Round)"
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -84,11 +75,6 @@ class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
 
 class EmblemOfSeveredFate_4_0(EmblemOfSeveredFate_4_1):
     version: Literal['4.0']
-    desc: str = (
-        'After a character uses an Elemental Burst: The character to which '
-        'this is attached gains 1 Energy. The DMG dealt by the '
-        "character's Elemental Bursts is increased by 2. "
-    )
     max_usage_per_round: int = 999
 
 

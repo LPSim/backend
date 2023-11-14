@@ -12,11 +12,6 @@ from .base import RoundEffectWeaponBase
 
 class FavoniusBase(RoundEffectWeaponBase):
     name: str
-    desc: str = (
-        'The character deals +1 DMG. '
-        'After the character uses an Elemental Skill: The character gains one '
-        'additional Energy. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: str
     weapon_type: WeaponType

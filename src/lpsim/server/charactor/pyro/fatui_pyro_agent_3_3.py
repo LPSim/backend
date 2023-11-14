@@ -21,7 +21,6 @@ from ..charactor_base import (
 
 class Prowl(ElementalSkillBase):
     name: Literal['Prowl'] = 'Prowl'
-    desc: str = '''Deals 1 Pyro DMG. This character gains Stealth.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -40,9 +39,6 @@ class Prowl(ElementalSkillBase):
 
 class StealthMaster(PassiveSkillBase):
     name: Literal['Stealth Master'] = 'Stealth Master'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Stealth.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -58,14 +54,6 @@ class StealthMaster(PassiveSkillBase):
 
 class PaidinFull_3_3(SkillTalent):
     name: Literal['Paid in Full']
-    desc: str = (
-        'Combat Action: When your active character is Fatui Pyro Agent, '
-        'equip this card. After Fatui Pyro Agent equips this card, '
-        'immediately use Prowl once. When your Fatui Pyro Agent, who has '
-        'this card equipped, creates a Stealth, it will have the following '
-        'effect: Starting Usage(s) +1, the Physical DMG the character deals '
-        'will be converted to Pyro DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Fatui Pyro Agent'] = 'Fatui Pyro Agent'
     cost: Cost = Cost(
@@ -110,7 +98,6 @@ class PaidinFull_3_3(SkillTalent):
 class FatuiPyroAgent_3_3(CharactorBase):
     name: Literal['Fatui Pyro Agent']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Blade of Settlement" Agent'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

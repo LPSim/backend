@@ -25,7 +25,6 @@ from ..charactor_base import (
 
 class StellarRestoration(ElementalSkillBase):
     name: Literal['Stellar Restoration'] = 'Stellar Restoration'
-    desc: str = '''Deals 3 Electro DMG, creates 1 Lightning Stiletto.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -79,14 +78,6 @@ class StarwardSword(ElementalBurstBase, AOESkillBase):
 
 class ThunderingPenance_3_3(SkillTalent):
     name: Literal['Thundering Penance']
-    desc: str = (
-        'Combat Action: When your active character is Keqing, equip this '
-        'card. After Keqing equips this card, immediately use Stellar '
-        'Restoration once. When your Keqing, who has this card equipped, '
-        'creates an Electro Elemental Infusion, it will have the following '
-        'effects: Starting Duration (Rounds) +1, Electro DMG dealt by the '
-        'attached character +1.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Keqing'] = 'Keqing'
     cost: Cost = Cost(
@@ -104,15 +95,6 @@ class LightningStiletto_3_3(SkillTalent):
     only can decrease the cost of talent or normal attack.)
     """
     name: Literal['Lightning Stiletto']
-    desc: str = (
-        'Combat Action: Switch your Keqing in to be your active character and '
-        'immediately use Stellar Restoration once. This instance of Stellar '
-        'Restoration will grant Keqing Electro Infusion without creating '
-        'another Lightning Stiletto. '
-        '(When Keqing uses Stellar Restoration with this card in Hand: '
-        'Instead of creating another Lightning Stiletto, discard this card '
-        'and Keqing gains Electro Infusion)'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Keqing'] = 'Keqing'
     cost: Cost = Cost(
@@ -247,7 +229,6 @@ class LightningStiletto_3_3(SkillTalent):
 class Keqing_3_3(CharactorBase):
     name: Literal['Keqing']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Driving Thunder" Keqing'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 3

@@ -24,10 +24,6 @@ from .base import RoundTeamStatus, ShieldTeamStatus, SwitchActionTeamStatus
 
 class ShrineOfMaya_3_7(RoundTeamStatus):
     name: Literal['Shrine of Maya'] = 'Shrine of Maya'
-    desc: str = (
-        'When your character triggers an Elemental Reaction: +1 Additional '
-        'DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -103,10 +99,6 @@ class FloralSidewinder_3_3(RoundTeamStatus):
     before.
     """
     name: Literal['Floral Sidewinder'] = 'Floral Sidewinder'
-    desc: str = (
-        "during this Round, when your characters' Skills trigger "
-        "Dendro-Related Reactions: Deal 1 Dendro DMG. (Once per Round)"
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -173,10 +165,6 @@ class FloralSidewinder_3_3(RoundTeamStatus):
 
 class AdeptalLegacy_4_1(SwitchActionTeamStatus):
     name: Literal['Adeptal Legacy'] = 'Adeptal Legacy'
-    desc: str = (
-        'After you switch characters: Deal 1 Dendro DMG, heal your active '
-        'character for 1 HP.'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 3
     max_usage: int = 3
@@ -220,7 +208,6 @@ class AdeptalLegacy_4_1(SwitchActionTeamStatus):
 
 class PulsingClarity_4_2(RoundTeamStatus):
     name: Literal['Pulsing Clarity'] = 'Pulsing Clarity'
-    desc: str = '''When Action Phase begins: Create Seamless Shield.'''
     version: Literal['4.2'] = '4.2'
     usage: int = 2
     max_usage: int = 2
@@ -245,11 +232,6 @@ class PulsingClarity_4_2(RoundTeamStatus):
 
 class SeamlessShield_4_2(ShieldTeamStatus):
     name: Literal['Seamless Shield'] = 'Seamless Shield'
-    desc: str = (
-        'Provides 1 Shield, protecting your active character. '
-        'When this effect is removed, or generated again: Deal 1 Dendro DMG, '
-        'and heal your active character for 1 HP.'
-    )
     version: Literal['4.2'] = '4.2'
     usage: int = 1
     max_usage: int = 1

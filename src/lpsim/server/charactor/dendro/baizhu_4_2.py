@@ -26,9 +26,6 @@ from ..charactor_base import (
 
 class GossamerSprite_4_2(AttackerSummonBase):
     name: Literal['Gossamer Sprite'] = 'Gossamer Sprite'
-    desc: str = (
-        'End Phase: Deal 1 Dendro DMG, heal your active character for 1 HP.'
-    )
     version: Literal['4.2'] = '4.2'
     usage: int = 1
     max_usage: int = 1
@@ -59,7 +56,6 @@ class GossamerSprite_4_2(AttackerSummonBase):
 
 class UniversalDiagnosis(ElementalSkillBase):
     name: Literal['Universal Diagnosis'] = 'Universal Diagnosis'
-    desc: str = '''Deals 1 Dendro DMG, summons 1 Gossamer Sprite.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -77,7 +73,6 @@ class UniversalDiagnosis(ElementalSkillBase):
 
 class HolisticRevivification(ElementalBurstBase):
     name: Literal['Holistic Revivification'] = 'Holistic Revivification'
-    desc: str = '''Creates 1 Pulsing Clarity and Seamless Shield.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -99,13 +94,6 @@ class HolisticRevivification(ElementalBurstBase):
 
 class AllThingsAreOfTheEarth_4_2(SkillTalent):
     name: Literal['All Things Are of the Earth']
-    desc: str = (
-        'Combat Action: When your active character is Baizhu, equip this '
-        'card. After Baizhu equips this card, immediately use Holistic '
-        'Revivification once. When your Baizhu, who has this card equipped, '
-        'is on the field, when Seamless Shield activates a healing effect, '
-        'generate 1 Elemental Dice of the same type as your active character.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Baizhu'] = 'Baizhu'
     cost: Cost = Cost(
@@ -151,7 +139,6 @@ class AllThingsAreOfTheEarth_4_2(SkillTalent):
 class Baizhu_4_2(CharactorBase):
     name: Literal['Baizhu']
     version: Literal['4.2'] = '4.2'
-    desc: str = '''"Beyond Mortality" Baizhu'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2

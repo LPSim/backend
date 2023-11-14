@@ -13,7 +13,6 @@ from ....consts import ObjectPositionType, WeaponType
 
 class FruitOfFulfillment_3_8(WeaponBase):
     name: Literal['Fruit of Fulfillment']
-    desc: str = '''The character deals +1 DMG. When played: Draw 2 cards.'''
     cost: Cost = Cost(any_dice_number = 3)
     version: Literal['3.8'] = '3.8'
     weapon_type: WeaponType = WeaponType.CATALYST
@@ -31,11 +30,6 @@ class FruitOfFulfillment_3_8(WeaponBase):
 
 class KingsSquire_4_0(WeaponBase):
     name: Literal["King's Squire"]
-    desc: str = (
-        'The character deals +1 DMG. When played: The character to which this '
-        'is attached will spend 2 less Elemental Dice next time they use an '
-        'Elemental Skill or equip a Talent card.'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['4.0'] = '4.0'
     weapon_type: WeaponType = WeaponType.BOW

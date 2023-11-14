@@ -28,12 +28,6 @@ from ..charactor_base import (
 
 class CryoCicins_4_1(AttackerSummonBase):
     name: Literal['Cryo Cicins'] = 'Cryo Cicins'
-    desc: str = (
-        'End Phase: Deal 1 Cryo DMG. (Can stack. Max 3 stacks.) '
-        'After Fatui Cryo Cicin Mage performs a Normal Attack: This card '
-        'gains 1 Usage(s). After your Fatui Cryo Cicin Mage takes Elemental '
-        'Reaction DMG: This card loses 1 Usage(s).'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 2
     max_usage: int = 3
@@ -151,7 +145,6 @@ class CicinIcicle(ElementalNormalAttackBase):
 
 class MistySummons(ElementalSkillBase):
     name: Literal['Misty Summons'] = 'Misty Summons'
-    desc: str = '''Deals 1 Cryo DMG, summons Cryo Cicins.'''
     version: Literal['4.1'] = '4.1'
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.CRYO
@@ -168,10 +161,6 @@ class MistySummons(ElementalSkillBase):
 
 class BlizzardBranchBlossom(ElementalBurstBase):
     name: Literal['Blizzard, Branch, Blossom'] = 'Blizzard, Branch, Blossom'
-    desc: str = (
-        'Deals 5 Cryo DMG, grants this character Cryo Application, '
-        'creates 1 Flowing Cicin Shield.'
-    )
     damage: int = 5
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -198,13 +187,6 @@ class BlizzardBranchBlossom(ElementalBurstBase):
 
 class CicinsColdGlare_3_7(SkillTalent):
     name: Literal["Cicin's Cold Glare"]
-    desc: str = (
-        'Combat Action: When your active character is Fatui Cryo Cicin Mage, '
-        'equip this card. After Fatui Cryo Cicin Mage equips this card, '
-        'immediately use Misty Summons once. After your Fatui Cryo Cicin '
-        "Mage, who has this card equipped, uses a Skill: If Cryo Cicins' "
-        'Usage(s) have exceeded their upper limit, deal 2 Cryo DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Fatui Cryo Cicin Mage'] = 'Fatui Cryo Cicin Mage'
     cost: Cost = Cost(
@@ -220,7 +202,6 @@ class CicinsColdGlare_3_7(SkillTalent):
 class FatuiCryoCicinMage_4_1(CharactorBase):
     name: Literal['Fatui Cryo Cicin Mage']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Cicin of the Hollow Mist" Cryo Cicin Mage'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 3

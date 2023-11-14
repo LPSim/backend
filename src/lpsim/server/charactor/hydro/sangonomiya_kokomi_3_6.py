@@ -14,8 +14,8 @@ from ...action import (
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DamageType, DieColor, 
+    ElementType, FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -28,9 +28,6 @@ from ..charactor_base import (
 
 class BakeKurage_3_5(AttackerSummonBase):
     name: Literal['Bake-Kurage'] = 'Bake-Kurage'
-    desc: str = (
-        'End Phase: Deal 1 Hydro DMG, heal your active character for 1 HP.'
-    )
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
@@ -83,9 +80,6 @@ class BakeKurage_3_5(AttackerSummonBase):
 
 class KuragesOath(ElementalSkillBase):
     name: Literal["Kurage's Oath"] = "Kurage's Oath"
-    desc: str = (
-        'This character gains Hydro Application and summons 1 Bake-Kurage.'
-    )
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -106,10 +100,6 @@ class KuragesOath(ElementalSkillBase):
 
 class NereidsAscension(ElementalBurstBase):
     name: Literal["Nereid's Ascension"] = "Nereid's Ascension"
-    desc: str = (
-        'Deals 2 Hydro DMG. Heals all allied characters for 1 point. '
-        'This character gains Ceremonial Garment.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -181,16 +171,6 @@ class NereidsAscension(ElementalBurstBase):
 
 class TamakushiCasket_4_2(SkillTalent):
     name: Literal['Tamakushi Casket']
-    desc: str = (
-        'Combat Action: When your active character is Sangonomiya Kokomi, '
-        'equip this card. After Sangonomiya Kokomi equips this card, '
-        "immediately use Nereid's Ascension once. When your Sangonomiya "
-        "Kokomi, who has this card equipped, uses Nereid's Ascension: If "
-        "Bake-Kurage is on the field, then increase its usage by 1. "
-        "If Bake-Kurage is not on the field, then sumon a Bake-Kurage with 1 "
-        "usage."
-        'While Ceremonial Garment exists, Bake-Kurage deals +1 DMG.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Sangonomiya Kokomi'] = 'Sangonomiya Kokomi'
     cost: Cost = Cost(
@@ -207,7 +187,6 @@ class TamakushiCasket_4_2(SkillTalent):
 class SangonomiyaKokomi_3_6(CharactorBase):
     name: Literal['Sangonomiya Kokomi']
     version: Literal['3.6'] = '3.6'
-    desc: str = '''"Pearl of Wisdom" Sangonomiya Kokomi'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2
@@ -223,7 +202,7 @@ class SangonomiyaKokomi_3_6(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'The Shape of Water',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             KuragesOath(),

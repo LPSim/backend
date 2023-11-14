@@ -25,7 +25,6 @@ from ..charactor_base import (
 
 class UpaShato(ElementalBurstBase):
     name: Literal['Upa Shato'] = 'Upa Shato'
-    desc: str = '''Deals 5 Physical DMG.'''
     damage: int = 5
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     cost: Cost = Cost(
@@ -37,10 +36,6 @@ class UpaShato(ElementalBurstBase):
 
 class InfusedStonehide(PassiveSkillBase):
     name: Literal['Infused Stonehide'] = 'Infused Stonehide'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Stonehide '
-        'and Stone Force.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -56,13 +51,6 @@ class InfusedStonehide(PassiveSkillBase):
 
 class StonehideReforged_3_3(SkillTalent):
     name: Literal['Stonehide Reforged']
-    desc: str = (
-        'Combat Action: When your active character is Stonehide Lawachurl, '
-        'equip this card. After Stonehide Lawachurl equips this card, '
-        'immediately use Upa Shato once. When your Stonehide Lawachurl, who '
-        'has this card equipped, defeats an opposing character: Stonehide '
-        'Lawachurl will re-attach Stonehide and Stone Force.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Stonehide Lawachurl'] = 'Stonehide Lawachurl'
     cost: Cost = Cost(
@@ -133,7 +121,6 @@ class StonehideReforged_3_3(SkillTalent):
 class StonehideLawachurl_3_3(CharactorBase):
     name: Literal['Stonehide Lawachurl']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Vale-Crosser" Stonehide Lawachurl'''
     element: ElementType = ElementType.GEO
     max_hp: int = 8
     max_charge: int = 2

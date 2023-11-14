@@ -24,11 +24,6 @@ from ..charactor_base import (
 
 class TalismanSpirit_3_7(AttackerSummonBase):
     name: Literal['Talisman Spirit'] = 'Talisman Spirit'
-    desc: str = (
-        'End Phase: Deal 1 Cryo DMG. '
-        'When this Summon is on the field: Opposing character(s) take +1 '
-        'Cryo DMG and Physical DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -65,7 +60,6 @@ class TalismanSpirit_3_7(AttackerSummonBase):
 
 class SpringSpiritSummoning(ElementalSkillBase):
     name: Literal['Spring Spirit Summoning'] = 'Spring Spirit Summoning'
-    desc: str = '''Deals 2 Cryo DMG, creates 1 Icy Quill.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -97,7 +91,6 @@ class SpringSpiritSummoning(ElementalSkillBase):
 class DivineMaidensDeliverance(ElementalBurstBase):
     name: Literal[
         "Divine Maiden's Deliverance"] = "Divine Maiden's Deliverance"
-    desc: str = '''Deals 1 Cryo DMG, summons 1 Talisman Spirit'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -117,13 +110,6 @@ class DivineMaidensDeliverance(ElementalBurstBase):
 
 class MysticalAbandon_3_7(SkillTalent):
     name: Literal['Mystical Abandon'] = 'Mystical Abandon'
-    desc: str = (
-        'Combat Action: When your active character is Shenhe, equip this card.'
-        'After Shenhe equips this card, immediately use Spring Spirit '
-        'Summoning once. When the Icy Quill created by your Shenhe, who has '
-        "this card equipped, is triggered by your characters' Normal Attacks, "
-        'its Usages will not decrease. (Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Shenhe'] = 'Shenhe'
     cost: Cost = Cost(
@@ -139,7 +125,6 @@ class MysticalAbandon_3_7(SkillTalent):
 class Shenhe_3_7(CharactorBase):
     name: Literal['Shenhe']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Lonesome Transcendence" Shenhe'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 2

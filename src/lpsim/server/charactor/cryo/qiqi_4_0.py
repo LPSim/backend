@@ -26,11 +26,6 @@ from ..charactor_base import (
 
 class HeraldOfFrost_4_0(AttackerSummonBase):
     name: Literal['Herald of Frost'] = 'Herald of Frost'
-    desc: str = (
-        'End Phase: Deal 1 Cryo DMG. '
-        'When this Summon is on the field, after Qiqi uses Normal Attack: '
-        'Heals your character that took the most DMG for 1 HP.'
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 3
     max_usage: int = 3
@@ -78,7 +73,6 @@ class HeraldOfFrost_4_0(AttackerSummonBase):
 class AdeptusArtHeraldOfFrost(ElementalSkillBase):
     name: Literal[
         'Adeptus Art: Herald of Frost'] = 'Adeptus Art: Herald of Frost'
-    desc: str = '''Summons 1 Herald of Frost.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -100,7 +94,6 @@ class AdeptusArtPreserverOfFortune(ElementalBurstBase):
     name: Literal[
         'Adeptus Art: Preserver of Fortune'
     ] = 'Adeptus Art: Preserver of Fortune'
-    desc: str = '''Deals 3 Cryo DMG, creates 1 Fortune-Preserving Talisman.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -150,13 +143,6 @@ class AdeptusArtPreserverOfFortune(ElementalBurstBase):
 
 class RiteOfResurrection_4_0(SkillTalent):
     name: Literal['Rite of Resurrection']
-    desc: str = (
-        'Combat Action: When your active character is Qiqi, equip this card. '
-        'After Qiqi equips this card, immediately use Adeptus Art: Preserver '
-        'of Fortune once. After your Qiqi, who has this card equipped, uses '
-        'Adeptus Art: Preserver of Fortune, she revives all your fallen '
-        'characters and heals them for 2 HP. (Can happen 2 times per match)'
-    )
     version: Literal['4.0'] = '4.0'
     charactor_name: Literal['Qiqi'] = 'Qiqi'
     cost: Cost = Cost(
@@ -175,7 +161,6 @@ class RiteOfResurrection_4_0(SkillTalent):
 class Qiqi_4_0(CharactorBase):
     name: Literal['Qiqi']
     version: Literal['4.0'] = '4.0'
-    desc: str = '''"Icy Resurrection" Qiqi'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 3

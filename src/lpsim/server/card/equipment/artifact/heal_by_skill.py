@@ -18,7 +18,6 @@ from .base import RoundEffectArtifactBase
 
 class HealBySkillArtifactBase(RoundEffectArtifactBase):
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int
@@ -81,9 +80,6 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
 
 class AdventurersBandana_3_3(HealBySkillArtifactBase):
     name: Literal["Adventurer's Bandana"] = "Adventurer's Bandana"
-    desc: str = (
-        'After a character uses a Normal Attack: Heal self for 1 HP.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 3
@@ -94,10 +90,6 @@ class AdventurersBandana_3_3(HealBySkillArtifactBase):
 
 class LuckyDogsSilverCirclet_3_3(HealBySkillArtifactBase):
     name: Literal["Lucky Dog's Silver Circlet"]
-    desc: str = (
-        'After a character uses an Elemental Skill: Heal self for 2 HP. '
-        '(Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
     max_usage_per_round: int = 1
@@ -108,10 +100,6 @@ class LuckyDogsSilverCirclet_3_3(HealBySkillArtifactBase):
 
 class TravelingDoctorsHandkerchief_3_3(HealBySkillArtifactBase):
     name: Literal["Traveling Doctor's Handkerchief"]
-    desc: str = (
-        'After a character uses an Elemental Burst: Heal all your characters '
-        'for 1 HP. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1

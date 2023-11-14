@@ -14,10 +14,6 @@ from .base import ArtifactBase, RoundEffectArtifactBase
 
 class GeneralsAncientHelm_3_5(ArtifactBase):
     name: Literal["General's Ancient Helm"]
-    desc: str = (
-        'When Action Phase begins: The character to which this is attached '
-        'gains Unmovable Mountain that provides 2 Shield points.'
-    )
     version: Literal['3.5'] = '3.5'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
@@ -41,13 +37,6 @@ class GeneralsAncientHelm_3_5(ArtifactBase):
 
 class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
     name: Literal['Tenacity of the Millelith']
-    desc: str = (
-        'When Action Phase begins: The character to which this is attached '
-        'gains Unmovable Mountain that provides 2 Shield points. '
-        'After this character takes DMG: If the character this card is '
-        'attached to is the active character, create 1 Elemental Die matching '
-        "this character's Elemental Type. (Once per Round) "
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 3)
     max_usage_per_round: int = 1

@@ -25,10 +25,6 @@ from ..charactor_base import (
 
 class YueguiThrowingMode_4_1(AttackerSummonBase):
     name: Literal['Yuegui: Throwing Mode'] = 'Yuegui: Throwing Mode'
-    desc: str = (
-        'End Phase: Deal 1 Dendro DMG, heal the character on your team that '
-        'has taken the most damage for 1 HP.'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 2
     max_usage: int = 2
@@ -78,7 +74,6 @@ class YueguiThrowingMode_4_1(AttackerSummonBase):
 
 class RaphanusSkyCluster(ElementalSkillBase):
     name: Literal['Raphanus Sky Cluster'] = 'Raphanus Sky Cluster'
-    desc: str = '''Summons 1 Yuegui: Throwing Mode.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -101,7 +96,6 @@ class RaphanusSkyCluster(ElementalSkillBase):
 
 class MoonjadeDescent(ElementalBurstBase):
     name: Literal['Moonjade Descent'] = 'Moonjade Descent'
-    desc: str = '''Deals 1 Dendro DMG, creates 1 Adeptal Legacy.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -121,13 +115,6 @@ class MoonjadeDescent(ElementalBurstBase):
 
 class Beneficent_4_1(SkillTalent):
     name: Literal['Beneficent']
-    desc: str = (
-        'Combat Action: When your active character is Yaoyao, equip this '
-        'card. After Yaoyao equips this card, immediately use Raphanus Sky '
-        'Cluster once. When Yuegui: Throwing Mode is created by your Yaoyao, '
-        'who has this card equipped, and it has only 1 Usage(s) remaining, it '
-        'deals +1 DMG and healing is increased by 1.'
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Yaoyao'] = 'Yaoyao'
     cost: Cost = Cost(
@@ -143,7 +130,6 @@ class Beneficent_4_1(SkillTalent):
 class Yaoyao_4_1(CharactorBase):
     name: Literal['Yaoyao']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Burgeoning Grace" Yaoyao'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2

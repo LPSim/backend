@@ -12,7 +12,6 @@ from .xiangling_3_8 import DoughFu, GuobaAttack
 
 
 class Pyronado(P_3_8):
-    desc: str = '''Deals 2 Pyro DMG, creates 1 Pyronado.'''
     damage: int = 2
 
 

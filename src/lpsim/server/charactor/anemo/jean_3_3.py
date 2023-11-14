@@ -26,9 +26,6 @@ from ..charactor_base import (
 
 class DandelionField_3_3(AttackerSummonBase):
     name: Literal['Dandelion Field'] = 'Dandelion Field'
-    desc: str = (
-        'End Phase: Deal 2 Anemo DMG, heal your active character for 1 HP.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -86,10 +83,6 @@ class DandelionField_3_3(AttackerSummonBase):
 
 class GaleBlade(ElementalSkillBase):
     name: Literal['Gale Blade'] = 'Gale Blade'
-    desc: str = (
-        'Deals 3 Anemo DMG, the target is forcibly switched to the next '
-        'character.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -113,9 +106,6 @@ class GaleBlade(ElementalSkillBase):
 
 class DandelionBreeze(ElementalBurstBase):
     name: Literal['Dandelion Breeze'] = 'Dandelion Breeze'
-    desc: str = (
-        'Heals all your characters for 2 HP, summons 1 Dandelion Field.'
-    )
     damage: int = -2
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -155,12 +145,6 @@ class DandelionBreeze(ElementalBurstBase):
 
 class LandsOfDandelion_3_3(SkillTalent):
     name: Literal['Lands of Dandelion']
-    desc: str = (
-        'Combat Action: When your active character is Jean, equip this card. '
-        'After Jean equips this card, immediately use Dandelion Breeze once. '
-        'When your Jean, who has this card equipped, is on the field, '
-        'Dandelion Field will cause you to deal +1 Anemo DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Jean'] = 'Jean'
     cost: Cost = Cost(
@@ -177,7 +161,6 @@ class LandsOfDandelion_3_3(SkillTalent):
 class Jean_3_3(CharactorBase):
     name: Literal['Jean']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Dandelion Knight" Jean'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 3

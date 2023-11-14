@@ -25,10 +25,6 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
         "Witch's Scorching Hat",  # pyro
     ]
 
-    desc: str = (
-        'When the character uses a Skill or equips a Talent: Spend 1 less '
-        'XXX Die. (Once per Round)'
-    )
     version: Literal["4.0"] = "4.0"
     usage: int = 1
     cost: Cost = Cost(any_dice_number = 2)
@@ -52,9 +48,6 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
         else:
             assert self.name == "Witch's Scorching Hat", 'Unknown name'
             self.element = ElementType.PYRO
-        self.desc = self.desc.replace(
-            "XXX", self.element.value.capitalize()
-        )
 
     def value_modifier_COST(
         self, 
@@ -125,12 +118,6 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
         "Heart of Depth",  # hydro
         "Crimson Witch of Flames",  # pyro
     ]
-    desc: str = (
-        'When the character uses a Skill or equips a Talent: Spend 1 less '
-        'XXX Die. (Once per Round) '
-        'Roll Phase: 2 of the starting Elemental Dice you roll are always '
-        'guaranteed to be XXX Dice.'
-    )
     version: Literal["4.0"] = "4.0"
     usage: int = 1
     cost: Cost = Cost(same_dice_number = 2)
@@ -154,9 +141,6 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
         else:
             assert self.name == "Crimson Witch of Flames", 'Unknown name'
             self.element = ElementType.PYRO
-        self.desc = self.desc.replace(
-            "XXX", self.element.value.capitalize()
-        )
 
     def value_modifier_INITIAL_DICE_COLOR(
             self, value: InitialDiceColorValue, 

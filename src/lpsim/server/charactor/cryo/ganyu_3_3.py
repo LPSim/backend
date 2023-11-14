@@ -12,10 +12,6 @@ from .ganyu_3_7 import FrostflakeArrow, TrailOftheQilin
 
 
 class CelestialShower(CS_3_7):
-    desc: str = (
-        'Deals 1 Cryo DMG, deals 1 Piercing DMG to all opposing characters on '
-        'standby, summons 1 Sacred Cryo Pearl.'
-    )
     damage: int = 1
     cost: Cost = Cost(
         elemental_dice_color = DieColor.CRYO,
@@ -25,14 +21,6 @@ class CelestialShower(CS_3_7):
 
 
 class UndividedHeart_3_3(UH_3_7):
-    desc: str = (
-        'Combat Action: When your active character is Ganyu, equip this card. '
-        'After Ganyu equips this card, immediately use Frostflake Arrow once. '
-        'When your Ganyu, who has this card equipped, uses Frostflake Arrow: '
-        'Cryo DMG dealt by this Skill +1 '
-        'if this Skill has been used before during this match, the Piercing '
-        'DMG dealt to all opposing characters on standby is changed to 3.'
-    )
     version: Literal['3.3'] = '3.3'
 
 

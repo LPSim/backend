@@ -29,10 +29,6 @@ from ..charactor_base import (
 
 class Tidecaller(ElementalSkillBase):
     name: Literal['Tidecaller'] = 'Tidecaller'
-    desc: str = (
-        'This character gains a Tidecaller: Surf Embrace. '
-        'Prepare Skill: Wavestrider.'
-    )
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -70,9 +66,6 @@ class Wavestrider(ElementalSkillBase):
 
 class Stormbreaker(ElementalBurstBase):
     name: Literal['Stormbreaker'] = 'Stormbreaker'
-    desc: str = (
-        "Deals _DAMAGE_ Electro DMG, creates 1 Thunderbeast's Targe."
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -92,13 +85,6 @@ class Stormbreaker(ElementalBurstBase):
 
 class LightningStorm_4_2(SkillTalent):
     name: Literal['Lightning Storm']
-    desc: str = (
-        'Combat Action: When your active character is Beidou, equip this '
-        'card. After Beidou equips this card, immediately use Tidecaller '
-        'once. When Beidou, who has this card equipped, uses Wavestrider: '
-        "Beidou's Normal Attacks this Round will cost 1 less Unaligned "
-        'Element. (Can be triggered 2 times)'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Beidou'] = 'Beidou'
     cost: Cost = Cost(
@@ -179,7 +165,6 @@ class LightningStorm_4_2(SkillTalent):
 class Beidou_3_8(CharactorBase):
     name: Literal['Beidou']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Uncrowned Lord of the Ocean" Beidou'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 3

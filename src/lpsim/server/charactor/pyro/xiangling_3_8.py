@@ -39,7 +39,6 @@ class DoughFu(PhysicalNormalAttackBase):
 
 class GuobaAttack(ElementalSkillBase):
     name: Literal['Guoba Attack'] = 'Guoba Attack'
-    desc: str = '''Summons 1 Guoba.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -61,7 +60,6 @@ class GuobaAttack(ElementalSkillBase):
 
 class Pyronado(ElementalBurstBase):
     name: Literal['Pyronado'] = 'Pyronado'
-    desc: str = '''Deals 3 Pyro DMG, creates 1 Pyronado.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -86,12 +84,6 @@ class Crossfire_4_2(SkillTalent):
         elemental_dice_number = 3
     )
     name: Literal['Crossfire']
-    desc: str = (
-        'Combat Action: When your active character is Xiangling, equip this '
-        'card. After Xiangling equips this card, immediately use Guoba Attack '
-        'once. When your Xiangling, who has this card equipped, uses Guoba '
-        'Attack, she will also deal 1 Pyro DMG.'
-    )
     charactor_name: Literal['Xiangling'] = 'Xiangling'
     skill: Literal['Guoba Attack'] = 'Guoba Attack'
 
@@ -102,7 +94,6 @@ class Crossfire_4_2(SkillTalent):
 class Xiangling_3_8(CharactorBase):
     name: Literal['Xiangling']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Exquisite Delicacy" Xiangling'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

@@ -24,10 +24,6 @@ from ..charactor_base import (
 
 class CuileinAnbar_3_3(AttackerSummonBase):
     name: Literal['Cuilein-Anbar'] = 'Cuilein-Anbar'
-    desc: str = (
-        'End Phase: Deal 2 Dendro DMG. '
-        'Usage(s): 2'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -90,7 +86,6 @@ class FloralBrush(ElementalSkillBase):
 
 class TrumpCardKitty(ElementalBurstBase):
     name: Literal['Trump-Card Kitty'] = 'Trump-Card Kitty'
-    desc: str = '''Deals 2 Dendro DMG, summons 1 Cuilein-Anbar.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -118,13 +113,6 @@ class FloralSidewinder_3_4(SkillTalent):
     elemental skill and equipping this card.
     """
     name: Literal['Floral Sidewinder']
-    desc: str = (
-        'Combat Action: When your active character is Collei, equip this '
-        'card. After Collei equips this card, immediately use Floral Brush '
-        'once. After your Collei, who has this card equipped, uses '
-        "Floral Brush, during this Round, when your characters' Skills "
-        'trigger Dendro-Related Reactions: Deal 1 Dendro DMG. (Once per Round)'
-    )
     version: Literal['3.4'] = '3.4'
     charactor_name: Literal['Collei'] = 'Collei'
     cost: Cost = Cost(
@@ -148,7 +136,6 @@ class FloralSidewinder_3_3(FloralSidewinder_3_4):
 class Collei_3_3(CharactorBase):
     name: Literal['Collei']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Sprout of Rebirth" Collei'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2

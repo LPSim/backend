@@ -24,10 +24,6 @@ from ..charactor_base import (
 
 class TenguJuuraiAmbush_3_5(AttackerSummonBase):
     name: Literal['Tengu Juurai: Ambush'] = 'Tengu Juurai: Ambush'
-    desc: str = (
-        'End Phase: Deal _DAMAGE_ Electro DMG, applies Crowfeather Cover to '
-        'friendly active character.'
-    )
     version: Literal['3.5'] = '3.5'
     usage: int = 1
     max_usage: int = 1
@@ -66,7 +62,6 @@ class TenguJuuraiStormcluster_3_5(TenguJuuraiAmbush_3_5):
 
 class TenguStormcall(ElementalSkillBase):
     name: Literal['Tengu Stormcall'] = 'Tengu Stormcall'
-    desc: str = '''Deals 1 Electro DMG, summons 1 Tengu Juurai: Ambush.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -85,9 +80,6 @@ class TenguStormcall(ElementalSkillBase):
 
 class SubjugationKoukouSendou(ElementalBurstBase):
     name: Literal['Subjugation: Koukou Sendou'] = 'Subjugation: Koukou Sendou'
-    desc: str = (
-        'Deals 1 Electro DMG, summons 1 Tengu Juurai: Stormcluster.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -110,14 +102,6 @@ class SubjugationKoukouSendou(ElementalBurstBase):
 
 class SinOfPride_3_5(SkillTalent):
     name: Literal['Sin of Pride']
-    desc: str = (
-        'Combat Action: When your active character is Kujou Sara, equip this '
-        'card. After Kujou Sara equips this card, immediately use '
-        'Subjugation: Koukou Sendou once. When Kujou Sara is active and has '
-        'this card equipped, all allied Electro characters with Crowfeather '
-        'Cover will deal +1 additional Elemental Skill and Elemental Burst '
-        'DMG.'
-    )
     version: Literal['3.5'] = '3.5'
     charactor_name: Literal['Kujou Sara'] = 'Kujou Sara'
     cost: Cost = Cost(
@@ -130,14 +114,6 @@ class SinOfPride_3_5(SkillTalent):
 
 class SinOfPride_4_2(SkillTalent):
     name: Literal['Sin of Pride']
-    desc: str = (
-        'Combat Action: When your active character is Kujou Sara, equip this '
-        'card. After Kujou Sara equips this card, immediately use '
-        'Tengu Stormcall once. When Kujou Sara is active and has '
-        'this card equipped, all allied Electro characters with Crowfeather '
-        'Cover will deal +1 additional Elemental Skill and Elemental Burst '
-        'DMG.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Kujou Sara'] = 'Kujou Sara'
     cost: Cost = Cost(
@@ -153,7 +129,6 @@ class SinOfPride_4_2(SkillTalent):
 class KujouSara_3_5(CharactorBase):
     name: Literal['Kujou Sara']
     version: Literal['3.5'] = '3.5'
-    desc: str = '''"Crowfeather Kaburaya" Kujou Sara'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

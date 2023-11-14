@@ -20,7 +20,6 @@ from ...summon.base import AttackerSummonBase
 
 class Nightrider(ElementalSkillBase):
     name: Literal['Nightrider'] = 'Nightrider'
-    desc: str = 'Deals 1 Electro DMG, summons 1 Oz.'
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -48,13 +47,6 @@ class StellarPredator_3_3(SkillTalent):
     name: Literal['Stellar Predator']
     charactor_name: Literal['Fischl'] = 'Fischl'
     version: Literal['3.3'] = '3.3'
-    desc: str = (
-        'Combat Action: When your active character is Fischl, equip this '
-        'card. After Fischl equips this card, immediately use Nightrider '
-        'once. When your Fischl, who has this card equipped, creates an Oz, '
-        'and after Fischl uses a Normal Attack: Deal 2 Electro DMG. '
-        '(Consumes Usage(s))'
-    )
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3,
@@ -64,7 +56,6 @@ class StellarPredator_3_3(SkillTalent):
 
 class Oz_3_3(AttackerSummonBase):
     name: Literal['Oz']
-    desc: str = '''End Phase: Deal 1 Electro DMG.'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -122,7 +113,6 @@ class Oz_3_3(AttackerSummonBase):
 class Fischl_3_3(CharactorBase):
     name: Literal['Fischl']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Fischl, Prinzessin der Verurteilung!" Fischl'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 3

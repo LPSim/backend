@@ -34,7 +34,17 @@ class ObjectBase(BaseModel):
     """
     Base class of objects in the game table. All objects in the game table 
     should inherit from this class.
+    Args:
+        name (str): Name of the object.
+        desc (str): Description of the object. When set, frontend
+            will add desc to the name, i.e. `{name}_{desc}`, to find 
+            descriptions. This is useful for objects that have different 
+            descriptions with different state (talent effect activated etc.).
+            Defaults to empty string, and frontend will do 
+            nothing. TODO: implement on frontend.
     """
+    name: str
+    desc: Literal[''] = ''
     type: ObjectType = ObjectType.EMPTY
     position: ObjectPosition
     id: int = -1
@@ -92,7 +102,6 @@ class CardBase(ObjectBase):
     Base class of all real cards. 
     """
     name: str
-    desc: str
     type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
                   ObjectType.TALENT, ObjectType.SUPPORT] = ObjectType.CARD
     strict_version_validation: bool = False  # default accept higher versions

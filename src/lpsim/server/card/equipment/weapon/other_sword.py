@@ -18,11 +18,6 @@ from .base import RoundEffectWeaponBase
 
 class AquilaFavonia_3_3(RoundEffectWeaponBase):
     name: Literal['Aquila Favonia']
-    desc: str = (
-        'The character deals +1 DMG. After the opposing character uses a '
-        'Skill: If the character with this attached is the active character, '
-        'heal this character for 1 HP. (Max twice per Round) '
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.3'] = '3.3'
     weapon_type: WeaponType = WeaponType.SWORD

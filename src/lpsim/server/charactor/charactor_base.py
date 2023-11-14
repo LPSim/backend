@@ -39,7 +39,6 @@ class SkillBase(ObjectBase):
     Base class of skills.
     """
     name: str
-    desc: str
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
     skill_type: SkillType
     damage_type: DamageElementalType
@@ -223,7 +222,6 @@ class PhysicalNormalAttackBase(SkillBase):
     """
     Base class of physical normal attacks.
     """
-    desc: str = """Deals 2 Physical DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
@@ -242,16 +240,10 @@ class ElementalNormalAttackBase(SkillBase):
     """
     Base class of elemental normal attacks.
     """
-    desc: str = """Deals 1 _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
     cost_label: int = CostLabels.NORMAL_ATTACK.value
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:
@@ -266,17 +258,10 @@ class ElementalSkillBase(SkillBase):
     """
     Base class of elemental skills.
     """
-    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
     cost_label: int = CostLabels.ELEMENTAL_SKILL.value
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize()
-        ).replace('_DAMAGE_', str(self.damage))
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:
@@ -290,7 +275,6 @@ class ElementalBurstBase(SkillBase):
     """
     Base class of elemental bursts.
     """
-    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     cost_label: int = CostLabels.ELEMENTAL_BURST.value
@@ -302,12 +286,6 @@ class ElementalBurstBase(SkillBase):
             elemental_dice_number = number,
             charge = charge
         )
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
-        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -326,18 +304,7 @@ class AOESkillBase(SkillBase):
     classes to do AOE attack. It will attack active charactor damage+element, 
     back chractor back_damage_piercing.
     """
-    desc: str = (
-        'Deals _ACTIVE_ _ELEMENT_ DMG, deals _BACK_ Piercing DMG to all '
-        'opposing characters on standby.'
-    )
     back_damage: int
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
-        self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
-        self.desc = self.desc.replace('_BACK_', str(self.back_damage))
 
     def attack_opposite_active(
         self, match: Any, damage: int, damage_type: DamageElementalType,
@@ -415,15 +382,6 @@ class TalentBase(CardBase):
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
     cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
     remove_when_used: bool = False
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        restriction = (
-            f' (You must have {self.charactor_name} in your deck to add this '
-            'card to your deck.)'
-        )
-        self.desc = self.desc.replace(restriction, '')
-        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -554,7 +512,6 @@ class CharactorBase(ObjectBase):
     Base class of charactors.
     """
     name: str
-    desc: str
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR

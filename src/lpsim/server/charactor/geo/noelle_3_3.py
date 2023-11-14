@@ -17,7 +17,6 @@ from ..charactor_base import (
 
 class Breastplate(ElementalSkillBase):
     name: Literal['Breastplate'] = 'Breastplate'
-    desc: str = '''Deals 1 Geo DMG, creates 1 Full Plate.'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -33,7 +32,6 @@ class Breastplate(ElementalSkillBase):
 
 class SweepingTime(ElementalBurstBase):
     name: Literal['Sweeping Time'] = 'Sweeping Time'
-    desc: str = '''Deals 4 Geo DMG. This character gains Sweeping Time.'''
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -50,13 +48,6 @@ class SweepingTime(ElementalBurstBase):
 
 class IGotYourBack_3_3(SkillTalent):
     name: Literal['I Got Your Back']
-    desc: str = (
-        'Combat Action: When your active character is Noelle, equip this '
-        'card. After Noelle equips this card, immediately use Breastplate '
-        'once. When your Noelle, who has this card equipped, creates a Full '
-        'Plate, it will heal all your characters for 1 HP after Noelle uses '
-        'a Normal Attack. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Noelle'] = 'Noelle'
     cost: Cost = Cost(
@@ -69,7 +60,6 @@ class IGotYourBack_3_3(SkillTalent):
 class Noelle_3_3(CharactorBase):
     name: Literal['Noelle']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Chivalric Blossom" Noelle'''
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 2

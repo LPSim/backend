@@ -15,7 +15,6 @@ class VanillaWeapon_3_3(WeaponBase):
         'White Iron Greatsword',
         'White Tassel'
     ]
-    desc: str = '''The character deals +1 DMG.'''
     version: Literal['3.3'] = '3.3'
     weapon_type: WeaponType = WeaponType.OTHER
 

@@ -24,12 +24,6 @@ from ..charactor_base import (
 
 class BaronBunny_3_7(DefendSummonBase):
     name: Literal['Baron Bunny'] = 'Baron Bunny'
-    desc: str = (
-        'When your active character takes DMG: Decrease DMG by 2. '
-        'When the Usages are depleted, this card will not be discarded. '
-        'At the End Phase, if Usage(s) have been depleted: Discard this card, '
-        'deal 2 Pyro DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -84,7 +78,6 @@ class Sharpshooter(PhysicalNormalAttackBase):
 
 class ExplosivePuppet(ElementalSkillBase):
     name: Literal['Explosive Puppet'] = 'Explosive Puppet'
-    desc: str = '''Summons 1 Baron Bunny.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -119,12 +112,6 @@ class FieryRain(ElementalBurstBase, AOESkillBase):
 
 class BunnyTriggered_4_2(SkillTalent):
     name: Literal['Bunny Triggered']
-    desc: str = (
-        'Combat Action: When your active character is Amber, equip this card. '
-        'After Amber equips this card, immediately use Explosive Puppet once. '
-        'After you use a Normal Attack: If this card and Baron Bunny are '
-        'still on the field, then Baron Bunny explodes and deals 4 Pyro DMG.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Amber'] = 'Amber'
     cost: Cost = Cost(
@@ -137,12 +124,6 @@ class BunnyTriggered_4_2(SkillTalent):
 
 class BunnyTriggered_3_7(SkillTalent):
     name: Literal['Bunny Triggered']
-    desc: str = (
-        'Combat Action: When your active character is Amber, equip this card. '
-        'After Amber equips this card, immediately use Explosive Puppet once. '
-        'After you use a Normal Attack: If this card and Baron Bunny are '
-        'still on the field, then Baron Bunny explodes and deals 3 Pyro DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Amber'] = 'Amber'
     cost: Cost = Cost(
@@ -157,7 +138,6 @@ class BunnyTriggered_3_7(SkillTalent):
 class Amber_3_7(CharactorBase):
     name: Literal['Amber']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Outrider" Amber'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

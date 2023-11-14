@@ -15,7 +15,6 @@ from .base import RoundEffectArtifactBase
 
 class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
     name: str
-    desc: str
     version: str
     cost: Cost
     skill_label: int  # CostLabels
@@ -70,10 +69,6 @@ class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
 
 class ThunderingPoise_4_0(SkillCostDecreaseArtifact):
     name: Literal['Thundering Poise']
-    desc: str = (
-        'When the character uses a Normal Attack or equips a Talent: Spend 1 '
-        'less Elemental Die. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(any_dice_number = 2)
     skill_label: int = CostLabels.NORMAL_ATTACK.value
@@ -81,12 +76,6 @@ class ThunderingPoise_4_0(SkillCostDecreaseArtifact):
 
 class VermillionHereafter_4_0(ThunderingPoise_4_0):
     name: Literal['Vermillion Hereafter']
-    desc: str = (
-        'When the character uses a Normal Attack or equips a Talent: Spend 1 '
-        'less Elemental Die. (Once per Round) '
-        'After a character is switched to the active character: During this '
-        'Round, character deals +1 Normal Attack DMG.'
-    )
     cost: Cost = Cost(any_dice_number = 3)
 
     def _attach_status(
@@ -130,10 +119,6 @@ class VermillionHereafter_4_0(ThunderingPoise_4_0):
 
 class CapriciousVisage_4_0(SkillCostDecreaseArtifact):
     name: Literal['Capricious Visage']
-    desc: str = (
-        'When the character uses an Elemental Skill or equips a Talent: Spend '
-        '1 less Elemental Die. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(any_dice_number = 2)
     skill_label: int = CostLabels.ELEMENTAL_SKILL.value
@@ -141,12 +126,6 @@ class CapriciousVisage_4_0(SkillCostDecreaseArtifact):
 
 class ShimenawasReminiscence_4_0(CapriciousVisage_4_0):
     name: Literal["Shimenawa's Reminiscence"]
-    desc: str = (
-        'When the character uses an Elemental Skill or equips a Talent: Spend '
-        '1 less Elemental Die. (Once per Round) '
-        "If the character has at least 2 Energy, this character's Normal "
-        "Attacks and Elemental Skills will deal +1 DMG."
-    )
     cost: Cost = Cost(any_dice_number = 3)
 
     def value_modifier_DAMAGE_INCREASE(

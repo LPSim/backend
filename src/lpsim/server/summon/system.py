@@ -7,7 +7,6 @@ from ..consts import DamageElementalType
 
 class BurningFlame_3_3(AttackerSummonBase):
     name: Literal['Burning Flame'] = 'Burning Flame'
-    desc: str = '''End Phase: Deal 1 Pyro DMG. (Can stack. Max 2 stacks.)'''
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 2

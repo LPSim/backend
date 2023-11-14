@@ -16,7 +16,6 @@ class ArtifactBase(CardBase):
     Base class of artifacts.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int
@@ -101,7 +100,6 @@ class RoundEffectArtifactBase(ArtifactBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int 

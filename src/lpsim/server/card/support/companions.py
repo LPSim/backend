@@ -46,7 +46,6 @@ class RoundEffectCompanionBase(RoundEffectSupportBase):
 
 class Paimon_3_3(CompanionBase):
     name: Literal['Paimon']
-    desc: str = '''When Action Phase begins: Create Omni Element x2.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 3)
     usage: int = 2
@@ -72,10 +71,6 @@ class Paimon_3_3(CompanionBase):
 
 class Katheryne_3_6(RoundEffectCompanionBase):
     name: Literal['Katheryne']
-    desc: str = (
-        'When you perform "Switch Character": The switch is considered a Fast '
-        'Action instead of a Combat Action. (Once per Round)'
-    )
     version: Literal['3.6'] = '3.6'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
@@ -118,13 +113,6 @@ class Katheryne_3_3(Katheryne_3_6):
 
 class Timaeus_3_3(UsageWithRoundRestrictionSupportBase):
     name: Literal['Timaeus']
-    desc: str = (
-        'Comes with 2 Transmutation Materials when played. '
-        'End Phase: Gain 1 Transmutation Material. '
-        'When playing an Artifact Card: If possible, spend Transmutation '
-        'Materials equal to the total cost of the Artifact and equip this '
-        'Artifact for free. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_one_round: int = 1
@@ -178,24 +166,11 @@ class Timaeus_3_3(UsageWithRoundRestrictionSupportBase):
 
 class Wagner_3_3(Timaeus_3_3):
     name: Literal['Wagner']
-    desc: str = (
-        'Comes with 2 Forging Billet when played. '
-        'End Phase: Gain 1 Forging Billet. '
-        'When playing a Weapon Card: If possible, spend Forging Billet '
-        'equal to the total cost of the Weapon and equip this '
-        'Weapon for free. (Once per Round)'
-    )
     decrease_target: int = CostLabels.WEAPON.value
 
 
 class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
     name: Literal['Chef Mao']
-    desc: str = (
-        'After playing a Food Event Card: Create 1 random Elemental Die. '
-        '(Once per Round) '
-        'The first time the effect is triggered, draw 1 random Food Event '
-        'Card from your deck.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
@@ -242,20 +217,12 @@ class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
 
 
 class ChefMao_3_3(ChefMao_4_1):
-    desc: str = (
-        'After playing a Food Event Card: Create 1 random Elemental Die. '
-        '(Once per Round) '
-    )
     version: Literal['3.3']
     limited_usage: int = 0
 
 
 class Tubby_3_3(RoundEffectCompanionBase):
     name: Literal['Tubby']
-    desc: str = (
-        'When playing a Location Support Card: Spend 2 less Elemental Dice. '
-        '(Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -298,11 +265,6 @@ class Tubby_3_3(RoundEffectCompanionBase):
 
 class Timmie_3_3(CompanionBase):
     name: Literal['Timmie']
-    desc: str = (
-        'Triggers automatically once per Round: This card gains 1 Pigeon. '
-        'When this card gains 3 Pigeons, discard this card, then draw 1 card '
-        'and create Genius Invokation TCG Omni Dice Omni Element x1.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
     usage: int = 0
@@ -371,13 +333,6 @@ class Timmie_3_3(CompanionBase):
 
 class Liben_3_3(CompanionBase):
     name: Literal['Liben']
-    desc: str = (
-        'End Phase: Collect your unused Elemental Dice (Max 1 of each '
-        'Elemental Type). '
-        'When Action Phase begins: If this card has collected 3 Elemental '
-        'Dice, draw 2 cards and create Omni Element x2, then discard this '
-        'card.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
     usage: int = 0
@@ -449,12 +404,6 @@ class Liben_3_3(CompanionBase):
 
 class ChangTheNinth_3_3(CompanionBase):
     name: Literal['Chang the Ninth']
-    desc: str = (
-        'When either side uses a Skill: If Physical DMG or Piercing DMG was '
-        'dealt, or an Elemental Reaction was triggered, this card gains 1 '
-        'Inspiration. When this card gains 3 Inspiration, discard this card, '
-        'then draw 2 cards.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
     usage: int = 0
@@ -525,10 +474,6 @@ class Ellin_3_3(RoundEffectCompanionBase):
     TODO: When draw in the round and play, should also decrease cost.
     """
     name: Literal['Ellin']
-    desc: str = (
-        'When you use a Skill that has already been used in this Round: Spend '
-        '1 less Elemental Die. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
@@ -584,10 +529,6 @@ class Ellin_3_3(RoundEffectCompanionBase):
 
 class IronTongueTian_3_3(CompanionBase):
     name: Literal['Iron Tongue Tian']
-    desc: str = (
-        'End Phase: One of your characters without maximum Energy gains 1 '
-        'Energy. (Active Character prioritized)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
     usage: int = 2
@@ -618,10 +559,6 @@ class IronTongueTian_3_3(CompanionBase):
 
 class LiuSu_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Liu Su']
-    desc: str = (
-        'After you switch characters: If the character you switched to does '
-        'not have Energy, they will gain 1 Energy. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 2
@@ -665,12 +602,6 @@ class LiuSu_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
 
 class Hanachirusato_3_7(CompanionBase):
     name: Literal['Hanachirusato']
-    desc: str = (
-        'When a Summon disappears: This card gains 1 Cleansing Ritual '
-        'Progress. (Max 3). When you play a Weapon or Artifact Card: If you '
-        'already have 3 Cleansing Ritual Progress, discard this card and '
-        'cause the card you play to cost 2 less Elemental Dice.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost()
     usage: int = 0
@@ -737,11 +668,6 @@ class Hanachirusato_3_7(CompanionBase):
 
 class KidKujirai_3_7(CompanionBase):
     name: Literal['Kid Kujirai']
-    desc: str = (
-        "When the Action Phase begins: Create 1 Omni Element. Then if your "
-        "opponent's Support Zone is not full, transfer this card to your "
-        "opponent's Support Zone."
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost()
     usage: int = 0
@@ -786,10 +712,6 @@ class KidKujirai_3_7(CompanionBase):
 
 class Xudong_3_7(Tubby_3_3):
     name: Literal['Xudong']
-    desc: str = (
-        'When playing a Food Event Card: Spend 2 less Elemental Dice. '
-        '(Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 2)
     decrease_target: int = CostLabels.FOOD.value
@@ -798,12 +720,6 @@ class Xudong_3_7(Tubby_3_3):
 
 class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
     name: Literal['Dunyarzad']
-    desc: str = (
-        'When playing a Companion Support Card: Spend 1 less Elemental Dice. '
-        '(Once per Round) '
-        'The first time the effect is triggered, draw 1 random Companion '
-        'Support Card from your deck.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     decrease_target: int = CostLabels.COMPANION.value
@@ -844,21 +760,12 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
 
 
 class Dunyarzad_3_7(Dunyarzad_4_1): 
-    desc: str = (
-        'When playing a Companion Support Card: Spend 1 less Elemental Dice. '
-        '(Once per Round) '
-    )
     version: Literal['3.7']
     limited_usage: int = 0
 
 
 class Rana_3_7(RoundEffectCompanionBase):
     name: Literal['Rana']
-    desc: str = (
-        'After your character uses an Elemental Skill: '
-        'Create 1 Elemental Die of the same Type as your next off-field '
-        'character. (Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -893,11 +800,6 @@ class Rana_3_7(RoundEffectCompanionBase):
 
 class MasterZhang_3_8(RoundEffectCompanionBase):
     name: Literal['Master Zhang']
-    desc: str = (
-        'When playing a Weapon card: Spend 1 less Elemental Die. On top of '
-        'that, for each of your characters already equipped with a Weapon on '
-        'the field, you spend 1 less Elemental Die. (Once per Round.)'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
@@ -938,10 +840,6 @@ class MasterZhang_3_8(RoundEffectCompanionBase):
 
 class Setaria_4_0(CompanionBase):
     name: Literal['Setaria']
-    desc: str = (
-        'After you perform any action, if you have 0 cards in your hand: '
-        'Draw 1 card.'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
@@ -970,11 +868,6 @@ class Setaria_4_0(CompanionBase):
 
 class YayoiNanatsuki_4_1(MasterZhang_3_8):
     name: Literal['Yayoi Nanatsuki']
-    desc: str = (
-        'When playing an Artifact card: Spend 1 less Elemental Die. On top of '
-        'that, for each of your characters already equipped with an artifact '
-        'on the field, you spend 1 less Elemental Die. (Once per Round.)'
-    )
     version: Literal['4.1'] = '4.1'
     card_cost_label: int = CostLabels.ARTIFACT.value
 

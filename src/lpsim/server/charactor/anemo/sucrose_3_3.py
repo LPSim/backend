@@ -10,7 +10,8 @@ from ...action import ActionTypes, Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -23,17 +24,7 @@ from ..charactor_base import (
 
 class LargeWindSpirit_3_3(SwirlChangeSummonBase):
     name: Literal['Large Wind Spirit'] = 'Large Wind Spirit'
-    desc: str = (
-        'End Phase: Deal 2 Anemo DMG. '
-        'After your character or Summon triggers a Swirl reaction: Convert '
-        'the Elemental Type of this card and change its DMG dealt to the '
-        'element Swirled. (Can only be converted once before leaving the '
-        'field)'
-    )
-    talent_desc: str = (
-        '. When this card has converted to another Elemental Type: Deal +1 '
-        'DMG of this Elemental Type.'
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 3
     max_usage: int = 3
@@ -43,13 +34,12 @@ class LargeWindSpirit_3_3(SwirlChangeSummonBase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         if self.talent_activated:
-            self.desc = self.desc.replace(self.talent_desc, '')
-            self.desc += self.talent_desc
+            self.desc = 'talent'
 
     def renew(self, obj: 'LargeWindSpirit_3_3') -> None:
         super().renew(obj)
         if obj.talent_activated and not self.talent_activated:
-            self.desc += self.talent_desc
+            self.desc = 'talent'
             self.talent_activated = obj.talent_activated
 
     def value_modifier_DAMAGE_INCREASE(
@@ -87,10 +77,6 @@ class AstableAnemohypostasisCreation6308(ElementalSkillBase):
     name: Literal[
         'Astable Anemohypostasis Creation - 6308'
     ] = 'Astable Anemohypostasis Creation - 6308'
-    desc: str = (
-        'Deals 3 Anemo DMG, the target is forcibly switched to the previous '
-        'character.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -116,7 +102,6 @@ class ForbiddenCreationIsomer75TypeII(ElementalBurstBase):
     name: Literal[
         'Forbidden Creation - Isomer 75 / Type II'
     ] = 'Forbidden Creation - Isomer 75 / Type II'
-    desc: str = 'Deals 1 Anemo DMG, summons 1 Large Wind Spirit.'
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -137,13 +122,6 @@ class ForbiddenCreationIsomer75TypeII(ElementalBurstBase):
 
 class ChaoticEntropy_3_3(SkillTalent):
     name: Literal['Chaotic Entropy']
-    desc: str = (
-        'Combat Action: When your active character is Sucrose, equip this '
-        'card. After Sucrose equips this card, immediately use Forbidden '
-        'Creation - Isomer 75 / Type II once. After the Large Wind Spirit '
-        'created by your Sucrose, who had this card equipped, has converted '
-        'to another Elemental Type: Deal +1 DMG of this Elemental Type.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Sucrose'] = 'Sucrose'
     cost: Cost = Cost(
@@ -162,7 +140,6 @@ class ChaoticEntropy_3_3(SkillTalent):
 class Sucrose_3_3(CharactorBase):
     name: Literal['Sucrose']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Harmless Sweetie" Sucrose'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 2
@@ -179,7 +156,7 @@ class Sucrose_3_3(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Wind Spirit Creation',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             AstableAnemohypostasisCreation6308(),

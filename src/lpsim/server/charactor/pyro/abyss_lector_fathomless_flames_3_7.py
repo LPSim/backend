@@ -37,7 +37,6 @@ class DarkfireFurnace_3_7(AOESummonBase):
 
 class OminousStar(ElementalBurstBase):
     name: Literal['Ominous Star'] = 'Ominous Star'
-    desc: str = '''Deals 3 Pyro DMG. Summons 1 Darkfire Furnace.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -54,9 +53,6 @@ class OminousStar(ElementalBurstBase):
 
 class FieryRebirth(PassiveSkillBase):
     name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Fiery Rebirth.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -72,14 +68,6 @@ class FieryRebirth(PassiveSkillBase):
 
 class EmbersRekindled_3_7(TalentBase):
     name: Literal['Embers Rekindled']
-    desc: str = (
-        'When played: If Abyss Lector: Fathomless Flames, who equips this '
-        'card, has already triggered Fiery Rebirth, immediately discard this '
-        'card and apply Aegis of Abyssal Flame to the character. '
-        'When Abyss Lector: Fathomless Flames, who has this card equipped, '
-        'triggers Fiery Rebirth: discard this card and apply Aegis of Abyssal '
-        'Flame to the character.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal[
         'Abyss Lector: Fathomless Flames'] = 'Abyss Lector: Fathomless Flames'
@@ -144,7 +132,6 @@ class EmbersRekindled_3_7(TalentBase):
 class AbyssLectorFathomlessFlames_3_7(CharactorBase):
     name: Literal['Abyss Lector: Fathomless Flames']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''Abyss Lector: Fathomless Flames'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 6
     max_charge: int = 2

@@ -14,11 +14,6 @@ from ....action import CreateDiceAction, Actions
 
 class GamblersEarrings_3_8(ArtifactBase):
     name: Literal["Gambler's Earrings"]
-    desc: str = (
-        'After an opposing character is defeated: If the character this card '
-        'is attached to is the active character, create Omni Element x2. '
-        '(Can happen 3 times per match)'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3

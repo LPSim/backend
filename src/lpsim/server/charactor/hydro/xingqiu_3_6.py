@@ -9,10 +9,6 @@ from .xingqiu_4_1 import GuhuaStyle, FatalRainscreen
 
 class Raincutter(R_4_1):
     name: Literal['Raincutter'] = 'Raincutter'
-    desc: str = (
-        'Deals 1 Hydro DMG, grants this character Hydro Application, creates '
-        '1 Rainbow Bladework.'
-    )
     damage: int = 1
 
 

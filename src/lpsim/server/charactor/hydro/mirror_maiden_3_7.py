@@ -20,9 +20,6 @@ from ..charactor_base import (
 
 class InfluxBlast(ElementalSkillBase):
     name: Literal['Influx Blast'] = 'Influx Blast'
-    desc: str = (
-        'Deals 2 Hydro DMG. The target character receives Refraction.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -69,15 +66,6 @@ class InfluxBlast(ElementalSkillBase):
 
 class MirrorCage_3_3(SkillTalent):
     name: Literal['Mirror Cage']
-    desc: str = (
-        'Combat Action: When your active character is Mirror Maiden, equip '
-        'this card. After Mirror Maiden equips this card, immediately use '
-        'Influx Blast once. When your Mirror Maiden, who has this card '
-        'equipped, creates a Refraction, it will have the following effects: '
-        'Starting Duration (Rounds) +1, will increase the Elemental Dice Cost '
-        'of switching from a character to which this is attached to another '
-        'character by 1.'
-    )
     version: Literal['3.3']
     charactor_name: Literal['Mirror Maiden'] = 'Mirror Maiden'
     cost: Cost = Cost(
@@ -101,7 +89,6 @@ class MirrorCage_4_2(MirrorCage_3_3):
 class MirrorMaiden_3_7(CharactorBase):
     name: Literal['Mirror Maiden']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Snezhnayan Maiden" Mirror Envoy'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2

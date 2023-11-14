@@ -68,9 +68,6 @@ class SpiritWaridingLampTroubleshooterCannon(ElementalSkillBase):
     name: Literal[
         'Spirit-Warding Lamp: Troubleshooter Cannon'
     ] = 'Spirit-Warding Lamp: Troubleshooter Cannon'
-    desc: str = (
-        'Deals 2 Electro DMG, summons 1 After-Sales Service Rounds.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -88,9 +85,6 @@ class SpiritWaridingLampTroubleshooterCannon(ElementalSkillBase):
 
 class AlcazarzaraysExactitude(ElementalBurstBase):
     name: Literal["Alcazarzaray's Exactitude"] = "Alcazarzaray's Exactitude"
-    desc: str = (
-        'Deals 1 Electro DMG, summons 1 Jinni.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -111,14 +105,6 @@ class AlcazarzaraysExactitude(ElementalBurstBase):
 
 class DiscretionarySupplement_4_2(SkillTalent):
     name: Literal['Discretionary Supplement']
-    desc: str = (
-        'Combat Action: When your active character is Dori, equip this card. '
-        "After Dori equips this card, immediately use Alcazarzaray's "
-        'Exactitude once. The Jinni summoned by your Dori who has this card '
-        'equipped heals 1 more HP when healing characters with no more than '
-        '6 HP, and increases the amount of Energy gained by characters with '
-        'no Energy by 1 when Energy is gained.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Dori'] = 'Dori'
     cost: Cost = Cost(
@@ -135,7 +121,6 @@ class DiscretionarySupplement_4_2(SkillTalent):
 class Dori_4_2(CharactorBase):
     name: Literal['Dori']
     version: Literal['4.2'] = '4.2'
-    desc: str = '''"Treasure of Dream Garden" Dori'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

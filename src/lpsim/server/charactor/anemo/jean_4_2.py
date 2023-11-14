@@ -14,9 +14,6 @@ from .jean_3_3 import (
 
 
 class DandelionField_4_2(DandelionField_3_3):
-    desc: str = (
-        'End Phase: Deal 1 Anemo DMG, heal your active character for 1 HP.'
-    )
     version: Literal['4.2'] = '4.2'
     damage: int = 1
 

@@ -26,7 +26,6 @@ class TeamStatusBase(StatusBase):
     """
     type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -50,7 +49,6 @@ class UsageTeamStatus(TeamStatusBase):
     called manually.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -83,7 +81,6 @@ class RoundTeamStatus(TeamStatusBase):
     of usages, it will remove itself.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -117,7 +114,6 @@ class DefendTeamStatus(UsageTeamStatus):
     when receive damage, and decrease usage by 1.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -156,7 +152,6 @@ class ShieldTeamStatus(DefendTeamStatus):
     and decrease corresponding usage.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -171,7 +166,6 @@ class ShieldTeamStatus(DefendTeamStatus):
 
 class ExtraAttackTeamStatus(TeamStatusBase):
     name: str
-    desc: str
     version: str
 
     trigger_skill_type: SkillType | None
@@ -233,10 +227,6 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
         'Geo Elemental Infusion',
         'Dendro Elemental Infusion',
     ]
-    desc: str = (
-        'When the charactor to which it is attached to deals Physical Damage, '
-        'it will be turned into XXX DMG. '
-    )
     infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
     icon_type: Literal[
@@ -261,7 +251,6 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
             ], ('In ElementalInfusion: element not set right value')
             assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
             self.infused_elemental_type = DamageElementalType(element)
-            self.desc = self.desc.replace('XXX', element)
         if self.icon_type == IconType.ATK_UP:
             self.icon_type = ELEMENT_TO_ENCHANT_ICON[
                 ElementType(self.infused_elemental_type.value)]  # type: ignore
@@ -291,7 +280,6 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
 
 class SwitchActionTeamStatus(UsageTeamStatus):
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int

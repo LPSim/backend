@@ -15,11 +15,6 @@ from .base import RoundEffectWeaponBase
 
 class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
     name: Literal['A Thousand Floating Dreams']
-    desc: str = (
-        'The character deals +1 DMG. '
-        'When your character triggers an Elemental Reaction: Deal +1 DMG. '
-        '(Twice per Round)'
-    )
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     version: Literal['3.7'] = '3.7'
     cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value

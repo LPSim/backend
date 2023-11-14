@@ -13,8 +13,9 @@ from ...action import (
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, DieColor, ElementType, 
-    FactionType, ObjectPositionType, PlayerActionLabels, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DamageType, 
+    DieColor, ElementType, FactionType, ObjectPositionType, PlayerActionLabels,
+    WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -27,12 +28,6 @@ from ..charactor_base import (
 
 class ChainsOfWardingThunder_3_7(AttackerSummonBase):
     name: Literal['Chains of Warding Thunder'] = 'Chains of Warding Thunder'
-    desc: str = (
-        'End Phase: Deal 1 Electro DMG. '
-        'When this Summon is on the field: Your opponent will have to spend '
-        '1 additional Elemental Die when performing "Switch Character." '
-        '(Once per Round) Usage(s): 2'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -78,11 +73,6 @@ class ChainsOfWardingThunder_3_7(AttackerSummonBase):
 
 class RockPaperScissorsCombo(ElementalSkillBase):
     name: Literal['Rock-Paper-Scissors Combo'] = 'Rock-Paper-Scissors Combo'
-    desc: str = (
-        'Deals 2 Electro DMG and then separately performs "Prepare Skill" for '
-        'Rock-Paper-Scissors Combo: Scissors and '
-        'Rock-Paper-Scissors Combo: Paper.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -103,10 +93,6 @@ class RockPaperScissorsComboScissors(ElementalSkillBase):
     name: Literal[
         'Rock-Paper-Scissors Combo: Scissors'
     ] = 'Rock-Paper-Scissors Combo: Scissors'
-    desc: str = (
-        'Deals 2 Electro DMG and then performs "Prepare Skill" for '
-        'Rock-Paper-Scissors Combo: Paper.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost()
@@ -151,7 +137,6 @@ class RockPaperScissorsComboPaper(ElementalSkillBase):
 
 class LightningLockdown(ElementalBurstBase):
     name: Literal['Lightning Lockdown'] = 'Lightning Lockdown'
-    desc: str = '''Deals 2 Electro DMG, summons Chains of Warding Thunder.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -171,10 +156,6 @@ class LightningLockdown(ElementalBurstBase):
 
 class ElectroCrystalCore(PassiveSkillBase):
     name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains '
-        'Electro Crystal Core.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -190,11 +171,6 @@ class ElectroCrystalCore(PassiveSkillBase):
 
 class AbsorbingPrism_3_7(TalentBase):
     name: Literal['Absorbing Prism']
-    desc: str = (
-        'Combat Action: When your active character is Electro Hypostasis, '
-        'heal that character for 3 HP and attach the Electro Crystal Core to '
-        'them.'
-    )
     version: Literal['3.7']
     charactor_name: Literal['Electro Hypostasis'] = 'Electro Hypostasis'
     cost: Cost = Cost(
@@ -252,7 +228,6 @@ class AbsorbingPrism_4_2(AbsorbingPrism_3_7):
 class ElectroHypostasis_3_7(CharactorBase):
     name: Literal['Electro Hypostasis']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''Electro Hypostasis'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 8
     max_charge: int = 2
@@ -270,7 +245,7 @@ class ElectroHypostasis_3_7(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Electro Crystal Projection',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             RockPaperScissorsCombo(),

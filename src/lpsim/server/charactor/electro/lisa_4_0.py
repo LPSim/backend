@@ -41,11 +41,6 @@ class LightningRoseSummon_4_0(AttackerSummonBase):
 
 class LightningTouch(ElementalNormalAttackBase):
     name: Literal['Lightning Touch'] = 'Lightning Touch'
-    desc: str = (
-        'Deals 1 Electro DMG. '
-        'If this Skill is a Charged Attack: Attach Conductive to the '
-        "opponent's active character."
-    )
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = ElementalNormalAttackBase.get_cost(ElementType.ELECTRO)
 
@@ -65,10 +60,6 @@ class LightningTouch(ElementalNormalAttackBase):
 
 class VioletArc(ElementalSkillBase):
     name: Literal['Violet Arc'] = 'Violet Arc'
-    desc: str = (
-        "Deals 2 Electro DMG. If Conductive is not attached to the opponent's "
-        'active character, Conductive will be attached.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -109,7 +100,6 @@ class VioletArc(ElementalSkillBase):
 
 class LightningRose(ElementalBurstBase):
     name: Literal['Lightning Rose'] = 'Lightning Rose'
-    desc: str = '''Deals 2 Electro DMG, summons 1 Lightning Rose.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -129,10 +119,6 @@ class LightningRose(ElementalBurstBase):
 
 class PulsatingWitch_4_0(TalentBase):
     name: Literal['Pulsating Witch']
-    desc: str = (
-        'After you switch to Lisa, who has this card equipped: Attach '
-        'Conductive to the opposing active character. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     charactor_name: Literal['Lisa'] = 'Lisa'
     cost: Cost = Cost(
@@ -218,7 +204,6 @@ class PulsatingWitch_4_0(TalentBase):
 class Lisa_4_0(CharactorBase):
     name: Literal['Lisa']
     version: Literal['4.0'] = '4.0'
-    desc: str = '''"Witch of Purple Rose" Lisa'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

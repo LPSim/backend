@@ -25,14 +25,6 @@ class Stormbreaker(Stormbreaker_3_8):
 
 
 class LightningStorm_3_4(LightningStorm_4_2):
-    desc: str = (
-        'Combat Action: When your active character is Beidou, equip this '
-        'card. After Beidou equips this card, immediately use Tidecaller '
-        'once. When Beidou, who has this card equipped, uses Wavestrider: '
-        "If DMG is taken while Prepare Skill is active, Beidou's Normal "
-        "Attacks this Round will cost 1 less Unaligned Element. "
-        '(Can be triggered 2 times)'
-    )
     version: Literal['3.4'] = '3.4'
     need_to_activate: bool = True
 

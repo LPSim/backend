@@ -25,11 +25,6 @@ from ..charactor_base import (
 
 class SolarIsotoma_4_0(AttackerSummonBase):
     name: Literal['Solar Isotoma'] = 'Solar Isotoma'
-    desc: str = (
-        'End Phase: Deal 1 Geo DMG. '
-        "When this Summon is on the field: Your character's Plunging Attack "
-        "spends 1 less Unaligned Element. (Once per Round)"
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 3
     max_usage: int = 3
@@ -102,7 +97,6 @@ class SolarIsotoma_4_0(AttackerSummonBase):
 
 class AbiogenesisSolarIsotoma(ElementalSkillBase):
     name: Literal['Abiogenesis: Solar Isotoma'] = 'Abiogenesis: Solar Isotoma'
-    desc: str = '''Solar Isotoma'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -124,9 +118,6 @@ class RiteOfProgenitureTectonicTide(ElementalBurstBase):
     name: Literal[
         'Rite of Progeniture: Tectonic Tide'
     ] = 'Rite of Progeniture: Tectonic Tide'
-    desc: str = (
-        'Deals 4 Geo DMG. If Solar Isotoma is on the field, deals +2 DMG.'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -158,13 +149,6 @@ class RiteOfProgenitureTectonicTide(ElementalBurstBase):
 
 class DescentOfDivinity_4_0(SkillTalent):
     name: Literal['Descent of Divinity']
-    desc: str = (
-        'Combat Action: When your active character is Albedo, equip this '
-        'card. After Albedo equips this card, immediately use Abiogenesis: '
-        'Solar Isotoma once. When there is Albedo on the field who has this '
-        'card equipped, if your side of the field has Solar Isotoma, then '
-        "your characters' Plunging Attack deals +1 DMG."
-    )
     version: Literal['4.0'] = '4.0'
     charactor_name: Literal['Albedo'] = 'Albedo'
     cost: Cost = Cost(
@@ -180,7 +164,6 @@ class DescentOfDivinity_4_0(SkillTalent):
 class Albedo_4_0(CharactorBase):
     name: Literal['Albedo']
     version: Literal['4.0'] = '4.0'
-    desc: str = '''"Kreideprinz" Albedo'''
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 2

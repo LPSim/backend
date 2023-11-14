@@ -21,10 +21,6 @@ from ..charactor_base import (
 
 class SearingOnslaught(ElementalSkillBase):
     name: Literal['Searing Onslaught'] = 'Searing Onslaught'
-    desc: str = (
-        'Deals 3 Pyro DMG. For the third use of this Skill each Round, deals '
-        '+2 DMG.'
-    )
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
@@ -78,7 +74,6 @@ class SearingOnslaught(ElementalSkillBase):
 
 class Dawn(ElementalBurstBase):
     name: Literal['Dawn'] = 'Dawn'
-    desc: str = '''Deals 8 Pyro DMG. This character gains Pyro Infusion.'''
     damage: int = 8
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -101,12 +96,6 @@ class Dawn(ElementalBurstBase):
 
 class FlowingFlame_3_3(SkillTalent):
     name: Literal['Flowing Flame']
-    desc: str = (
-        'Combat Action: When your active character is Diluc, equip this card. '
-        'After Diluc equips this card, immediately use Searing Onslaught '
-        'once. When your Diluc, who has this card equipped, uses Searing '
-        'Onslaught for the second time in one Round, spend 1 less Pyro Die.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Diluc'] = 'Diluc'
     cost: Cost = Cost(
@@ -122,7 +111,6 @@ class FlowingFlame_3_3(SkillTalent):
 class Diluc_3_3(CharactorBase):
     name: Literal['Diluc']  # Do not set default value for charactor name
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Dark Side of Dawn" Diluc'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 3

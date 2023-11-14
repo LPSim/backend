@@ -24,11 +24,6 @@ from ..charactor_base import (
 
 class BounatifulCore_4_2(DeclareRoundEndAttackSummonBase):
     name: Literal['Bountiful Core'] = 'Bountiful Core'
-    desc: str = (
-        'End Phase: Deal 2 Dendro DMG. Usage(s): 1 (Can stack, max 3 stacks) '
-        'When you declare the end of your Round: If this summon has at least '
-        '2 Usages remaining, deal 2 Dendro DMG. (Consumes Usages)'
-    )
     version: Literal['4.2'] = '4.2'
     usage: int = 1
     max_usage: int = 3
@@ -43,11 +38,6 @@ class BounatifulCore_4_2(DeclareRoundEndAttackSummonBase):
 
 class DanceOfHaftkarsvar(ElementalSkillBase):
     name: Literal['Dance of Haftkarsvar'] = 'Dance of Haftkarsvar'
-    desc: str = (
-        'Deals 3 Hydro DMG, if the party includes Hydro Characters and Dendro '
-        'Characters and characters from no other Elements, create 1 Golden '
-        "Chalice's Bounty."
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -80,9 +70,6 @@ class DanceOfAbzendegiDistantDreamsListeningSpring(ElementalBurstBase):
     name: Literal[
         'Dance of Abzendegi: Distant Dreams, Listening Spring'
     ] = 'Dance of Abzendegi: Distant Dreams, Listening Spring'
-    desc: str = (
-        'Deals 2 Hydro DMG. The target character receives Lingering Aeon.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -104,12 +91,6 @@ class DanceOfAbzendegiDistantDreamsListeningSpring(ElementalBurstBase):
 
 class TheStarrySkiesTheirFlowersRain_4_2(SkillTalent):
     name: Literal['The Starry Skies Their Flowers Rain']
-    desc: str = (
-        'Combat Action: When your active character is Nilou, equip this card. '
-        'After Nilou equips this card, immediately use Dance of Haftkarsvar. '
-        'When there is Nilou on the field who has this card equipped, the '
-        'damage dealt by your Bountiful Core is increased by 1. '
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Nilou'] = 'Nilou'
     cost: Cost = Cost(
@@ -147,7 +128,6 @@ class TheStarrySkiesTheirFlowersRain_4_2(SkillTalent):
 class Nilou_4_2(CharactorBase):
     name: Literal['Nilou']
     version: Literal['4.2'] = '4.2'
-    desc: str = '''"Dance of Lotuslight" Nilou'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2

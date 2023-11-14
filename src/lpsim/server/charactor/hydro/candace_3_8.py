@@ -27,9 +27,6 @@ from ..charactor_base import (
 class SacredRiteHeronsSanctum(ElementalSkillBase):
     name: Literal[
         "Sacred Rite: Heron's Sanctum"] = "Sacred Rite: Heron's Sanctum"
-    desc: str = (
-        'Attaches a Heron Shield to this character and prepares Heron Strike'
-    )
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -49,7 +46,6 @@ class SacredRiteHeronsSanctum(ElementalSkillBase):
 
 class HeronStrike(ElementalSkillBase):
     name: Literal['Heron Strike'] = 'Heron Strike'
-    desc: str = '''(Prepare for 1 turn) Deals 3 Hydro DMG.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost()
@@ -72,7 +68,6 @@ class HeronStrike(ElementalSkillBase):
 class SacredRiteWagtailsTide(ElementalBurstBase):
     name: Literal[
         "Sacred Rite: Wagtail's Tide"] = "Sacred Rite: Wagtail's Tide"
-    desc: str = '''Deals 2 Hydro DMG and create Prayer of the Crimson Crown.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -92,14 +87,6 @@ class SacredRiteWagtailsTide(ElementalBurstBase):
 
 class TheOverflow_3_8(SkillTalent):
     name: Literal['The Overflow']
-    desc: str = (
-        'Combat Action: When your active character is Candace, equip this '
-        'card. After Candace equips this card, immediately use Sacred Rite: '
-        "Wagtail's Tide once. When this card is equipped by Candace, her "
-        'Prayer of the Crimson Crown has the following extra effect: After '
-        'your character uses a Normal Attack: Deals 1 Hydro DMG. (Once per '
-        'Round)'
-    )
     version: Literal['3.8']
     charactor_name: Literal['Candace'] = 'Candace'
     cost: Cost = Cost(
@@ -127,7 +114,6 @@ class TheOverflow_4_2(TheOverflow_3_8):
 class Candace_3_8(CharactorBase):
     name: Literal['Candace']  # Do not set default value for charactor name
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Golden Vow" Candace'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2

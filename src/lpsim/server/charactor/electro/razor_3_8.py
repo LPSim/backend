@@ -28,9 +28,6 @@ class ClawAndThunder(ElementalSkillBase):
 
 class LightningFang(ElementalBurstBase):
     name: Literal['Lightning Fang'] = 'Lightning Fang'
-    desc: str = (
-        'Deals 3 Electro DMG. This character gains The Wolf Within.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -48,13 +45,6 @@ class LightningFang(ElementalBurstBase):
 # Talents
 class Awakening_4_2(SkillTalent):
     name: Literal['Awakening']
-    desc: str = (
-        'Combat Action: When your active character is Razor, equip this card. '
-        'After Razor equips this card, immediately use Claw and Thunder once. '
-        'After your Razor, who has this card equipped, uses Claw and Thunder: '
-        '1 of your Electro characters gains 1 Energy. '
-        '(Active Character prioritized) (Once per round)'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Razor'] = 'Razor'
     cost: Cost = Cost(
@@ -133,7 +123,6 @@ class Awakening_4_2(SkillTalent):
 class Razor_3_8(CharactorBase):
     name: Literal['Razor']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Wolf Boy" Razor'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

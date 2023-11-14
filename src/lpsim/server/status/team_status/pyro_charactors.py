@@ -22,10 +22,6 @@ from .base import (
 
 class SparksNSplash_3_4(UsageTeamStatus):
     name: Literal["Sparks 'n' Splash"] = "Sparks 'n' Splash"
-    desc: str = (
-        "After a character to which Sparks 'n' Splash is attached uses a "
-        "Skill: Deals 2 Pyro DMG to their team's active character. Usage(s): 2"
-    )
     version: Literal['3.4'] = '3.4'
     usage: int = 2
     max_usage: int = 2
@@ -63,17 +59,7 @@ class SparksNSplash_3_4(UsageTeamStatus):
 
 class InspirationField_3_3(RoundTeamStatus):
     name: Literal['Inspiration Field'] = 'Inspiration Field'
-    desc: str = (
-        "When your character uses a Skill: If this character has at least 7 "
-        "HP, deal +2 additional DMG for this instance. After the Skill DMG "
-        "is finalized, if this character's HP is not greater than 6, heal "
-        "this character for 2 HP."
-    )
-    buff_desc: str = (
-        "When your character uses a Skill: If this character has at least 7 "
-        "HP, deal +2 additional DMG for this instance. After the Skill DMG "
-        "is finalized, heal this character for 2 HP."
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -84,13 +70,13 @@ class InspirationField_3_3(RoundTeamStatus):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.talent_activated:
-            self.desc = self.buff_desc
+            self.desc = 'talent'
 
     def renew(self, new_status: 'InspirationField_3_3') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
-            self.desc = self.buff_desc
+            self.desc = 'talent'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -147,10 +133,6 @@ class InspirationField_3_3(RoundTeamStatus):
 
 class AurousBlaze_3_3(RoundTeamStatus, ExtraAttackTeamStatus):
     name: Literal['Aurous Blaze'] = 'Aurous Blaze'
-    desc: str = (
-        'After your character other than Yoimiya uses a Skill: '
-        'Deal 1 Pyro DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -178,7 +160,6 @@ class AurousBlaze_3_3(RoundTeamStatus, ExtraAttackTeamStatus):
 
 class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
     name: Literal['Pyronado'] = 'Pyronado'
-    desc: str = '''After your character uses a Skill: Deal 2 Pyro DMG.'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -204,12 +185,6 @@ class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
 
 class FierySanctumField_4_1(DefendTeamStatus):
     name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
-    desc: str = (
-        'When Dehya is on standby on your '
-        'side, then when your active character takes damage: Decrease DMG '
-        'taken by 1, and if Dehya has at least 7 HP, deal 1 Piercing DMG to '
-        'her (once per round).'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 1
     max_usage: int = 1

@@ -12,9 +12,6 @@ from .razor_3_8 import ClawAndThunder
 
 
 class LightningFang(LF_3_8):
-    desc: str = (
-        'Deals 5 Electro DMG. This character gains The Wolf Within.'
-    )
     damage: int = 5
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
@@ -24,13 +21,6 @@ class LightningFang(LF_3_8):
 
 
 class Awakening_3_3(Awakening_4_2):
-    desc: str = (
-        'Combat Action: When your active character is Razor, equip this card. '
-        'After Razor equips this card, immediately use Claw and Thunder once. '
-        'After your Razor, who has this card equipped, uses Claw and Thunder: '
-        '1 of your Electro characters gains 1 Energy. '
-        '(Active Character prioritized)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,

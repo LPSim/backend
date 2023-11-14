@@ -10,10 +10,6 @@ from .base import RoundEffectWeaponBase
 
 class SkywardBase(RoundEffectWeaponBase):
     name: str
-    desc: str = (
-        "The character deals +1 DMG. Once per Round: This character's Normal "
-        "Attack deal +1 additional DMG."
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: str
     weapon_type: WeaponType

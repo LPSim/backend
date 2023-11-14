@@ -54,10 +54,6 @@ class MobMage_1_0(Mob_1_0):
             )
         return v
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)  # type: ignore
-        self.desc = self.desc.replace('_NAME_', self.name)
-
     def _init_skills(self):
         if self.element == ElementType.NONE:
             # set element by name

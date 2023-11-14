@@ -2,6 +2,7 @@
 Collect descriptions.
 """
 import json
+import logging
 from typing import Any, Dict, Literal, TypedDict
 
 
@@ -37,16 +38,29 @@ def _parse_value(value: Any):
     return value
 
 
-def _merge_dict(source, destination):
+def _merge_dict(source, destination, prev_key: str = ''):
     for key, value in source.items():
+        pkey = f'{prev_key}|{key}'
         if isinstance(value, dict):
             # get node or create one
             node = destination.setdefault(key, {})
-            _merge_dict(value, node)
+            _merge_dict(value, node, prev_key = pkey)
         else:
+            value = _parse_value(value)
+            if '|names|' in pkey and value in ['', 'XXX']:
+                # name is empty, raise error.
+                raise ValueError(
+                    f'name value "{value}" of key "{pkey}" is empty'
+                )
             if key in destination:
-                raise ValueError(f'key {key} already exists')
-            destination[key] = _parse_value(value)
+                if destination[key] != value:
+                    raise ValueError(
+                        f'value "{destination[key]}" of key "{pkey}" '
+                        f'is replaced by new value "{value}"'
+                    )
+                else:
+                    logging.warning(f'duplicate adding key "{pkey}"')
+            destination[key] = value
     return destination
 
 

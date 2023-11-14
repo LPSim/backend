@@ -20,7 +20,6 @@ from ..charactor_base import (
 
 class BaneOfAllEvil(ElementalBurstBase):
     name: Literal['Bane of All Evil'] = 'Bane of All Evil'
-    desc: str = '''Deals 4 Anemo DMG. This character gains Yaksha's Mask.'''
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -46,14 +45,6 @@ class BaneOfAllEvil(ElementalBurstBase):
 
 class ConquerorOfEvilGuardianYaksha_3_7(SkillTalent):
     name: Literal['Conqueror of Evil: Guardian Yaksha']
-    desc: str = (
-        'Combat Action: When your active character is Xiao, equip this card. '
-        'After Xiao equips this card, immediately use Bane of All Evil once. '
-        "While your Xiao has Yaksha's Mask attached, your use of Lemniscatic "
-        "Wind Cycling will cost 1 less Genius Invokation TCG Anemo Cost Anemo "
-        "Die. (Every attachment of Yaksha's Mask allows the effect to be "
-        "triggered twice)"
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Xiao'] = 'Xiao'
     cost: Cost = Cost(
@@ -70,7 +61,6 @@ class ConquerorOfEvilGuardianYaksha_3_7(SkillTalent):
 class Xiao_3_7(CharactorBase):
     name: Literal['Xiao']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Vigilant Yaksha" Xiao'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 2

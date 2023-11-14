@@ -24,7 +24,6 @@ from ..charactor_base import (
 
 class ChonghuasLayeredFrost(ElementalSkillBase):
     name: Literal["Chonghua's Layered Frost"] = "Chonghua's Layered Frost"
-    desc: str = '''Deals 3 Cryo DMG, creates 1 Chonghua Frost Field.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -56,14 +55,6 @@ class ChonghuasLayeredFrost(ElementalSkillBase):
 
 class SteadyBreathing_3_3(SkillTalent):
     name: Literal['Steady Breathing']
-    desc: str = (
-        'Combat Action: When your active character is Chongyun, equip this '
-        "card. After Chongyun equips this card, immediately use Chonghua's "
-        'Layered Frost once. When your Chongyun, who has this card equipped, '
-        'creates a Chonghua Frost Field, it will have the following effects: '
-        'Starting Duration (Rounds) +1, will cause your Sword, Claymore, and '
-        "Polearm-wielding characters' Normal Attacks to deal +1 DMG."
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Chongyun'] = 'Chongyun'
     cost: Cost = Cost(
@@ -76,13 +67,6 @@ class SteadyBreathing_3_3(SkillTalent):
 
 class SteadyBreathing_4_2(SkillTalent):
     name: Literal['Steady Breathing']
-    desc: str = (
-        'Combat Action: When your active character is Chongyun, equip this '
-        "card. After Chongyun equips this card, immediately use Chonghua's "
-        'Layered Frost once. When your Chongyun, who has this card equipped, '
-        'creates a Chonghua Frost Field, it will cause your Sword, Claymore, '
-        "and Polearm-wielding characters' Normal Attacks to deal +1 DMG."
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Chongyun'] = 'Chongyun'
     cost: Cost = Cost(
@@ -99,7 +83,6 @@ class SteadyBreathing_4_2(SkillTalent):
 class Chongyun_3_3(CharactorBase):
     name: Literal['Chongyun']  # Do not set default value for charactor name
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Frozen Ardor" Chongyun'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 3

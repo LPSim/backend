@@ -13,7 +13,6 @@ from .maguu_kenki_3_4 import PseudoTenguSweeper
 
 
 class BlusteringBlade(BB_3_4):
-    desc: str = '''Deals 1 Anemo DMG, summons 1 Shadowsword: Lone Gale.'''
     damage: int = 1
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -30,7 +29,6 @@ class BlusteringBlade(BB_3_4):
 
 
 class FrostyAssault(FA_3_4):
-    desc: str = '''Deals 1 Anemo DMG, summons 1 Shadowsword: Lone Gale.'''
     damage: int = 1
 
     def get_actions(self, match: Any) -> List[Actions]:

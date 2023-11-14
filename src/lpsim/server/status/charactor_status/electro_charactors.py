@@ -37,12 +37,8 @@ class ElectroInfusionKeqing_3_3(ElementalInfusionCharactorStatus,
     and usage +1.
     """
     name: Literal['Electro Elemental Infusion'] = 'Electro Elemental Infusion'
+    desc: Literal['', 'keqing_talent'] = ''
     mark: Literal['Keqing']  # used to select right status
-    buff_desc: str = (
-        'When the charactor to which it is attached to deals '
-        'Physical Damage, it will be turned into Electro DMG, '
-        'and Electro DMG dealt by the charactor +1.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -52,13 +48,13 @@ class ElectroInfusionKeqing_3_3(ElementalInfusionCharactorStatus,
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.talent_activated:
-            self.desc = self.buff_desc
+            self.desc = 'keqing_talent'
 
     def renew(self, new_status: 'ElectroInfusionKeqing_3_3') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
-            self.desc = self.buff_desc
+            self.desc = 'keqing_talent'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -93,10 +89,6 @@ class RockPaperScissorsComboScissors_3_7(PrepareCharactorStatus):
     name: Literal[
         'Rock-Paper-Scissors Combo: Scissors'
     ] = 'Rock-Paper-Scissors Combo: Scissors'
-    desc: str = (
-        'Prepare Skill Rock-Paper-Scissors Combo: Scissors and '
-        'Rock-Paper-Scissors Combo: Paper.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Electro Hypostasis'] = 'Electro Hypostasis'
     skill_name: Literal[
@@ -108,9 +100,6 @@ class RockPaperScissorsComboPaper_3_7(PrepareCharactorStatus):
     name: Literal[
         'Rock-Paper-Scissors Combo: Paper'
     ] = 'Rock-Paper-Scissors Combo: Paper'
-    desc: str = (
-        'Prepare Skill Rock-Paper-Scissors Combo: Paper.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Electro Hypostasis'] = 'Electro Hypostasis'
     skill_name: Literal[
@@ -120,12 +109,6 @@ class RockPaperScissorsComboPaper_3_7(PrepareCharactorStatus):
 
 class ChakraDesiderata_3_7(CharactorStatusBase):
     name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
-    desc: str = (
-        'After your other characters use Elemental Bursts: Gain 1 Resolve. '
-        '(Max 3) '
-        'When the character to which this is attached uses Secret Art: Musou '
-        'Shinsetsu: Consume all Resolve and deal +1 DMG per Resolve.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 0
     max_usage: int = 3
@@ -173,11 +156,6 @@ class ChakraDesiderata_3_7(CharactorStatusBase):
 
 class TheShrinesSacredShade_3_7(RoundCharactorStatus):
     name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
-    desc: str = (
-        'During this round, the next Yakan Evocation: Sesshou Sakura used by '
-        'the charactor to which this is attached will cost 2 less Elemental '
-        'Dice.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -215,10 +193,6 @@ class TheShrinesSacredShade_3_7(RoundCharactorStatus):
 
 class TheWolfWithin_3_3(RoundCharactorStatus):
     name: Literal['The Wolf Within'] = 'The Wolf Within'
-    desc: str = (
-        'After the character to which this is attached uses a Normal Attack '
-        'or an Elemental Skill: Deal 2 Electro DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -260,11 +234,6 @@ class TheWolfWithin_3_3(RoundCharactorStatus):
 
 class TidecallerSurfEmbrace_3_4(ShieldCharactorStatus, PrepareCharactorStatus):
     name: Literal['Tidecaller: Surf Embrace'] = 'Tidecaller: Surf Embrace'
-    desc: str = (
-        'The next time this character acts, they will immediately use the '
-        'Skill Wavestrider. While preparing this Skill: Grant 2 Shield '
-        'points to the character to which this is attached.'
-    )
     version: Literal['3.4'] = '3.4'
     charactor_name: Literal['Beidou'] = 'Beidou'
     skill_name: Literal['Wavestrider'] = 'Wavestrider'
@@ -283,10 +252,6 @@ class TidecallerSurfEmbrace_3_4(ShieldCharactorStatus, PrepareCharactorStatus):
 
 class CrowfeatherCover_3_5(UsageCharactorStatus):
     name: Literal['Crowfeather Cover'] = 'Crowfeather Cover'
-    desc: str = (
-        'The character with this attached deals +1 Elemental Skill and '
-        'Elemental Burst DMG.'
-    )
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
@@ -340,13 +305,6 @@ class CrowfeatherCover_3_5(UsageCharactorStatus):
 
 class PactswornPathclearer_3_3(ElementalInfusionCharactorStatus):
     name: Literal['Pactsworn Pathclearer'] = 'Pactsworn Pathclearer'
-    desc: str = (
-        'End Phase: Gain 1 level of Indwelling. '
-        'Create the following effects based on the Indwelling Level: '
-        'If equal to or greater than 2: Physical DMG dealt is converted to '
-        'Electro DMG; If equal or greater than 4: DMG dealt +2; If equal to '
-        'or greater than 6: Indwelling Level -4'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 0
     max_usage: int = 999
@@ -408,13 +366,6 @@ class Conductive_4_0(CharactorStatusBase):
     damage increase will perform in elemental skill.
     """
     name: Literal['Conductive'] = 'Conductive'
-    desc: str = (
-        'This status starts with 2 stacks of Conductive. When attached '
-        'repeatedly, Conductive stack +1. Conductive can be stacked to a '
-        'maximum of 4 stacks. End Phase: Accumulate 1 stack of Conductive. '
-        'When the character attached with Conductive takes DMG from Violet '
-        'Arc: Remove this status and DMG +1 for each stack of Conductive. '
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 2
     max_usage: int = 4

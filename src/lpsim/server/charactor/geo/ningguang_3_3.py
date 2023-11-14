@@ -6,8 +6,8 @@ from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -20,7 +20,6 @@ from ..charactor_base import (
 
 class JadeScreen(ElementalSkillBase):
     name: Literal['Jade Screen'] = 'Jade Screen'
-    desc: str = '''Deals 2 Geo DMG, creates 1 Jade Screen.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -39,9 +38,6 @@ class JadeScreen(ElementalSkillBase):
 
 class Starshatter(ElementalBurstBase):
     name: Literal['Starshatter'] = 'Starshatter'
-    desc: str = (
-        'Deals 6 Geo DMG. If Jade Screen is on the field, deals +2 DMG.'
-    )
     damage: int = 6
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -73,12 +69,6 @@ class Starshatter(ElementalBurstBase):
 
 class StrategicReserve_3_3(SkillTalent):
     name: Literal['Strategic Reserve']
-    desc: str = (
-        'Combat Action: When your active character is Ningguang, equip this '
-        'card. After Ningguang equips this card, immediately use Jade Screen '
-        'once. When your Ningguang, who has this card equipped, is on the '
-        'field, Jade Screen will cause you to deal +1 Geo DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Ningguang'] = 'Ningguang'
     cost: Cost = Cost(
@@ -94,7 +84,6 @@ class StrategicReserve_3_3(SkillTalent):
 class Ningguang_3_3(CharactorBase):
     name: Literal['Ningguang']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Eclipsing Star" Ningguang'''
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 3
@@ -110,7 +99,7 @@ class Ningguang_3_3(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Sparkling Scatter',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             JadeScreen(),

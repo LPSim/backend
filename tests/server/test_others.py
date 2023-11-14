@@ -1,3 +1,4 @@
+from typing import Literal
 import pytest
 
 from src.lpsim.agents.random_agent import RandomAgent
@@ -64,6 +65,7 @@ def test_object_position_validation():
 
 def test_objectbase_wrong_handler_name():
     class WrongEventHandler(ObjectBase):
+        name: Literal['WrongEventHandler'] = 'WrongEventHandler'
         position: ObjectPosition = ObjectPosition(
             player_idx = -1,
             area = ObjectPositionType.INVALID,
@@ -77,6 +79,7 @@ def test_objectbase_wrong_handler_name():
         _ = WrongEventHandler()
 
     class WrongValueModifier(ObjectBase):
+        name: Literal['WrongValueModifier'] = 'WrongValueModifier'
         position: ObjectPosition = ObjectPosition(
             player_idx = -1,
             area = ObjectPositionType.INVALID,
@@ -260,6 +263,7 @@ def test_id_wont_duplicate():
     )
     for _ in range(50000):
         o = ObjectBase(
+            name = 'Test object',
             position = position,
         )
         assert o.id not in s
@@ -316,5 +320,5 @@ if __name__ == '__main__':
     # test_match_config_and_match_errors()
     # test_objectbase_wrong_handler_name()
     # test_create_dice()
-    # test_id_wont_duplicate()
+    test_id_wont_duplicate()
     test_remove_non_exist_equip()

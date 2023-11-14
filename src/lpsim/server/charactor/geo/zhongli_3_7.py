@@ -40,7 +40,6 @@ class StoneStele_3_7(AttackerSummonBase):
 
 class DominusLapidis(ElementalSkillBase):
     name: Literal['Dominus Lapidis'] = 'Dominus Lapidis'
-    desc: str = '''Deals 1 Geo DMG, summons 1 Stone Stele'''
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -60,9 +59,6 @@ class DominusLapidis(ElementalSkillBase):
 class DominusLapidisStrikingStone(ElementalSkillBase):
     name: Literal[
         'Dominus Lapidis: Striking Stone'] = 'Dominus Lapidis: Striking Stone'
-    desc: str = (
-        'Deals 3 Geo DMG, summons 1 Stone Stele, creates 1 Jade Shield.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -82,9 +78,6 @@ class DominusLapidisStrikingStone(ElementalSkillBase):
 
 class PlanetBefall(ElementalBurstBase):
     name: Literal['Planet Befall'] = 'Planet Befall'
-    desc: str = (
-        'Deals 4 Geo DMG. The target character receives Petrification.'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -109,13 +102,6 @@ class PlanetBefall(ElementalBurstBase):
 
 class DominanceOfEarth_3_7(SkillTalent):
     name: Literal['Dominance of Earth']
-    desc: str = (
-        'Combat Action: When your active character is Zhongli, equip this '
-        'card. After Zhongli equips this card, immediately use Dominus '
-        'Lapidis: Striking Stone once. When your active character is '
-        'protected by a Shield Character Status or a Shield Combat Status, '
-        'your Summons deal +1 Geo DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Zhongli'] = 'Zhongli'
     cost: Cost = Cost(
@@ -171,7 +157,6 @@ class DominanceOfEarth_3_7(SkillTalent):
 class Zhongli_3_7(CharactorBase):
     name: Literal['Zhongli']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Vago Mundo" Zhongli'''
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 3

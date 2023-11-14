@@ -31,13 +31,6 @@ from ..charactor_base import (
 
 class LightfallSword_3_8(SummonBase):
     name: Literal['Lightfall Sword'] = 'Lightfall Sword'
-    desc: str = (
-        'When Eula uses a Normal Attack or Elemental Skill, this card will '
-        'accumulate 2 Zeal stacks, but Eula will not gain Energy. '
-        'End Phase: Discard this card and deal _DAMAGE_ Physical DMG. '
-        'Each Zeal stack adds 1 DMG to this damage instance. '
-        "(Effects on this card's Usage will apply to Zeal.)"
-    )
     version: Literal['3.8'] = '3.8'
     usage: int = 0
     max_usage: int = 999
@@ -47,7 +40,6 @@ class LightfallSword_3_8(SummonBase):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -112,10 +104,6 @@ class FavoniusBladeworkEdel(PhysicalNormalAttackBase):
 
 class IcetideVortex(ElementalSkillBase):
     name: Literal['Icetide Vortex'] = 'Icetide Vortex'
-    desc: str = (
-        'Deals 2 Cryo DMG. If this character has not yet gained Grimheart, '
-        'they will gain Grimheart.'
-    )
     version: Literal['3.8'] = '3.8'
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.CRYO
@@ -166,7 +154,6 @@ class IcetideVortex(ElementalSkillBase):
 
 class GlacialIllumination(ElementalBurstBase):
     name: Literal['Glacial Illumination'] = 'Glacial Illumination'
-    desc: str = '''Deals 2 Cryo DMG, summons 1 Lightfall Sword.'''
     version: Literal['3.8'] = '3.8'
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.CRYO
@@ -190,12 +177,6 @@ class GlacialIllumination(ElementalBurstBase):
 
 class WellspringOfWarLust_3_5(SkillTalent):
     name: Literal['Wellspring of War-Lust']
-    desc: str = (
-        'Combat Action: When your active character is Eula, equip this card. '
-        'After Eula equips this card, immediately use Glacial Illumination '
-        'once. After your Eula, who has this card equipped, uses Icetide '
-        'Vortex, this will generate 1 more Zeal for Lightfall Sword.'
-    )
     version: Literal['3.5'] = '3.5'
     charactor_name: Literal['Eula'] = 'Eula'
     cost: Cost = Cost(
@@ -212,7 +193,6 @@ class WellspringOfWarLust_3_5(SkillTalent):
 class Eula_3_8(CharactorBase):
     name: Literal['Eula']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Dance of the Shimmering Wave" Eula'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 2

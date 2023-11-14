@@ -25,10 +25,6 @@ class GuhuaStyle(PhysicalNormalAttackBase):
 
 class FatalRainscreen(ElementalSkillBase):
     name: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
-    desc: str = (
-        'Deals 2 Hydro DMG, grants this character Hydro Application, '
-        'creates 1 Rain Sword.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -66,10 +62,6 @@ class FatalRainscreen(ElementalSkillBase):
 
 class Raincutter(ElementalBurstBase):
     name: Literal['Raincutter'] = 'Raincutter'
-    desc: str = (
-        'Deals 2 Hydro DMG, grants this character Hydro Application, creates '
-        '1 Rainbow Bladework.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -100,12 +92,6 @@ class Raincutter(ElementalBurstBase):
 
 class TheScentRemained_3_3(SkillTalent):
     name: Literal['The Scent Remained']
-    desc: str = (
-        'Combat Action: When your active character is Xingqiu, '
-        'equip this card. After Xingqiu equips this card, immediately use '
-        'Fatal Rainscreen once. When your Xingqiu, who has this card '
-        'equipped, creates a Rain Sword, its starting Usage(s)+1.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Xingqiu'] = 'Xingqiu'
     cost: Cost = Cost(
@@ -117,13 +103,6 @@ class TheScentRemained_3_3(SkillTalent):
 
 class TheScentRemained_4_2(TheScentRemained_3_3):
     name: Literal['The Scent Remained']
-    desc: str = (
-        'Combat Action: When your active character is Xingqiu, '
-        'equip this card. After Xingqiu equips this card, immediately use '
-        'Fatal Rainscreen once. When your Xingqiu, who has this card '
-        'equipped, creates a Rain Sword, its starting Usage(s)+1, and '
-        'can block DMG of at least 2 for your active charactor.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Xingqiu'] = 'Xingqiu'
     cost: Cost = Cost(
@@ -137,7 +116,6 @@ class TheScentRemained_4_2(TheScentRemained_3_3):
 class Xingqiu_4_1(CharactorBase):
     name: Literal['Xingqiu']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Juvenile Galant" Xingqiu'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2

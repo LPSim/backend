@@ -11,10 +11,6 @@ from .xingqiu_4_1 import GuhuaStyle, FatalRainscreen
 
 class Raincutter(R_3_6):
     name: Literal['Raincutter'] = 'Raincutter'
-    desc: str = (
-        'Deals 1 Hydro DMG, grants this character Hydro Application, creates '
-        '1 Rainbow Bladework (version 3.3).'
-    )
 
     def get_actions(self, match: Any) -> List[Actions]:
         """

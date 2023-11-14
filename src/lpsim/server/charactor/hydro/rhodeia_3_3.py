@@ -12,8 +12,8 @@ from ...action import (
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, SkillType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, ObjectPositionType, SkillType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -26,7 +26,6 @@ from ..charactor_base import (
 
 class Squirrel_3_3(AttackerSummonBase):
     name: Literal['Oceanic Mimic: Squirrel'] = 'Oceanic Mimic: Squirrel'
-    desc: str = '''End Phase: Deal 2 Hydro DMG. Usage(s): 2'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -36,7 +35,6 @@ class Squirrel_3_3(AttackerSummonBase):
 
 class Raptor_3_3(AttackerSummonBase):
     name: Literal['Oceanic Mimic: Raptor'] = 'Oceanic Mimic: Raptor'
-    desc: str = '''End Phase: Deal 1 Hydro DMG. Usage(s): 3'''
     version: Literal['3.3'] = '3.3'
     usage: int = 3
     max_usage: int = 3
@@ -46,12 +44,6 @@ class Raptor_3_3(AttackerSummonBase):
 
 class Frog_3_3(DefendSummonBase):
     name: Literal['Oceanic Mimic: Frog'] = 'Oceanic Mimic: Frog'
-    desc: str = (
-        'When your active character takes DMG: Decrease DMG taken by 1. '
-        'When the Usages are depleted, this card will not be discarded. '
-        'At the End Phase, if Usage(s) have been depleted: Discard this card, '
-        'deal 2 Hydro DMG. Usage(s): 2'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -75,10 +67,6 @@ mimic_names = [
 class RhodeiaElementSkill(ElementalSkillBase):
     name: Literal['Oceanid Mimic Summoning',
                   'The Myriad Wilds']
-    desc: str = (
-        'Randomly summons XX Oceanid Mimic (Prioritizes summoning a different '
-        'type from preexisting ones).'
-    )
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -95,7 +83,6 @@ class RhodeiaElementSkill(ElementalSkillBase):
             assert self.name == 'The Myriad Wilds'
             self.summon_number = 2
             self.cost.elemental_dice_number = 5
-        self.desc = self.desc.replace('XX', str(self.summon_number))
 
     def get_next_summon_names(
         self, match: Any, occupied: List[int]
@@ -150,10 +137,6 @@ class RhodeiaElementSkill(ElementalSkillBase):
 
 class TideAndTorrent(ElementalBurstBase):
     name: Literal['Tide and Torrent'] = 'Tide and Torrent'
-    desc: str = (
-        'Deals 2 Hydro DMG. For each friendly Summon on the field, '
-        'deals +2 additional DMG.'
-    )
     damage: int = 2
     damage_per_summon: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
@@ -176,13 +159,6 @@ class TideAndTorrent(ElementalBurstBase):
 
 class StreamingSurge_3_3(SkillTalent):
     name: Literal['Streaming Surge']
-    desc: str = (
-        'Combat Action: When your active character is Rhodeia of Loch, '
-        'equip this card. After Rhodeia of Loch equips this card, '
-        'immediately use Tide and Torrent once. When your Rhodeia of Loch, '
-        'who has this card equipped, uses Tide and Torrent, all of your '
-        'Summon(s) gain +1 Usage(s).'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Rhodeia of Loch'] = 'Rhodeia of Loch'
     cost: Cost = Cost(
@@ -229,7 +205,6 @@ class StreamingSurge_3_3(SkillTalent):
 class RhodeiaOfLoch_3_3(CharactorBase):
     name: Literal['Rhodeia of Loch']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Lady of Clear Waters" Rhodeia'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 3
@@ -246,7 +221,7 @@ class RhodeiaOfLoch_3_3(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Surge',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             RhodeiaElementSkill(

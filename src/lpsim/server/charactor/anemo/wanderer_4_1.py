@@ -68,7 +68,6 @@ class YuubanMeigen(ElementalNormalAttackBase):
 
 class HanegaSongOfTheWind(ElementalSkillBase):
     name: Literal['Hanega: Song of the Wind'] = 'Hanega: Song of the Wind'
-    desc: str = '''Deals 2 Anemo DMG. This character gains Windfavored.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -88,10 +87,6 @@ class HanegaSongOfTheWind(ElementalSkillBase):
 class KyougenFiveCeremonialPlays(ElementalBurstBase):
     name: Literal[
         'Kyougen: Five Ceremonial Plays'] = 'Kyougen: Five Ceremonial Plays'
-    desc: str = (
-        'Deals 7 Anemo DMG. If the character has Windfavored attached, then '
-        'remove it and increase DMG by 1.'
-    )
     damage: int = 7
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
@@ -126,14 +121,6 @@ class KyougenFiveCeremonialPlays(ElementalBurstBase):
 
 class GalesOfReverie_4_1(SkillTalent):
     name: Literal['Gales of Reverie']
-    desc: str = (
-        'Combat Action: When your active character is Wanderer, equip this '
-        'card. After Wanderer equips this card, immediately use Hanega: Song '
-        'of the Wind once. When your Wanderer, who has this card equipped, is '
-        'in Windfavored state and after using Charged Attack: you will spend '
-        '1 less Elemental Die the next time you use "Switch Character" and '
-        'deal 1 Anemo DMG.'
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Wanderer'] = 'Wanderer'
     cost: Cost = Cost(
@@ -234,7 +221,6 @@ class GalesOfReverie_4_1(SkillTalent):
 class Wanderer_4_1(CharactorBase):
     name: Literal['Wanderer']
     version: Literal['4.1'] = '4.1'
-    desc: str = '''"Eons Adrift" Wanderer'''
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 3

@@ -14,10 +14,6 @@ from .base import (
 
 class Grimheart_3_8(UsageCharactorStatus):
     name: Literal['Grimheart'] = 'Grimheart'
-    desc: str = (
-        'After the character to which this is attached uses Icetide Vortex: '
-        'Remove this status, DMG +_DAMAGE_ for this instance.'
-    )
     version: Literal['3.8'] = '3.8'
     damage: int = 3
     usage: int = 1
@@ -31,7 +27,6 @@ class Grimheart_3_8(UsageCharactorStatus):
         else:
             assert self.version == '3.8'
             self.damage = 3
-        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -69,11 +64,7 @@ class CryoFusionAyaka_3_3(ElementalInfusionCharactorStatus,
     """
     name: Literal['Cryo Elemental Infusion'] = 'Cryo Elemental Infusion'
     mark: Literal['Kamisato Ayaka']  # used to select right status
-    buff_desc: str = (
-        'When the charactor to which it is attached to deals '
-        'Physical Damage, it will be turned into Cryo DMG, '
-        'and Cryo DMG dealt by the charactor +1.'
-    )
+    desc: Literal['', 'ayaka_talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -83,13 +74,13 @@ class CryoFusionAyaka_3_3(ElementalInfusionCharactorStatus,
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.talent_activated:
-            self.desc = self.buff_desc
+            self.desc = 'ayaka_talent'
 
     def renew(self, new_status: 'CryoFusionAyaka_3_3') -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
-            self.desc = self.buff_desc
+            self.desc = 'ayaka_talent'
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,

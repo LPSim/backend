@@ -31,10 +31,6 @@ class VolatileSporeCloud(ElementalSkillBase):
 
 class FeatherSpreading(ElementalBurstBase):
     name: Literal['Feather Spreading'] = 'Feather Spreading'
-    desc: str = (
-        'Deals 4 Dendro DMG, then consumes all Radical Vitality stacks. '
-        'For each stack consumed, this instance deals +1 DMG.'
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -73,10 +69,6 @@ class FeatherSpreading(ElementalBurstBase):
 
 class RadicalVitality(PassiveSkillBase):
     name: Literal['Radical Vitality'] = 'Radical Vitality'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Radical '
-        'Vitality.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -92,13 +84,6 @@ class RadicalVitality(PassiveSkillBase):
 
 class ProliferatingSpores_3_3(SkillTalent):
     name: Literal['Proliferating Spores']
-    desc: str = (
-        'Combat Action: When your active character is Jadeplume Terrorshroom, '
-        'equip this card. After Jadeplume Terrorshroom equips this card, '
-        'immediately use Volatile Spore Cloud once. Your Jadeplume '
-        'Terrorshroom, who has this card equipped, can accumulate 1 more '
-        'stack of Radical Vitality.'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal[
         'Jadeplume Terrorshroom'] = 'Jadeplume Terrorshroom'
@@ -129,7 +114,6 @@ class ProliferatingSpores_3_3(SkillTalent):
 class JadeplumeTerrorshroom_3_3(CharactorBase):
     name: Literal['Jadeplume Terrorshroom']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Lord of Fungi" Jadeplume Terrorshroom'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2

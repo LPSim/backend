@@ -15,10 +15,6 @@ class CatalyzingField_3_4(UsageTeamStatus):
     Catalyzing field.
     """
     name: Literal['Catalyzing Field'] = 'Catalyzing Field'
-    desc: str = (
-        'When you deal Electro DMG or Pyro DMG to an opposing active '
-        'charactor, DMG dealt +1.'
-    )
     version: Literal['3.4'] = '3.4'
     usage: int = 2
     max_usage: int = 2
@@ -68,10 +64,6 @@ class DendroCore_3_3(UsageTeamStatus):
     Dendro core.
     """
     name: Literal['Dendro Core'] = 'Dendro Core'
-    desc: str = (
-        'When you deal Pyro DMG or Electro DMG to an opposing active '
-        'charactor, DMG dealt +2.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -112,10 +104,6 @@ class Crystallize_3_3(ShieldTeamStatus):
     Crystallize.
     """
     name: Literal['Crystallize'] = 'Crystallize'
-    desc: str = (
-        'Grants 1 Shield point to your active charactor. '
-        '(Can stack. Max 2 Points.)'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 2

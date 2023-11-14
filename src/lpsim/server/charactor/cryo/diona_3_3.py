@@ -23,9 +23,6 @@ from ..charactor_base import (
 
 class DrunkenMist_3_3(AttackerSummonBase):
     name: Literal['Drunken Mist'] = 'Drunken Mist'
-    desc: str = (
-        'End Phase: Deal 1 Cryo DMG, heal your active character for 2 HP.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -58,7 +55,6 @@ class DrunkenMist_3_3(AttackerSummonBase):
 
 class IcyPaws(ElementalSkillBase):
     name: Literal['Icy Paws'] = 'Icy Paws'
-    desc: str = '''Deals 2 Cryo DMG, creates 1 Cat-Claw Shield.'''
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -82,10 +78,6 @@ class IcyPaws(ElementalSkillBase):
 
 class SignatureMix(ElementalBurstBase):
     name: Literal['Signature Mix'] = 'Signature Mix'
-    desc: str = (
-        'Deals 1 Cryo DMG, heals this character for 2 HP, summons 1 '
-        'Drunken Mist.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -119,12 +111,6 @@ class SignatureMix(ElementalBurstBase):
 
 class ShakenNotPurred_4_1(SkillTalent):
     name: Literal['Shaken, Not Purred']
-    desc: str = (
-        'Combat Action: When your active character is Diona, equip this card. '
-        'After Diona equips this card, immediately use Icy Paws once. '
-        'When your Diona, who has this card equipped, creates a Cat-Claw '
-        'Shield, its Shield points +1.'
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Diona'] = 'Diona'
     cost: Cost = Cost(
@@ -148,7 +134,6 @@ class ShakenNotPurred_3_3(ShakenNotPurred_4_1):
 class Diona_3_3(CharactorBase):
     name: Literal['Diona']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Kätzlein Cocktail" Diona'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 3

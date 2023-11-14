@@ -21,7 +21,6 @@ from ..charactor_base import (
 
 class GuideToAfterlife(ElementalSkillBase):
     name: Literal['Guide to Afterlife'] = 'Guide to Afterlife'
-    desc: str = '''This character gains Paramita Papilio.'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -41,10 +40,6 @@ class GuideToAfterlife(ElementalSkillBase):
 
 class SpiritSoother(ElementalBurstBase):
     name: Literal['Spirit Soother'] = 'Spirit Soother'
-    desc: str = (
-        "Deals 4 Pyro DMG, heals herself for 2 HP. If this character's HP is "
-        "no more than 6, DMG dealt and Healing are increased by 1."
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -78,12 +73,6 @@ class SpiritSoother(ElementalBurstBase):
 
 class SanguineRouge_3_7(SkillTalent):
     name: Literal['Sanguine Rouge']
-    desc: str = (
-        'Combat Action: When your active character is Hu Tao, equip this '
-        'card. After Hu Tao equips this card, immediately use Guide to '
-        'Afterlife once. When your Hu Tao, who has this card equipped, has no '
-        'more than 6 HP, Pyro DMG dealt +1.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Hu Tao'] = 'Hu Tao'
     cost: Cost = Cost(
@@ -123,7 +112,6 @@ class SanguineRouge_3_7(SkillTalent):
 class HuTao_3_7(CharactorBase):
     name: Literal['Hu Tao']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Fragrance in Thaw" Hu Tao'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 3

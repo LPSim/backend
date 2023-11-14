@@ -24,11 +24,6 @@ from ..charactor_base import (
 
 class MelodyLoop_3_3(AttackerSummonBase):
     name: Literal['Melody Loop'] = 'Melody Loop'
-    desc: str = (
-        'End Phase: Heal all your characters for 1 HP and your active '
-        'character gains Hydro Application. '
-        'Usage(s): 2'
-    )
     version: Literal['3.3'] = '3.3'
     damage_elemental_type: DamageElementalType = DamageElementalType.HEAL
     damage: int = -1
@@ -76,9 +71,6 @@ class MelodyLoop_3_3(AttackerSummonBase):
 
 class LetTheShowBegin(ElementalSkillBase):
     name: Literal['Let the Show Begin♪'] = 'Let the Show Begin♪'
-    desc: str = (
-        'Deals 1 Hydro DMG, summons 1 Melody Loop.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
@@ -94,7 +86,6 @@ class LetTheShowBegin(ElementalSkillBase):
 
 class ShiningMiracle(ElementalBurstBase):
     name: Literal['Shining Miracle'] = 'Shining Miracle'
-    desc: str = '''Heals all of your characters for 4 HP.'''
     damage: int = -4
     damage_type: DamageElementalType = DamageElementalType.HEAL
     cost: Cost = Cost(
@@ -127,14 +118,6 @@ class ShiningMiracle(ElementalBurstBase):
 
 class GloriousSeason_3_3(SkillTalent):
     name: Literal['Glorious Season'] = 'Glorious Season'
-    desc: str = (
-        'Combat Action: When your active character is Barbara, equip this '
-        'card. '
-        'After Barbara equips this card, immediately use Let the Show Begin♪ '
-        'once. When your Barbara, who has this card equipped, is on the '
-        'field, Melody Loop will allow you to spend 1 less Elemental Die the '
-        'next time you use "Switch Character." (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Barbara'] = 'Barbara'
     cost: Cost = Cost(
@@ -200,7 +183,6 @@ class GloriousSeason_4_2(GloriousSeason_3_3):
 class Barbara_3_3(CharactorBase):
     name: Literal['Barbara']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Shining Idol" Barbara'''
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 3

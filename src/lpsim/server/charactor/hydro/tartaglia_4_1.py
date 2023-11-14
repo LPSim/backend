@@ -55,10 +55,6 @@ class AttachRiptideWhenSkillEnd(SkillBase):
 
 class FoulLegacyRagingTide(ElementalSkillBase, AttachRiptideWhenSkillEnd):
     name: Literal['Foul Legacy: Raging Tide'] = 'Foul Legacy: Raging Tide'
-    desc: str = (
-        'Switches to Melee Stance and deals 2 Hydro DMG, '
-        'and attach Riptide to the target charactor.'
-    )
     version: Literal['4.1'] = '4.1' 
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
@@ -83,12 +79,6 @@ class FoulLegacyRagingTide(ElementalSkillBase, AttachRiptideWhenSkillEnd):
 
 class HavocObliteration(ElementalBurstBase, AttachRiptideWhenSkillEnd):
     name: Literal['Havoc: Obliteration'] = 'Havoc: Obliteration'
-    desc: str = (
-        'Performs different attacks based on the current stance that '
-        'Tartaglia is in. Ranged Stance - Flash of Havoc: Deal 5 Hydro DMG, '
-        'reclaim 2 Energy, and apply Riptide to the target character. '
-        'Melee Stance - Light of Obliteration: Deal 7 Hydro DMG.'
-    )
     version: Literal['4.1'] = '4.1' 
     damage: int = 7
     ranged_damage: int = 5
@@ -152,11 +142,6 @@ class TideWithholder(PassiveSkillBase):
     themself.
     """
     name: Literal['Tide Withholder'] = 'Tide Withholder'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Ranged '
-        'Stance. Once the Melee Stance attached to the character ends, '
-        'reapplies Ranged Stance.'
-    )
     version: Literal['4.1'] = '4.1'
 
     def event_handler_GAME_START(
@@ -178,12 +163,6 @@ class TideWithholder(PassiveSkillBase):
 
 class AbyssalMayhemHydrospout_4_1(SkillTalent):
     name: Literal['Abyssal Mayhem: Hydrospout']
-    desc: str = (
-        'Combat Action: When your active character is Tartaglia, equip this '
-        'card. After Tartaglia equips this card, immediately use Foul Legacy: '
-        'Raging Tide once. End Phase: Deals 1 Piercing DMG to the opponent '
-        'active character if they have Riptide attached.'
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Tartaglia'] = 'Tartaglia'
     cost: Cost = Cost(
@@ -237,7 +216,6 @@ class AbyssalMayhemHydrospout_4_1(SkillTalent):
 class Tartaglia_4_1(CharactorBase):
     name: Literal['Tartaglia']
     version: Literal['4.1'] = '4.1'
-    desc: str = '"Childe" Tartaglia'
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 3

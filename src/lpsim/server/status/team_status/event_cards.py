@@ -33,10 +33,6 @@ from .base import (
 
 class ChangingShifts_3_3(UsageTeamStatus):
     name: Literal['Changing Shifts'] = 'Changing Shifts'
-    desc: str = (
-        'The next time you perform "Switch Character": '
-        'Spend 1 less Elemental Die.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -73,7 +69,6 @@ class ChangingShifts_3_3(UsageTeamStatus):
 
 class IHaventLostYet_4_0(RoundTeamStatus):
     name: Literal["I Haven't Lost Yet!"] = "I Haven't Lost Yet!"
-    desc: str = '''You cannot play "I Haven't Lost Yet!" again this round.'''
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
@@ -82,11 +77,6 @@ class IHaventLostYet_4_0(RoundTeamStatus):
 
 class FreshWindOfFreedom_4_1(RoundTeamStatus):
     name: Literal['Fresh Wind of Freedom'] = 'Fresh Wind of Freedom'
-    desc: str = (
-        'In this Round, when an opposing character is defeated during your '
-        'Action, you can continue to act again when that Action ends. '
-        'Usage(s): 1 '
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 1
     max_usage: int = 1
@@ -138,11 +128,6 @@ class FreshWindOfFreedom_4_1(RoundTeamStatus):
 
 class LeaveItToMe_3_3(UsageTeamStatus):
     name: Literal['Leave It to Me!']
-    desc: str = (
-        'The next time you perform "Switch Character": '
-        'The switch will be considered a Fast Action instead of a '
-        'Combat Action.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -196,11 +181,6 @@ class EnduringRock_3_3(RoundTeamStatus):
     name: Literal[
         'Elemental Resonance: Enduring Rock'
     ] = 'Elemental Resonance: Enduring Rock'
-    desc: str = (
-        'During this round, after your character deals Geo DMG next time: '
-        'Should there be any Combat Status on your side that provides Shield, '
-        'grant one such Status with 3 Shield points.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -256,10 +236,6 @@ class EnduringRock_3_3(RoundTeamStatus):
 
 class WhereIstheUnseenRazor_4_0(RoundTeamStatus):
     name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
-    desc: str = (
-        'During this Round, the next time you play a Weapon card: '
-        'Spend 2 less Elemental Dice.'
-    )
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
@@ -298,10 +274,6 @@ class SprawlingGreenery_3_3(RoundTeamStatus):
     name: Literal[
         'Elemental Resonance: Sprawling Greenery'
     ] = 'Elemental Resonance: Sprawling Greenery'
-    desc: str = (
-        'During this round, the next Elemental Reaction you trigger deals '
-        '+2 DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -346,7 +318,6 @@ class SprawlingGreenery_3_3(RoundTeamStatus):
 
 class ReviveOnCooldown_3_7(RoundTeamStatus):
     name: Literal['Revive on cooldown'] = 'Revive on cooldown'
-    desc: str = '''You cannot revive any charactor with food this round.'''
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -355,10 +326,6 @@ class ReviveOnCooldown_3_7(RoundTeamStatus):
 
 class StoneAndContracts_3_7(TeamStatusBase):
     name: Literal['Stone and Contracts']
-    desc: str = (
-        'When the Action Phase of the next Round begins: Create 3 Omni '
-        'Element. '
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -384,11 +351,6 @@ class StoneAndContracts_3_7(TeamStatusBase):
 
 class AncientCourtyard_3_8(RoundTeamStatus):
     name: Literal['Ancient Courtyard']
-    desc: str = (
-        'You must have a character who has already equipped a Weapon or '
-        'Artifact: The next time you play a Weapon or Artifact card in this '
-        'Round: Spend 2 less Elemental Dice.'
-    )
     version: Literal['3.8'] = '3.8'
     usage: int = 1
     max_usage: int = 1
@@ -433,12 +395,6 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
         'Fatui Ambusher: Pyroslinger Bracer',
         'Fatui Ambusher: Electrohammer Vanguard'
     ]
-    desc: str = (
-        "After a character on whose side of the field this card is on uses a "
-        "Skill: Deals 1 XXX DMG to the active character on that side. "
-        "(Once per round) "
-        "Usage(s): 2"
-    )
     element: DamageElementalType = DamageElementalType.PIERCING
     version: Literal['3.7'] = '3.7'
     usage: int = 2
@@ -458,7 +414,6 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
         else:
             assert self.name == 'Fatui Ambusher: Electrohammer Vanguard'
             self.element = DamageElementalType.ELECTRO
-        self.desc = self.desc.replace('XXX', self.element.name.capitalize())
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -505,10 +460,6 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
 
 class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
     name: Literal['Rhythm of the Great Dream']
-    desc: str = (
-        'The next time you play a Weapon or Artifact from your hand: Spend 1 '
-        'less Elemental Die.'
-    )
     version: Literal['3.8'] = '3.8'
     usage: int = 1
     max_usage: int = 1
@@ -546,10 +497,6 @@ class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
 
 class WhenTheCraneReturned_3_3(UsageTeamStatus):
     name: Literal['When the Crane Returned']
-    desc: str = (
-        'The next time you use a Skill: Switch your next character in to be '
-        'the active character.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -601,11 +548,6 @@ class WindAndFreedom_3_7(FreshWindOfFreedom_4_1):
 
 class Pankration_4_1(TeamStatusBase):
     name: Literal['Pankration!'] = 'Pankration!'
-    desc: str = (
-        'After a player announces the end of their Round first, the other '
-        'player, who has yet to announce the end of their Round, draws 2 '
-        'cards.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost()
     usage: int = 1
@@ -632,10 +574,6 @@ class Pankration_4_1(TeamStatusBase):
 
 class Lyresong_4_2(WhereIstheUnseenRazor_4_0):
     name: Literal['Lyresong'] = 'Lyresong'
-    desc: str = (
-        'During this Round, the next time you play an Artifact card: '
-        'Spend 2 less Elemental Dice.'
-    )
     version: Literal['4.2'] = '4.2'
     decrease_target: int = CostLabels.ARTIFACT.value
 

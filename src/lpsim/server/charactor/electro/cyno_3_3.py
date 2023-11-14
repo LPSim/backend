@@ -59,9 +59,6 @@ class SecretRiteChasmicSoulfarer(ElementalSkillBase):
 class SacredRiteWolfsSwiftness(ElementalBurstBase):
     name: Literal[
         "Sacred Rite: Wolf's Swiftness"] = "Sacred Rite: Wolf's Swiftness"
-    desc: str = (
-        "Deals 4 Electro DMG. Pactsworn Pathclearer's Indwelling Level +2."
-    )
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -91,10 +88,6 @@ class SacredRiteWolfsSwiftness(ElementalBurstBase):
 
 class LawfulEnforcer(PassiveSkillBase):
     name: Literal['Lawful Enforcer'] = 'Lawful Enforcer'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains Pactsworn '
-        'Pathclearer.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -110,13 +103,6 @@ class LawfulEnforcer(PassiveSkillBase):
 
 class FeatherfallJudgment_3_3(SkillTalent):
     name: Literal['Featherfall Judgment']
-    desc: str = (
-        'Combat Action: When your active character is Cyno, equip this card. '
-        'After Cyno equips this card, immediately use Secret Rite: Chasmic '
-        'Soulfarer once. When your Cyno, who has this card equipped, uses '
-        "Secret Rite: Chasmic Soulfarer with 3 or 5 levels of Pactsworn "
-        "Pathclearer's Indwelling effect, deal +1 additional DMG."
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Cyno'] = 'Cyno'
     cost: Cost = Cost(
@@ -131,13 +117,6 @@ class FeatherfallJudgment_3_3(SkillTalent):
 
 class FeatherfallJudgment_4_2(SkillTalent):
     name: Literal['Featherfall Judgment']
-    desc: str = (
-        'Combat Action: When your active character is Cyno, equip this card. '
-        'After Cyno equips this card, immediately use Secret Rite: Chasmic '
-        'Soulfarer once. When your Cyno, who has this card equipped, uses '
-        "Secret Rite: Chasmic Soulfarer with even levels of Pactsworn "
-        "Pathclearer's Indwelling effect, deal +1 additional DMG."
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Cyno'] = 'Cyno'
     cost: Cost = Cost(
@@ -156,9 +135,6 @@ class FeatherfallJudgment_4_2(SkillTalent):
 class Cyno_3_3(CharactorBase):
     name: Literal['Cyno']
     version: Literal['3.3'] = '3.3'
-    desc: str = (
-        '''"Judicator of Secrets" Cyno'''
-    )
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

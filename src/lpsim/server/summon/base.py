@@ -28,7 +28,6 @@ class SummonBase(ObjectBase):
     type: Literal[ObjectType.SUMMON] = ObjectType.SUMMON
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'RESET_WITH_MAX'
     name: str
-    desc: str
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     usage: int
@@ -95,7 +94,6 @@ class AttackerSummonBase(SummonBase):
     Attacker Summon, as it also makes damage with type HEAL.
     """
     name: str
-    desc: str = '''End Phase: Deal _DAMAGE_ _ELEMENT_ DMG.'''
     version: str
     usage: int
     max_usage: int
@@ -103,14 +101,6 @@ class AttackerSummonBase(SummonBase):
     damage: int
 
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
-
-    def __init__(self, *argv, **kwargs) -> None:
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_DAMAGE_', str(self.damage)
-        ).replace(
-            '_ELEMENT_', self.damage_elemental_type.name.capitalize()
-        )
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -178,18 +168,7 @@ class AOESummonBase(AttackerSummonBase):
     Base class that deals AOE damage. It will attack active charactor 
     damage+element, back chractor back_damage_piercing.
     """
-    desc: str = (
-        'Deals _ACTIVE_ _ELEMENT_ DMG, deals _BACK_ Piercing DMG to all '
-        'opposing characters on standby.'
-    )
     back_damage: int
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_elemental_type.value.lower().capitalize())
-        self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
-        self.desc = self.desc.replace('_BACK_', str(self.back_damage))
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -249,7 +228,6 @@ class DefendSummonBase(SummonBase):
 
     Args:
         name: The name of the summon.
-        desc: The description of the summon.
         usage: The usage of the summon, which is shown on top right when it is
             summoned, represents the number of times it can decrease damage.
         max_usage: The maximum usage of the summon.
@@ -265,7 +243,6 @@ class DefendSummonBase(SummonBase):
         decrease_usage_by_damage: Always be false for defend summons.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -347,7 +324,6 @@ class ShieldSummonBase(DefendSummonBase):
 
     Args:
         name: The name of the summon.
-        desc: The description of the summon.
         usage: The usage of the summon, which is shown on top right when it is
             summoned, represents the number of times it can decrease damage.
         max_usage: The maximum usage of the summon.
@@ -363,7 +339,6 @@ class ShieldSummonBase(DefendSummonBase):
         max_in_one_time: Not used, always be 0 for shield summons.
     """
     name: str
-    desc: str
     version: str
     usage: int
     max_usage: int
@@ -386,12 +361,6 @@ class SwirlChangeSummonBase(AttackerSummonBase):
     Note: create summon before attack, so it can change element immediately.
     """
     name: str
-    desc: str = (
-        'After your character or Summon triggers a Swirl reaction: Convert '
-        'the Elemental Type of this card and change its DMG dealt to the '
-        'element Swirled. (Can only be converted once before leaving the '
-        'field)'
-    )
     version: str
     usage: int
     max_usage: int

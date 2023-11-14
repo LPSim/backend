@@ -25,15 +25,6 @@ from ..charactor_base import (
 
 class Ushi_3_6(DefendSummonBase):
     name: Literal['Ushi'] = 'Ushi'
-    desc: str = (
-        'When your active character takes DMG: Decrease DMG taken by 1. '
-        'When the Usage is depleted, this card will not be discarded. '
-        'Can be triggered once while this summon is present: '
-        'When your character recieves DMG, Arataki Itto gains '
-        'Superlative Superstrength. '
-        'End Phase: Discard this card, deal 1 Geo DMG. '
-        'Usage(s): 1'
-    )
     version: Literal['3.6'] = '3.6'
     usage: int = 1
     max_usage: int = 1
@@ -98,10 +89,6 @@ class FightClubLegend(PhysicalNormalAttackBase):
 class MasatsuZetsugiAkaushiBurst(ElementalSkillBase):
     name: Literal[
         'Masatsu Zetsugi: Akaushi Burst!'] = 'Masatsu Zetsugi: Akaushi Burst!'
-    desc: str = (
-        'Deals 1 Geo DMG. Summons Ushi. This Character gains '
-        'Superlative Superstrength.'
-    )
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -123,7 +110,6 @@ class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
     name: Literal[
         'Royal Descent: Behold, Itto the Evil!'
     ] = 'Royal Descent: Behold, Itto the Evil!'
-    desc: str = '''Deals 5 Geo DMG. This character gains Raging Oni King.'''
     damage: int = 5
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
@@ -149,14 +135,6 @@ class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
 
 class AratakiIchiban_3_6(SkillTalent):
     name: Literal['Arataki Ichiban']
-    desc: str = (
-        'Combat Action: When your active character is Arataki Itto, '
-        'equip this card. After Arataki Itto equips this card, immediately '
-        'use Fight Club Legend once. After your Arataki Itto, who has this '
-        'card equipped, uses Fight Club Legend for the second time or more '
-        'this Round: If Superlative Superstrength is triggered, deal +1 '
-        'additional DMG.'
-    )
     version: Literal['3.6'] = '3.6'
     charactor_name: Literal['Arataki Itto'] = 'Arataki Itto'
     cost: Cost = Cost(
@@ -173,7 +151,6 @@ class AratakiIchiban_3_6(SkillTalent):
 class AratakiItto_3_6(CharactorBase):
     name: Literal['Arataki Itto']
     version: Literal['3.6'] = '3.6'
-    desc: str = '''"Hanamizaka Heroics" Arataki Itto'''
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 3

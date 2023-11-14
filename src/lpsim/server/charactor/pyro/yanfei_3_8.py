@@ -26,9 +26,6 @@ class SealOfApproval(ElementalNormalAttackBase):
 
 class SignedEdict(ElementalSkillBase):
     name: Literal['Signed Edict'] = 'Signed Edict'
-    desc: str = (
-        'Deals 3 Pyro DMG and attaches Scarlet Seal to this character.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -50,10 +47,6 @@ class SignedEdict(ElementalSkillBase):
 
 class DoneDeal(ElementalBurstBase):
     name: Literal['Done Deal'] = 'Done Deal'
-    desc: str = (
-        'Deals 3 Pyro DMG, attaches Scarlet Seal and Brilliance to this '
-        'character.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -74,12 +67,6 @@ class DoneDeal(ElementalBurstBase):
 
 class RightOfFinalInterpretation_3_8(SkillTalent):
     name: Literal['Right of Final Interpretation']
-    desc: str = (
-        'Combat Action: When your active character is Yanfei, equip this '
-        'card. After Yanfei equips this card, immediately use Seal of '
-        'Approval once. When Yanfei uses a Charged Attack with this card '
-        'equipped: Deal +1 DMG to enemies with 6 or less HP.'
-    )
     version: Literal['3.8'] = '3.8'
     charactor_name: Literal['Yanfei'] = 'Yanfei'
     cost: Cost = Cost(
@@ -124,7 +111,6 @@ class RightOfFinalInterpretation_3_8(SkillTalent):
 class Yanfei_3_8(CharactorBase):
     name: Literal['Yanfei']
     version: Literal['3.8'] = '3.8'
-    desc: str = '''Wise Innocence: Yanfei'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2

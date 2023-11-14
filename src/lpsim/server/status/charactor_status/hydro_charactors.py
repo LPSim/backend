@@ -35,12 +35,6 @@ class Riptide_4_1(CharactorStatusBase):
     when game starts.
     """
     name: Literal['Riptide'] = 'Riptide'
-    desc: str = (
-        'When the character to which this is attached is defeated: Apply '
-        'Riptide to active character. '
-        'When Tartaglia is in Melee Stance, he will deal additional DMG when '
-        'attacking the character to which this is attached.'
-    )
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
@@ -83,10 +77,6 @@ class Riptide_4_1(CharactorStatusBase):
 
 class RangedStance_4_1(CharactorStatusBase):
     name: Literal['Ranged Stance'] = 'Ranged Stance'
-    desc: str = (
-        'After the character to which this is attached uses Charged Attack: '
-        'Apply Riptide to target character.'
-    )
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
@@ -152,15 +142,6 @@ class RangedStance_4_1(CharactorStatusBase):
 class MeleeStance_4_1(ElementalInfusionCharactorStatus,
                       RoundCharactorStatus):
     name: Literal['Melee Stance'] = 'Melee Stance'
-    desc: str = (
-        'Physical DMG dealt by character is converted to Hydro DMG. '
-        'After the character uses Charged Attack: Apply Riptide to target '
-        'character. Character deals +1 DMG to target characters with Riptide '
-        'attached. '
-        'After Skills are used against characters affected by Riptide: '
-        'Deal 1 Piercing DMG to the next opposing off-field character. '
-        '(Twice per Round)'
-    )
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
@@ -320,12 +301,6 @@ class Riptide_3_7(Riptide_4_1, RoundCharactorStatus):
     when game starts.
     """
     name: Literal['Riptide'] = 'Riptide'
-    desc: str = (
-        'When the character to which this is attached is defeated: Apply '
-        'Riptide to active character. '
-        'When Tartaglia is in Melee Stance, he will deal additional DMG when '
-        'attacking the character to which this is attached.'
-    )
     version: Literal['3.7']
     usage: int = 2
     max_usage: int = 2
@@ -342,11 +317,6 @@ class MeleeStance_3_7(MeleeStance_4_1):
 
 class CeremonialGarment_3_5(RoundCharactorStatus):
     name: Literal['Ceremonial Garment'] = 'Ceremonial Garment'
-    desc: str = (
-        'The character to which this is attached has their Normal Attacks '
-        'deal +1 DMG. After the character to which this attached uses a '
-        'Normal Attack: Heal 1 HP for all your characters.'
-    )
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
@@ -403,11 +373,6 @@ class CeremonialGarment_3_5(RoundCharactorStatus):
 
 class HeronShield_3_8(ShieldCharactorStatus, PrepareCharactorStatus):
     name: Literal['Heron Shield'] = 'Heron Shield'
-    desc: str = (
-        'The next time this character acts, they will immediately use the '
-        'Skill Heron Strike. While preparing this Skill: Grant 2 Shield '
-        'points to the character to which this is attached.'
-    )
     version: Literal['3.8'] = '3.8'
     charactor_name: Literal['Candace'] = 'Candace'
     skill_name: Literal['Heron Strike'] = 'Heron Strike'
@@ -426,9 +391,7 @@ class HeronShield_3_8(ShieldCharactorStatus, PrepareCharactorStatus):
 
 class Refraction_3_3(RoundCharactorStatus):
     name: Literal['Refraction'] = 'Refraction'
-    desc: str = (
-        'The character to which this is attached takes +1 Hydro DMG.'
-    )
+    desc: Literal['', 'talent'] = ''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -441,12 +404,7 @@ class Refraction_3_3(RoundCharactorStatus):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.is_talent_activated:
-            additional_desc = (
-                ' The Elemental Dice Cost of switching from this character to '
-                'another character is increased by 1.'
-            )
-            self.desc = self.desc.replace(additional_desc, '')
-            self.desc += additional_desc
+            self.desc = 'talent'
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -492,10 +450,6 @@ class Refraction_3_3(RoundCharactorStatus):
 class TakimeguriKanka_4_1(ElementalInfusionCharactorStatus, 
                           UsageCharactorStatus):
     name: Literal['Takimeguri Kanka'] = 'Takimeguri Kanka'
-    desc: str = (
-        'The character to which this is attached has their Normal Attacks '
-        'deal +1 DMG, and their Physical DMG is converted to Hydro DMG.'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 2
     max_usage: int = 2
@@ -528,7 +482,6 @@ class TakimeguriKanka_4_1(ElementalInfusionCharactorStatus,
 
 class LingeringAeon_4_2(RoundEndAttackCharactorStatus):
     name: Literal['Lingering Aeon'] = 'Lingering Aeon'
-    desc: str = '''End Phase: Deal 3 Hydro DMG to affected characters.'''
     version: Literal['4.2'] = '4.2'
     usage: int = 1
     max_usage: int = 1

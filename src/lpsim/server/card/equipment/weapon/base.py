@@ -21,7 +21,6 @@ class WeaponBase(CardBase):
     Base class of weapons.
     """
     name: str
-    desc: str
     cost: Cost
     version: str
     weapon_type: WeaponType
@@ -139,7 +138,6 @@ class RoundEffectWeaponBase(WeaponBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     cost: Cost
     version: str
     weapon_type: WeaponType

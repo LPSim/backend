@@ -20,11 +20,6 @@ class SacrificialWeapons_3_3(RoundEffectWeaponBase):
         'Sacrificial Sword',
         'Sacrificial Bow',
     ]
-    desc: str = (
-        'The character deals +1 DMG. After the character uses an Elemental '
-        'Skill: Create 1 Elemental Die of the same Elemental Type as this '
-        'character. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.3'] = '3.3'
     weapon_type: WeaponType = WeaponType.OTHER

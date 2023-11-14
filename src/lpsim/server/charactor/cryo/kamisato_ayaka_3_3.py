@@ -28,7 +28,6 @@ from ..charactor_base import (
 
 class FrostflakeSekiNoTo_3_3(AttackerSummonBase):
     name: Literal['Frostflake Seki no To'] = 'Frostflake Seki no To'
-    desc: str = '''End Phase: Deal 2 Cryo DMG.'''
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -41,7 +40,6 @@ class FrostflakeSekiNoTo_3_3(AttackerSummonBase):
 
 class KamisatoArtSoumetsu(ElementalBurstBase):
     name: Literal['Kamisato Art: Soumetsu'] = 'Kamisato Art: Soumetsu'
-    desc: str = '''Deals 4 Cryo DMG, summons 1 Frostflake Seki no To.'''
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.CRYO
     cost: Cost = Cost(
@@ -58,10 +56,6 @@ class KamisatoArtSoumetsu(ElementalBurstBase):
 
 class KamisatoArtSenho(PassiveSkillBase):
     name: Literal['Kamisato Art: Senho'] = 'Kamisato Art: Senho'
-    desc: str = (
-        '(Passive) When switched to be the active character, this character '
-        'gains Cryo Elemental Infusion.'
-    )
 
     def infuse(self, match: Any) -> List[CreateObjectAction]:
         args: Dict = { 'mark': 'Kamisato Ayaka' }
@@ -123,12 +117,6 @@ class KamisatoArtSenho(PassiveSkillBase):
 
 class KantenSenmyouBlessing_3_3(TalentBase):
     name: Literal['Kanten Senmyou Blessing']
-    desc: str = (
-        'The Cryo Elemental Infusion created by your Kamisato Ayaka, who has '
-        'this card equipped, allows the character to which it is attached to '
-        'deal +1 Cryo DMG. When you switch to Kamisato Ayaka, who has this '
-        'card equipped: Spend 1 less Elemental Die. (Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     charactor_name: Literal['Kamisato Ayaka'] = 'Kamisato Ayaka'
     cost: Cost = Cost(
@@ -200,7 +188,6 @@ class KantenSenmyouBlessing_3_3(TalentBase):
 class KamisatoAyaka_3_3(CharactorBase):
     name: Literal['Kamisato Ayaka']
     version: Literal['3.3'] = '3.3'
-    desc: str = '''"Frostflake Heron" Kamisato Ayaka'''
     element: ElementType = ElementType.CRYO
     max_hp: int = 10
     max_charge: int = 3

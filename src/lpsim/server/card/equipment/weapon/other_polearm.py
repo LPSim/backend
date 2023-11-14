@@ -22,13 +22,6 @@ from .base import RoundEffectWeaponBase, WeaponBase
 
 class VortexVanquisher_3_7(RoundEffectWeaponBase):
     name: Literal['Vortex Vanquisher']
-    desc: str = (
-        'The character deals +1 DMG. When your active character is protected '
-        'by a Shield Character Status or a Shield Combat Status, you deal +1 '
-        'DMG. After the character uses an Elemental Skill: If you have a '
-        'Combat Status that grants a Shield on your side, add 1 Shield point '
-        'to that Combat Status. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.7'] = '3.7'
     weapon_type: WeaponType = WeaponType.POLEARM
@@ -105,11 +98,6 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
 
 class LithicSpear_3_7(WeaponBase):
     name: Literal['Lithic Spear']
-    desc: str = (
-        'The character deals +1 DMG. '
-        'When played: For each party member from Liyue, grant 1 Shield point '
-        'to the character to which this is attached. (Max 3 points)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.7'] = '3.7'
     weapon_type: WeaponType = WeaponType.POLEARM
@@ -140,11 +128,6 @@ class LithicSpear_3_7(WeaponBase):
 
 
 class LithicSpear_3_3(LithicSpear_3_7):
-    desc: str = (
-        'The character deals +1 DMG. '
-        'When played: For each alive party member from Liyue, grant 1 Shield '
-        'point to the character to which this is attached. (Max 3 points)'
-    )
     version: Literal['3.3']
 
     def equip(self, match: Any) -> List[Actions]:
@@ -160,11 +143,6 @@ class LithicSpear_3_3(LithicSpear_3_7):
 
 class EngulfingLightning_3_7(RoundEffectWeaponBase):
     name: Literal['Engulfing Lightning']
-    desc: str = (
-        'The character deals +1 DMG. '
-        'Triggers automatically once per Round: If the character to which '
-        'this is attached does not have Energy, they will gain 1 Energy.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 3)
     weapon_type: WeaponType = WeaponType.POLEARM

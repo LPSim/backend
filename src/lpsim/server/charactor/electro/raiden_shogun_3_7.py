@@ -26,11 +26,6 @@ from ..charactor_base import (
 
 class EyeOfStormyJudgment_3_7(AttackerSummonBase):
     name: Literal['Eye of Stormy Judgment'] = 'Eye of Stormy Judgment'
-    desc: str = (
-        'End Phase: Deal 1 Electro DMG. '
-        "When this Summon is on the field: Your characters' Elemental Bursts "
-        'deal +1 DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 3
     max_usage: int = 3
@@ -62,7 +57,6 @@ class EyeOfStormyJudgment_3_7(AttackerSummonBase):
 class TranscendenceBalefulOmen(ElementalSkillBase):
     name: Literal[
         'Transcendence: Baleful Omen'] = 'Transcendence: Baleful Omen'
-    desc: str = '''Summons 1 Eye of Stormy Judgment'''
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -83,9 +77,6 @@ class TranscendenceBalefulOmen(ElementalSkillBase):
 class SecretArtMusouShinsetsu(ElementalBurstBase):
     name: Literal[
         'Secret Art: Musou Shinsetsu'] = 'Secret Art: Musou Shinsetsu'
-    desc: str = (
-        'Deals 3 Electro DMG. All of your other characters gain 2 Energy.'
-    )
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
@@ -109,10 +100,6 @@ class SecretArtMusouShinsetsu(ElementalBurstBase):
 
 class ChakraDesiderata(PassiveSkillBase):
     name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
-    desc: str = (
-        '(Passive) When the battle begins, this character gains '
-        'Chakra Desiderata.'
-    )
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any
@@ -128,13 +115,6 @@ class ChakraDesiderata(PassiveSkillBase):
 
 class WishesUnnumbered_3_7(SkillTalent):
     name: Literal['Wishes Unnumbered']
-    desc: str = (
-        'Combat Action: When your active character is Raiden Shogun, '
-        'equip this card. After Raiden Shogun equips this card, immediately '
-        'use Secret Art: Musou Shinsetsu once. When your Raiden Shogun, who '
-        'has this card equipped, uses Secret Art: Musou Shinsetsu, it will '
-        'deal +1 additional DMG for every point of Resolve consumed.'
-    )
     version: Literal['3.7'] = '3.7'
     charactor_name: Literal['Raiden Shogun'] = 'Raiden Shogun'
     cost: Cost = Cost(
@@ -153,7 +133,6 @@ class WishesUnnumbered_3_7(SkillTalent):
 class RaidenShogun_3_7(CharactorBase):
     name: Literal['Raiden Shogun']
     version: Literal['3.7'] = '3.7'
-    desc: str = '''"Plane of Euthymia" Raiden Shogun'''
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2

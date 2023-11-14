@@ -10,10 +10,6 @@ from .base import RoundTeamStatus, ShieldTeamStatus
 
 class RebelliousShield_3_7(ShieldTeamStatus):
     name: Literal['Rebellious Shield'] = 'Rebellious Shield'
-    desc: str = (
-        'Grants 1 Shield point to defend your active charactor. '
-        '(Can stack. Max 2 Points.)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 2
@@ -23,7 +19,6 @@ class MillennialMovementFarewellSong_3_7(RoundTeamStatus):
     name: Literal[
         'Millennial Movement: Farewell Song'
     ] = 'Millennial Movement: Farewell Song'
-    desc: str = '''Your character deals +1 DMG.'''
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2

@@ -21,7 +21,6 @@ from ..charactor_base import (
 
 class ClusterbloomArrow_3_6(AttackerSummonBase):
     name: Literal['Clusterbloom Arrow'] = 'Clusterbloom Arrow'
-    desc: str = '''End Phase: Deal 1 Dendro DMG. (Can stack. Max 2 stacks.)'''
     version: Literal['3.6'] = '3.6'
     usage: int = 1
     max_usage: int = 2
@@ -35,9 +34,6 @@ class ClusterbloomArrow_3_6(AttackerSummonBase):
 
 class VijnanaPhalaMine(ElementalSkillBase):
     name: Literal['Vijnana-Phala Mine'] = 'Vijnana-Phala Mine'
-    desc: str = (
-        'Deals 2 Dendro DMG. This character gains Vijnana Suffusion.'
-    )
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
@@ -72,13 +68,6 @@ class FashionersTanglevineShaft(ElementalBurstBase, AOESkillBase):
 
 class KeenSight_3_6(SkillTalent):
     name: Literal['Keen Sight']
-    desc: str = (
-        'Combat Action: When your active character is Tighnari, equip this '
-        'card. After Tighnari equips this card, immediately use Vijnana-Phala '
-        'Mine once. When your Tighnari, who has this card equipped, is '
-        "affected by Vijnana Suffusion, the character's Charged Attack costs "
-        '1 less Unaligned Element.'
-    )
     version: Literal['3.6'] = '3.6'
     charactor_name: Literal['Tighnari'] = 'Tighnari'
     cost: Cost = Cost(
@@ -94,7 +83,6 @@ class KeenSight_3_6(SkillTalent):
 class Tighnari_3_6(CharactorBase):
     name: Literal['Tighnari']
     version: Literal['3.6'] = '3.6'
-    desc: str = '''"Verdant Strider" Tighnari'''
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2

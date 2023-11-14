@@ -29,10 +29,6 @@ class FireworkFlareUp(PhysicalNormalAttackBase):
 
 class NiwabiFireDance(ElementalSkillBase):
     name: Literal['Niwabi Fire-Dance'] = 'Niwabi Fire-Dance'
-    desc: str = (
-        'This character gains Niwabi Enshou. '
-        '(This Skill does not grant Energy)'
-    )
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
@@ -58,7 +54,6 @@ class NiwabiFireDance(ElementalSkillBase):
 
 class RyuukinSaxifrage(ElementalBurstBase):
     name: Literal['Ryuukin Saxifrage'] = 'Ryuukin Saxifrage'
-    desc: str = '''Deals 3 Pyro DMG, creates 1 Aurous Blaze.'''
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -81,13 +76,6 @@ class RyuukinSaxifrage(ElementalBurstBase):
 
 class NaganoharaMeteorSwarm_4_2(SkillTalent):
     name: Literal['Naganohara Meteor Swarm']
-    desc: str = (
-        'Combat Action: When your active character is Yoimiya, equip this '
-        'card. After Yoimiya equips this card, immediately use Niwabi '
-        'Fire-Dance once. After your Yoimiya, who has this card equipped, '
-        'usage of Niwabi Enshou is increased by 1, and when '
-        'Niwabi Enshou is triggered: Deal 1 additional Pyro DMG.'
-    )
     version: Literal['4.2'] = '4.2'
     charactor_name: Literal['Yoimiya'] = 'Yoimiya'
     cost: Cost = Cost(
@@ -104,7 +92,6 @@ class NaganoharaMeteorSwarm_4_2(SkillTalent):
 class Yoimiya_3_8(CharactorBase):
     name: Literal['Yoimiya']  # Do not set default value for charactor name
     version: Literal['3.8'] = '3.8'
-    desc: str = '''"Frolicking Flames" Yoimiya'''
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 3
