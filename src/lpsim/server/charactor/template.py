@@ -297,7 +297,8 @@ charactor_descs: Dict[str, DescDictType] = {
         },
         "descs": {
             "VERSION": {
-                "zh-CN": "",
+                # you can use reference key to reference other desc
+                "zh-CN": "$CHARACTOR_STATUS/...|descs|OLD_VERSION",
                 "en-US": ""
             }
         }
