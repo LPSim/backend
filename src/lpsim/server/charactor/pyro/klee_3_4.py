@@ -6,8 +6,8 @@ from ...action import Actions, CreateObjectAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
+    FactionType, ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
@@ -105,7 +105,7 @@ class Klee_3_4(CharactorBase):
         self.skills = [
             ElementalNormalAttackBase(
                 name = 'Kaboom!',
-                damage_type = self.element,
+                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
                 cost = ElementalNormalAttackBase.get_cost(self.element),
             ),
             JumpyDumpty(),
