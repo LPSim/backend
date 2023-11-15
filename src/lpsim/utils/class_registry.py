@@ -178,11 +178,11 @@ def register_class(
 
 
 def _parse_object(
-    class_dict: Dict[int, Type[Any]], class_version_dict: List[int], 
+    class_dict: Dict[int, Type[Any]], class_version_list: List[int], 
     version: str, args: Any
 ):
     version_int = _version_to_int(version)
-    for v in class_version_dict:
+    for v in class_version_list:
         if v <= version_int:
             return pydantic.parse_obj_as(class_dict[v], args)
     else:
