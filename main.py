@@ -42,7 +42,7 @@ if __name__ == '__main__':
     main.match.config.initial_hand_size = 20
     main.match.config.max_hand_size = 30
     main.match.config.card_number = None
-    assert main.match.start()
+    assert main.match.start()[0]
     main.match.step()
 
     while main.match.round_number < 100 and not main.match.is_game_end():

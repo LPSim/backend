@@ -236,14 +236,17 @@ class HTTPServer():
                 raise HTTPException(status_code = 404, 
                                     detail = 'Player not found')
             deck = Deck.from_str(deck_str)
-            if not deck.check_legal(
+            deck_check_res, deck_check_info = deck.check_legal(
                 match.config.card_number, 
                 match.config.max_same_card_number, 
                 match.config.charactor_number, 
                 match.config.check_deck_restriction
-            ):
-                raise HTTPException(status_code = 403, 
-                                    detail = 'Deck not legal')
+            )
+            if not deck_check_res:
+                raise HTTPException(
+                    status_code = 403, 
+                    detail = f'Deck not legal. {deck_check_info}'
+                )
             self.decks[player_idx] = deck
 
         @app.get('/state/{mode}/{state_idx}/{player_idx}')

@@ -51,7 +51,7 @@ def test_match_pipeline():
     match.config.max_same_card_number = 30
     set_16_omni(match)
     # main.match.event_handlers[0].version = '3.3'
-    assert match.start()
+    assert match.start()[0]
     match.step()  # switch card
 
     while match.round_number < 100 and not match.is_game_end():
@@ -95,7 +95,7 @@ def test_save_load():
     match.config.max_same_card_number = 30
     set_16_omni(match)
     match.event_handlers[0].version = '3.3'  # type: ignore
-    assert match.start()
+    assert match.start()[0]
     match.step()  # switch card
 
     saves = {}
@@ -186,7 +186,7 @@ def test_copy_speed():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -207,7 +207,7 @@ def test_copy_speed():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     starttime = time.time()
     for i in range(run_time):
         _ = match.copy(deep = True)
@@ -219,7 +219,7 @@ def test_copy_speed():
     match.set_deck([deck, deck])
     mainjson = match.json()
     starttime = time.time()
-    assert match.start()
+    assert match.start()[0]
     for i in range(run_time):
         mainjson = match.json()
         _ = Match(**json.loads(mainjson))
@@ -259,7 +259,7 @@ def test_random_same_after_load():
     initial_agent_1 = agent_1.copy(deep = True)
     results_1 = []
     test_step = 100
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -271,7 +271,7 @@ def test_random_same_after_load():
     match = initial_match.copy(deep = True)
     agent_0 = initial_agent_0.copy(deep = True)
     agent_1 = initial_agent_1.copy(deep = True)
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for i in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -290,7 +290,7 @@ def test_random_same_after_load():
     agent_1 = initial_agent_1.copy()
     assert agent_0 == initial_agent_0
     assert agent_1 == initial_agent_1
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for i in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -330,7 +330,7 @@ def test_save_load_same():
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
     test_step = 100
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -369,7 +369,7 @@ def test_use_card():
     match.event_handlers = (
         [OmnipotentGuideEventHandler_3_3()] + match.event_handlers
     )
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     hand_numbers = [10, 10, 10, 10, 10, 9, 8, 7, 6, 5, 5, 5]
@@ -454,7 +454,7 @@ def test_support_over_maximum_and_error_tests():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -533,7 +533,7 @@ def test_support_over_maximum_and_error_tests():
     # after start, set deck will raise error
     with pytest.raises(ValueError):
         match.set_deck([deck, deck])
-    assert not match.start()
+    assert not match.start()[0]
 
 
 def test_summon_over_maximum():
@@ -792,7 +792,7 @@ def test_save_history():
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     test_step = 100
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -845,7 +845,7 @@ def test_save_history_2():
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     test_step = 10
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -883,7 +883,7 @@ def test_generate_unused_cards():
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     test_step = 10
-    assert match.start()
+    assert match.start()[0]
     match.step()
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
@@ -936,7 +936,7 @@ def test_prediction():
     match.config.make_skill_prediction = True
     match.config.history_level = 10
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:

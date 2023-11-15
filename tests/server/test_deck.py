@@ -125,49 +125,49 @@ def test_deck_assertions():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False
-    )
+    )[0]
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 30,
         charactor_number = 3,
         check_restriction = False
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = 29, 
         max_same_card_number = 30,
         charactor_number = 3,
         check_restriction = False
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = 31, 
         max_same_card_number = 30,
         charactor_number = 3,
         check_restriction = False
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 29,
         charactor_number = 3,
         check_restriction = False
-    )
+    )[0]
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
         charactor_number = 3,
         check_restriction = False
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
         charactor_number = 2,
         check_restriction = False
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
         charactor_number = 4,
         check_restriction = False
-    )
+    )[0]
 
 
 def test_deck_restriction():
@@ -183,13 +183,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
     deck = Deck.from_str('''
         default_version:4.0
         charactor:Nahida
@@ -203,13 +203,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
     deck = Deck.from_str('''
         default_version:4.0
         charactor:Nahida
@@ -222,13 +222,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
     deck = Deck.from_str('''
         default_version:4.0
         charactor:Nahida
@@ -241,13 +241,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
     deck = Deck.from_str('''
         default_version:4.0
         charactor:Nahida
@@ -262,13 +262,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
     deck = Deck.from_str('''
         default_version:4.0
         charactor:Nahida
@@ -283,13 +283,13 @@ def test_deck_restriction():
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = False,
-    )
+    )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
         charactor_number = None,
         check_restriction = True,
-    )
+    )[0]
 
 
 def test_deck_to_str_to_deck():

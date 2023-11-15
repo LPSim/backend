@@ -1,3 +1,4 @@
+import logging
 from typing import Any, List, Tuple
 from ..server.event_handler import OmnipotentGuideEventHandler_3_3
 from ..server.match import Match, MatchConfig
@@ -54,11 +55,14 @@ def get_new_match(
     if len(decks) > 0:
         match.set_deck(decks)
         start_result = match.start()
-        if not start_result:
-            raise RuntimeError('Match start failed.')
+        if not start_result[0]:
+            raise RuntimeError(f'Match start failed. {start_result[1]}')
 
     if auto_step:
-        match._save_history()
-        match.step()
+        if len(decks) == 0:
+            logging.warning('No deck is set, match will not auto_step.')
+        else:
+            match._save_history()
+            match.step()
 
     return match, random_state

@@ -58,7 +58,7 @@ def test_covenant_of_rock():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -135,7 +135,7 @@ def test_rock_dice_different_not_omni():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -200,7 +200,7 @@ def test_arcane_card_always_in_hand():
         match = Match()
         match.set_deck([deck, deck])
         match.config.max_same_card_number = 30
-        assert match.start()
+        assert match.start()[0]
         match.step()
         for table in match.player_tables:
             first_three = table.hands[:3]

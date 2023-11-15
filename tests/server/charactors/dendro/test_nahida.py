@@ -51,7 +51,7 @@ def test_fischl_mona_nahida():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -133,7 +133,7 @@ def test_fischl_mona_nahida_no_talent():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -268,7 +268,7 @@ def test_nahida_talents():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.player_tables[1].charactors[0].skills[
         0].damage_type = DamageElementalType.PYRO  # can do pyro damage
     match.step()
@@ -449,7 +449,7 @@ def test_nahida_talents_2():
     match.config.max_same_card_number = 30
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -579,7 +579,7 @@ def test_nahida_apply_seed_to_defeated():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -643,7 +643,7 @@ def test_maya_not_first_status():
     match.config.max_same_card_number = 30
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -718,7 +718,7 @@ def test_seed_not_first_status():
     set_16_omni(match)
     match.config.initial_dice_number = 32
     match.config.max_dice_number = 32
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -808,7 +808,7 @@ def test_talent_enemy_has_other_charactor_status():
     match.config.random_first_player = False
     set_16_omni(match)
     # match.enable_history = True
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:

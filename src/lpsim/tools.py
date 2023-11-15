@@ -50,7 +50,7 @@ def interact_match_with_agents(
     Interact match with agents.
     """
     if match.state == MatchState.WAITING:
-        assert match.start()
+        assert match.start()[0]
     match.step()
     while len(agent_1.commands) > 0 or len(agent_0.commands) > 0:
         if match.need_respond(0):

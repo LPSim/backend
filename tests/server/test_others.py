@@ -138,10 +138,10 @@ def test_match_config_and_match_errors():
     assert not config.check_config()
     match = Match()
     match.config = config
-    assert not match.start()
+    assert not match.start()[0]
     match = Match()
     match.player_tables = []
-    assert not match.start()
+    assert not match.start()[0]
     match = Match()
     deck = Deck.from_str(
         '''
@@ -153,7 +153,7 @@ def test_match_config_and_match_errors():
     with pytest.raises(AssertionError):
         match.set_deck([])
     match.set_deck([deck, deck])
-    assert not match.start()
+    assert not match.start()[0]
     deck = Deck.from_str(
         '''
         default_version:4.0
@@ -164,7 +164,7 @@ def test_match_config_and_match_errors():
     match = Match()
     match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
-    assert match.start()
+    assert match.start()[0]
     agent_0 = NothingAgent(player_idx = 0)
     agent_1 = RandomAgent(player_idx = 1)
     non_exist_tested = False
@@ -284,7 +284,7 @@ def test_remove_non_exist_equip():
     match.config.charactor_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
-    assert match.start()
+    assert match.start()[0]
     with pytest.raises(AssertionError):
         match._action_move_object(
             MoveObjectAction(

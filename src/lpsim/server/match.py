@@ -2,7 +2,7 @@ import os
 import logging
 
 import numpy as np
-from typing import Literal, List, Any, Dict
+from typing import Literal, List, Any, Dict, Tuple
 from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
@@ -523,34 +523,44 @@ class Match(BaseModel):
                      f'{new_state}.')
         self.state = new_state
 
-    def start(self) -> bool:
+    def start(self) -> Tuple[bool, Any]:
         """
         Start a new match. MatchState should be WAITING. Check the config and
         start until reaching STARTING_CARD_SWITCH, then wait for responses 
         from player to switch cards.
+        Returns:
+            bool: True if success, False if error occurs.
+            Any: If success, return None. Otherwise, return 
+                error message (str).
         """
         if self.state != MatchState.WAITING:
-            logging.error('Match is not waiting for start. If it is running '
-                          'or ended, please re-generate a new match.')
-            return False
+            error_message = (
+                'Match is not waiting for start. If it is running '
+                'or ended, please re-generate a new match.'
+            )
+            logging.error(error_message)
+            return False, error_message
 
         # make valid check
         if not self.config.check_config():
+            error_message = 'Match config is not valid.'
             logging.error('Match config is not valid.')
-            return False
+            return False, error_message
         if len(self.player_tables) != 2:
-            logging.error('Only support 2 players now.')
-            return False
+            error_message = 'Only support 2 players now.'
+            logging.error(error_message)
+            return False, error_message
         for pnum, player_table in enumerate(self.player_tables):
-            is_legal = player_table.player_deck_information.check_legal(
+            is_legal, info = player_table.player_deck_information.check_legal(
                 card_number = self.config.card_number,
                 max_same_card_number = self.config.max_same_card_number,
                 charactor_number = self.config.charactor_number,
                 check_restriction = self.config.check_deck_restriction,
             )
             if not is_legal:
-                logging.error(f'Player {pnum} deck is not legal.')
-                return False
+                error_message = f'Player {pnum} deck is not legal. {info}'
+                logging.error(error_message)
+                return False, error_message
 
         self._set_match_state(MatchState.STARTING)
 
@@ -632,7 +642,7 @@ class Match(BaseModel):
                 event_frame = event_frame,
                 error_message = 'Initial draw card should not trigger objects.'
             )
-        return True
+        return True, None
 
     def empty_frame_assertion(
         self, event_frame: EventFrame, error_message: str

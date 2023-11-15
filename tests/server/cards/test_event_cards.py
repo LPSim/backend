@@ -47,7 +47,7 @@ def test_bestest():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:

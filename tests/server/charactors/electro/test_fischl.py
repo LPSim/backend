@@ -80,7 +80,7 @@ def test_fischl():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -193,7 +193,7 @@ def test_fischl_2():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.random_first_player = False
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:

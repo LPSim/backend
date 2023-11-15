@@ -90,7 +90,7 @@ def test_crystallize():
     match.config.max_same_card_number = 30
     match.config.check_deck_restriction = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -184,7 +184,7 @@ def test_frozen():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -304,7 +304,7 @@ def test_frozen_and_pyro():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -405,7 +405,7 @@ def test_burning_flame():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -515,7 +515,7 @@ def test_dendro_core_catalyzing_field():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -582,7 +582,7 @@ def test_catalyzing_field_old():
     match.config.random_first_player = False
     set_16_omni(match)
     match.event_handlers[0].version = '3.3'  # type: ignore
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -636,7 +636,7 @@ def test_swirl():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -695,7 +695,7 @@ def test_swirl_2():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -760,7 +760,7 @@ def test_swirl_3():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.player_tables[1].charactors[0].skills[1].damage_type = \
         DamageElementalType.PYRO
     match.step()
@@ -837,7 +837,7 @@ def test_swirl_4():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -926,7 +926,7 @@ def test_swirl_with_catalyzing_field():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -1027,7 +1027,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -1146,7 +1146,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -1277,7 +1277,7 @@ def test_overloaded():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.player_tables[0].charactors[0].hp = 90
     match.player_tables[0].charactors[0].max_hp = 90
     match.step()
@@ -1346,7 +1346,7 @@ def test_background_overloaded():
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.player_tables[0].charactors[0].hp = 90
     match.player_tables[0].charactors[0].max_hp = 90
     match.step()

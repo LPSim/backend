@@ -72,7 +72,7 @@ def test_rana():
     deck = Deck(**deck)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -172,7 +172,7 @@ def test_rana():
     match.config.max_same_card_number = 30
     match.config.random_first_player = False
     set_16_omni(match)
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -280,7 +280,7 @@ def test_timmie():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     last_colors = [[], []]

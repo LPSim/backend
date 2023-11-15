@@ -9,7 +9,7 @@ from .object_base import CardBase
 from .charactor.charactor_base import CharactorBase
 
 from ..utils import BaseModel, get_instance
-from typing import Literal, List
+from typing import Any, Literal, List, Tuple
 
 
 class Deck(BaseModel):
@@ -28,31 +28,38 @@ class Deck(BaseModel):
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 
                     charactor_number: int | None,
-                    check_restriction: bool) -> bool:
+                    check_restriction: bool) -> Tuple[bool, Any]:
         """
         check whether the deck is legal.
         1. the number of charactors
         2. the number of cards
         3. the number of cards with the same name
         4. cards with special carrying rules
+
+        Returns:
+            bool: whether the deck is legal
+            Any: error message if not legal
         """
         if charactor_number is not None:
             if len(self.charactors) != charactor_number:
-                logging.error(f'charactor number should be {charactor_number}')
-                return False
+                error_msg = f'charactor number should be {charactor_number}'
+                logging.error(error_msg)
+                return False, error_msg
         if card_number is not None:
             if len(self.cards) != card_number:
-                logging.error(f'card number should be {card_number}')
-                return False
+                error_msg = f'card number should be {card_number}'
+                logging.error(error_msg)
+                return False, error_msg
         if max_same_card_number is not None:
             card_names = [c.name for c in self.cards]
             for card in card_names:
                 if card_names.count(card) > max_same_card_number:
-                    logging.error(
+                    error_msg = (
                         f'card {card} should not be more than '
                         f'{max_same_card_number} in deck'
                     )
-                    return False
+                    logging.error(error_msg)
+                    return False, error_msg
         if check_restriction:
             for card in self.cards:
                 restriction = card.get_deck_restriction()
@@ -64,41 +71,44 @@ class Deck(BaseModel):
                         if restriction.name in charactor.faction:
                             counter += 1
                     if counter < restriction.number:
-                        logging.error(
+                        error_msg = (
                             f'to use card {card.name}, '
                             f'charactor number of faction {restriction.name} '
                             f'should be at least {restriction.number}'
                         )
-                        return False
+                        logging.error(error_msg)
+                        return False, error_msg
                 elif restriction.type == 'CHARACTOR':
                     counter = 0
                     for charactor in self.charactors:
                         if restriction.name == charactor.name:
                             counter += 1
                     if counter < restriction.number:
-                        logging.error(
+                        error_msg = (
                             f'to use card {card.name}, '
                             f'charactor number of name {restriction.name} '
                             f'should be at least {restriction.number}'
                         )
-                        return False
+                        logging.error(error_msg)
+                        return False, error_msg
                 elif restriction.type == 'ELEMENT':
                     counter = 0
                     for charactor in self.charactors:
                         if restriction.name == charactor.element.value:
                             counter += 1
                     if counter < restriction.number:
-                        logging.error(
+                        error_msg = (
                             f'to use card {card.name}, '
                             f'charactor number of element {restriction.name} '
                             f'should be at least {restriction.number}'
                         )
-                        return False
+                        logging.error(error_msg)
+                        return False, error_msg
                 else:
                     raise NotImplementedError(
                         f'restriction type {restriction.type} not implemented'
                     )
-        return True
+        return True, None
 
     @staticmethod
     def from_str(deck_str: str) -> 'Deck':

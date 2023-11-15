@@ -82,7 +82,7 @@ def test_mona():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -224,7 +224,7 @@ def test_mona_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
@@ -291,7 +291,7 @@ def test_mona_q_enemy_attack():
     match.config.max_same_card_number = 30
     set_16_omni(match)
     match.config.random_first_player = False
-    assert match.start()
+    assert match.start()[0]
     match.step()
 
     while True:
