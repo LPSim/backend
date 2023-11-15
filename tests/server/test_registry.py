@@ -75,7 +75,7 @@ def test_class_registry():
     assert ins.name == 'Sleep'
     with pytest.raises(AssertionError):
         # wrong version, get error
-        get_instance(EventCardBase, { 'name': 'Sleep1', 'version': '0.1' })
+        get_instance(EventCardBase, { 'name': 'Sleep', 'version': '0.1' })
 
 
 def test_desc_registry():
@@ -169,6 +169,26 @@ def test_desc_registry():
     with pytest.raises(ValueError):
         # wrong key, raise error
         update_desc(sleep_patch_4)
+    empty_name: Dict[str, DescDictType] = {
+        'CARD/EmptyName': {
+            "names": {
+                'zh-CN': '',
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        # empty name, raise error
+        update_desc(empty_name)
+    empty_name_2: Dict[str, DescDictType] = {
+        'CARD/EmptyName2': {
+            "names": {
+                'zh-CN': 'XXX',
+            }
+        }
+    }
+    with pytest.raises(ValueError):
+        # empty name, raise error
+        update_desc(empty_name_2)
 
 
 if __name__ == "__main__":
