@@ -4,6 +4,7 @@ branch = True
 [report]
 include = 
     ./src/lpsim/server/*
+    ./src/lpsim/utils/*
     ./tests/*
 ; Regexes for lines to exclude from consideration
 exclude_also =
