@@ -33,6 +33,8 @@ def _parse_value(value: Any):
         keys = value[1:].split('|')
         root = _desc_dict
         for key in keys:
+            if key not in root:
+                raise ValueError(f'in "{value}": key "{key}" not found')
             root = root[key]
         return root
     return value
@@ -40,7 +42,10 @@ def _parse_value(value: Any):
 
 def _merge_dict(source, destination, prev_key: str = ''):
     for key, value in source.items():
-        pkey = f'{prev_key}|{key}'
+        if prev_key == '':
+            pkey = key
+        else:
+            pkey = f'{prev_key}|{key}'
         if isinstance(value, dict):
             # get node or create one
             node = destination.setdefault(key, {})

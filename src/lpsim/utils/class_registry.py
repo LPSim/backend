@@ -9,7 +9,7 @@ corresponding class and version, and instantiate it.
 import logging
 import types
 from typing import (
-    Any, Dict, List, Literal, Optional, Type, Union, get_type_hints, get_args
+    Any, Dict, List, Optional, Type, Union, get_type_hints, get_args
 )
 
 import pydantic
@@ -41,12 +41,6 @@ def _is_union_type(t) -> bool:
     )
 
 
-def _is_literal(t) -> bool:
-    return (
-        getattr(t, '__origin__', None) is Literal
-    )
-
-
 def _version_to_int(version: str) -> int:
     """
     Convert version string to int. For example, 3.2 will be converted to
@@ -68,21 +62,23 @@ def register_class_one(cls: Type[Any]):
     """
     Register one class. If the class is registered, print a warning. If same
     version, name and base class, raise error. If descs not exist, raise error.
-    TODO: currently not dealing with descs.
-    TODO: for chartactors, check their talent type hint is original
     """
     class_name = cls.__name__
     cls_type_hints = get_type_hints(cls)
     name_hints = cls_type_hints['name']
     version_hints = cls_type_hints['version']
     desc_hints = cls_type_hints['desc']
-    assert len(get_args(desc_hints)) > 0, (
-        f'Class {cls} desc type hint is empty or not a Literal'
-    )
+    if len(get_args(desc_hints)) == 0:
+        raise AssertionError(
+            f'Class {cls} desc type hint is empty or not a Literal'
+        )
     descs = get_args(desc_hints)
     version = version_hints.__args__[0]
     type_hints = cls_type_hints['type']
-    assert len(type_hints.__args__) == 1
+    if len(type_hints.__args__) != 1:
+        raise AssertionError(
+            f'Class {cls} type hint is empty more than 1'
+        )
     obj_type = type_hints.__args__[0]
     names = name_hints.__args__
     # check if class name is match
@@ -109,21 +105,19 @@ def register_class_one(cls: Type[Any]):
             target_charactor_names = cls_type_hints['charactor_name'].__args__
             assert len(target_charactor_names) == 1
             desc_type = f'TALENT_{target_charactor_names[0]}'
-        if len(descs) > 1 or descs[0] != '':
-            # has multiple descs, or has desc but not empty
-            for desc in descs:
-                if desc == '':
-                    # empty, no extra desc
-                    if not desc_exist(desc_type, name, version):
-                        raise AssertionError(
-                            f'Class {cls} name {name} version {version} is '
-                            'not found in descs'
-                        )
-                elif not desc_exist(desc_type, f'{name}_{desc}', version):
+        for desc in descs:
+            if desc == '':
+                # empty, no extra desc
+                if not desc_exist(desc_type, name, version):
                     raise AssertionError(
-                        f'Class {cls} name {name}(desc: {desc}) version '
-                        f'{version} is not found in descs'
+                        f'Class {cls} name {name} version {version} is '
+                        'not found in descs'
                     )
+            elif not desc_exist(desc_type, f'{name}_{desc}', version):
+                raise AssertionError(
+                    f'Class {cls} name {name}(desc: {desc}) version '
+                    f'{version} is not found in descs'
+                )
     version = _version_to_int(version)
     register_success = False
     base_classes = cls.mro()
@@ -147,8 +141,8 @@ def register_class_one(cls: Type[Any]):
                 if version in target_dict:
                     if target_dict[version] == cls:
                         logging.warning(
-                            f'Class {cls} is already registered in class '
-                            'registry'
+                            f'Class {cls} is already registered in base class '
+                            f'{base_class.__name__} registry'
                         )
                         continue
                     else:
