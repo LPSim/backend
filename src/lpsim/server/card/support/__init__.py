@@ -1,13 +1,9 @@
-from .companions import Companions
-from .locations import Locations
-from .items import Items
-from .old_version import (
-    OldVersionCompanions, OldVersionLocations, OldVersionItems
-)
+from ....utils import import_all_modules
+from .base import SupportBase
+from .companions import CompanionBase
+from .items import ItemBase
+from .locations import LocationBase
 
 
-Supports = (
-    Locations | Companions | Items
-    # finally old version cards
-    | OldVersionLocations | OldVersionCompanions | OldVersionItems
-)
+import_all_modules(__file__, __name__)
+__all__ = ('SupportBase', 'CompanionBase', 'ItemBase', 'LocationBase')

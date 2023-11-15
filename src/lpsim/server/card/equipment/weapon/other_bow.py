@@ -1,6 +1,8 @@
 
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....event import SkillEndEventArguments
 
 from ....modifiable_values import DamageIncreaseValue
@@ -13,13 +15,8 @@ from ....struct import Cost, ObjectPosition
 from .base import RoundEffectWeaponBase, WeaponBase
 
 
-class AmosBow(RoundEffectWeaponBase):
+class AmosBow_3_7(RoundEffectWeaponBase):
     name: Literal["Amos' Bow"]
-    desc: str = (
-        'The character deals +1 DMG. When the character uses a Skill that '
-        'costs at least a total of 5 Elemental Dice and Energy, +2 additional '
-        'DMG. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.7'] = '3.7'
     weapon_type: WeaponType = WeaponType.BOW
@@ -49,14 +46,8 @@ class AmosBow(RoundEffectWeaponBase):
         return value
 
 
-class ElegyForTheEnd(WeaponBase):
+class ElegyForTheEnd_3_7(WeaponBase):
     name: Literal["Elegy for the End"]
-    desc: str = (
-        'The character deals +1 DMG. '
-        'After the character uses an Elemental Burst: Create Millennial '
-        'Movement: Farewell Song. (Your character deals +1 DMG, Duration '
-        '(Rounds): 2)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.7'] = '3.7'
     weapon_type: WeaponType = WeaponType.BOW
@@ -88,4 +79,4 @@ class ElegyForTheEnd(WeaponBase):
         )]
 
 
-Bows = AmosBow | ElegyForTheEnd
+register_class(AmosBow_3_7 | ElegyForTheEnd_3_7)

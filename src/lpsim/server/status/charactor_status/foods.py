@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...consts import (
     CostLabels, DamageElementalType, IconType, ObjectPositionType, 
     SkillType
@@ -16,21 +18,16 @@ from .base import (
 )
 
 
-class Satiated(RoundCharactorStatus):
+class Satiated_3_3(RoundCharactorStatus):
     name: Literal['Satiated'] = 'Satiated'
-    desc: str = 'You cannot consume more Food this Round'
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.FOOD] = IconType.FOOD
 
 
-class JueyunGuoba(RoundCharactorStatus, UsageCharactorStatus):
+class JueyunGuoba_3_3(RoundCharactorStatus, UsageCharactorStatus):
     name: Literal['Jueyun Guoba'] = 'Jueyun Guoba'
-    desc: str = (
-        "During this Round, the target character's next Normal Attack "
-        "deals +1 DMG."
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -62,12 +59,8 @@ class JueyunGuoba(RoundCharactorStatus, UsageCharactorStatus):
         return value
 
 
-class AdeptusTemptation(RoundCharactorStatus, UsageCharactorStatus):
+class AdeptusTemptation_3_3(RoundCharactorStatus, UsageCharactorStatus):
     name: Literal["Adeptus' Temptation"] = "Adeptus' Temptation"
-    desc: str = (
-        "During this Round, the target character's next Elemental Burst "
-        "deals +3 DMG."
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -99,11 +92,8 @@ class AdeptusTemptation(RoundCharactorStatus, UsageCharactorStatus):
         return value
 
 
-class LotusFlowerCrisp(DefendCharactorStatus, RoundCharactorStatus):
+class LotusFlowerCrisp_3_3(DefendCharactorStatus, RoundCharactorStatus):
     name: Literal['Lotus Flower Crisp'] = 'Lotus Flower Crisp'
-    desc: str = (
-        "During this Round, the target character takes -3 DMG the next time."
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -111,12 +101,8 @@ class LotusFlowerCrisp(DefendCharactorStatus, RoundCharactorStatus):
     max_in_one_time: int = 3
 
 
-class NorthernSmokedChicken(RoundCharactorStatus, UsageCharactorStatus):
+class NorthernSmokedChicken_3_3(RoundCharactorStatus, UsageCharactorStatus):
     name: Literal['Northern Smoked Chicken']
-    desc: str = (
-        "During this Round, the target character's next Normal Attack cost "
-        "less 1 Unaligned Element."
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -148,12 +134,8 @@ class NorthernSmokedChicken(RoundCharactorStatus, UsageCharactorStatus):
         return value
 
 
-class MushroomPizza(RoundEndAttackCharactorStatus):
+class MushroomPizza_3_3(RoundEndAttackCharactorStatus):
     name: Literal['Mushroom Pizza'] = 'Mushroom Pizza'
-    desc: str = (
-        'End Phase: Heal this charactor for 1 HP. '
-        'Usage(s): 2'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -162,12 +144,8 @@ class MushroomPizza(RoundEndAttackCharactorStatus):
     damage_elemental_type: DamageElementalType = DamageElementalType.HEAL
 
 
-class MintyMeatRolls(RoundCharactorStatus):
+class MintyMeatRolls_3_4(RoundCharactorStatus):
     name: Literal['Minty Meat Rolls'] = 'Minty Meat Rolls'
-    desc: str = (
-        "During this Round, the target character's next 3 Normal Attacks cost "
-        "less 1 Unaligned Element."
-    )
     version: Literal['3.4'] = '3.4'
     usage: int = 1
     max_usage: int = 1
@@ -208,12 +186,13 @@ class MintyMeatRolls(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class SashiMiPlatter(RoundCharactorStatus):
+class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
+    version: Literal['3.3']
+    decrease_usage: int = 999
+
+
+class SashiMiPlatter_3_7(RoundCharactorStatus):
     name: Literal['Sashimi Platter'] = 'Sashimi Platter'
-    desc: str = (
-        "During this Round, the target character's Normal Attacks "
-        "deals +1 DMG."
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -247,12 +226,8 @@ class SashiMiPlatter(RoundCharactorStatus):
         return value
 
 
-class TandooriRoastChicken(RoundCharactorStatus):
+class TandooriRoastChicken_3_7(RoundCharactorStatus):
     name: Literal['Tandoori Roast Chicken'] = 'Tandoori Roast Chicken'
-    desc: str = (
-        "During this Round, all your characters' next Elemental Skills "
-        "deal +2 DMG."
-    )
     version: Literal['3.7'] = '3.7'
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
@@ -287,11 +262,8 @@ class TandooriRoastChicken(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class ButterCrab(DefendCharactorStatus, RoundCharactorStatus):
+class ButterCrab_3_7(DefendCharactorStatus, RoundCharactorStatus):
     name: Literal['Butter Crab'] = 'Butter Crab'
-    desc: str = (
-        "During this Round, the target character takes -2 DMG the next time."
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -299,8 +271,9 @@ class ButterCrab(DefendCharactorStatus, RoundCharactorStatus):
     max_in_one_time: int = 2
 
 
-FoodStatus = (
-    Satiated | JueyunGuoba | AdeptusTemptation | LotusFlowerCrisp 
-    | NorthernSmokedChicken | MushroomPizza | MintyMeatRolls | SashiMiPlatter
-    | TandooriRoastChicken | ButterCrab
+register_class(
+    Satiated_3_3 | JueyunGuoba_3_3 | AdeptusTemptation_3_3 
+    | LotusFlowerCrisp_3_3 | NorthernSmokedChicken_3_3 | MushroomPizza_3_3 
+    | MintyMeatRolls_3_3 | MintyMeatRolls_3_4 
+    | SashiMiPlatter_3_7 | TandooriRoastChicken_3_7 | ButterCrab_3_7
 )

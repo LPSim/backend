@@ -1,5 +1,7 @@
 from typing import Any, Literal
 
+from .....utils.class_registry import register_class
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....struct import Cost
@@ -11,13 +13,8 @@ from ....consts import (
 from .base import RoundEffectWeaponBase
 
 
-class AThousandFloatingDreams(RoundEffectWeaponBase):
+class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
     name: Literal['A Thousand Floating Dreams']
-    desc: str = (
-        'The character deals +1 DMG. '
-        'When your character triggers an Elemental Reaction: Deal +1 DMG. '
-        '(Twice per Round)'
-    )
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     version: Literal['3.7'] = '3.7'
     cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
@@ -63,4 +60,4 @@ class AThousandFloatingDreams(RoundEffectWeaponBase):
         return value
 
 
-Catalysts = AThousandFloatingDreams | AThousandFloatingDreams
+register_class(AThousandFloatingDreams_3_7)

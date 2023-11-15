@@ -4,7 +4,7 @@ import dictdiffer
 
 import pytest
 from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler
+from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from src.lpsim.agents.random_agent import RandomAgent
@@ -367,7 +367,7 @@ def test_use_card():
     match.config.max_same_card_number = 30
     match.config.initial_dice_number = 16
     match.event_handlers = (
-        [OmnipotentGuideEventHandler()] + match.event_handlers
+        [OmnipotentGuideEventHandler_3_3()] + match.event_handlers
     )
     assert match.start()
     match.step()

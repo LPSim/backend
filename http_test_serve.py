@@ -1,4 +1,4 @@
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler
+from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.network import HTTPServer
 from src.lpsim.server.match import MatchConfig, Match
 from tests.utils_for_test import get_random_state
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     match.config = server.match.config
 
     # rich mode
-    match.event_handlers.append(OmnipotentGuideEventHandler())
+    match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
     match.config.initial_dice_number = 16
 
     server.match = match

@@ -1,11 +1,10 @@
-"""
-Cards that can obtained in hands.
-"""
-
-from .event import EventCards
-from .support import Supports
-from .equipment.artifact import Artifacts
-from .equipment.weapon import Weapons
+from ...utils import import_all_modules
+from .equipment import WeaponBase, ArtifactBase
+from .support import SupportBase, LocationBase, ItemBase, CompanionBase
 
 
-Cards = Weapons | Artifacts | Supports | EventCards
+import_all_modules(__file__, __name__)
+__all__ = (
+    'WeaponBase', 'ArtifactBase', 'SupportBase', 'LocationBase', 
+    'ItemBase', 'CompanionBase'
+)

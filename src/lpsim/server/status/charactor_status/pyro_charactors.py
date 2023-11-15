@@ -1,8 +1,11 @@
 from typing import Any, List, Literal
+
+from ....utils.class_registry import register_class
 from ...struct import Cost
 
 from ...action import (
-    ActionTypes, Actions, CreateObjectAction, DrawCardAction, MakeDamageAction, RemoveObjectAction
+    ActionTypes, Actions, CreateObjectAction, DrawCardAction, MakeDamageAction,
+    RemoveObjectAction
 )
 
 from ...event import (
@@ -25,12 +28,8 @@ from .base import (
 )
 
 
-class Stealth(DefendCharactorStatus, ElementalInfusionCharactorStatus):
+class Stealth_3_3(DefendCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Stealth'] = 'Stealth'
-    desc: str = (
-        'The character to which this is attached takes -1 DMG and '
-        'deals +1 DMG. Usage(s): 2'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -77,12 +76,8 @@ class Stealth(DefendCharactorStatus, ElementalInfusionCharactorStatus):
         return value
 
 
-class ExplosiveSpark(UsageCharactorStatus):
+class ExplosiveSpark_3_4(UsageCharactorStatus):
     name: Literal['Explosive Spark'] = 'Explosive Spark'
-    desc: str = (
-        'When the character to which this is attached to uses a Charged '
-        'Attack: Spend 1 less Pyro Die and deal +1 DMG. Usage(s): XXX'
-    )
     version: Literal['3.4'] = '3.4'
     usage: int
     max_usage: int
@@ -90,7 +85,6 @@ class ExplosiveSpark(UsageCharactorStatus):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.desc = self.desc.replace('XXX', str(self.max_usage))
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Any,
@@ -137,12 +131,8 @@ class ExplosiveSpark(UsageCharactorStatus):
         return value
 
 
-class NiwabiEnshou(ElementalInfusionCharactorStatus, UsageCharactorStatus):
+class NiwabiEnshou_3_3(ElementalInfusionCharactorStatus, UsageCharactorStatus):
     name: Literal['Niwabi Enshou'] = 'Niwabi Enshou'
-    desc: str = (
-        'The character to which this is attached has their Normal Attacks '
-        'deal +1 DMG, and their Physical DMG dealt converted to Pyro DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -221,12 +211,8 @@ class NiwabiEnshou(ElementalInfusionCharactorStatus, UsageCharactorStatus):
         return ret + self.check_should_remove()
 
 
-class Brilliance(RoundCharactorStatus):
+class Brilliance_3_8(RoundCharactorStatus):
     name: Literal['Brilliance'] = 'Brilliance'
-    desc: str = (
-        'When the character uses a Charged Attack: Spend 1 less Pyro. '
-        '(Once every Round) End Phase: Attach Scarlet Seal to this character.'
-    )
     version: Literal['3.8'] = '3.8'
     usage: int = 2
     max_usage: int = 2
@@ -235,7 +221,7 @@ class Brilliance(RoundCharactorStatus):
     decrease_cost_max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
-    def renew(self, new_status: 'Brilliance') -> None:
+    def renew(self, new_status: 'Brilliance_3_8') -> None:
         self.decrease_cost_usage = max(new_status.decrease_cost_usage, 
                                        self.decrease_cost_usage)
         self.decrease_cost_max_usage = max(new_status.decrease_cost_max_usage, 
@@ -283,12 +269,8 @@ class Brilliance(RoundCharactorStatus):
         )]
 
 
-class ScarletSeal(UsageCharactorStatus):
+class ScarletSeal_4_2(UsageCharactorStatus):
     name: Literal['Scarlet Seal'] = 'Scarlet Seal'
-    desc: str = (
-        'When the character uses a Charged Attack: Damage dealt +2.'
-        '(Can stack, max 2 usages)'
-    )
     version: Literal['4.2'] = '4.2'
     usage: int = 1
     max_usage: int = 2
@@ -341,14 +323,9 @@ class ScarletSeal(UsageCharactorStatus):
         return []
 
 
-class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):
+class ParamitaPapilio_3_7(ElementalInfusionCharactorStatus, 
+                          RoundCharactorStatus):
     name: Literal['Paramita Papilio'] = 'Paramita Papilio'
-    desc: str = (
-        'The character to which this is attached has their Physical DMG dealt '
-        'converted to Pyro DMG, and they will deal +1 Pyro DMG. When the '
-        'character to which this is attached uses a Charged Attack: Apply '
-        'Blood Blossom to target character.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -400,12 +377,8 @@ class ParamitaPapilio(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         )]
 
 
-class BloodBlossom(RoundEndAttackCharactorStatus):
+class BloodBlossom_3_7(RoundEndAttackCharactorStatus):
     name: Literal['Blood Blossom'] = 'Blood Blossom'
-    desc: str = (
-        'End Phase: Deal 1 Pyro DMG to the character to which this is '
-        'attached.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -414,8 +387,8 @@ class BloodBlossom(RoundEndAttackCharactorStatus):
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
 
-class DilucInfusion(ElementalInfusionCharactorStatus, 
-                    RoundCharactorStatus):
+class DilucInfusion_3_3(ElementalInfusionCharactorStatus, 
+                        RoundCharactorStatus):
     name: Literal['Pyro Elemental Infusion'] = 'Pyro Elemental Infusion'
     mark: Literal['Diluc'] = 'Diluc'
     version: Literal['3.3'] = '3.3'
@@ -423,19 +396,14 @@ class DilucInfusion(ElementalInfusionCharactorStatus,
     max_usage: int = 2
 
 
-class FieryRebirth(ReviveCharactorStatus):
+class FieryRebirth_3_7(ReviveCharactorStatus):
     name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
     version: Literal['3.7'] = '3.7'
     heal: int = 3
 
 
-class AegisOfAbyssalFlame(ShieldCharactorStatus):
+class AegisOfAbyssalFlame_3_7(ShieldCharactorStatus):
     name: Literal['Aegis of Abyssal Flame'] = 'Aegis of Abyssal Flame'
-    desc: str = (
-        'Grant the character to which this is attached 3 Shield points. '
-        'Before this Shield is depleted, the character to which this is '
-        'attached will deal +1 Pyro DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 3
     max_usage: int = 3
@@ -456,18 +424,22 @@ class AegisOfAbyssalFlame(ShieldCharactorStatus):
         return value
 
 
-class IncinerationDrive(PrepareCharactorStatus):
+class IncinerationDrive_4_1(PrepareCharactorStatus):
     name: Literal['Incineration Drive'] = 'Incineration Drive'
-    desc: str = (
-        'Prepare Skill Incineration Drive. '
-    )
     version: Literal['4.1'] = '4.1'
     charactor_name: Literal['Dehya'] = 'Dehya'
     skill_name: Literal['Incineration Drive'] = 'Incineration Drive'
 
 
-PyroCharactorStatus = (
-    Stealth | ExplosiveSpark | NiwabiEnshou | Brilliance | ScarletSeal
-    | ParamitaPapilio | BloodBlossom | DilucInfusion | FieryRebirth
-    | AegisOfAbyssalFlame | IncinerationDrive
+class ScarletSeal_3_8(ScarletSeal_4_2):
+    version: Literal['3.8']
+    usage: int = 1
+    max_usage: int = 1
+
+
+register_class(
+    Stealth_3_3 | ExplosiveSpark_3_4 | NiwabiEnshou_3_3 | Brilliance_3_8 
+    | ScarletSeal_4_2 | ParamitaPapilio_3_7 | BloodBlossom_3_7 
+    | DilucInfusion_3_3 | FieryRebirth_3_7 | AegisOfAbyssalFlame_3_7 
+    | IncinerationDrive_4_1 | ScarletSeal_3_8
 )

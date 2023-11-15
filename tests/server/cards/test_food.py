@@ -1,3 +1,4 @@
+from src.lpsim.server.struct import ObjectPosition
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
@@ -128,6 +129,8 @@ def test_adeptus_temptation():
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == 2
+                        assert isinstance(req.targets[0], ObjectPosition)
+                        assert isinstance(req.targets[1], ObjectPosition)
                         assert req.targets[0].charactor_idx == 1
                         assert req.targets[1].charactor_idx == 2
             elif test_id == 4:
@@ -274,6 +277,8 @@ def test_lotus_flower_crisp():
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == 2
+                        assert isinstance(req.targets[0], ObjectPosition)
+                        assert isinstance(req.targets[1], ObjectPosition)
                         assert req.targets[0].charactor_idx == 0
                         assert req.targets[1].charactor_idx == 2
                         cards += 1
@@ -413,6 +418,8 @@ def test_lotus_flower_crisp_and_reflection():
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == 2
+                        assert isinstance(req.targets[0], ObjectPosition)
+                        assert isinstance(req.targets[1], ObjectPosition)
                         assert req.targets[0].charactor_idx == 0
                         assert req.targets[1].charactor_idx == 2
                         cards += 1
@@ -1482,15 +1489,15 @@ def test_guoba_egg():
 
 
 if __name__ == '__main__':
-    # test_adeptus_temptation()
-    # test_lotus_flower_crisp()
-    # test_lotus_flower_crisp_and_reflection()
-    # test_mond_hash()
-    # test_tandoori()
-    # test_pizza()
+    test_adeptus_temptation()
+    test_lotus_flower_crisp()
+    test_lotus_flower_crisp_and_reflection()
+    test_mond_hash()
+    test_tandoori()
+    test_pizza()
     test_full_and_tandoori()
-    # test_north_chicken()
-    # test_north_chicken_2()
-    # test_guoba_meatroll_egg_sashimi_crab()
-    # test_meatroll()
-    # test_guoba_egg()
+    test_north_chicken()
+    test_north_chicken_2()
+    test_guoba_meatroll_egg_sashimi_crab()
+    test_meatroll()
+    test_guoba_egg()

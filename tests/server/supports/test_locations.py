@@ -1,3 +1,4 @@
+from src.lpsim.server.card.support.locations import Vanarana_3_7
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
@@ -496,7 +497,7 @@ def test_vanarana():
                     for support, color in zip(
                         match.player_tables[0].supports, colors
                     ):
-                        assert support.name == 'Vanarana'
+                        assert isinstance(support, Vanarana_3_7)
                         assert support.usage == 2
                         assert support.colors == color
                     colors = [
@@ -508,7 +509,7 @@ def test_vanarana():
                     for support, color in zip(
                         match.player_tables[1].supports, colors
                     ):
-                        assert support.name == 'Vanarana'
+                        assert isinstance(support, Vanarana_3_7)
                         assert support.usage == 2
                         assert support.colors == color
                 elif test_id == 2:
@@ -527,7 +528,7 @@ def test_vanarana():
                         ['ANEMO']
                     ]
                     for support, c in zip(supports, colors):
-                        assert support.name == 'Vanarana'
+                        assert isinstance(support, Vanarana_3_7)
                         assert support.colors == c
                     supports = match.player_tables[1].supports
                     assert len(supports) == 4
@@ -541,7 +542,7 @@ def test_vanarana():
                         []
                     ]
                     for support, c in zip(supports, colors):
-                        assert support.name == 'Vanarana'
+                        assert isinstance(support, Vanarana_3_7)
                         assert support.colors == c
                 elif test_id == 4:
                     supports = (
@@ -560,7 +561,7 @@ def test_vanarana():
                         ['OMNI', 'OMNI']
                     ]
                     for support, c in zip(supports, colors):
-                        assert support.name == 'Vanarana'
+                        assert isinstance(support, Vanarana_3_7)
                         assert support.colors == c
                 else:
                     break

@@ -1,5 +1,7 @@
 from typing import Literal, List, Any
 
+from .....utils.class_registry import register_base_class
+
 from ....event import MoveObjectEventArguments, RoundPrepareEventArguments
 
 from ....object_base import CardBase
@@ -14,7 +16,6 @@ class ArtifactBase(CardBase):
     Base class of artifacts.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int
@@ -89,6 +90,9 @@ class ArtifactBase(CardBase):
         return []
 
 
+register_base_class(ArtifactBase)
+
+
 class RoundEffectArtifactBase(ArtifactBase):
     """
     Artifacts that has round effects. Refresh their usage when equipped and
@@ -96,7 +100,6 @@ class RoundEffectArtifactBase(ArtifactBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int 

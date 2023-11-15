@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from .base import ArtifactBase
 
 from ....consts import DieColor, ObjectPositionType
@@ -10,13 +12,8 @@ from ....event import CharactorDefeatedEventArguments
 from ....action import CreateDiceAction, Actions
 
 
-class GamblersEarrings(ArtifactBase):
+class GamblersEarrings_3_8(ArtifactBase):
     name: Literal["Gambler's Earrings"]
-    desc: str = (
-        'After an opposing character is defeated: If the character this card '
-        'is attached to is the active character, create Omni Element x2. '
-        '(Can happen 3 times per match)'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
@@ -61,4 +58,16 @@ class GamblersEarrings(ArtifactBase):
         )]
 
 
-Gamblers = GamblersEarrings | GamblersEarrings
+class GamblersEarrings_3_3(GamblersEarrings_3_8):
+    version: Literal['3.3']
+    usage: int = 999
+
+    def equip(self, match: Any) -> List[Actions]:
+        """
+        Equip this artifact. Reset usage.
+        """
+        self.usage = 999
+        return []
+
+
+register_class(GamblersEarrings_3_8 | GamblersEarrings_3_3)

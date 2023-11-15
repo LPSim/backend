@@ -1,4 +1,6 @@
 from typing import Any, List, Literal
+
+from ....utils.class_registry import register_base_class, register_class
 from ...dice import Dice
 
 from ...action import (
@@ -29,13 +31,15 @@ class LocationBase(SupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
 
 
+register_base_class(LocationBase)
+
+
 class RoundEffectLocationBase(RoundEffectSupportBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
 
 
-class LiyueHarborWharf(LocationBase):
+class LiyueHarborWharf_3_3(LocationBase):
     name: Literal['Liyue Harbor Wharf']
-    desc: str = '''End Phase: Draw 2 cards.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
@@ -60,12 +64,8 @@ class LiyueHarborWharf(LocationBase):
         ] + self.check_should_remove()
 
 
-class KnightsOfFavoniusLibrary(LocationBase):
+class KnightsOfFavoniusLibrary_3_3(LocationBase):
     name: Literal['Knights of Favonius Library']
-    desc: str = (
-        'When played: Select any Elemental Dice to reroll. '
-        'Roll Phase: Gain another chance to reroll.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0
@@ -90,12 +90,8 @@ class KnightsOfFavoniusLibrary(LocationBase):
         return value
 
 
-class JadeChamber(LocationBase):
+class JadeChamber_4_0(LocationBase):
     name: Literal['Jade Chamber']
-    desc: str = (
-        'Roll Phase: 2 of the starting Elemental Dice you roll are always '
-        'guaranteed to match the Elemental Type of your active character.'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
     usage: int = 0
@@ -121,12 +117,13 @@ class JadeChamber(LocationBase):
         return value
 
 
-class DawnWinery(RoundEffectLocationBase):
+class JadeChamber_3_3(JadeChamber_4_0):
+    version: Literal['3.3']
+    cost: Cost = Cost(same_dice_number = 1)
+
+
+class DawnWinery_3_3(RoundEffectLocationBase):
     name: Literal['Dawn Winery']
-    desc: str = (
-        'When you perform "Switch Character": Spend 1 less Elemental Die. '
-        '(Once per Round)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -153,11 +150,8 @@ class DawnWinery(RoundEffectLocationBase):
         return value
 
 
-class WangshuInn(LocationBase):
+class WangshuInn_3_3(LocationBase):
     name: Literal['Wangshu Inn']
-    desc: str = (
-        'End Phase: Heal the most injured character on standby for 2 HP.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
@@ -203,9 +197,8 @@ class WangshuInn(LocationBase):
         )] + self.check_should_remove()
 
 
-class FavoniusCathedral(LocationBase):
+class FavoniusCathedral_3_3(LocationBase):
     name: Literal['Favonius Cathedral']
-    desc: str = '''End Phase: Heal your active character for 2 HP.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
@@ -240,12 +233,8 @@ class FavoniusCathedral(LocationBase):
         )] + self.check_should_remove()
 
 
-class Tenshukaku(LocationBase):
+class Tenshukaku_3_7(LocationBase):
     name: Literal['Tenshukaku']
-    desc: str = (
-        'When the Action Phase begins: If you have 5 different kinds of '
-        'Elemental Die, create 1 Omni Element.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
@@ -279,11 +268,8 @@ class Tenshukaku(LocationBase):
         )]
 
 
-class GrandNarukamiShrine(LocationBase):
+class GrandNarukamiShrine_3_6(LocationBase):
     name: Literal['Grand Narukami Shrine']
-    desc: str = (
-        'Triggers automatically once per Round: Create 1 random Elemental Die.'
-    )
     version: Literal['3.6'] = '3.6'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 3
@@ -317,9 +303,8 @@ class GrandNarukamiShrine(LocationBase):
         )] + self.check_should_remove()
 
 
-class SangonomiyaShrine(LocationBase):
+class SangonomiyaShrine_3_7(LocationBase):
     name: Literal['Sangonomiya Shrine']
-    desc: str = '''End Phase: Heal all your characters for 1 HP.'''
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 2
@@ -359,13 +344,8 @@ class SangonomiyaShrine(LocationBase):
         return [damage_action] + self.check_should_remove()
 
 
-class SumeruCity(RoundEffectLocationBase):
+class SumeruCity_3_7(RoundEffectLocationBase):
     name: Literal['Sumeru City']
-    desc: str = (
-        'When your character uses a Skill or equips a Talent: If you do not '
-        'have more Elemental Dice than cards in your hand, spend 1 less '
-        'Elemental Die. (Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
     max_usage_per_round: int = 1
@@ -412,13 +392,8 @@ class SumeruCity(RoundEffectLocationBase):
         return value
 
 
-class Vanarana(LocationBase):
+class Vanarana_3_7(LocationBase):
     name: Literal['Vanarana']
-    desc: str = (
-        'End Phase: Collect up to 2 unused Elemental Dice. '
-        'When the Action Phase begins: Reclaim the dice you collected using '
-        'this card.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost()
     usage: int = 0
@@ -504,12 +479,8 @@ class Vanarana(LocationBase):
         )]
 
 
-class ChinjuForest(LocationBase):
+class ChinjuForest_3_7(LocationBase):
     name: Literal['Chinju Forest']
-    desc: str = (
-        'When Action Phase begins: If you do not start first, create 1 '
-        'Elemental Die that matches the Type of your active character.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
@@ -542,12 +513,8 @@ class ChinjuForest(LocationBase):
         )] + self.check_should_remove()
 
 
-class GoldenHouse(LocationBase, UsageWithRoundRestrictionSupportBase):
+class GoldenHouse_4_0(LocationBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Golden House']
-    desc: str = (
-        'When you play a Weapon card or an Artifact card with an original '
-        'cost of at least 3: Spend 1 less Elemental Die. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
     usage: int = 2
@@ -589,12 +556,8 @@ class GoldenHouse(LocationBase, UsageWithRoundRestrictionSupportBase):
         return super().event_handler_MOVE_OBJECT(event, match)
 
 
-class GandharvaVille(LocationBase, UsageWithRoundRestrictionSupportBase):
+class GandharvaVille_4_1(LocationBase, UsageWithRoundRestrictionSupportBase):
     name: Literal['Gandharva Ville']
-    desc: str = (
-        'Before you choose your action, when the number of Elemental Dice you '
-        'have is 0: Create 1 Omni Element (once per Round).'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 3
@@ -626,14 +589,8 @@ class GandharvaVille(LocationBase, UsageWithRoundRestrictionSupportBase):
         )]
 
 
-class StormterrorsLair(LocationBase, UsageWithRoundRestrictionSupportBase):
+class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
     name: Literal["Stormterror's Lair"]
-    desc: str = (
-        'When played: Draw a random Talent card from your deck. '
-        'When you play a Talent card, or when your character uses a Skill '
-        'with an original cost of at least 4 Elemental Dice: Spend 1 less '
-        'Elemental Die. (Once per Round) Usage(s): 3'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 3
@@ -699,9 +656,10 @@ class StormterrorsLair(LocationBase, UsageWithRoundRestrictionSupportBase):
         return []
 
 
-Locations = (
-    LiyueHarborWharf | KnightsOfFavoniusLibrary | JadeChamber | DawnWinery 
-    | WangshuInn | FavoniusCathedral | Tenshukaku | GrandNarukamiShrine 
-    | SangonomiyaShrine | SumeruCity | Vanarana | ChinjuForest | GoldenHouse
-    | GandharvaVille | StormterrorsLair
+register_class(
+    LiyueHarborWharf_3_3 | KnightsOfFavoniusLibrary_3_3 | JadeChamber_4_0 
+    | JadeChamber_3_3 | DawnWinery_3_3 | WangshuInn_3_3 
+    | FavoniusCathedral_3_3 | Tenshukaku_3_7 | GrandNarukamiShrine_3_6 
+    | SangonomiyaShrine_3_7 | SumeruCity_3_7 | Vanarana_3_7 | ChinjuForest_3_7 
+    | GoldenHouse_4_0 | GandharvaVille_4_1 | StormterrorsLair_4_2
 )

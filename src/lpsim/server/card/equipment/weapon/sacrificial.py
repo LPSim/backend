@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....action import CreateDiceAction
 
 from ....event import SkillEndEventArguments
@@ -11,18 +13,13 @@ from ....struct import Cost
 from .base import RoundEffectWeaponBase
 
 
-class SacrificialWeapons(RoundEffectWeaponBase):
+class SacrificialWeapons_3_3(RoundEffectWeaponBase):
     name: Literal[
         'Sacrificial Fragments',
         'Sacrificial Greatsword',
         'Sacrificial Sword',
         'Sacrificial Bow',
     ]
-    desc: str = (
-        'The character deals +1 DMG. After the character uses an Elemental '
-        'Skill: Create 1 Elemental Die of the same Elemental Type as this '
-        'character. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: Literal['3.3'] = '3.3'
     weapon_type: WeaponType = WeaponType.OTHER
@@ -66,3 +63,6 @@ class SacrificialWeapons(RoundEffectWeaponBase):
             number = 1,
             color = die_color,
         )]
+
+
+register_class(SacrificialWeapons_3_3)

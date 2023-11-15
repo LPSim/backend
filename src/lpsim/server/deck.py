@@ -2,28 +2,28 @@ import logging
 
 from pydantic import validator
 
-from .object_base import CardBases
+from ..utils.deck_code import deck_code_to_deck_str, deck_str_to_deck_code
+
+from .object_base import CardBase
 
 from .charactor.charactor_base import CharactorBase
 
-from ..utils import BaseModel, get_instance_from_type_unions
+from ..utils import BaseModel, get_instance
 from typing import Literal, List
-from . import Cards
-from . import Charactors
 
 
 class Deck(BaseModel):
     name: Literal['Deck'] = 'Deck'
     charactors: List[CharactorBase] = []
-    cards: List[CardBases] = []
+    cards: List[CardBase] = []
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):
-        return get_instance_from_type_unions(Charactors, v)
+        return get_instance(CharactorBase, v)
 
     @validator('cards', each_item = True, pre = True)
     def parse_cards(cls, v):
-        return get_instance_from_type_unions(Cards, v)
+        return get_instance(CardBase, v)
 
     def check_legal(self, card_number: int | None, 
                     max_same_card_number: int | None, 
@@ -162,21 +162,13 @@ class Deck(BaseModel):
                 if version is not None:
                     args['version'] = version
                 for _ in range(number):
-                    deck.charactors.append(
-                        get_instance_from_type_unions(
-                            Charactors, args
-                        )
-                    )
+                    deck.charactors.append(get_instance(CharactorBase, args))
             else:
                 for _ in range(number):
                     args = { 'name': line }
                     if version is not None:
                         args['version'] = version
-                    deck.cards.append(
-                        get_instance_from_type_unions(
-                            Cards, args
-                        )
-                    )
+                    deck.cards.append(get_instance(CardBase, args))
         return deck
 
     def to_str(self) -> str:
@@ -193,3 +185,17 @@ class Deck(BaseModel):
             deck_str += f'@{card.version}'
             deck_str += '\n'
         return deck_str
+
+    @staticmethod
+    def from_deck_code(deck_code: str, version: str | None = None) -> 'Deck':
+        """
+        Convert deck code to deck object. If version is specified, 
+        default_version will be set in deck_str.
+        """
+        return Deck.from_str(deck_code_to_deck_str(deck_code, version))
+
+    def to_deck_code(self) -> str:
+        """
+        Convert deck object to deck code.
+        """
+        return deck_str_to_deck_code(self.to_str())

@@ -1,9 +1,12 @@
+from src.lpsim.server.status.charactor_status.geo_charactors import (
+    RagingOniKing_3_6
+)
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 
@@ -172,6 +175,7 @@ def test_arataki_itto():
                 charactor = match.player_tables[1].charactors[0]
                 for status in charactor.status:
                     if status.name == 'Raging Oni King':
+                        assert isinstance(status, RagingOniKing_3_6)
                         assert status.status_increase_usage == 1
             elif test_id == 5:
                 for req in match.requests:

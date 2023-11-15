@@ -1,22 +1,22 @@
 from typing import Any, Literal
 
+from ....utils.class_registry import register_class
+
 from ...consts import IconType, SkillType
 
 from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus, ShieldCharactorStatus
 
 
-class UnmovableMountain(ShieldCharactorStatus):
+class UnmovableMountain_3_5(ShieldCharactorStatus):
     name: Literal['Unmovable Mountain'] = 'Unmovable Mountain'
-    desc: str = '''Provides 2 Shield to protect the equipped charactor.'''
     version: Literal['3.5'] = '3.5'
     usage: int = 2
     max_usage: int = 2
 
 
-class VermillionHereafter(RoundCharactorStatus):
+class VermillionHereafter_4_0(RoundCharactorStatus):
     name: Literal['Vermillion Hereafter']
-    desc: str = '''During this Round, character deals +1 Normal Attack DMG.'''
     version: Literal['4.0'] = '4.0'
     usage: int = 1
     max_usage: int = 1
@@ -37,4 +37,4 @@ class VermillionHereafter(RoundCharactorStatus):
         return value
 
 
-ArtifactCharactorStatus = UnmovableMountain | VermillionHereafter
+register_class(UnmovableMountain_3_5 | VermillionHereafter_4_0)

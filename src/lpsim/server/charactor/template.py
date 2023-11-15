@@ -3,6 +3,10 @@
 
 from typing import Any, List, Literal
 
+from ...utils.class_registry import register_class
+
+from ...utils.desc_registry import DescDictType
+
 from ...summon.base import ShieldSummonBase, AttackerSummonBase
 
 from ...modifiable_values import CombatActionValue, DamageIncreaseValue
@@ -21,14 +25,12 @@ from ..charactor_base import (
 )
 
 
-# Charactor status. DO NOT define here, define in server/status/characor_status
-# Here is just example.
+# Charactor status.
 
 
 # Round status, will last for several rounds and disappear
 class ...(RoundCharactorStatus):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
@@ -43,7 +45,6 @@ class ...(RoundCharactorStatus):
 # Usage status, will not disappear until usage is 0
 class ...(UsageCharactorStatus):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
@@ -58,7 +59,6 @@ class ...(UsageCharactorStatus):
 # Defend status, i.e. purple shield. They inherit UsageCharactorStatus
 class ...(DefendCharactorStatus):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
@@ -69,14 +69,12 @@ class ...(DefendCharactorStatus):
 # Shieldstatus, i.e. yellow shield.
 class ...(ShieldCharactorStatus):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
 
 
-# Team status. DO NOT define here, define in server/status/team_status
-# Here is just example.
+# Team status. 
 
 
 # Refer to above, change XXXCharactorStatus to XXXTeamStatus.
@@ -88,7 +86,6 @@ class ...(ShieldCharactorStatus):
 
 class ...(AttackerSummonBase):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
@@ -98,7 +95,6 @@ class ...(AttackerSummonBase):
 
 class ...(DefendSummonBase):
     name: Literal[...] = ...
-    desc: str = ...
     version: Literal[...] = ...
     usage: int = ...
     max_usage: int = ...
@@ -114,7 +110,6 @@ class ...(DefendSummonBase):
 
 class ...(ElementalSkillBase):
     name: Literal[...] = ...
-    desc: str = ...
     damage: int = ...
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -135,7 +130,6 @@ class ...(ElementalSkillBase):
 
 class ...(ElementalBurstBase):
     name: Literal[...] = ...
-    desc: str = ...
     damage: int = ...
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
@@ -150,7 +144,6 @@ class ...(ElementalBurstBase):
 
 class ...(PassiveSkillBase):
     name: Literal[...] = ...
-    desc: str = ...
     usage: int = ...
 
     def event_handler_ROUND_PREPARE(
@@ -176,7 +169,6 @@ class ...(PassiveSkillBase):
 
 class ...(SkillTalent):
     name: Literal[...]  # Do not set default value for talent card
-    desc: str = ...
     version: Literal[...] = ...
     charactor_name: Literal[...] = ...
     cost: Cost = Cost(
@@ -196,10 +188,10 @@ class ...(SkillTalent):
 # charactor base
 
 
-class ...(CharactorBase):
-    name: Literal[...]  # Do not set default value for charactor name
-    version: Literal[...] = ...
-    desc: str = ...
+# charactor class name should contain its version.
+class CNAME_X_X(CharactorBase):
+    name: Literal["CNAME"]
+    version: Literal['VERSION'] = 'VERSION'
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = ...
@@ -211,7 +203,6 @@ class ...(CharactorBase):
         FactionType.
     ]
     weapon_type: WeaponType = WeaponType.
-    talent: ... | None = None
 
     def _init_skills(self) -> None:
         self.skills = [
@@ -230,4 +221,92 @@ class ...(CharactorBase):
         ]
 
 
-# finally, modify server/charactor/(element)/__init__.py
+# define descriptions of newly defined classes. Note key of skills and talents
+# have charactor names. For balance changes, only descs are needed to define.
+# TODO: class desc will change key
+charactor_descs: Dict[str, DescDictType] = {
+    # charactor information. descs are optional but must define version number.
+    # id is used to sort in the frontend.
+    "CHARACTOR/CNAME_X_X": {
+        "image_path": "charactor/...",
+        "id": ...,
+        "names": {
+            "zh-CN": "...",
+            "en-US": "CNAME_X_X"
+        },
+        "descs": {
+            "VERSION": {
+                "zh-CN": "",
+                "en-US": ""
+            }
+        }
+    },
+    # for newly deinfed charactors, define avatar path.
+    "AVATAR/...": {
+        "image_path": "avatar/..."
+    },
+    # charactor skills, with SKILL_${cname}_${skill_type} as key.
+    "SKILL_CNAME_X_X_NORMAL_ATTACK/...": {
+        "names": {
+            "zh-CN": "XXX",
+            "en-US": "XXX"
+        },
+        "descs": {
+            "VERSION": {
+                "zh-CN": "",
+                "en-US": ""
+            }
+        }
+    },
+    ...,
+    # charactor talents, with TALENT_${cname}_${talent_name} as key.
+    "TALENT_CNAME_X_X/...": {
+        "image_path": "charactor/...",
+        "id": ...,
+        "names": {
+            "zh-CN": "XXX",
+            "en-US": "XXX"
+        },
+        "descs": {
+            "VERSION": {
+                "zh-CN": "",
+                "en-US": ""
+            }
+        }
+    },
+    # summons
+    "SUMMON/...": {
+        "image_path": "summon/...",
+        "names": {
+            "zh-CN": "XXX",
+            "en-US": "XXX"
+        },
+        "descs": {
+            "VERSION": {
+                "zh-CN": "",
+                "en-US": ""
+            }
+        }
+    },
+    # status
+    "CHARACTOR_STATUS/...": {
+        "image_path": "status/...",
+        "names": {
+            "zh-CN": "XXX",
+            "en-US": "XXX"
+        },
+        "descs": {
+            "VERSION": {
+                # you can use reference key to reference other desc
+                "zh-CN": "$CHARACTOR_STATUS/...|descs|OLD_VERSION",
+                "en-US": ""
+            }
+        }
+    },
+}
+
+
+register_class(
+    CNAME_X_X | Talent | Summon | Status,
+    charactor_descs
+)

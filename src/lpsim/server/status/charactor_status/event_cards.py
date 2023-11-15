@@ -1,5 +1,7 @@
 from typing import Any, Literal, List
 
+from ....utils.class_registry import register_class
+
 from ...action import RemoveObjectAction
 
 from ...event import MakeDamageEventArguments
@@ -10,13 +12,8 @@ from ...modifiable_values import DamageIncreaseValue
 from .base import RoundCharactorStatus
 
 
-class HeavyStrike(RoundCharactorStatus):
+class HeavyStrike_3_7(RoundCharactorStatus):
     name: Literal['Heavy Strike'] = 'Heavy Strike'
-    desc: str = (
-        "During this round, your current active character's next "
-        'Normal Attack deals +1 DMG. '
-        'When this Normal Attack is a Charged Attack: Deal +1 additional DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
@@ -54,14 +51,10 @@ class HeavyStrike(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class ShatteringIce(RoundCharactorStatus):
+class ShatteringIce_3_3(RoundCharactorStatus):
     name: Literal[
         'Elemental Resonance: Shattering Ice'
     ] = 'Elemental Resonance: Shattering Ice'
-    desc: str = (
-        'During this Round, your character will deal +2 DMG '
-        'for the next instance.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -97,14 +90,10 @@ class ShatteringIce(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-class FerventFlames(RoundCharactorStatus):
+class FerventFlames_3_3(RoundCharactorStatus):
     name: Literal[
         'Elemental Resonance: Fervent Flames'
     ] = 'Elemental Resonance: Fervent Flames'
-    desc: str = (
-        'During this round, the next instance of Pyro-Related Reactions your '
-        'character triggers deals +3 DMG.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 1
     max_usage: int = 1
@@ -143,4 +132,4 @@ class FerventFlames(RoundCharactorStatus):
         return self.check_should_remove()
 
 
-EventCardCharactorStatus = HeavyStrike | ShatteringIce | FerventFlames
+register_class(HeavyStrike_3_7 | ShatteringIce_3_3 | FerventFlames_3_3)

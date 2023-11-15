@@ -1,5 +1,7 @@
 from typing import Literal, List, Any
 
+from ....utils.class_registry import register_base_class
+
 from ...event import MoveObjectEventArguments, RoundPrepareEventArguments
 from ...object_base import CardBase
 from ...consts import IconType, ObjectType, ObjectPositionType, CostLabels
@@ -16,7 +18,6 @@ class SupportBase(CardBase):
     event triggers will work and do supports.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int
@@ -123,6 +124,9 @@ class SupportBase(CardBase):
         return []
 
 
+register_base_class(SupportBase)
+
+
 class RoundEffectSupportBase(SupportBase):
     """
     Supports that has round effects. Refresh their usage when played and
@@ -130,7 +134,6 @@ class RoundEffectSupportBase(SupportBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     max_usage_per_round: int 
@@ -156,7 +159,6 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     maximum usage. e.g. Liu Su has 1 usage per round and 2 total usage.
     """
     name: str
-    desc: str
     version: str
     cost: Cost
     usage: int = 2
@@ -194,7 +196,6 @@ class LimitedEffectSupportBase(SupportBase):
     """
 
     name: str
-    desc: str
     version: str
     cost: Cost
     limited_usage: int

@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ..base import StatusBase
 
 from ...action import Actions, CreateObjectAction
@@ -20,15 +22,8 @@ from .base import (
 )
 
 
-class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
+class SweepingTime_3_3(RoundCharactorStatus, ElementalInfusionCharactorStatus):
     name: Literal['Sweeping Time'] = 'Sweeping Time'
-    desc: str = (
-        'When your character uses a Normal Attack: Consume 1 less Geo Die. '
-        '(Once per Round) '
-        "Character's Normal Attacks deal +2 DMG, and their Physical DMG is "
-        'converted to Geo DMG. '
-        'Duration (Rounds): 2'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -105,15 +100,9 @@ class SweepingTime(RoundCharactorStatus, ElementalInfusionCharactorStatus):
         return value
 
 
-class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
+class RagingOniKing_4_2(RoundCharactorStatus, 
+                        ElementalInfusionCharactorStatus):
     name: Literal['Raging Oni King'] = 'Raging Oni King'
-    desc: str = (
-        'The character to which this is attached to has their Normal Attacks '
-        'deal +_DAMAGE_ DMG, and their Physical DMG is converted to Geo DMG. '
-        'After the character to which this is attached uses a Normal Attack: '
-        'Gains Superlative Superstrength (Once per Round). '
-        'Duration (Rounds): 2 '
-    )
     version: Literal['4.2'] = '4.2'
     usage: int = 2
     max_usage: int = 2
@@ -126,9 +115,6 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
 
     def __init__(self, *argv, **kwargs) -> None:
         super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_DAMAGE_', str(self.damage_increase)
-        )
 
     def renew(self, new_status: StatusBase) -> None:
         super().renew(new_status)
@@ -199,14 +185,8 @@ class RagingOniKing(RoundCharactorStatus, ElementalInfusionCharactorStatus):
         )]
 
 
-class SuperlativeSuperstrength(UsageCharactorStatus):
+class SuperlativeSuperstrength_3_6(UsageCharactorStatus):
     name: Literal['Superlative Superstrength'] = 'Superlative Superstrength'
-    desc: str = (
-        'When the character to which this is attached to uses a Charged '
-        'Attack: Deal +1 DMG. If the Usage(s) are no less than 2, '
-        'expend 1 less Unaligned Element. '
-        'Usage(s): 1 (Can stack. Max 3 stacks)'
-    )
     version: Literal['3.6'] = '3.6'
     usage: int = 1
     max_usage: int = 3
@@ -260,21 +240,11 @@ class SuperlativeSuperstrength(UsageCharactorStatus):
         return value
 
 
-class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
+class Stonehide_3_3(ElementalInfusionCharactorStatus, DefendCharactorStatus):
     """
     Combined Stonehide and Stone Force into one.
     """
     name: Literal['Stonehide'] = 'Stonehide'
-    desc: str = (
-        'When the character to which this is attached receives DMG: Decrease '
-        'DMG taken by 1. When Geo DMG is decreased, consume 1 additional '
-        'Usage(s).'
-        'Stone Force: '
-        'The character to which this is attached has their Physical DMG '
-        'converted to Geo DMG. Once per Round: The character deals +1 DMG. '
-        'Once the Stonehide attached to the character is removed, this status '
-        'will be removed alongside it.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 3
     max_usage: int = 3
@@ -339,18 +309,20 @@ class Stonehide(ElementalInfusionCharactorStatus, DefendCharactorStatus):
         return value
 
 
-class Petrification(RoundCharactorStatus):
+class Petrification_3_7(RoundCharactorStatus):
     name: Literal['Petrification'] = 'Petrification'
-    desc: str = (
-        'Character cannot use Skills.(Lasts until the end of this Round)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
-GeoCharactorStatus = (
-    SweepingTime | RagingOniKing | SuperlativeSuperstrength | Stonehide
-    | Petrification
+class RagingOniKing_3_6(RagingOniKing_4_2):
+    version: Literal['3.6']
+    damage_increase: int = 2
+
+
+register_class(
+    SweepingTime_3_3 | RagingOniKing_4_2 | SuperlativeSuperstrength_3_6 
+    | Stonehide_3_3 | Petrification_3_7 | RagingOniKing_3_6
 )

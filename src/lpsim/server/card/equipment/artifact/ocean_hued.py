@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import DamageElementalType, DamageType, ObjectPositionType
 
 from ....action import Actions, MakeDamageAction
@@ -11,14 +13,8 @@ from .base import ArtifactBase
 from ....struct import Cost
 
 
-class CrownOfWatatsumi(ArtifactBase):
+class CrownOfWatatsumi_4_1(ArtifactBase):
     name: Literal['Crown of Watatsumi']
-    desc: str = (
-        'For every 3 HP of healing your characters receive, this card '
-        'accumulates 1 Sea-Dyed Foam (maximum of 2). '
-        'When this character deals DMG: Consume all Sea-Dyed Foam. DMG is '
-        'increased by 1 for each Sea-Dyed Foam consumed.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(same_dice_number = 1)
     usage: int = 0
@@ -74,15 +70,8 @@ class CrownOfWatatsumi(ArtifactBase):
         return []
 
 
-class OceanHuedClam(CrownOfWatatsumi):
+class OceanHuedClam_4_2(CrownOfWatatsumi_4_1):
     name: Literal['Ocean-Hued Clam']
-    desc: str = (
-        'When played: Heal this charactor by 3 HP. '
-        'For every 3 HP of healing your characters receive, this card '
-        'accumulates 1 Sea-Dyed Foam (maximum of 2). '
-        'When this character deals DMG: Consume all Sea-Dyed Foam. DMG is '
-        'increased by 1 for each Sea-Dyed Foam consumed.'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(any_dice_number = 3)
 
@@ -107,4 +96,4 @@ class OceanHuedClam(CrownOfWatatsumi):
         ]
 
 
-OceanHuedArtifacts = CrownOfWatatsumi | OceanHuedClam
+register_class(CrownOfWatatsumi_4_1 | OceanHuedClam_4_2)

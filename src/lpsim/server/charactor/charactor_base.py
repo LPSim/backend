@@ -10,13 +10,9 @@ from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 
 from pydantic import validator
 
-from ..card.equipment.artifact.base import ArtifactBase
+from ...utils.class_registry import register_base_class
 
-from ..card.equipment.weapon.base import WeaponBase
-
-from ..status.charactor_status.base import CharactorStatusBase
-
-from ...utils import get_instance_from_type_unions
+from ...utils import get_instance
 
 from ..event import MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
@@ -29,13 +25,13 @@ from ..object_base import (
 )
 from ..struct import Cost, DeckRestriction, ObjectPosition
 from ..modifiable_values import DamageValue
-from ..status import CharactorStatus
-from ..card.equipment.artifact import Artifacts
-from ..card.equipment.weapon import Weapons
 from ..action import (
     ChargeAction, CreateObjectAction, MakeDamageAction, MoveObjectAction, 
     RemoveObjectAction, Actions, SkillEndAction, UseSkillAction
 )
+from ..status import CharactorStatusBase
+from ..card import ArtifactBase
+from ..card import WeaponBase
 
 
 class SkillBase(ObjectBase):
@@ -43,7 +39,6 @@ class SkillBase(ObjectBase):
     Base class of skills.
     """
     name: str
-    desc: str
     type: Literal[ObjectType.SKILL] = ObjectType.SKILL
     skill_type: SkillType
     damage_type: DamageElementalType
@@ -227,7 +222,6 @@ class PhysicalNormalAttackBase(SkillBase):
     """
     Base class of physical normal attacks.
     """
-    desc: str = """Deals 2 Physical DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType = DamageElementalType.PHYSICAL
     damage: int = 2
@@ -246,16 +240,10 @@ class ElementalNormalAttackBase(SkillBase):
     """
     Base class of elemental normal attacks.
     """
-    desc: str = """Deals 1 _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.NORMAL_ATTACK] = SkillType.NORMAL_ATTACK
     damage_type: DamageElementalType
     damage: int = 1
     cost_label: int = CostLabels.NORMAL_ATTACK.value
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:
@@ -270,17 +258,10 @@ class ElementalSkillBase(SkillBase):
     """
     Base class of elemental skills.
     """
-    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_SKILL] = SkillType.ELEMENTAL_SKILL
     damage_type: DamageElementalType
     damage: int = 3
     cost_label: int = CostLabels.ELEMENTAL_SKILL.value
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize()
-        ).replace('_DAMAGE_', str(self.damage))
 
     @staticmethod
     def get_cost(element: ElementType) -> Cost:
@@ -294,7 +275,6 @@ class ElementalBurstBase(SkillBase):
     """
     Base class of elemental bursts.
     """
-    desc: str = """Deals _DAMAGE_ _ELEMENT_ DMG."""
     skill_type: Literal[SkillType.ELEMENTAL_BURST] = SkillType.ELEMENTAL_BURST
     damage_type: DamageElementalType
     cost_label: int = CostLabels.ELEMENTAL_BURST.value
@@ -306,12 +286,6 @@ class ElementalBurstBase(SkillBase):
             elemental_dice_number = number,
             charge = charge
         )
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
-        self.desc = self.desc.replace('_DAMAGE_', str(self.damage))
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -330,18 +304,7 @@ class AOESkillBase(SkillBase):
     classes to do AOE attack. It will attack active charactor damage+element, 
     back chractor back_damage_piercing.
     """
-    desc: str = (
-        'Deals _ACTIVE_ _ELEMENT_ DMG, deals _BACK_ Piercing DMG to all '
-        'opposing characters on standby.'
-    )
     back_damage: int
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        self.desc = self.desc.replace(
-            '_ELEMENT_', self.damage_type.value.lower().capitalize())
-        self.desc = self.desc.replace('_ACTIVE_', str(self.damage))
-        self.desc = self.desc.replace('_BACK_', str(self.back_damage))
 
     def attack_opposite_active(
         self, match: Any, damage: int, damage_type: DamageElementalType,
@@ -419,15 +382,6 @@ class TalentBase(CardBase):
     type: Literal[ObjectType.TALENT] = ObjectType.TALENT
     cost_label: int = CostLabels.CARD.value | CostLabels.TALENT.value
     remove_when_used: bool = False
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        restriction = (
-            f' (You must have {self.charactor_name} in your deck to add this '
-            'card to your deck.)'
-        )
-        self.desc = self.desc.replace(restriction, '')
-        self.desc += restriction
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
@@ -558,7 +512,6 @@ class CharactorBase(ObjectBase):
     Base class of charactors.
     """
     name: str
-    desc: str
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     type: Literal[ObjectType.CHARACTOR] = ObjectType.CHARACTOR
@@ -589,19 +542,25 @@ class CharactorBase(ObjectBase):
 
     @validator('status', each_item = True, pre = True)
     def parse_status(cls, v):
-        return get_instance_from_type_unions(CharactorStatus, v)
+        return get_instance(CharactorStatusBase, v)
 
     @validator('weapon', pre = True)
     def parse_weapon(cls, v):
         if v is None:
             return v
-        return get_instance_from_type_unions(Weapons, v)
+        return get_instance(WeaponBase, v)
 
     @validator('artifact', pre = True)
     def parse_artifact(cls, v):
         if v is None:
             return v
-        return get_instance_from_type_unions(Artifacts, v)
+        return get_instance(ArtifactBase, v)
+
+    @validator('talent', pre = True)
+    def parse_talent(cls, v):
+        if v is None:
+            return v
+        return get_instance(TalentBase, v)
 
     @validator('version', pre = True)
     def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
@@ -733,3 +692,7 @@ class CharactorBase(ObjectBase):
             elif self.artifact is not None and self.artifact.id == position.id:
                 return self.artifact
             return None
+
+
+register_base_class(CharactorBase)
+register_base_class(TalentBase)

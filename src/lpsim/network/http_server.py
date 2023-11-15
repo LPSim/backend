@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
+from ..utils.desc_registry import get_desc_patch
+
 from ..server.match import Match, MatchConfig
 from ..server.deck import Deck
 from ..agents import InteractionAgent
@@ -111,6 +113,17 @@ class HTTPServer():
             return {
                 'version': __version__,
                 'version_tuple': __version_tuple__,
+            }
+
+        @app.get('/patch')
+        async def get_patch():
+            """
+            Return the desc patch.
+            """
+            patch = get_desc_patch()
+            return {
+                'verion': '1.0',
+                'patch': patch
             }
 
         @app.post('/reset')

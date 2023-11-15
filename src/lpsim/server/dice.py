@@ -12,6 +12,7 @@ class Dice(ObjectBase):
     Attributes:
         colors: list of colors of dice.
     """
+    name: Literal['Dice'] = 'Dice'
     position: ObjectPosition = ObjectPosition(
         player_idx = -1,
         area = ObjectPositionType.INVALID,

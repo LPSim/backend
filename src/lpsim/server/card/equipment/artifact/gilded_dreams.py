@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import DamageType, ElementalReactionType, ObjectPositionType
 
 from ....action import Actions, DrawCardAction
@@ -10,14 +12,8 @@ from ....struct import Cost
 from .base import RoundEffectArtifactBase
 
 
-class ShadowOfTheSandKing(RoundEffectArtifactBase):
+class ShadowOfTheSandKing_4_2(RoundEffectArtifactBase):
     name: Literal['Shadow of the Sand King']
-    desc: str = (
-        'When played: Draw a card. '
-        'When the character to which this card is attached is your active '
-        'character, then when an opposing character takes elemental reacction '
-        'DMG: Draw a card. (Once per Round)'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(same_dice_number = 1)
     max_usage_per_round: int = 1
@@ -60,4 +56,4 @@ class ShadowOfTheSandKing(RoundEffectArtifactBase):
         )]
 
 
-GildedDreamses = ShadowOfTheSandKing | ShadowOfTheSandKing
+register_class(ShadowOfTheSandKing_4_2)

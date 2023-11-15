@@ -1,5 +1,7 @@
 from typing import Literal, List, Any
 
+from .....utils.class_registry import register_base_class
+
 from ....modifiable_values import DamageIncreaseValue
 
 from ....event import MoveObjectEventArguments, RoundPrepareEventArguments
@@ -19,7 +21,6 @@ class WeaponBase(CardBase):
     Base class of weapons.
     """
     name: str
-    desc: str
     cost: Cost
     version: str
     weapon_type: WeaponType
@@ -127,6 +128,9 @@ class WeaponBase(CardBase):
         return value
 
 
+register_base_class(WeaponBase)
+
+
 class RoundEffectWeaponBase(WeaponBase):
     """
     Weapons that has round effects. Refresh their usage when equipped and
@@ -134,7 +138,6 @@ class RoundEffectWeaponBase(WeaponBase):
     Instead of setting usage, set max_usage_per_round.
     """
     name: str
-    desc: str
     cost: Cost
     version: str
     weapon_type: WeaponType

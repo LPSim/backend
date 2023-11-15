@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....event import (
     ChooseCharactorEventArguments, SwitchCharactorEventArguments
 )
@@ -13,7 +15,6 @@ from .base import RoundEffectArtifactBase
 
 class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
     name: str
-    desc: str
     version: str
     cost: Cost
     skill_label: int  # CostLabels
@@ -66,25 +67,15 @@ class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
         return value
 
 
-class ThunderingPoise(SkillCostDecreaseArtifact):
+class ThunderingPoise_4_0(SkillCostDecreaseArtifact):
     name: Literal['Thundering Poise']
-    desc: str = (
-        'When the character uses a Normal Attack or equips a Talent: Spend 1 '
-        'less Elemental Die. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(any_dice_number = 2)
     skill_label: int = CostLabels.NORMAL_ATTACK.value
 
 
-class VermillionHereafter(ThunderingPoise):
+class VermillionHereafter_4_0(ThunderingPoise_4_0):
     name: Literal['Vermillion Hereafter']
-    desc: str = (
-        'When the character uses a Normal Attack or equips a Talent: Spend 1 '
-        'less Elemental Die. (Once per Round) '
-        'After a character is switched to the active character: During this '
-        'Round, character deals +1 Normal Attack DMG.'
-    )
     cost: Cost = Cost(any_dice_number = 3)
 
     def _attach_status(
@@ -126,25 +117,15 @@ class VermillionHereafter(ThunderingPoise):
                                    event.action.charactor_idx)
 
 
-class CapriciousVisage(SkillCostDecreaseArtifact):
+class CapriciousVisage_4_0(SkillCostDecreaseArtifact):
     name: Literal['Capricious Visage']
-    desc: str = (
-        'When the character uses an Elemental Skill or equips a Talent: Spend '
-        '1 less Elemental Die. (Once per Round)'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost(any_dice_number = 2)
     skill_label: int = CostLabels.ELEMENTAL_SKILL.value
 
 
-class ShimenawasReminiscence(CapriciousVisage):
+class ShimenawasReminiscence_4_0(CapriciousVisage_4_0):
     name: Literal["Shimenawa's Reminiscence"]
-    desc: str = (
-        'When the character uses an Elemental Skill or equips a Talent: Spend '
-        '1 less Elemental Die. (Once per Round) '
-        "If the character has at least 2 Energy, this character's Normal "
-        "Attacks and Elemental Skills will deal +1 DMG."
-    )
     cost: Cost = Cost(any_dice_number = 3)
 
     def value_modifier_DAMAGE_INCREASE(
@@ -176,7 +157,29 @@ class ShimenawasReminiscence(CapriciousVisage):
         return value
 
 
-VermillionShimenawas = (
-    ThunderingPoise | VermillionHereafter
-    | CapriciousVisage | ShimenawasReminiscence 
+class ThunderingPoise_3_7(ThunderingPoise_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 2)
+
+
+class VermillionHereafter_3_7(VermillionHereafter_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+class CapriciousVisage_3_7(CapriciousVisage_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 2)
+
+
+class ShimenawasReminiscence_3_7(ShimenawasReminiscence_4_0):
+    version: Literal['3.7']
+    cost: Cost = Cost(same_dice_number = 3)
+
+
+register_class(
+    ThunderingPoise_4_0 | VermillionHereafter_4_0
+    | CapriciousVisage_4_0 | ShimenawasReminiscence_4_0 
+    | ThunderingPoise_3_7 | VermillionHereafter_3_7
+    | CapriciousVisage_3_7 | ShimenawasReminiscence_3_7
 )

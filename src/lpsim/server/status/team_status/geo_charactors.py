@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...struct import Cost
 
 from ...action import MakeDamageAction
@@ -14,13 +16,8 @@ from ...modifiable_values import (
 from .base import DefendTeamStatus, ShieldTeamStatus
 
 
-class FullPlate(ShieldTeamStatus):
+class FullPlate_3_3(ShieldTeamStatus):
     name: Literal['Full Plate'] = 'Full Plate'
-    desc: str = (
-        'Grants 2 Shield points to your active character. Before this Shield '
-        'is fully consumed, the Physical DMG you take is halved. '
-        '(The figure will be rounded up)'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -92,12 +89,8 @@ class FullPlate(ShieldTeamStatus):
         return ret
 
 
-class JadeScreen(DefendTeamStatus):
+class JadeScreen_3_3(DefendTeamStatus):
     name: Literal['Jade Screen'] = 'Jade Screen'
-    desc: str = (
-        'When your active character receives at least 2 DMG: Decrease DMG '
-        'taken by 1.'
-    )
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
@@ -131,12 +124,11 @@ class JadeScreen(DefendTeamStatus):
         return value
 
 
-class JadeShield(ShieldTeamStatus):
+class JadeShield_3_7(ShieldTeamStatus):
     name: Literal['Jade Shield'] = 'Jade Shield'
-    desc: str = '''Grants 2 Shield points to your active character.'''
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
 
 
-GeoTeamStatus = FullPlate | JadeScreen | JadeShield
+register_class(FullPlate_3_3 | JadeScreen_3_3 | JadeShield_3_7)

@@ -7,7 +7,13 @@ from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
 
-from ..utils import BaseModel, get_instance_from_type_unions
+from .summon.base import SummonBase
+
+from .status.team_status.base import TeamStatusBase
+
+from .status.charactor_status.base import CharactorStatusBase
+
+from ..utils import BaseModel, get_instance
 from .deck import Deck
 from .player_table import PlayerTable
 from .action import (
@@ -85,7 +91,7 @@ from .event import (
     UseCardEventArguments,
     UseSkillEventArguments,
 )
-from .object_base import CardBases, ObjectBase
+from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
     CombatActionValue,
     ModifiableValueBase,
@@ -100,10 +106,7 @@ from .elemental_reaction import (
     check_elemental_reaction,
     apply_elemental_reaction,
 )
-from .event_handler import SystemEventHandlers, SystemEventHandler
-from .status import TeamStatus, CharactorStatus
-from . import Summons
-from . import Cards
+from .event_handler import SystemEventHandlerBase, SystemEventHandler
 
 
 class MatchState(str, Enum):
@@ -293,7 +296,7 @@ class Match(BaseModel):
     '''
     _history: List['Match'] = PrivateAttr(default_factory = list)
     _history_diff: List = PrivateAttr(default_factory = list)
-    last_action: ActionBase = ActionBase()
+    last_action: Actions = ActionBase()
     action_info: Any = {}
 
     # skill prediction results. It will generate in player action request.
@@ -308,7 +311,7 @@ class Match(BaseModel):
     _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
 
     # event handlers to implement special rules.
-    event_handlers: List[SystemEventHandlers] = [
+    event_handlers: List[SystemEventHandlerBase] = [
         SystemEventHandler(),
         # OmnipotentGuideEventHandler(),
     ]
@@ -331,19 +334,23 @@ class Match(BaseModel):
     # If some object explicitly claims that some event handlers will work in
     # trashbin, these events will be triggered in trashbin. After all event
     # chain cleared, all objects in trashbin will be removed.
-    trashbin: List[CharactorStatus | TeamStatus | Cards | Summons] = []
+    trashbin: List[
+        CharactorStatusBase | TeamStatusBase | CardBase | SummonBase
+    ] = []
 
     @validator('event_handlers', each_item = True, pre = True)
     def parse_event_handlers(cls, v):
-        return get_instance_from_type_unions(SystemEventHandlers, v)
+        return get_instance(SystemEventHandlerBase, v)
 
-    @validator('requests', each_item = True, pre = True)
-    def parse_requests(cls, v):
-        return get_instance_from_type_unions(Requests, v)
+    # @validator('requests', each_item = True, pre = True)
+    # def parse_requests(cls, v):
+    #     return get_instance(Requests, v)
 
-    @validator('last_action', pre = True)
-    def parse_last_action(cls, v):
-        return get_instance_from_type_unions(Actions, v, 'type')
+    @validator('trashbin', each_item = True, pre = True)
+    def parse_trashbin(cls, v):
+        return get_instance(
+            CharactorStatusBase | TeamStatusBase | CardBase | SummonBase, v
+        )
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -1767,8 +1774,8 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         if len(table.table_deck) < number:
             number = len(table.table_deck)
-        draw_cards: List[CardBases] = []
-        blacklist: List[CardBases] = []
+        draw_cards: List[CardBase] = []
+        blacklist: List[CardBase] = []
         if self.version <= '0.0.1':
             # in 0.0.1, whitelist and blacklist are not supported
             # no filter
@@ -1867,7 +1874,7 @@ class Match(BaseModel):
         card_idxs = action.card_idxs[:]
         card_idxs.sort(reverse = True)  # reverse order to avoid index error
         card_names = [table.hands[cidx].name for cidx in card_idxs]
-        restore_cards: List[CardBases] = []
+        restore_cards: List[CardBase] = []
         for cidx in card_idxs:
             restore_cards.append(table.hands[cidx])
             table.hands = table.hands[:cidx] + table.hands[cidx + 1:]
@@ -2377,12 +2384,12 @@ class Match(BaseModel):
         table = self.player_tables[player_idx]
         # charactor_idx = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
-            target_classes = TeamStatus
+            target_class = TeamStatusBase
             target_list = table.team_status
             target_name = 'team status'
         elif action.object_position.area \
                 == ObjectPositionType.CHARACTOR_STATUS:
-            target_classes = CharactorStatus
+            target_class = CharactorStatusBase
             target_list = table.charactors[
                 action.object_position.charactor_idx].status
             charactor = table.charactors[action.object_position.charactor_idx]
@@ -2397,14 +2404,14 @@ class Match(BaseModel):
                 return []
             target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
-            target_classes = Summons
+            target_class = SummonBase
             target_list = table.summons
             target_name = 'summon'
         elif action.object_position.area == ObjectPositionType.HAND:
             assert len(table.hands) < self.config.max_hand_size, (
                 'Cannot create hand card when hand is full.'
             )
-            target_classes = Cards
+            target_class = CardBase
             target_list = table.hands
             target_name = 'hand'
         # elif action.object_position.area == ObjectPositionType.SYSTEM:
@@ -2419,8 +2426,8 @@ class Match(BaseModel):
         args = action.object_arguments.copy()
         args['name'] = action.object_name
         args['position'] = action.object_position
-        target_object = get_instance_from_type_unions(
-            target_classes, args
+        target_object = get_instance(
+            target_class, args
         )
         for csnum, current_object in enumerate(target_list):
             if current_object.name == target_object.name:

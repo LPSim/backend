@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...modifiable_values import (
     CostValue, DamageElementEnhanceValue, DamageIncreaseValue
 )
@@ -18,7 +20,7 @@ from .base import (
 )
 
 
-class MidareRanzan(ElementalInfusionCharactorStatus):
+class MidareRanzan_3_8(ElementalInfusionCharactorStatus):
     name: Literal[
         # newly created ranzan, and will change its element based on kazuha
         # skill.
@@ -31,11 +33,6 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
         'Midare Ranzan: Cryo',
         'Midare Ranzan: Electro',
     ] = 'Midare Ranzan'
-    desc: str = (
-        'When the attached character uses a Plunging Attack: Physical DMG '
-        'dealt becomes _ELEMENT_ DMG, and deals +1 DMG. '
-        'After the character uses a skill: This effect is removed.'
-    )
     element: ElementType = ElementType.NONE
     version: Literal['3.8'] = '3.8'
     usage: int = 1
@@ -128,8 +125,6 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
             self.name = (
                 f'Midare Ranzan: {self.element.name.capitalize()}'
             )  # type: ignore
-            self.desc = self.desc.replace('_ELEMENT_', 
-                                          self.element.name.capitalize())
             self.icon_type = ELEMENT_TO_ENCHANT_ICON[
                 self.element]  # type: ignore
         else:
@@ -138,7 +133,6 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
                 # no swirl, change to anemo
                 self.name = 'Midare Ranzan'
                 self.element = ElementType.ANEMO
-                self.desc = self.desc.replace('_ELEMENT_', 'Anemo')
         self.infused_elemental_type = ELEMENT_TO_DAMAGE_TYPE[self.element]
         return []
 
@@ -166,16 +160,8 @@ class MidareRanzan(ElementalInfusionCharactorStatus):
         )]
 
 
-class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
+class YakshasMask_3_7(ElementalInfusionCharactorStatus, RoundCharactorStatus):
     name: Literal["Yaksha's Mask"] = "Yaksha's Mask"
-    desc: str = (
-        'The character to which this is attached has their Physical DMG dealt '
-        'converted to Anemo DMG and they will deal +1 Anemo DMG. When the '
-        'character to which this is attached uses a Plunging Attack: +2 '
-        'additional DMG. If the character this card is attached to is the '
-        'active character, when you perform "Switch Character": Spend 1 less '
-        'Elemental Die. (Once per Round)'
-    )
     version: Literal['3.7'] = '3.7'
     usage: int = 2
     max_usage: int = 2
@@ -192,7 +178,7 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         self.switch_cost_decrease_usage = self.switch_cost_decrease_max_usage
         return super().event_handler_ROUND_PREPARE(event, match)
 
-    def renew(self, new_status: 'YakshasMask') -> None:
+    def renew(self, new_status: 'YakshasMask_3_7') -> None:
         self.switch_cost_decrease_usage = new_status.switch_cost_decrease_usage
         self.skill_cost_decrease_usage = new_status.skill_cost_decrease_usage
         super().renew(new_status)
@@ -254,7 +240,7 @@ class YakshasMask(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         return value
 
 
-class Windfavored(CharactorStatusBase):
+class Windfavored_4_1(CharactorStatusBase):
     """
     As attack target will be changed, we do not contain triggers for this
     status; instead, maintenance its usage by normal attack. The only exception
@@ -262,12 +248,6 @@ class Windfavored(CharactorStatusBase):
     self.
     """
     name: Literal['Windfavored'] = 'Windfavored'
-    desc: str = (
-        'When the character to which this is attached performs a Normal '
-        'Attack: DMG dealt +2. If the opponent has characters on standby, '
-        'then this Skill will deal damage to the next opposing character on '
-        'standby instead.'
-    )
     version: Literal['4.1'] = '4.1'
     usage: int = 2
     max_usage: int = 2
@@ -288,4 +268,4 @@ class Windfavored(CharactorStatusBase):
         return []
 
 
-AnemoCharactorStatus = MidareRanzan | YakshasMask | Windfavored
+register_class(MidareRanzan_3_8 | YakshasMask_3_7 | Windfavored_4_1)

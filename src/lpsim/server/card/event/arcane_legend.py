@@ -4,6 +4,8 @@ Arcane legend cards.
 
 from typing import Any, List, Literal
 
+from ....utils.class_registry import register_class
+
 from ...modifiable_values import DamageValue
 
 from ...action import (
@@ -16,10 +18,10 @@ from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
     ObjectPositionType, ObjectType
 )
-from ...object_base import CardBase
+from ...object_base import EventCardBase
 
 
-class ArcaneLegendBase(CardBase):
+class ArcaneLegendBase(EventCardBase):
     type: Literal[ObjectType.ARCANE] = ObjectType.ARCANE
     cost_label: int = CostLabels.CARD.value | CostLabels.ARCANE.value
 
@@ -35,13 +37,8 @@ class ArcaneLegendBase(CardBase):
         )]
 
 
-class AncientCourtyard(ArcaneLegendBase):
+class AncientCourtyard_3_8(ArcaneLegendBase):
     name: Literal['Ancient Courtyard']
-    desc: str = (
-        'You must have a character who has already equipped a Weapon or '
-        'Artifact: The next time you play a Weapon or Artifact card in this '
-        'Round: Spend 2 less Elemental Dice.'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost(arcane_legend = True)
 
@@ -82,12 +79,8 @@ class AncientCourtyard(ArcaneLegendBase):
         return ret
 
 
-class CovenantOfRock(ArcaneLegendBase):
+class CovenantOfRock_3_8(ArcaneLegendBase):
     name: Literal['Covenant of Rock']
-    desc: str = (
-        'Can only be played when you have 0 Elemental Dice left: '
-        'Generate 2 different Elemental Dice.'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost(arcane_legend = True)
 
@@ -121,14 +114,8 @@ class CovenantOfRock(ArcaneLegendBase):
         return ret
 
 
-class JoyousCelebration(ArcaneLegendBase):
+class JoyousCelebration_4_2(ArcaneLegendBase):
     name: Literal['Joyous Celebration']
-    desc: str = (
-        'Your active character must be one of the following elemental types '
-        'to play this card: Cryo/Hydro/Pyro/Electro/Dendro: The element '
-        'corresponding to your active character\'s Elemental Type will be '
-        'applied to your characters that already have elemental application.'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(arcane_legend = True)
     apply_no_element_charactor: bool = False
@@ -190,12 +177,13 @@ class JoyousCelebration(ArcaneLegendBase):
         return ret
 
 
-class FreshWindOfFreedom(ArcaneLegendBase):
+class JoyousCelebration_4_0(JoyousCelebration_4_2):
+    version: Literal['4.0'] = '4.0'
+    apply_no_element_charactor: bool = True
+
+
+class FreshWindOfFreedom_4_1(ArcaneLegendBase):
     name: Literal['Fresh Wind of Freedom']
-    desc: str = (
-        'In this Round, when an opposing character is defeated during your '
-        'Action, you can continue to act again when that Action ends.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost(arcane_legend = True)
 
@@ -222,12 +210,8 @@ class FreshWindOfFreedom(ArcaneLegendBase):
         ]
 
 
-class InEveryHouseAStove(ArcaneLegendBase):
+class InEveryHouseAStove_4_2(ArcaneLegendBase):
     name: Literal['In Every House a Stove']
-    desc: str = (
-        'Draw a number of cards equal to the current Round number. '
-        '(Up to 4 cards can be drawn in this way)'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost(arcane_legend = True)
 
@@ -250,7 +234,7 @@ class InEveryHouseAStove(ArcaneLegendBase):
         ]
 
 
-ArcaneLegendCards = (
-    AncientCourtyard | CovenantOfRock | JoyousCelebration
-    | FreshWindOfFreedom | InEveryHouseAStove
+register_class(
+    AncientCourtyard_3_8 | CovenantOfRock_3_8 | JoyousCelebration_4_2
+    | FreshWindOfFreedom_4_1 | InEveryHouseAStove_4_2 | JoyousCelebration_4_0
 )

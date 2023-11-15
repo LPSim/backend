@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ELEMENT_TO_DIE_COLOR, ObjectPositionType
 
 from ....action import CreateDiceAction, CreateObjectAction
@@ -10,12 +12,8 @@ from ....struct import Cost
 from .base import ArtifactBase, RoundEffectArtifactBase
 
 
-class GeneralsAncientHelm(ArtifactBase):
+class GeneralsAncientHelm_3_5(ArtifactBase):
     name: Literal["General's Ancient Helm"]
-    desc: str = (
-        'When Action Phase begins: The character to which this is attached '
-        'gains Unmovable Mountain that provides 2 Shield points.'
-    )
     version: Literal['3.5'] = '3.5'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
@@ -37,15 +35,8 @@ class GeneralsAncientHelm(ArtifactBase):
         )]
 
 
-class TenacityOfTheMillelith(RoundEffectArtifactBase):
+class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
     name: Literal['Tenacity of the Millelith']
-    desc: str = (
-        'When Action Phase begins: The character to which this is attached '
-        'gains Unmovable Mountain that provides 2 Shield points. '
-        'After this character takes DMG: If the character this card is '
-        'attached to is the active character, create 1 Elemental Die matching '
-        "this character's Elemental Type. (Once per Round) "
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 3)
     max_usage_per_round: int = 1
@@ -96,4 +87,4 @@ class TenacityOfTheMillelith(RoundEffectArtifactBase):
         )]
 
 
-MillelithArtifacts = GeneralsAncientHelm | TenacityOfTheMillelith
+register_class(GeneralsAncientHelm_3_5 | TenacityOfTheMillelith_3_7)

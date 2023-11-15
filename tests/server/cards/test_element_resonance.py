@@ -1,3 +1,4 @@
+from src.lpsim.server.struct import ObjectPosition
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
@@ -484,6 +485,7 @@ def test_other_all_element_resonance():
                     if req.name == 'UseCardRequest':
                         if req.card_idx == card_idx:
                             for target in req.targets:
+                                assert isinstance(target, ObjectPosition)
                                 assert target.charactor_idx != target_idx
             elif test_id == 4:
                 cmd = cmd.split()

@@ -4,6 +4,8 @@ Event cards that not belong to any other categories.
 
 from typing import Any, List, Literal, Tuple
 
+from ....utils.class_registry import register_class
+
 from ...event import (
     CharactorDefeatedEventArguments, RoundPrepareEventArguments
 )
@@ -12,7 +14,7 @@ from ...consts import (
     DieColor, ObjectPositionType, ObjectType, PlayerActionLabels, SkillType
 )
 
-from ...object_base import CardBase, MultiTargetCardBase
+from ...object_base import EventCardBase, MultiTargetEventCardBase
 from ...action import (
     ActionTypes, Actions, ChangeObjectUsageAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
@@ -22,9 +24,8 @@ from ...action import (
 from ...struct import Cost, MultipleObjectPosition, ObjectPosition
 
 
-class TheBestestTravelCompanion(CardBase):
+class TheBestestTravelCompanion_3_3(EventCardBase):
     name: Literal['The Bestest Travel Companion!']
-    desc: str = '''Convert the Elemental Dice spent to Omni Element x2.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         any_dice_number = 2
@@ -48,12 +49,8 @@ class TheBestestTravelCompanion(CardBase):
         )]
 
 
-class ChangingShifts(CardBase):
+class ChangingShifts_3_3(EventCardBase):
     name: Literal['Changing Shifts']
-    desc: str = (
-        'The next time you perform "Switch Character": '
-        'Spend 1 less Elemental Die.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -90,9 +87,8 @@ class ChangingShifts(CardBase):
         )]
 
 
-class TossUp(CardBase):
+class TossUp_3_3(EventCardBase):
     name: Literal['Toss-Up']
-    desc: str = '''Select any Elemental Dice to reroll. Can reroll 2 times.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -110,9 +106,8 @@ class TossUp(CardBase):
         )]
 
 
-class Strategize(CardBase):
+class Strategize_3_3(EventCardBase):
     name: Literal['Strategize']
-    desc: str = '''Draw 2 cards.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(
         same_dice_number = 1
@@ -136,14 +131,8 @@ class Strategize(CardBase):
         )]
 
 
-class IHaventLostYet(CardBase):
+class IHaventLostYet_4_0(EventCardBase):
     name: Literal["I Haven't Lost Yet!"]
-    desc: str = (
-        "Only playable if one of your characters is defeated this Round: "
-        "Create Omni Element x1 and your current active character gains 1 "
-        "Energy. "
-        "(Only one copy of I Haven't Lost Yet! can be played each round.)"
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
 
@@ -217,13 +206,23 @@ class IHaventLostYet(CardBase):
         return []
 
 
-class LeaveItToMe(CardBase):
+class IHaventLostYet_3_3(IHaventLostYet_4_0):
+    name: Literal["I Haven't Lost Yet!"]
+    version: Literal['3.3']
+    cost: Cost = Cost()
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[ChargeAction | CreateDiceAction | CreateObjectAction]:
+        ret = super().get_actions(target, match)
+        assert ret[-1].type == ActionTypes.CREATE_OBJECT
+        # old version not adding team status
+        ret = ret[:-1]
+        return ret
+
+
+class LeaveItToMe_3_3(EventCardBase):
     name: Literal['Leave It to Me!']
-    desc: str = (
-        'The next time you perform "Switch Character": '
-        'The switch will be considered a Fast Action instead of a '
-        'Combat Action.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost()
 
@@ -260,12 +259,8 @@ class LeaveItToMe(CardBase):
         )]
 
 
-class WhenTheCraneReturned(CardBase):
+class WhenTheCraneReturned_3_3(EventCardBase):
     name: Literal['When the Crane Returned']
-    desc: str = (
-        'The next time you use a Skill: Switch your next character in to be '
-        'the active character.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -302,9 +297,8 @@ class WhenTheCraneReturned(CardBase):
         )]
 
 
-class Starsigns(CardBase):
+class Starsigns_3_3(EventCardBase):
     name: Literal['Starsigns']
-    desc: str = '''Your current Active Character gains 1 Energy.'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)
 
@@ -332,12 +326,8 @@ class Starsigns(CardBase):
         )]
 
 
-class ClaxsArts(CardBase):
+class ClaxsArts_3_3(EventCardBase):
     name: Literal["Calx's Arts"]
-    desc: str = (
-        'Shift 1 Energy from at most 2 of your characters on standby to '
-        'your active character.'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -386,13 +376,8 @@ class ClaxsArts(CardBase):
         return ret
 
 
-class MasterOfWeaponry(MultiTargetCardBase):
+class MasterOfWeaponry_4_1(MultiTargetEventCardBase):
     name: Literal['Master of Weaponry']
-    desc: str = (
-        'Shift 1 Weapon Equipment Card that has been equipped to one of your '
-        'characters to another one of your characters of the same Weapon '
-        'Type, and reset the "usages per Round" limit on its effects.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost()
     move_type: Literal[
@@ -465,13 +450,8 @@ class MasterOfWeaponry(MultiTargetCardBase):
         )]
 
 
-class BlessingOfTheDivineRelicsInstallation(MasterOfWeaponry):
+class BlessingOfTheDivineRelicsInstallation_4_1(MasterOfWeaponry_4_1):
     name: Literal["Blessing of the Divine Relic's Installation"]
-    desc: str = (
-        'Shift 1 Artifact Equipment Card that has been equipped to one of '
-        'your characters to another one of your characters, '
-        'and reset the "usages per Round" limit on its effects.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost()
     move_type: Literal[
@@ -480,9 +460,20 @@ class BlessingOfTheDivineRelicsInstallation(MasterOfWeaponry):
     reset_usage: bool = True
 
 
-class QuickKnit(CardBase):
+class MasterOfWeaponry_3_3(MasterOfWeaponry_4_1):
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
+class BlessingOfTheDivineRelicsInstallation_3_3(
+    BlessingOfTheDivineRelicsInstallation_4_1
+):
+    version: Literal['3.3']
+    reset_usage: bool = False
+
+
+class QuickKnit_3_3(EventCardBase):
     name: Literal['Quick Knit']
-    desc: str = '''Choose one Summon on your side and grant it +1 Usage(s).'''
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -509,12 +500,8 @@ class QuickKnit(CardBase):
         )]
 
 
-class SendOff(CardBase):
+class SendOff_3_7(EventCardBase):
     name: Literal['Send Off']
-    desc: str = (
-        'Choose one Summon on the opposing side and cause it to lose '
-        '2 Usage(s).'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 2)
 
@@ -542,11 +529,25 @@ class SendOff(CardBase):
         )]
 
 
-class GuardiansOath(CardBase):
+class SendOff_3_3(SendOff_3_7):
+    name: Literal['Send Off']
+    version: Literal['3.3']
+    cost: Cost = Cost(any_dice_number = 2)
+
+    def get_actions(
+        self, target: ObjectPosition | None, match: Any
+    ) -> List[RemoveObjectAction]:
+        """
+        Act the card. Create team status.
+        """
+        assert target is not None
+        return [RemoveObjectAction(
+            object_position = target,
+        )]
+
+
+class GuardiansOath_3_3(EventCardBase):
     name: Literal["Guardian's Oath"]
-    desc: str = (
-        'Destroy all Summons. (Affects both you and your opponent.)'
-    )
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 4)
 
@@ -576,12 +577,8 @@ class GuardiansOath(CardBase):
         return ret
 
 
-class PlungingStrike(CardBase):
+class PlungingStrike_3_7(EventCardBase):
     name: Literal['Plunging Strike']
-    desc: str = (
-        'Combat Action: Switch to the target character. '
-        'That character then uses a Normal Attack.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 3)
 
@@ -637,13 +634,8 @@ class PlungingStrike(CardBase):
         ]
 
 
-class HeavyStrike(CardBase):
+class HeavyStrike_3_7(EventCardBase):
     name: Literal['Heavy Strike']
-    desc: str = (
-        "During this round, your current active character's next "
-        'Normal Attack deals +1 DMG. '
-        'When this Normal Attack is a Charged Attack: Deal +1 additional DMG.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 1)
 
@@ -667,9 +659,8 @@ class HeavyStrike(CardBase):
         )]
 
 
-class TheLegendOfVennessa(CardBase):
+class TheLegendOfVennessa_3_7(EventCardBase):
     name: Literal['The Legend of Vennessa']
-    desc: str = '''Create 4 basic Elemental Dice of different types.'''
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(same_dice_number = 3)
 
@@ -693,12 +684,8 @@ class TheLegendOfVennessa(CardBase):
         ]
 
 
-class FriendshipEternal(CardBase):
+class FriendshipEternal_3_7(EventCardBase):
     name: Literal['Friendship Eternal']
-    desc: str = (
-        'Players with less than 4 cards in their hand draw cards until their '
-        'hand has 4 cards in it.'
-    )
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(
         same_dice_number = 2
@@ -739,12 +726,8 @@ class FriendshipEternal(CardBase):
         return ret
 
 
-class RhythmOfTheGreatDream(CardBase):
+class RhythmOfTheGreatDream_3_8(EventCardBase):
     name: Literal['Rhythm of the Great Dream']
-    desc: str = (
-        'The next time you play a Weapon or Artifact from your hand: Spend 1 '
-        'less Elemental Die.'
-    )
     version: Literal['3.8'] = '3.8'
     cost: Cost = Cost()
 
@@ -770,13 +753,8 @@ class RhythmOfTheGreatDream(CardBase):
         )]
 
 
-class WhereIstheUnseenRazor(CardBase):
+class WhereIstheUnseenRazor_4_0(EventCardBase):
     name: Literal['Where Is the Unseen Razor?'] = 'Where Is the Unseen Razor?'
-    desc: str = (
-        'Return a Weapon card equipped by your character to your Hand. '
-        'During this Round, the next time you play a Weapon card: '
-        'Spend 2 less Elemental Dice.'
-    )
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
 
@@ -820,14 +798,8 @@ class WhereIstheUnseenRazor(CardBase):
         ]
 
 
-class Pankration(CardBase):
+class Pankration_4_1(EventCardBase):
     name: Literal['Pankration!']
-    desc: str = (
-        'Can only be played when you have at least 8 Elemental Dice '
-        'remaining, and your opponent has not yet ended their Round: After a '
-        'player announces the end of their Round first, the other player, who '
-        'has yet to announce the end of their Round, draws 2 cards.'
-    )
     version: Literal['4.1'] = '4.1'
     cost: Cost = Cost()
 
@@ -861,13 +833,8 @@ class Pankration(CardBase):
         ]
 
 
-class Lyresong(CardBase):
+class Lyresong_4_2(EventCardBase):
     name: Literal['Lyresong'] = 'Lyresong'
-    desc: str = (
-        'Return an Artifact card equipped by your character to your Hand. '
-        'During this Round, the next time you play an Artifact card: '
-        'Spend 2 less Elemental Dice.'
-    )
     version: Literal['4.2'] = '4.2'
     cost: Cost = Cost()
 
@@ -911,11 +878,14 @@ class Lyresong(CardBase):
         ]
 
 
-OtherEventCards = (
-    TheBestestTravelCompanion | ChangingShifts | TossUp | Strategize
-    | IHaventLostYet | LeaveItToMe | WhenTheCraneReturned | Starsigns 
-    | ClaxsArts | MasterOfWeaponry | BlessingOfTheDivineRelicsInstallation 
-    | QuickKnit | SendOff | GuardiansOath | PlungingStrike | HeavyStrike 
-    | TheLegendOfVennessa | FriendshipEternal | RhythmOfTheGreatDream 
-    | WhereIstheUnseenRazor | Pankration | Lyresong
+register_class(
+    TheBestestTravelCompanion_3_3 | ChangingShifts_3_3 | TossUp_3_3 
+    | Strategize_3_3 | IHaventLostYet_4_0 | LeaveItToMe_3_3 
+    | WhenTheCraneReturned_3_3 | Starsigns_3_3 | ClaxsArts_3_3 
+    | MasterOfWeaponry_4_1 | BlessingOfTheDivineRelicsInstallation_4_1 
+    | QuickKnit_3_3 | SendOff_3_7 | GuardiansOath_3_3 | PlungingStrike_3_7 
+    | HeavyStrike_3_7 | TheLegendOfVennessa_3_7 | FriendshipEternal_3_7 
+    | RhythmOfTheGreatDream_3_8 | WhereIstheUnseenRazor_4_0 | Pankration_4_1 
+    | Lyresong_4_2 | IHaventLostYet_3_3 | MasterOfWeaponry_3_3
+    | BlessingOfTheDivineRelicsInstallation_3_3 | SendOff_3_3
 )

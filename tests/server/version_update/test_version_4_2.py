@@ -1,8 +1,8 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp, check_usage, get_pidx_cidx, get_random_state, 
+    get_test_id_from_command, make_respond, set_16_omni
 )
 
 

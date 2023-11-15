@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from .....utils.class_registry import register_class
+
 from ....consts import ObjectPositionType, SkillType, WeaponType
 
 from ....action import ChargeAction
@@ -10,11 +12,6 @@ from .base import RoundEffectWeaponBase
 
 class FavoniusBase(RoundEffectWeaponBase):
     name: str
-    desc: str = (
-        'The character deals +1 DMG. '
-        'After the character uses an Elemental Skill: The character gains one '
-        'additional Energy. (Once per Round)'
-    )
     cost: Cost = Cost(same_dice_number = 3)
     version: str
     weapon_type: WeaponType
@@ -47,10 +44,10 @@ class FavoniusBase(RoundEffectWeaponBase):
         )]
 
 
-class FavoniusSword(FavoniusBase):
+class FavoniusSword_3_7(FavoniusBase):
     name: Literal['Favonius Sword']
     version: Literal['3.7'] = '3.7'
     weapon_type: Literal[WeaponType.SWORD] = WeaponType.SWORD
 
 
-FavoniusWeapons = FavoniusSword | FavoniusSword
+register_class(FavoniusSword_3_7)
