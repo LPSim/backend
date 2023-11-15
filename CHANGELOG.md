@@ -7,6 +7,24 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+### Added
+- #4 #5 #9 Implement class registry, which supports registering class by name 
+  and getting class by name. It also supports registering classes after lpsim 
+  is initialized.
+- #13 Implement desc registry, which saves the descriptions of classes. When a 
+  class is registered in the class registry, a valid description is required.
+- Implement `/patch` endpoint in HTTPServer, which can be used to get 
+  description patchs from server.
+- #3 Support create `Deck` from deck code, or export `Deck` to deck code.
+
+### Changed
+- Now `desc` for a class means description hints for the class, e.g. with 
+  talent activated, descriptions of some class will change. `desc` is a Literal
+  now and default contains empty string. If a class has hints, add more strings
+  into it, and modify `desc` when situation matchs. When `desc` is set, its
+  corresponding descriptions should also be valid. Refer to Sucrose's Large
+  Wind Spirit and desc_class for more details.
+
 ## [0.4.2.1] - 2023-11-05
 
 ### Changed
