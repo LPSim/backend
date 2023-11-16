@@ -241,10 +241,6 @@ charactor_descs: Dict[str, DescDictType] = {
             }
         }
     },
-    # for newly deinfed charactors, define avatar path.
-    "AVATAR/...": {
-        "image_path": "avatar/..."
-    },
     # charactor skills, with SKILL_${cname}_${skill_type} as key.
     "SKILL_CNAME_X_X_NORMAL_ATTACK/...": {
         "names": {
