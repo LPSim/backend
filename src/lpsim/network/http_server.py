@@ -122,7 +122,7 @@ class HTTPServer():
             """
             patch = get_desc_patch()
             return {
-                'verion': '1.0',
+                'version': '1.0',
                 'patch': patch
             }
 
