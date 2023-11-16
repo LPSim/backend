@@ -24,6 +24,11 @@ of the game, and the last number is the patch version of this project.
   into it, and modify `desc` when situation matchs. When `desc` is set, its
   corresponding descriptions should also be valid. Refer to Sucrose's Large
   Wind Spirit and desc_class for more details.
+- #6 Now HTTPServer will send detailed error about deck in `/deck` when deck is 
+  invalid.
+
+### Fixed
+- #7 Nilou E cannot generate Bountiful Core in the first time.
 
 ## [0.4.2.1] - 2023-11-05
 
