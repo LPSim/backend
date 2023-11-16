@@ -10,6 +10,7 @@
         "en-US": "You must have a character who has already equipped a Weapon or Artifact: The next time you play a Weapon or Artifact card in this Round: Spend 2 less Elemental Dice."
       }
     },
+    "id": 330001,
     "image_path": "cardface/Event_Event_Jiangjun.png"
   },
   "ARCANE/Covenant of Rock": {
@@ -37,6 +38,7 @@
         "en-US": "In this Round, when an opposing character is defeated during your Action, you can continue to act again when that Action ends."
       }
     },
+    "id": 330004,
     "image_path": "cardface/Event_Event_Xinfeng.png"
   },
   "ARCANE/In Every House a Stove": {
@@ -50,6 +52,7 @@
         "en-US": "Draw a number of cards equal to the current Round number. (Up to 4 cards can be drawn in this way) (Only one \"Arcane Legend\" card can be played for the entire game. This card will be in your starting hand.)"
       }
     },
+    "image_path": "cardface/Event_Event_Guobahelp.png",
     "id": 330005
   },
   "ARCANE/Joyous Celebration": {
@@ -399,6 +402,7 @@
         "en-US": "When played: Heal this charactor by 3 HP. For every 3 HP of healing your characters receive, this card accumulates 1 Sea-Dyed Foam (maximum of 2). When this character deals DMG: Consume all Sea-Dyed Foam. DMG is increased by 1 for each Sea-Dyed Foam consumed. (Characters can equip at most 1 Artifact)"
       }
     },
+    "image_path": "cardface/Modify_Artifact_Hairantaozhuang.png",
     "id": 312016
   },
   "ARTIFACT/Ornate Kabuto": {
@@ -430,6 +434,7 @@
         "en-US": "When played: Draw a card. When the character to which this card is attached is your active character, then when an opposing character takes elemental reaction DMG: Draw a card. (Once per Round)(A character can equip a maximum of 1 3004_BuffArtifact)"
       }
     },
+    "image_path": "cardface/Modify_Artifact_Chiwangdanjian.png",
     "id": 312017
   },
   "ARTIFACT/Shimenawa's Reminiscence": {
@@ -555,6 +560,7 @@
         "en-US": "When the character uses a Normal Attack or equips a Talent: Spend 1 less Elemental Die. (Once per Round) After a character is switched to the active character: During this Round, character deals +1 Normal Attack DMG."
       }
     },
+    "id": 312012,
     "image_path": "cardface/Modify_Artifact_ChenshaTaozhuang.png"
   },
   "ARTIFACT/Viridescent Venerer": {
@@ -666,7 +672,8 @@
         "en-US": "During this Round, the target character's next Elemental Burst deals +3 DMG."
       }
     },
-    "image_path": "cardface/Event_Food_XTQ.png"
+    "image_path": "cardface/Event_Food_XTQ.png",
+    "id": 333002
   },
   "CARD/Blessing of the Divine Relic's Installation": {
     "names": {
@@ -697,7 +704,8 @@
         "en-US": "During this Round, all your characters take -2 DMG the next time."
       }
     },
-    "image_path": "cardface/Event_Food_Huangyou.png"
+    "image_path": "cardface/Event_Food_Huangyou.png",
+    "id": 333012
   },
   "CARD/Calx's Arts": {
     "names": {
@@ -724,7 +732,8 @@
         "en-US": "The next time you perform \"Switch Character\": Spend 1 less Elemental Die."
       }
     },
-    "image_path": "cardface/Event_Event_Huanbanshijian.png"
+    "image_path": "cardface/Event_Event_Huanbanshijian.png",
+    "id": 332002
   },
   "CARD/Elemental Resonance: Enduring Rock": {
     "names": {
@@ -737,7 +746,8 @@
         "en-US": "During this round, after your character deals Geo DMG next time: Should there be any Combat Status on your side that provides Shield, grant one such Status with 3 Shield points.(You must have at least 2 Geo characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_ResonanceA_Rock.png"
+    "image_path": "cardface/Event_ResonanceA_Rock.png",
+    "id": 331602
   },
   "CARD/Elemental Resonance: Fervent Flames": {
     "names": {
@@ -750,7 +760,8 @@
         "en-US": "During this round, the next instance of Pyro-Related Reactions your current active character triggers deals +3 DMG.(You must have at least 2 Pyro characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_ResonanceA_Fire.png"
+    "image_path": "cardface/Event_ResonanceA_Fire.png",
+    "id": 331302
   },
   "CARD/Elemental Resonance: High Voltage": {
     "names": {
@@ -791,7 +802,8 @@
         "en-US": "During this Round, your current active character will deal +2 DMG for the next instance.(You must have at least 2 Cryo characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_ResonanceA_Ice.png"
+    "image_path": "cardface/Event_ResonanceA_Ice.png",
+    "id": 331102
   },
   "CARD/Elemental Resonance: Soothing Water": {
     "names": {
@@ -818,7 +830,8 @@
         "en-US": "During this round, the next Elemental Reaction you trigger deals +2 DMG. Your Burning Flame, Dendro Core, and Catalyzing Field gain +1 Usage(s).(You must have at least 2 Dendro characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_ResonanceA_Grass.png"
+    "image_path": "cardface/Event_ResonanceA_Grass.png",
+    "id": 331702
   },
   "CARD/Elemental Resonance: Woven Flames": {
     "names": {
@@ -971,7 +984,8 @@
         "en-US": "During this round, your current active character's next Normal Attack deals +1 DMG. When this Normal Attack is a Charged Attack: Deal +1 additional DMG."
       }
     },
-    "image_path": "cardface/Event_Event_Zhonggongji.png"
+    "image_path": "cardface/Event_Event_Zhonggongji.png",
+    "id": 332018
   },
   "CARD/I Haven't Lost Yet!": {
     "names": {
@@ -988,7 +1002,8 @@
         "en-US": "Only playable if one of your characters is defeated this Round: Create Omni Element x1 and your current active character gains 1 Energy. (Only one copy of I Haven't Lost Yet! can be played each round.)"
       }
     },
-    "image_path": "cardface/Event_Event_Bendayehaimeiyoushu.png"
+    "image_path": "cardface/Event_Event_Bendayehaimeiyoushu.png",
+    "id": 332005
   },
   "CARD/Jueyun Guoba": {
     "names": {
@@ -1001,7 +1016,8 @@
         "en-US": "During this Round, the target character's next Normal Attack deals +1 DMG."
       }
     },
-    "image_path": "cardface/Event_Food_Jueyunguoba.png"
+    "image_path": "cardface/Event_Food_Jueyunguoba.png",
+    "id": 333001
   },
   "CARD/Leave It to Me!": {
     "names": {
@@ -1014,7 +1030,8 @@
         "en-US": "The next time you perform \"Switch Character\": The switch will be considered a Fast Action instead of a Combat Action."
       }
     },
-    "image_path": "cardface/Event_Event_Jiaogeiwoba.png"
+    "image_path": "cardface/Event_Event_Jiaogeiwoba.png",
+    "id": 332006
   },
   "CARD/Lotus Flower Crisp": {
     "names": {
@@ -1027,7 +1044,8 @@
         "en-US": "During this Round, the target character takes -3 DMG the next time."
       }
     },
-    "image_path": "cardface/Event_Food_Lianhuasu.png"
+    "image_path": "cardface/Event_Food_Lianhuasu.png",
+    "id": 333003
   },
   "CARD/Lyresong": {
     "names": {
@@ -1039,7 +1057,9 @@
         "zh-CN": "将一个我方角色所装备的「圣遗物」返回手牌。本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。",
         "en-US": "Return an Artifact card equipped by your character to your Hand.  During this Round, the next time you play a Artifact card: Spend 2 less Elemental Dice."
       }
-    }
+    },
+    "id": 332024,
+    "image_path": "cardface/Event_Event_Wangfu.png"
   },
   "CARD/Master of Weaponry": {
     "names": {
@@ -1074,7 +1094,8 @@
         "en-US": "Before this Round ends, the target character's next 3 Normal Attacks cost 1 less Unaligned Element."
       }
     },
-    "image_path": "cardface/Event_Food_Bohejuan.png"
+    "image_path": "cardface/Event_Food_Bohejuan.png",
+    "id": 333008
   },
   "CARD/Mondstadt Hash Brown": {
     "names": {
@@ -1101,7 +1122,8 @@
         "en-US": "Heal target character for 1 HP. For the next two Rounds, heal this character for 1 HP again at the End Phase."
       }
     },
-    "image_path": "cardface/Event_Food_Kaomogupisa.png"
+    "image_path": "cardface/Event_Food_Kaomogupisa.png",
+    "id": 333007
   },
   "CARD/Nature and Wisdom": {
     "names": {
@@ -1128,7 +1150,8 @@
         "en-US": "During this Round, the target character's next Normal Attack cost less 1 Unaligned Element."
       }
     },
-    "image_path": "cardface/Event_Food_Beidiyanxunji.png"
+    "image_path": "cardface/Event_Food_Beidiyanxunji.png",
+    "id": 333004
   },
   "CARD/Pankration!": {
     "names": {
@@ -1141,7 +1164,8 @@
         "en-US": "Can only be played when you have at least 8 Elemental Dice remaining, and your opponent has not yet ended their Round: After a player announces the end of their Round first, the other player, who has yet to announce the end of their Round, draws 2 cards."
       }
     },
-    "image_path": "cardface/Event_Event_Heiquan.png"
+    "image_path": "cardface/Event_Event_Heiquan.png",
+    "id": 332023
   },
   "CARD/Plunging Strike": {
     "names": {
@@ -1182,7 +1206,8 @@
         "en-US": "The next time you play a Weapon or Artifact from your hand: Spend 1 less Elemental Die."
       }
     },
-    "image_path": "cardface/Event_Event_Dameng.png"
+    "image_path": "cardface/Event_Event_Dameng.png",
+    "id": 332021
   },
   "CARD/Sashimi Platter": {
     "names": {
@@ -1195,7 +1220,8 @@
         "en-US": "Before this Round ends, the target character's Normal Attacks deal +1 DMG."
       }
     },
-    "image_path": "cardface/Event_Food_Cishen.png"
+    "image_path": "cardface/Event_Food_Cishen.png",
+    "id": 333010
   },
   "CARD/Send Off": {
     "names": {
@@ -1240,7 +1266,8 @@
         "en-US": "When the Action Phase of the next Round begins: Create 3 Omni Element. (You must have at least 2 Liyue characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_Event_Yanyuqiyue.png"
+    "image_path": "cardface/Event_Event_Yanyuqiyue.png",
+    "id": 331802
   },
   "CARD/Strategize": {
     "names": {
@@ -1281,7 +1308,8 @@
         "en-US": "During this Round, all your characters' next Elemental Skills deal +2 DMG."
       }
     },
-    "image_path": "cardface/Event_Food_Tangduer.png"
+    "image_path": "cardface/Event_Food_Tangduer.png",
+    "id": 333011
   },
   "CARD/Teyvat Fried Egg": {
     "names": {
@@ -1372,7 +1400,8 @@
         "en-US": "The next time you use a Skill: Switch your next character in to be the active character."
       }
     },
-    "image_path": "cardface/Event_Event_Heguizhishi.png"
+    "image_path": "cardface/Event_Event_Heguizhishi.png",
+    "id": 332007
   },
   "CARD/Where Is the Unseen Razor?": {
     "names": {
@@ -1385,7 +1414,8 @@
         "en-US": "Return a Weapon card equipped by your character to your Hand. During this Round, the next time you play a Weapon card: Spend 2 less Elemental Dice."
       }
     },
-    "image_path": "cardface/Event_Event_Cangfen.png"
+    "image_path": "cardface/Event_Event_Cangfen.png",
+    "id": 332022
   },
   "CARD/Wind and Freedom": {
     "names": {
@@ -1402,7 +1432,8 @@
         "en-US": "In this Round, when an opposing character is defeated during your Action, you can continue to act again when that Action ends. (You must have at least 2 Mondstadt characters in your deck to add this card to your deck.)"
       }
     },
-    "image_path": "cardface/Event_Event_Fengyuziyou.png"
+    "image_path": "cardface/Event_Event_Fengyuziyou.png",
+    "id": 331801
   },
   "CHARACTOR/Abyss Lector: Fathomless Flames": {
     "names": {
@@ -1503,6 +1534,7 @@
         "en-US": "\"Beyond Mortality\" Baizhu"
       }
     },
+    "image_path": "cardface/Char_Avatar_Baizhuer.png",
     "id": 1705
   },
   "CHARACTOR/Barbara": {
@@ -1716,6 +1748,7 @@
         "en-US": "\"Treasure of Dream Garden\" Dori"
       }
     },
+    "image_path": "cardface/Char_Avatar_Dori.png",
     "id": 1410
   },
   "CHARACTOR/Electro Hypostasis": {
@@ -2135,6 +2168,7 @@
         "en-US": "\"Dance of Lotuslight\" Nilou"
       }
     },
+    "image_path": "cardface/Char_Avatar_Nilou.png",
     "id": 1208
   },
   "CHARACTOR/Ningguang": {
@@ -2546,7 +2580,6 @@
         "en-US": "During this Round, the target character's next Elemental Burst deals +3 DMG."
       }
     },
-    "id": 333002,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Aegis of Abyssal Flame": {
@@ -2599,7 +2632,6 @@
         "en-US": "During this Round, the target character takes -2 DMG the next time."
       }
     },
-    "id": 333012,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Ceremonial Garment": {
@@ -2730,7 +2762,6 @@
         "en-US": "During this round, the next instance of Pyro-Related Reactions your character triggers deals +3 DMG."
       }
     },
-    "id": 331302,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Elemental Resonance: Shattering Ice": {
@@ -2744,7 +2775,6 @@
         "en-US": "During this Round, your character will deal +2 DMG for the next instance."
       }
     },
-    "id": 331102,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Explosive Spark": {
@@ -2814,7 +2844,6 @@
         "en-US": "During this round, your current active character's next Normal Attack deals +1 DMG. When this Normal Attack is a Charged Attack: Deal +1 additional DMG."
       }
     },
-    "id": 332018,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Heron Shield": {
@@ -2854,7 +2883,6 @@
         "en-US": "During this Round, the target character's next Normal Attack deals +1 DMG."
       }
     },
-    "id": 333001,
     "image_path": ""
   },
   "CHARACTOR_STATUS/King's Squire": {
@@ -2880,7 +2908,8 @@
         "zh-CN": "结束阶段：对所附属角色造成3点水元素伤害。",
         "en-US": "End Phase: Deal 3 Hydro DMG to affected characters."
       }
-    }
+    },
+    "image_path": "status/Nilou_E_01.png"
   },
   "CHARACTOR_STATUS/Lithic Spear": {
     "names": {
@@ -2906,7 +2935,6 @@
         "en-US": "During this Round, the target character takes -3 DMG the next time."
       }
     },
-    "id": 333003,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Melee Stance": {
@@ -3019,7 +3047,6 @@
         "en-US": "During this Round, the target character's next 3 Normal Attacks cost less 1 Unaligned Element."
       }
     },
-    "id": 333008,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Moonpiercer": {
@@ -3046,7 +3073,6 @@
         "en-US": "End Phase: Heal this charactor for 1 HP. Usage(s): 2"
       }
     },
-    "id": 333007,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Niwabi Enshou": {
@@ -3073,7 +3099,6 @@
         "en-US": "During this Round, the target character's next Normal Attack cost less 1 Unaligned Element."
       }
     },
-    "id": 333004,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Pactsworn Pathclearer": {
@@ -3268,7 +3293,6 @@
         "en-US": "During this Round, the target character's Normal Attacks deals +1 DMG."
       }
     },
-    "id": 333010,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Satiated": {
@@ -3390,7 +3414,6 @@
         "en-US": "During this Round, all your characters' next Elemental Skills deal +2 DMG."
       }
     },
-    "id": 333011,
     "image_path": ""
   },
   "CHARACTOR_STATUS/The Shrine's Sacred Shade": {
@@ -3456,7 +3479,6 @@
         "en-US": "During this Round, character deals +1 Normal Attack DMG."
       }
     },
-    "id": 312012,
     "image_path": ""
   },
   "CHARACTOR_STATUS/Vijnana Suffusion": {
@@ -6720,7 +6742,8 @@
         "zh-CN": "结束阶段：造成1点雷元素伤害。",
         "en-US": "End Phase: Deals 1 Electro DMG."
       }
-    }
+    },
+    "image_path": "cardface/Summon_DoriE.png"
   },
   "SUMMON/Autumn Whirlwind": {
     "names": {
@@ -6771,7 +6794,8 @@
         "zh-CN": "结束阶段：造成2点草元素伤害。可用次数：1（可叠加，最多叠加到3次）我方宣布结束时：如果此牌的可用次数至少为2，则造成2点草元素伤害。（需消耗可用次数）",
         "en-US": "End Phase: Deal 2 Dendro DMG. Usage(s): 1 (Can stack, max 3 stacks) When you declare the end of your Round: If this summon has at least 2 Usages remaining, deal 2 Dendro DMG. (Consumes Usages)"
       }
-    }
+    },
+    "image_path": "cardface/Summon_Nilou.png"
   },
   "SUMMON/Burning Flame": {
     "names": {
@@ -6973,7 +6997,8 @@
         "zh-CN": "结束阶段：造成1点草元素伤害，治疗我方出战角色1点。",
         "en-US": "End Phase: Deal 1 Dendro DMG, heal your active character for 1 HP."
       }
-    }
+    },
+    "image_path": "cardface/Summon_Baizhuer.png"
   },
   "SUMMON/Guoba": {
     "names": {
@@ -7037,7 +7062,8 @@
         "zh-CN": "结束阶段：治疗我方出战角色2点，并使其获得1点充能。",
         "en-US": "End Phase: Heal your active character for 2 HP and that character gains 1 Energy."
       }
-    }
+    },
+    "image_path": "cardface/Summon_DoriQ.png"
   },
   "SUMMON/Large Wind Spirit_talent": {
     "names": {
@@ -7738,6 +7764,7 @@
         "en-US": "When played: Draw a random Talent card from your deck. When you play a Talent card, or when your character uses a Skill with an original cost of at least 4 Elemental Dice: Spend 1 less Elemental Die. (Once per Round) Usage(s): 3"
       }
     },
+    "image_path": "cardface/Assist_Location_Fenglong.png",
     "id": 321015
   },
   "SUPPORT/Sumeru City": {
@@ -7965,6 +7992,7 @@
         "en-US": "Combat Action: When your active character is Baizhu, equip this card. After Baizhu equips this card, immediately use Holistic Revivification once. When your Baizhu, who has this card equipped, is on the field, when Seamless Shield activates a healing effect, generate 1 Elemental Dice of the same type as your active character. (You must have Baizhu in your deck to add this card to your deck)"
       }
     },
+    "image_path": "cardface/Modify_Talent_Baizhuer.png",
     "id": 217051
   },
   "TALENT_Barbara/Glorious Season": {
@@ -8068,6 +8096,7 @@
         "en-US": "Combat Action: When your active character is Collei, equip this card. After Collei equips this card, immediately use Floral Brush once. After your Collei, who has this card equipped, uses Floral Brush, during this Round, when your characters' Skills trigger Dendro-Related Reactions: Deal 1 Dendro DMG. (Once per Round) (You must have Collei in your deck to add this card to your deck.)"
       }
     },
+    "id": 217011,
     "image_path": "cardface/Modify_Talent_Collei.png"
   },
   "TALENT_Cyno/Featherfall Judgment": {
@@ -8145,6 +8174,7 @@
         "en-US": "Combat Action: When your active character is Dori, equip this card. After Dori equips this card, immediately use Alcazarzaray's Exactitude once. The Jinni summoned by your Dori who has this card equipped heals 1 more HP when healing characters with no more than 6 HP, and increases the amount of Energy gained by characters with no Energy by 1 when Energy is gained. (You must have Dori in your deck to add this card to your deck)"
       }
     },
+    "image_path": "cardface/Modify_Constellation_Dori.png",
     "id": 214101
   },
   "TALENT_Electro Hypostasis/Absorbing Prism": {
@@ -8486,6 +8516,7 @@
         "en-US": "Combat Action: When your active character is Nilou, equip this card. After Nilou equips this card, immediately use Dance of Haftkarsvar. When there is Nilou on the field who has this card equipped, the damage dealt by your Bountiful Core is increased by 1. (You must have Nilou in your deck to add this card to your deck.)"
       }
     },
+    "image_path": "cardface/Modify_Constellation_Nilou.png",
     "id": 212081
   },
   "TALENT_Ningguang/Strategic Reserve": {
@@ -8848,7 +8879,6 @@
         "en-US": "You must have a character who has already equipped a Weapon or Artifact: The next time you play a Weapon or Artifact card in this Round: Spend 2 less Elemental Dice."
       }
     },
-    "id": 330001,
     "image_path": ""
   },
   "TEAM_STATUS/Aurous Blaze": {
@@ -8905,7 +8935,6 @@
         "en-US": "The next time you perform \"Switch Character\": Spend 1 less Elemental Die."
       }
     },
-    "id": 332002,
     "image_path": ""
   },
   "TEAM_STATUS/Chonghua's Frost Field_talent": {
@@ -8971,7 +9000,6 @@
         "en-US": "During this round, after your character deals Geo DMG next time: Should there be any Combat Status on your side that provides Shield, grant one such Status with 3 Shield points."
       }
     },
-    "id": 331602,
     "image_path": ""
   },
   "TEAM_STATUS/Elemental Resonance: Sprawling Greenery": {
@@ -8985,7 +9013,6 @@
         "en-US": "During this round, the next Elemental Reaction you trigger deals +2 DMG."
       }
     },
-    "id": 331702,
     "image_path": ""
   },
   "TEAM_STATUS/Fatui Ambusher: Cryo Cicin Mage": {
@@ -9064,7 +9091,6 @@
         "en-US": "during this Round, when your characters' Skills trigger Dendro-Related Reactions: Deal 1 Dendro DMG. (Once per Round)"
       }
     },
-    "id": 217011,
     "image_path": ""
   },
   "TEAM_STATUS/Flowing Cicin Shield": {
@@ -9104,7 +9130,6 @@
         "en-US": "In this Round, when an opposing character is defeated during your Action, you can continue to act again when that Action ends. Usage(s): 1 "
       }
     },
-    "id": 330004,
     "image_path": ""
   },
   "TEAM_STATUS/Full Plate": {
@@ -9130,7 +9155,8 @@
         "zh-CN": "敌方角色受到绽放反应时：我方不再生成草原核，而是改为召唤丰穰之核。",
         "en-US": "After opponent's characters are affected by the Bloom reaction: Your team no longer generates Dendro Core, but instead summons Bountiful Core."
       }
-    }
+    },
+    "image_path": "status/Nilou_E_02.png"
   },
   "TEAM_STATUS/I Haven't Lost Yet!": {
     "names": {
@@ -9143,7 +9169,6 @@
         "en-US": "You cannot play \"I Haven't Lost Yet!\" again this round."
       }
     },
-    "id": 332005,
     "image_path": ""
   },
   "TEAM_STATUS/Ice Lotus": {
@@ -9261,7 +9286,6 @@
         "en-US": "The next time you perform \"Switch Character\": The switch will be considered a Fast Action instead of a Combat Action."
       }
     },
-    "id": 332006,
     "image_path": ""
   },
   "TEAM_STATUS/Lyresong": {
@@ -9274,8 +9298,7 @@
         "zh-CN": "本回合中，我方下次打出「圣遗物」手牌时：少花费2个元素骰。",
         "en-US": "During this Round, the next time you play a Artifact card: Spend 2 less Elemental Dice."
       }
-    },
-    "id": 332024
+    }
   },
   "TEAM_STATUS/Millennial Movement: Farewell Song": {
     "names": {
@@ -9301,7 +9324,6 @@
         "en-US": "After a player announces the end of their Round first, the other player, who has yet to announce the end of their Round, draws 2 cards."
       }
     },
-    "id": 332023,
     "image_path": ""
   },
   "TEAM_STATUS/Poetics of Fuubutsu: Cryo": {
@@ -9379,7 +9401,8 @@
         "zh-CN": "行动阶段开始时：生成无郤气护盾。",
         "en-US": "When Action Phase begins: Create Seamless Shield."
       }
-    }
+    },
+    "image_path": "status/Baizhu_E.png"
   },
   "TEAM_STATUS/Pyronado": {
     "names": {
@@ -9482,7 +9505,6 @@
         "en-US": "The next time you play a Weapon or Artifact from your hand: Spend 1 less Elemental Die."
       }
     },
-    "id": 332021,
     "image_path": ""
   },
   "TEAM_STATUS/Seamless Shield": {
@@ -9534,7 +9556,6 @@
         "en-US": "When the Action Phase of the next Round begins: Create 3 Omni Element. "
       }
     },
-    "id": 331802,
     "image_path": ""
   },
   "TEAM_STATUS/Stormzone_talent": {
@@ -9600,7 +9621,6 @@
         "en-US": "The next time you use a Skill: Switch your next character in to be the active character."
       }
     },
-    "id": 332007,
     "image_path": ""
   },
   "TEAM_STATUS/Where Is the Unseen Razor?": {
@@ -9614,7 +9634,6 @@
         "en-US": "During this Round, the next time you play a Weapon card: Spend 2 less Elemental Dice."
       }
     },
-    "id": 332022,
     "image_path": ""
   },
   "TEAM_STATUS/Wind and Freedom": {
@@ -9632,7 +9651,6 @@
         "en-US": "The next time you use a Skill: Switch your next character in to be the active character."
       }
     },
-    "id": 331801,
     "image_path": ""
   },
   "TEAM_STATUS/Winds of Harmony": {
