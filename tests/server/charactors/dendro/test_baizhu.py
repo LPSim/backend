@@ -32,7 +32,7 @@ def test_baizhu():
             "skill 0 15 14 13",
             "skill 0 12 11 10",
             "skill 2 9 8 7 6",
-            "TEST 1 40 40 40 39 40 29",
+            "TEST 1 40 40 40 39 40 27",
             "end"
         ],
         [
@@ -47,7 +47,7 @@ def test_baizhu():
             "TEST 2 p0 dice 12",
             "end",
             "end",
-            "TEST 1 40 40 40 39 40 32",
+            "TEST 1 40 40 40 39 40 30",
             "end"
         ]
     ]
@@ -334,6 +334,6 @@ def test_baizhu_3():
 
 
 if __name__ == '__main__':
-    # test_baizhu()
+    test_baizhu()
     test_baizhu_2()
     test_baizhu_3()

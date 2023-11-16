@@ -105,11 +105,11 @@ def test_nilou_2():
             "sw_char 2 12",
             "skill 1 11 10 9",
             "sw_char 1 8",
-            "TEST 2 p1 team 1 0",
+            "TEST 2 p1 team 0",
             "sw_char 0 7",
             "skill 1 6 5 4",
             "TEST 2 p1 team 0",
-            "TEST 3 p1 summon 1",
+            "TEST 3 p1 summon 2",
             "TEST 3 p0 summon 1",
             "sw_char 2 3",
             "skill 1 2 1 0",
@@ -122,7 +122,7 @@ def test_nilou_2():
             "card 2 0 8 7 6",
             "card 2 1 5",
             "skill 2 4 3 2",
-            "TEST 1 38 34 34 38 35 23",
+            "TEST 1 38 34 32 38 35 23",
             "end"
         ],
         [
@@ -137,7 +137,7 @@ def test_nilou_2():
             "sw_char 2 5",
             "skill 1 4 3 2",
             "end",
-            "TEST 1 38 34 36 40 40 25",
+            "TEST 1 38 34 34 40 40 25",
             "sw_char 1 15",
             "sw_char 0 14",
             "skill 1 13 12 11",
@@ -145,7 +145,7 @@ def test_nilou_2():
             "sw_char 2 9",
             "TEST 3 p0 summon 1 3",
             "end",
-            "TEST 1 38 32 34 38 35 12",
+            "TEST 1 38 32 32 38 35 12",
             "end"
         ]
     ]

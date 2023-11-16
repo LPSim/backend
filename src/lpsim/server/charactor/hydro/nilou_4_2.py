@@ -60,9 +60,10 @@ class DanceOfHaftkarsvar(ElementalSkillBase):
                 break
         ret = super().get_actions(match)
         if all_hydro_dendro:
-            ret.append(
+            # first generate team status, then attack
+            ret = [
                 self.create_team_status('Golden Chalice\'s Bounty')
-            )
+            ] + ret
         return ret
 
 
