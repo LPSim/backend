@@ -234,7 +234,11 @@ class HTTPServer():
             if str_type == 'str':
                 deck = Deck.from_str(deck_str)
             else:
-                deck = Deck.from_deck_code(deck_str)
+                try:
+                    deck = Deck.from_deck_code(deck_str)
+                except Exception:
+                    raise HTTPException(status_code = 403, 
+                                        detail = 'Invalid deck code')
             deck_check_res, deck_check_info = deck.check_legal(
                 match.config.card_number, 
                 match.config.max_same_card_number, 
