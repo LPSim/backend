@@ -16,6 +16,7 @@ of the game, and the last number is the patch version of this project.
 - Implement `/patch` endpoint in HTTPServer, which can be used to get 
   description patchs from server.
 - #3 Support create `Deck` from deck code, or export `Deck` to deck code.
+  Also add related APIs in HTTPServer.
 
 ### Changed
 - Now `desc` for a class means description hints for the class, e.g. with 
