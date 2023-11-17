@@ -7,6 +7,8 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.2.2] - 2023-11-18
+
 ### Added
 - #4 #5 #9 Implement class registry, which supports registering class by name 
   and getting class by name. It also supports registering classes after lpsim 
@@ -231,8 +233,9 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.1...HEAD
-[0.4.2.1]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.2...HEAD
+[0.4.2.2]: https://github.com/LPSim/backend/releases/tag/v0.4.2.2
+[0.4.2.1]: https://github.com/LPSim/backend/releases/tag/v0.4.2.1
 [0.4.2.0]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
 [0.4.1.3]: https://github.com/LPSim/backend/releases/tag/v0.4.1.3
 [0.4.1.2]: https://github.com/LPSim/backend/releases/tag/v0.4.1.2
