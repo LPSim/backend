@@ -224,18 +224,17 @@ class HTTPServer():
             """
             return [deck.dict() for deck in self.decks]
 
-        @app.post('/deck')
-        async def post_deck(data: DeckData):
-            """
-            Set deck.
-            """
+        def post_deck_data(data: DeckData, str_type: Literal['str', 'code']):
             match = self.match
             deck_str = data.deck_str
             player_idx = data.player_idx
             if player_idx < 0 or player_idx > 1:
                 raise HTTPException(status_code = 404, 
                                     detail = 'Player not found')
-            deck = Deck.from_str(deck_str)
+            if str_type == 'str':
+                deck = Deck.from_str(deck_str)
+            else:
+                deck = Deck.from_deck_code(deck_str)
             deck_check_res, deck_check_info = deck.check_legal(
                 match.config.card_number, 
                 match.config.max_same_card_number, 
@@ -248,6 +247,33 @@ class HTTPServer():
                     detail = f'Deck not legal. {deck_check_info}'
                 )
             self.decks[player_idx] = deck
+
+        @app.post('/deck')
+        async def post_deck(data: DeckData):
+            """
+            Set deck.
+            """
+            post_deck_data(data, 'str')
+
+        @app.get('/deck_code/{player_idx}')
+        async def get_deck_code(player_idx: int):
+            """
+            get deck code of a player.
+            """
+            if player_idx < 0 or player_idx > 1:
+                raise HTTPException(status_code = 404, 
+                                    detail = 'Player not found')
+            try:
+                return self.decks[player_idx].to_deck_code()
+            except ValueError as e:
+                raise HTTPException(status_code = 403, detail = str(e))
+
+        @app.post('/deck_code')
+        async def post_deck_code(data: DeckData):
+            """
+            Set deck by deck code.
+            """
+            post_deck_data(data, 'code')
 
         @app.get('/state/{mode}/{state_idx}/{player_idx}')
         async def get_game_state(
