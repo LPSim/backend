@@ -10,14 +10,12 @@ logging.basicConfig(level = logging.INFO)
 
 if __name__ == '__main__':
     deck_str_1 = '''
-        default_version:4.1
-        charactor:Noelle
-        charactor:Mona
-        charactor:Dehya
-        # Gales of Reverie*10
-        # Beneficent*10
-        Stalwart and True*10
-        Sweet Madame*10
+        default_version:4.2
+        charactor:Baizhu
+        charactor:Nilou
+        charactor:Tighnari
+        All Things Are of the Earth*15
+        Lotus Flower Crisp*15
     '''
     deck_str_2 = '''
     charactor:Nahida@3.7
@@ -61,6 +59,12 @@ if __name__ == '__main__':
             # }
         )
     )
+
+    # # modify hp
+    # for deck in server.decks:
+    #     for charactor in deck.charactors:
+    #         charactor.hp = 40
+    #         charactor.max_hp = 40
 
     # fix random seed
     match = Match(random_state = get_random_state())
