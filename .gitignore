@@ -166,3 +166,6 @@ _version.py
 prof
 *.prof
 *.lprof
+
+# folders for test
+v*/

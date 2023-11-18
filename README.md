@@ -3,7 +3,7 @@
 ---
 
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
-[![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?style=flat-square&color=blue)](https://pypi.org/project/lpsim/)
+[![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 
 [中文简介](docs/README.ch.md)
 
@@ -161,6 +161,35 @@ while not match.is_game_end():
 print(f'winner is {match.winner}')
 ```
 
+### Customize cards and charactors
+
+To customize cards and charactors, you need to understand the actions,
+event handlers and value modifiers. All interaction are done by actions, and
+all actions are triggered by events. Value modifiers are for modifying values
+such as dice cost and damage. The easiest way to implement a new object is to
+copy an existing card/charactor/skill/status... and modify it. 
+
+`templates/charactor.py` is a template for charactors. You can copy it
+and modify it to implement a new charactor. You can define any object that is
+related to the charactor, e.g. skills, talents, summons, status. Then, you 
+should create the description for these objects, which is used in the frontend,
+and class registry will reject objects without description. Finally, register
+all objects as well as their descriptions to class registry with 
+`register_class` function. Note the template uses relative imports, as it is
+used for creating new official charactors. You need to change them to absolute
+imports if you want to create a new charactor outside this project.
+
+Define a new card is relatively simple, you can refer to `templates/card.py`,
+it defined a new card "Big Strategize" which costs 2 any dice and draws 3 
+cards. As a sample of custom card, it uses absolute import, so you can use it
+outside this project.
+
+You can manually register new objects and use them in the match.
+Take "Big Strategize" for example, install `lpsim` first, then type
+`import templates.card` after `import lpsim`. Then you can create a HTTP
+server by `a = HTTPServer(); a.run()` to see that a new card is added to the 
+candidate card list.
+
 ## Details
 
 Pydantic to save & load states of match, exported data is complete to restore
@@ -197,7 +226,7 @@ should be passed without modification.
 
 Contributions are welcomed, however, currently there is no detailed guide for
 contribution. To add new charactor related objects (Charactor, Skill, Talent,
-Summon, Status), please refer to `server/charactor/template.py` and implemented
+Summon, Status), please refer to `templates/charactor.py` and implemented
 charactors.
 To add a new card, please refer to existing card implementations in 
 `server/card`.
