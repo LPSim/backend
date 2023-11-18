@@ -77,7 +77,7 @@ def register_class_one(cls: Type[Any]):
     type_hints = cls_type_hints['type']
     if len(type_hints.__args__) != 1:
         raise AssertionError(
-            f'Class {cls} type hint is empty more than 1'
+            f'Class {cls} type hint is empty or more than 1'
         )
     obj_type = type_hints.__args__[0]
     names = name_hints.__args__
