@@ -1,6 +1,6 @@
 from typing import Any, List, Literal
 
-from ....utils.class_registry import register_class
+from ....utils.class_registry import register_base_class, register_class
 
 from ...action import (
     ActionTypes, CharactorReviveAction, CreateObjectAction, MakeDamageAction
@@ -70,6 +70,9 @@ class FoodCardBase(EventCardBase):
             object_position = pos,
             object_arguments = {}
         )]
+
+
+register_base_class(FoodCardBase)
 
 
 class JueyunGuoba_3_3(FoodCardBase):

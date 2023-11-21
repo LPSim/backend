@@ -9,10 +9,8 @@ corresponding class and version, and instantiate it.
 import logging
 import types
 from typing import (
-    Any, Dict, List, Optional, Type, Union, get_type_hints, get_args
+    Any, Dict, List, Optional, Set, Type, Union, get_type_hints, get_args
 )
-
-import pydantic
 
 from ..server.consts import ObjectType
 
@@ -177,17 +175,27 @@ def register_class(
         register_class_one(classes)
 
 
-def _parse_object(
-    class_dict: Dict[int, Type[Any]], class_version_list: List[int], 
-    version: str, args: Any
+def _get_class(
+    class_dict: Dict[str, Dict[int, Type[Any]]], 
+    class_version_list: Dict[str, List[int]], 
+    name: str, version: str
 ):
     version_int = _version_to_int(version)
-    for v in class_version_list:
+    for v in class_version_list[name]:
         if v <= version_int:
-            return pydantic.parse_obj_as(class_dict[v], args)
+            return class_dict[name][v]
     else:
         # all failed, raise error
         raise KeyError()
+
+
+def _parse_object(
+    class_dict: Dict[str, Dict[int, Type[Any]]], 
+    class_version_list: Dict[str, List[int]], 
+    name: str, version: str, args: Any
+):
+    cls = _get_class(class_dict, class_version_list, name, version)
+    return cls(**args)
 
 
 # def get_instance_from_type_unions(types, args, key = 'name'):
@@ -207,8 +215,8 @@ def get_instance(base_class: Type[Any], args: Dict):
                 )
             try:
                 return _parse_object(
-                    _class_dict[type][name], _class_version_dict[type][name],
-                    version, args
+                    _class_dict[type], _class_version_dict[type],
+                    name, version, args
                 )
             except KeyError:
                 continue
@@ -222,15 +230,66 @@ def get_instance(base_class: Type[Any], args: Dict):
             )
         try:
             return _parse_object(
-                _class_dict[base_class][name], 
-                _class_version_dict[base_class][name], 
+                _class_dict[base_class], 
+                _class_version_dict[base_class], 
+                name,
                 version,
                 args
             )
         except KeyError:
             raise AssertionError(
-                f'Cannot find class {name} in base class {base_class}'
+                f'Cannot find class {name} with version {version} in base '
+                f'class {base_class}'
             )
 
 
-__all__ = ('register_base_class', 'register_class', 'get_instance')
+def get_class_list_by_base_class(
+    base_class: Type[Any], version: str = '99.9', exclude: Set[str] = set()
+) -> List[str]:
+    """
+    Get list of class names by base class and version. If the base class is a 
+    union type, class names that matchs any type in the union will be returned.
+
+    Args:
+        base_class: The base class to search.
+        version: The version of the class. Classes that have higher version
+            than this will be ignored. Default is '99.9'.
+        exclude: Exclude class with specified names in the list.
+
+    Return:
+        List of class names.
+    """
+    result_set: Set[str] = set()
+    base_class_list = [base_class]
+    if _is_union_type(base_class):
+        # is union type, try each class sequentially
+        base_class_list = base_class.__args__  # type: ignore
+    for type in base_class_list:
+        if type not in _class_dict:
+            raise AssertionError(
+                f'Base class {type} is not registered in class registry'
+            )
+        names = _class_dict[type].keys()
+        for name in names:
+            if name in exclude:
+                continue
+            try:
+                _ = _get_class(
+                    _class_dict[type], 
+                    _class_version_dict[type], 
+                    name, 
+                    version
+                )
+                # get class success
+                result_set.add(name)
+            except KeyError:
+                continue
+    return sorted(list(result_set))
+
+
+__all__ = (
+    'register_base_class', 
+    'register_class', 
+    'get_instance',
+    'get_class_list_by_base_class',
+)
