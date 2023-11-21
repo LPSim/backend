@@ -8,6 +8,7 @@ from .summon import SummonBase
 from .match import Match, MatchState
 from .object_base import ObjectBase, CardBase
 from .deck import Deck
+from .patch import *  # noqa: F401, F403
 
 __all__ = (
     'LocationBase', 'ItemBase', 'WeaponBase', 'SupportBase', 'ArtifactBase', 
