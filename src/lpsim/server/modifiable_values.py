@@ -26,6 +26,10 @@ class ModifiableValueTypes(str, Enum):
     DAMAGE_MULTIPLY = 'DAMAGE_MULTIPLY'
     DAMAGE_DECREASE = 'DAMAGE_DECREASE'
 
+    # before using card, a modifiable value is used to check whether use card
+    # successfully.
+    USE_CARD = 'USE_CARD'
+
 
 class ModifiableValueBase(BaseModel):
     """
@@ -322,3 +326,13 @@ class DamageDecreaseValue(DamageIncreaseValue):
 
 DamageValue = DamageElementEnhanceValue
 FinalDamageValue = DamageDecreaseValue  # alias
+
+
+class UseCardValue(ModifiableValueBase):
+    """
+    Value to check whether using card success. If use_card is false, then the
+    actions about the card are ignored, but will consume cost.
+    """
+    type: ModifiableValueTypes = ModifiableValueTypes.USE_CARD
+    card: Any
+    use_card: bool = True

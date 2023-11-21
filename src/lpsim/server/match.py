@@ -98,6 +98,7 @@ from .modifiable_values import (
     InitialDiceColorValue,
     ModifiableValueTypes, RerollValue, CostValue,
     DamageMultiplyValue, DamageDecreaseValue,
+    UseCardValue,
 )
 from .struct import (
     ObjectPosition, Cost
@@ -2439,19 +2440,21 @@ class Match(BaseModel):
         target_object = get_instance(
             target_class, args
         )
-        for csnum, current_object in enumerate(target_list):
-            if current_object.name == target_object.name:
-                # have same status, only update status usage
-                current_object.renew(target_object)  # type: ignore
-                logging.info(
-                    f'player {player_idx} '
-                    f'renew {target_name} {action.object_name}.'
-                )
-                return [CreateObjectEventArguments(
-                    action = action,
-                    create_result = 'RENEW',
-                    create_idx = csnum,
-                )]
+        if target_name != 'hand':
+            # if not create hand, not allow to create same name object
+            for csnum, current_object in enumerate(target_list):
+                if current_object.name == target_object.name:
+                    # have same name object, only update status usage
+                    current_object.renew(target_object)  # type: ignore
+                    logging.info(
+                        f'player {player_idx} '
+                        f'renew {target_name} {action.object_name}.'
+                    )
+                    return [CreateObjectEventArguments(
+                        action = action,
+                        create_result = 'RENEW',
+                        create_idx = csnum,
+                    )]
         if (target_name == 'summon' 
                 and len(target_list) >= self.config.max_summon_number):
             # summon number reaches maximum
@@ -2808,14 +2811,27 @@ class Match(BaseModel):
                 f'tried to use non-exist card with id '
                 f'{action.card_position.id}.'
             )
-        logging.info(
-            f'player {action.card_position.player_idx} '
-            f'use card {table.using_hand.name}.'  # type: ignore
+        card = table.using_hand
+
+        # check if use success
+        use_card_value = UseCardValue(
+            position = card.position,
+            card = card
         )
+        self._modify_value(use_card_value, 'REAL')
+
+        info_str = (
+            f'player {action.card_position.player_idx} '
+            f'use card {card.name}.'  # type: ignore
+        )
+        if not use_card_value.use_card:
+            info_str += ' But use card failed!'
+        logging.info(info_str)
 
         return [UseCardEventArguments(
             action = action,
-            card = table.using_hand
+            card = card,
+            use_card_success = use_card_value.use_card
         )]
 
     def _action_skill_end(self, action: SkillEndAction) \

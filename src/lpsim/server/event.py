@@ -357,6 +357,7 @@ class UseCardEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
     action: UseCardAction
     card: Any
+    use_card_success: bool
 
 
 EventArguments = (

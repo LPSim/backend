@@ -102,8 +102,10 @@ class CardBase(ObjectBase):
     Base class of all real cards. 
     """
     name: str
-    type: Literal[ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
-                  ObjectType.TALENT, ObjectType.SUPPORT] = ObjectType.CARD
+    type: Literal[
+        ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
+        ObjectType.TALENT, ObjectType.SUPPORT, ObjectType.ARCANE,
+    ] = ObjectType.CARD
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     position: ObjectPosition = ObjectPosition(
@@ -217,10 +219,12 @@ class CardBase(ObjectBase):
                 == self.target_position_type_multiple
             )
         )
-        actions += self.get_actions(
-            target = event.action.target,  # type: ignore
-            match = match,
-        )
+        if event.use_card_success:
+            # use success, add actions of the card
+            actions += self.get_actions(
+                target = event.action.target,  # type: ignore
+                match = match,
+            )
         return actions
 
 
