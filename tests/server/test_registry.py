@@ -1,6 +1,7 @@
 from typing import Dict, Literal
 
 import pytest
+from src.lpsim.server.card.event.foods import FoodCardBase
 
 from src.lpsim.server.card.support.base import SupportBase
 
@@ -12,7 +13,9 @@ from src.lpsim.utils.desc_registry import (
     DescDictType, desc_exist, get_desc_patch, update_desc
 )
 
-from src.lpsim.utils.class_registry import get_instance, register_class
+from src.lpsim.utils.class_registry import (
+    get_class_list_by_base_class, get_instance, register_class
+)
 
 from src.lpsim.server.struct import Cost
 from src.lpsim.server.object_base import EventCardBase
@@ -191,6 +194,23 @@ def test_desc_registry():
         update_desc(empty_name_2)
 
 
+def test_get_class_list():
+    nlist = get_class_list_by_base_class(SupportBase, '3.3', set(['NRE']))
+    assert 'NRE' not in nlist
+    assert 'Wangshu Inn' in nlist
+    assert len(nlist) == 19  # initial 20 and except NRE
+    nlist = get_class_list_by_base_class(SupportBase, '3.3')
+    assert 'NRE' in nlist
+    assert len(nlist) == 20  # initial 20
+    nlist = get_class_list_by_base_class(SupportBase | FoodCardBase, '3.3')
+    assert len(nlist) == 28  # initial 20 + 8 food cards
+    nlist = get_class_list_by_base_class(FoodCardBase, '4.2')
+    assert len(nlist) == 12  # in 4.2, there are 12 food cards
+    nlist = get_class_list_by_base_class(FoodCardBase, '3.3', set(['NRE']))
+    assert len(nlist) == 8
+
+
 if __name__ == "__main__":
     test_class_registry()
     test_desc_registry()
+    test_get_class_list()
