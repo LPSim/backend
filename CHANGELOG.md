@@ -7,6 +7,22 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+### Added
+- `get_class_by_base_class` for `ClassRegistry`, which can get all classes 
+  that are inherited from the base class.
+- Before using a card, card usage will be checked by `UseCardValue`, which can
+  mark a card failed to use.
+- Added `/deck_code_data` endpoint in HTTPServer, which can get deck code data
+  from server, and frontend can generate deck code without asking server.
+
+### Fixed
+- wrong description of Gambler's Earrings with version 3.3.
+- Typo of error message in class_registry.
+
+# Changed
+- Move template files to `templates` folder.
+- Define `AllCharactorFoodCard` for foods that will effect all charactors.
+
 ## [0.4.2.2] - 2023-11-18
 
 ### Added
