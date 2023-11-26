@@ -8,9 +8,10 @@ import json
 
 
 # load name map and forbid list
-data = json.load(open(__file__.replace('deck_code.py', 'deck_code_data.json')))
-name_map = data['name_map']
-forbid_list = data['forbid_list']
+deck_code_data = json.load(open(__file__.replace('deck_code.py', 
+                                                 'deck_code_data.json')))
+name_map = deck_code_data['name_map']
+forbid_list = deck_code_data['forbid_list']
 
 
 # create forbid word trie
@@ -172,7 +173,7 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
     raise ValueError('in generating deck code: retry time exceeded')
 
 
-__all__ = ['deck_code_to_deck_str', 'deck_str_to_deck_code']
+__all__ = ['deck_code_to_deck_str', 'deck_str_to_deck_code', 'deck_code_data']
 
 
 if __name__ == '__main__':

@@ -14,6 +14,7 @@ from ..server.match import Match, MatchConfig
 from ..server.deck import Deck
 from ..agents import InteractionAgent
 from .utils import get_new_match
+from ..utils.deck_code import deck_code_data
 from .. import __version_tuple__, __version__  # type: ignore
 
 
@@ -278,6 +279,14 @@ class HTTPServer():
             Set deck by deck code.
             """
             post_deck_data(data, 'code')
+
+        @app.get('/deck_code_data')
+        async def get_deck_code_data():
+            """
+            get deck code data that is needed for generating deckcode in
+            frontend.
+            """
+            return JSONResponse(deck_code_data)
 
         @app.get('/state/{mode}/{state_idx}/{player_idx}')
         async def get_game_state(
