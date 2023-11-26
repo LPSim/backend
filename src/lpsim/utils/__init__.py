@@ -45,7 +45,7 @@ def import_all_modules(
             continue
         if file.endswith('.py'):
             file = file[:-3]
-        if file not in exceptions:
+        if file not in exceptions:  # pragma: no branch
             importlib.import_module('.' + file, package = name)
 
 
