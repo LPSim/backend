@@ -24,6 +24,7 @@ def test_deck_string():
                 'name': 'Strategize',
             }
         ] * 30,
+        'default_version': '4.0',
     })
     deck_str_1 = Deck.from_str('''
         default_version:4.0
@@ -64,6 +65,7 @@ def test_deck_string():
                 'name': 'Strategize',
             }
         ] * 10,
+        'default_version': '4.0',
     })
     deck_str_2 = Deck.from_str('''
         default_version:4.0
@@ -100,6 +102,7 @@ def test_deck_string():
                 'name': 'Stellar Predator',
             }
         ] * 30,
+        'default_version': '4.0',
     })
     deck_str_3 = Deck.from_str('''
         default_version:4.0

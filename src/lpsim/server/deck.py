@@ -16,6 +16,7 @@ class Deck(BaseModel):
     name: Literal['Deck'] = 'Deck'
     charactors: List[CharactorBase] = []
     cards: List[CardBase] = []
+    default_version: str | None = None
 
     @validator('charactors', each_item = True, pre = True)
     def parse_charactors(cls, v):
@@ -144,13 +145,12 @@ class Deck(BaseModel):
         """
         deck_str = deck_str.strip()
         deck = Deck()
-        default_version: str | None = None
         for line in deck_str.split('\n'):
             line = line.strip()
             if line == '':
                 continue
             if line.startswith('default_version:'):
-                default_version = line[16:]
+                deck.default_version = line[16:]
                 continue
             if line[0] == '#':
                 # comment line
@@ -166,7 +166,7 @@ class Deck(BaseModel):
                 line, version = line.split('@')
                 version = version.strip()
             else:
-                version = default_version
+                version = deck.default_version
             if line.startswith('charactor:'):
                 args = { 'name': line[10:] }
                 if version is not None:
@@ -186,6 +186,8 @@ class Deck(BaseModel):
         Convert deck object to deck string.
         """
         deck_str = ''
+        if self.default_version is not None:
+            deck_str += f'default_version:{self.default_version}\n'
         for charactor in self.charactors:
             deck_str += f'charactor:{charactor.name}'
             deck_str += f'@{charactor.version}'
