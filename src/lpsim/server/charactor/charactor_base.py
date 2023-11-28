@@ -461,9 +461,13 @@ class TalentBase(CardBase):
 class SkillTalent(TalentBase):
     """
     Talents that trigger skills. They will get skill as input, which is
-    saved as a private variable.
+    saved as a private variable. They are all equiment cards.
     """
 
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.TALENT.value 
+        | CostLabels.EQUIP_TALENT.value
+    )
     skill: str
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:

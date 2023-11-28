@@ -298,8 +298,12 @@ class CostLabels(int, Enum):
     ELEMENTAL_BURST = 0x1000
     CHARGED_ATTACK = 0x2000
     PLUNGING_ATTACK = 0x4000
+    # talents have two types, equipment or event.
+    EQUIP_TALENT = 0x8000
 
     SKILLS = 0x1c00
+    EQUIPMTNTS = 0x80c0
+    SUPPORTS = 0x1c
 
     def __str__(self):
         return self.name
