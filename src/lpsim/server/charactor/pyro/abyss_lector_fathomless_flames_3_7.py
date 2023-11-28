@@ -10,7 +10,7 @@ from ...action import Actions, CreateObjectAction, RemoveObjectAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, 
+    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DieColor, 
     ElementType, FactionType, ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
@@ -74,6 +74,10 @@ class EmbersRekindled_3_7(TalentBase):
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
         elemental_dice_number = 2
+    )
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.TALENT.value 
+        | CostLabels.EQUIP_TALENT.value
     )
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:

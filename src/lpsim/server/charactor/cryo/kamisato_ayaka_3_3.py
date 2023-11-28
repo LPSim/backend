@@ -123,6 +123,10 @@ class KantenSenmyouBlessing_3_3(TalentBase):
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 2
     )
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.TALENT.value 
+        | CostLabels.EQUIP_TALENT.value
+    )
     usage: int = 1
     max_usage: int = 1
 

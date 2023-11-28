@@ -15,7 +15,7 @@ from ...action import (
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
+    CostLabels, DamageElementalType, DieColor, ElementType, FactionType, 
     ObjectPositionType, PlayerActionLabels, WeaponType
 )
 from ..charactor_base import (
@@ -124,6 +124,10 @@ class PulsatingWitch_4_0(TalentBase):
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 1
+    )
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.TALENT.value 
+        | CostLabels.EQUIP_TALENT.value
     )
     usage: int = 1
 

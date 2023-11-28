@@ -302,7 +302,7 @@ class CostLabels(int, Enum):
     EQUIP_TALENT = 0x8000
 
     SKILLS = 0x1c00
-    EQUIPMTNTS = 0x80c0
+    EQUIPMENTS = 0x8060
     SUPPORTS = 0x1c
 
     def __str__(self):
