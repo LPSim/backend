@@ -131,9 +131,6 @@ class KantenSenmyouBlessing_3_3(TalentBase):
     max_usage: int = 1
 
     def is_valid(self, match: Any) -> bool:
-        """
-        Only corresponding charactor is active charactor can equip this card.
-        """
         if self.position.area != ObjectPositionType.HAND:
             # not in hand, cannot equip
             raise AssertionError('Talent is not in hand')
