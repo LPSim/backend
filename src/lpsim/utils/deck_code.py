@@ -90,7 +90,7 @@ def deck_code_to_deck_str(deck_code: str, version: str | None = None) -> str:
     if version is not None:
         results.append(f'default_version:{version}')
     for x in decode:
-        if x > 0:
+        if x > 0 and x <= len(name_map):
             if x - 1 in charactors_idx:
                 results.append(f'charactor:{name_map[x - 1]}')
             else:
