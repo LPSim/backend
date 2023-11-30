@@ -11,17 +11,19 @@ from ..consts import (
     ObjectPositionType, ObjectType, DamageElementalType, DamageType
 )
 from ..event import (
+    CreateObjectEventArguments,
     DeclareRoundEndEventArguments,
     MakeDamageEventArguments,
     ReceiveDamageEventArguments,
     RoundEndEventArguments,
     ChangeObjectUsageEventArguments,
+    RoundPrepareEventArguments,
 )
 from ..action import (
-    Actions, MakeDamageAction, RemoveObjectAction
+    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
 )
 from ..modifiable_values import DamageDecreaseValue, DamageValue
-from ..struct import Cost
+from ..struct import Cost, ObjectPosition
 
 
 class SummonBase(ObjectBase):
@@ -401,3 +403,81 @@ class SwirlChangeSummonBase(AttackerSummonBase):
         # do type change
         self.damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[elements[1]]
         return []
+
+
+class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
+    """
+    Summons that will attack opposite, and generate status to self periodly,
+    usually defend status. e.g. Dehya, Lynette.
+    """
+    name: str
+    version: str
+    usage: int
+    max_usage: int
+    damage_elemental_type: DamageElementalType
+    damage: int
+    status_name: str | None = None
+
+    def _create_status(self, match: Any) -> List[CreateObjectAction]:
+        """
+        Create status
+        """
+        if self.status_name is not None:  # pragma: no cover
+            name = self.status_name
+        else:
+            name = self.name
+        return [CreateObjectAction(
+            object_name = name,
+            object_position = ObjectPosition(
+                player_idx = self.position.player_idx,
+                area = ObjectPositionType.TEAM_STATUS,
+                id = 0,
+            ),
+            object_arguments = {}
+        )]
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When created object is self, and not renew, also create teams status
+        """
+        if event.create_result == 'RENEW':
+            # renew, do nothing
+            return []
+        if (
+            event.action.object_name == self.name
+            and self.position.check_position_valid(
+                event.action.object_position, match, player_idx_same = True,
+                area_same = True
+            )
+        ):
+            # name same, and position same, is self created
+            return self._create_status(match)
+        return []
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        # re-generate status
+        return self._create_status(match)
+
+    def _remove(self, match: Any) -> List[RemoveObjectAction]:
+        """
+        If self should remove, and has generated status, remove together.
+        """
+        status = match.player_tables[
+            self.position.player_idx].team_status
+        target_status = None
+        for s in status:
+            if s.name == self.name:
+                target_status = s
+                break
+        ret: List[RemoveObjectAction] = [RemoveObjectAction(
+            object_position = self.position,
+        )]
+        if target_status is not None:
+            ret.append(RemoveObjectAction(
+                object_position = target_status.position
+            ))
+        return ret

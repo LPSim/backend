@@ -2,18 +2,13 @@ from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
 
-from ...summon.base import AttackerSummonBase
+from ...summon.base import AttackAndGenerateStatusSummonBase
 
 from ...modifiable_values import DamageValue
-from ...event import (
-    CreateObjectEventArguments, RoundEndEventArguments, 
-    RoundPrepareEventArguments
-)
+from ...event import RoundEndEventArguments
 
-from ...action import (
-    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
-)
-from ...struct import Cost, ObjectPosition
+from ...action import Actions, MakeDamageAction
+from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DamageType, DieColor, 
@@ -28,77 +23,14 @@ from ..charactor_base import (
 # Summons
 
 
-class FierySanctumField_4_1(AttackerSummonBase):
+class FierySanctumField_4_1(AttackAndGenerateStatusSummonBase):
     name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
     version: Literal['4.1'] = '4.1'
     usage: int = 3
     max_usage: int = 3
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
     damage: int = 1
-    shield_usage: int = 1
-    shield_triggered: bool = False
 
-    def _create_status(self, match: Any) -> List[CreateObjectAction]:
-        """
-        Create status
-        """
-        return [CreateObjectAction(
-            object_name = self.name,
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.TEAM_STATUS,
-                id = 0,
-            ),
-            object_arguments = {}
-        )]
-
-    def event_handler_CREATE_OBJECT(
-        self, event: CreateObjectEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When created object is self, and not renew, also create teams status
-        """
-        if event.create_result == 'RENEW':
-            # renew, do nothing
-            return []
-        if (
-            event.action.object_name == self.name
-            and self.position.check_position_valid(
-                event.action.object_position, match, player_idx_same = True,
-                area_same = True
-            )
-        ):
-            # name same, and position same, is self created
-            return self._create_status(match)
-        return []
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        # re-generate status
-        self.shield_usage = 1
-        self.shield_triggered = False
-        return self._create_status(match)
-
-    def _remove(self, match: Any) -> List[RemoveObjectAction]:
-        """
-        If self should remove, and has generated status, remove together.
-        """
-        status = match.player_tables[
-            self.position.player_idx].team_status
-        target_status = None
-        for s in status:
-            if s.name == self.name:
-                target_status = s
-                break
-        ret: List[RemoveObjectAction] = [RemoveObjectAction(
-            object_position = self.position,
-        )]
-        if target_status is not None:
-            ret.append(RemoveObjectAction(
-                object_position = target_status.position
-            ))
-        return ret
 
 # Skills
 
