@@ -34,7 +34,7 @@ class LocationBase(SupportBase):
 register_base_class(LocationBase)
 
 
-class RoundEffectLocationBase(RoundEffectSupportBase):
+class RoundEffectLocationBase(RoundEffectSupportBase, LocationBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.LOCATION.value
 
 

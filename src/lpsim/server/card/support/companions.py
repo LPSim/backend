@@ -32,16 +32,14 @@ from ...event import (
 
 
 class CompanionBase(SupportBase):
-    cost_label: int = (CostLabels.CARD.value 
-                       | CostLabels.COMPANION.value)
+    cost_label: int = CostLabels.CARD.value | CostLabels.COMPANION.value
 
 
 register_base_class(CompanionBase)
 
 
-class RoundEffectCompanionBase(RoundEffectSupportBase):
-    cost_label: int = (CostLabels.CARD.value 
-                       | CostLabels.COMPANION.value)
+class RoundEffectCompanionBase(RoundEffectSupportBase, CompanionBase):
+    cost_label: int = CostLabels.CARD.value | CostLabels.COMPANION.value
 
 
 class Paimon_3_3(CompanionBase):

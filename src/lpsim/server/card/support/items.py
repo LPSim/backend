@@ -30,11 +30,7 @@ class ItemBase(SupportBase):
 register_base_class(ItemBase)
 
 
-class RoundEffectItemBase(RoundEffectSupportBase):
-    name: str
-    version: str
-    cost: Cost
-    max_usage_per_round: int 
+class RoundEffectItemBase(RoundEffectSupportBase, ItemBase):
     cost_label: int = CostLabels.CARD.value | CostLabels.ITEM.value
 
 
