@@ -2,7 +2,9 @@ import pydantic
 import os
 import importlib
 from typing import List
-from .class_registry import get_instance  # noqa: F401
+from .class_registry import (  # noqa: F401
+    register_class, get_instance, get_class_list_by_base_class
+)
 from .desc_registry import (  # noqa: F401
     DescDictType, ExpectedLanguageType, update_desc, desc_exist,
     get_desc_patch,
