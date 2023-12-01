@@ -177,6 +177,10 @@ class AbsorbingPrism_3_7(TalentBase):
         elemental_dice_color = DieColor.ELECTRO,
         elemental_dice_number = 3
     )
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.TALENT.value
+        | CostLabels.EVENT.value
+    )
     remove_when_used: bool = True
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:

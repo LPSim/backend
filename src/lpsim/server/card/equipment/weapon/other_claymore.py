@@ -14,7 +14,7 @@ from .base import RoundEffectWeaponBase, WeaponBase
 
 from ....struct import Cost, ObjectPosition
 
-from ....consts import CostLabels, ObjectPositionType, ObjectType, WeaponType
+from ....consts import ObjectPositionType, ObjectType, WeaponType
 
 
 class WolfsGravestone_3_3(WeaponBase):
@@ -40,7 +40,6 @@ class TheBell_3_7(RoundEffectWeaponBase):
     name: Literal['The Bell']
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     version: Literal['3.7'] = '3.7'
-    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     cost: Cost = Cost(same_dice_number = 3)

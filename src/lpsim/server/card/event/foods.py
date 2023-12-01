@@ -3,7 +3,8 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_base_class, register_class
 
 from ...action import (
-    ActionTypes, Actions, CharactorReviveAction, CreateObjectAction, MakeDamageAction
+    ActionTypes, Actions, CharactorReviveAction, CreateObjectAction, 
+    MakeDamageAction
 )
 from ...struct import Cost, ObjectPosition
 from ...modifiable_values import DamageValue
@@ -17,7 +18,9 @@ class FoodCardBase(EventCardBase):
     """
     Base class for food cards.
     """
-    cost_label: int = CostLabels.CARD | CostLabels.FOOD
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.FOOD.value | CostLabels.EVENT.value
+    )
     can_eat_only_if_damaged: bool
 
     def eat_target(self, match: Any) -> List[int]:

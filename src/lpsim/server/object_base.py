@@ -230,6 +230,7 @@ class CardBase(ObjectBase):
 
 class EventCardBase(CardBase):
     type: Literal[ObjectType.CARD] = ObjectType.CARD
+    cost_label: int = CostLabels.CARD.value | CostLabels.EVENT.value
 
 
 class MultiTargetEventCardBase(EventCardBase):

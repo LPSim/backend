@@ -4,7 +4,7 @@ from ....utils.class_registry import register_base_class
 
 from ...event import MoveObjectEventArguments, RoundPrepareEventArguments
 from ...object_base import CardBase
-from ...consts import IconType, ObjectType, ObjectPositionType, CostLabels
+from ...consts import IconType, ObjectType, ObjectPositionType
 from ...struct import Cost
 from ...action import Actions, RemoveObjectAction, MoveObjectAction
 from ...struct import ObjectPosition
@@ -22,7 +22,6 @@ class SupportBase(CardBase):
     cost: Cost
     usage: int
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
-    cost_label: int = CostLabels.CARD.value
     remove_when_used: bool = False
 
     # icon type is used to show the icon on the summon top right. 

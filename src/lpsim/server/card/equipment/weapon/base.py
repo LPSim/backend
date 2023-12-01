@@ -25,7 +25,10 @@ class WeaponBase(CardBase):
     version: str
     weapon_type: WeaponType
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.WEAPON.value
+        | CostLabels.EQUIPMENT.value
+    )
 
     usage: int = 0
     damage_increase: int = 1  # Almost all weapons increase the damage by 1

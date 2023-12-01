@@ -21,7 +21,10 @@ class ArtifactBase(CardBase):
     usage: int
 
     type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
-    cost_label: int = CostLabels.CARD.value | CostLabels.ARTIFACT.value
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.ARTIFACT.value 
+        | CostLabels.EQUIPMENT.value
+    )
     remove_when_used: bool = False
 
     def equip(self, match: Any) -> List[Actions]:

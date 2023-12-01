@@ -466,7 +466,7 @@ class SkillTalent(TalentBase):
 
     cost_label: int = (
         CostLabels.CARD.value | CostLabels.TALENT.value 
-        | CostLabels.EQUIP_TALENT.value
+        | CostLabels.EQUIPMENT.value
     )
     skill: str
 

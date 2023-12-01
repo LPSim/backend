@@ -25,7 +25,10 @@ from ...object_base import EventCardBase
 
 class ArcaneLegendBase(EventCardBase):
     type: Literal[ObjectType.ARCANE] = ObjectType.ARCANE
-    cost_label: int = CostLabels.CARD.value | CostLabels.ARCANE.value
+    cost_label: int = (
+        CostLabels.CARD.value | CostLabels.ARCANE.value
+        | CostLabels.EVENT.value
+    )
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any

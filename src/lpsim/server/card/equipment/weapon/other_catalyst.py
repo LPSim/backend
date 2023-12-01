@@ -7,7 +7,7 @@ from ....modifiable_values import DamageIncreaseValue
 from ....struct import Cost
 
 from ....consts import (
-    CostLabels, ElementalReactionType, ObjectPositionType, ObjectType, 
+    ElementalReactionType, ObjectPositionType, ObjectType, 
     WeaponType
 )
 from .base import RoundEffectWeaponBase
@@ -17,7 +17,6 @@ class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
     name: Literal['A Thousand Floating Dreams']
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
     version: Literal['3.7'] = '3.7'
-    cost_label: int = CostLabels.CARD.value | CostLabels.WEAPON.value
     weapon_type: WeaponType = WeaponType.CATALYST
 
     cost: Cost = Cost(same_dice_number = 3)

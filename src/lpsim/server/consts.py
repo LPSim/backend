@@ -217,6 +217,8 @@ class FactionType(str, Enum):
     ARKHE_PNEUMA = 'ARKHE_PNEUMA'
     ARKHE_OUSIA = 'ARKHE_OUSIA'
 
+    THE_EREMITES = 'THE_EREMITES'
+
     def __str__(self):
         return self.value
 
@@ -301,11 +303,12 @@ class CostLabels(int, Enum):
     ELEMENTAL_BURST = 0x1000
     CHARGED_ATTACK = 0x2000
     PLUNGING_ATTACK = 0x4000
-    # talents have two types, equipment or event.
-    EQUIP_TALENT = 0x8000
+    # equipment is all artifact, all weapon and some talents
+    EQUIPMENT = 0x8000
+    # event is some action cards, and some talents
+    EVENT = 0x10000
 
     SKILLS = 0x1c00
-    EQUIPMENTS = 0x8060
     SUPPORTS = 0x1c
 
     def __str__(self):

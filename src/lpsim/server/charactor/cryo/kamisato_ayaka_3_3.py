@@ -125,7 +125,7 @@ class KantenSenmyouBlessing_3_3(TalentBase):
     )
     cost_label: int = (
         CostLabels.CARD.value | CostLabels.TALENT.value 
-        | CostLabels.EQUIP_TALENT.value
+        | CostLabels.EQUIPMENT.value
     )
     usage: int = 1
     max_usage: int = 1
