@@ -338,7 +338,6 @@ class HTTPServer():
                     for idx, diff 
                     in enumerate(match._history_diff[state_idx + 1:])
                 ]
-            print('state output length', len(result))
             return JSONResponse(result)
 
         @app.get('/request/{player_idx}')
