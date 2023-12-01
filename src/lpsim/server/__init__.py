@@ -8,6 +8,8 @@ from .summon import SummonBase
 from .match import Match, MatchState
 from .object_base import ObjectBase, CardBase
 from .deck import Deck
+
+# import patch to automatically register classes
 from .patch import *  # noqa: F401, F403
 
 __all__ = (
