@@ -4,16 +4,18 @@ Arcane legend cards.
 
 from typing import Any, List, Literal
 
+from ...event import UseCardEventArguments
+
 from ....utils.class_registry import register_class
 
 from ...modifiable_values import DamageValue
 
 from ...action import (
-    ConsumeArcaneLegendAction, CreateDiceAction, CreateObjectAction, 
-    DrawCardAction, MakeDamageAction
+    Actions, ConsumeArcaneLegendAction, CreateDiceAction, CreateObjectAction, 
+    DrawCardAction, MakeDamageAction, RemoveCardAction
 )
 
-from ...struct import Cost, ObjectPosition
+from ...struct import Cost, MultipleObjectPosition, ObjectPosition
 from ...consts import (
     ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageType, ElementType, 
     ObjectPositionType, ObjectType
@@ -35,6 +37,49 @@ class ArcaneLegendBase(EventCardBase):
         return [ConsumeArcaneLegendAction(
             player_idx = self.position.player_idx
         )]
+
+    def event_handler_USE_CARD(
+        self, event: UseCardEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Mainly copied from CardBase with modifications with use_card_success.
+
+        If this card is used, trigger events. But if not use_card_success,
+        instead of do nothing, will consume arcane legend.
+        """
+        actions: List[Actions] = []
+        if event.action.card_position.id != self.id:
+            # not this card
+            return actions
+        if self.remove_when_used:  # pragma: no branch
+            actions.append(RemoveCardAction(
+                position = ObjectPosition(
+                    player_idx = self.position.player_idx,
+                    area = ObjectPositionType.HAND,
+                    id = self.id,
+                ),
+                remove_type = 'USED',
+            ))
+        # target is None, otherwise should match class
+        assert (
+            event.action.target is None
+            or (
+                isinstance(event.action.target, MultipleObjectPosition)
+                == self.target_position_type_multiple
+            )
+        )
+        if event.use_card_success:
+            # use success, add actions of the card
+            actions += self.get_actions(
+                target = event.action.target,  # type: ignore
+                match = match,
+            )
+        else:
+            # use failed, only consume arcane legend
+            actions += [ConsumeArcaneLegendAction(
+                player_idx = self.position.player_idx
+            )]
+        return actions
 
 
 class AncientCourtyard_3_8(ArcaneLegendBase):
