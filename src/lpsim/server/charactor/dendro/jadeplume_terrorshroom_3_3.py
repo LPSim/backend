@@ -61,7 +61,6 @@ class FeatherSpreading(ElementalBurstBase):
         self.damage = 4
         ret.append(ChangeObjectUsageAction(
             object_position = found_status.position,
-            change_type = 'DELTA',
             change_usage = - found_status.usage
         ))
         return ret

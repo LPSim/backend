@@ -495,7 +495,6 @@ class QuickKnit_3_3(EventCardBase):
         assert target is not None
         return [ChangeObjectUsageAction(
             object_position = target,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 
@@ -524,7 +523,6 @@ class SendOff_3_7(EventCardBase):
         assert target is not None
         return [ChangeObjectUsageAction(
             object_position = target,
-            change_type = 'DELTA',
             change_usage = -2
         )]
 

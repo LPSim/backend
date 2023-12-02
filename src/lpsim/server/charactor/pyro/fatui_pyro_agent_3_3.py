@@ -82,7 +82,6 @@ class PaidinFull_3_3(SkillTalent):
         # add 1 usage
         return [ChangeObjectUsageAction(
             object_position = status.position,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 

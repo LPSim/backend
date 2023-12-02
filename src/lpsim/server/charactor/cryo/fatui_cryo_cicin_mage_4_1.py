@@ -62,7 +62,6 @@ class CryoCicins_4_1(AttackerSummonBase):
             # change usage
             ret += [ChangeObjectUsageAction(
                 object_position = self.position,
-                change_type = 'DELTA',
                 change_usage = 1,
                 max_usage = self.max_usage
             )]
@@ -112,7 +111,6 @@ class CryoCicins_4_1(AttackerSummonBase):
             return []
         return [ChangeObjectUsageAction(
             object_position = self.position,
-            change_type = 'DELTA',
             change_usage = -1
         )]
 

@@ -151,7 +151,6 @@ class NereidsAscension(ElementalBurstBase):
                     ret.append(
                         ChangeObjectUsageAction(
                             object_position = kurage_found.position,
-                            change_type = 'DELTA',
                             change_usage = 1
                         )
                     )

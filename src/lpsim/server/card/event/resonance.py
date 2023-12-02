@@ -359,7 +359,6 @@ class SprawlingGreenery_3_3(ElementalResonanceCardBase):
             if s.name in object_names:
                 ret.append(ChangeObjectUsageAction(
                     object_position = s.position,
-                    change_type = 'DELTA',
                     change_usage = 1,
                 ))
         summons = match.player_tables[self.position.player_idx].summons
@@ -367,7 +366,6 @@ class SprawlingGreenery_3_3(ElementalResonanceCardBase):
             if s.name in object_names:
                 ret.append(ChangeObjectUsageAction(
                     object_position = s.position,
-                    change_type = 'DELTA',
                     change_usage = 1,
                 ))
         return ret

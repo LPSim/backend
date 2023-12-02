@@ -335,12 +335,11 @@ class RemoveObjectAction(ActionBase):
 
 class ChangeObjectUsageAction(ActionBase):
     """
-    Action for changing object usage.
+    Action for changing object usage. change in delta.
     """
     type: Literal[ActionTypes.CHANGE_OBJECT_USAGE] = \
         ActionTypes.CHANGE_OBJECT_USAGE
     object_position: ObjectPosition
-    change_type: Literal['DELTA', 'SET']
     change_usage: int
     min_usage: int = 0
     max_usage: int = 999

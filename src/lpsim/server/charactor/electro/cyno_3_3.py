@@ -76,7 +76,6 @@ class SacredRiteWolfsSwiftness(ElementalBurstBase):
             if s.name == 'Pactsworn Pathclearer':  # pragma: no branch
                 ret.append(ChangeObjectUsageAction(
                     object_position = s.position,
-                    change_type = 'DELTA',
                     change_usage = 2
                 ))
                 return ret

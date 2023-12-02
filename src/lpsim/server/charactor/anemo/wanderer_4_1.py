@@ -61,7 +61,6 @@ class YuubanMeigen(ElementalNormalAttackBase):
         assert len(ret) == 2
         return [damage_action, ret[1], ChangeObjectUsageAction(
             object_position = windfavored.position,
-            change_type = 'DELTA',
             change_usage = -1
         )]
 

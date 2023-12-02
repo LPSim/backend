@@ -177,7 +177,6 @@ class TheSeedOfStoredKnowledge_3_7(SkillTalent):
                 return [ChangeObjectUsageAction(
                     object_position = status.position,
                     change_usage = 1,
-                    change_type = 'DELTA',
                 )]
         raise AssertionError('Shrine of Maya not found.')
 

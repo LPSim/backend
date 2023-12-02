@@ -67,7 +67,6 @@ class ShrineOfMaya_3_7(RoundTeamStatus):
                                 ChangeObjectUsageAction(
                                     object_position = position,
                                     change_usage = 1,
-                                    change_type = 'DELTA',
                                 )
                             )
                 return ret

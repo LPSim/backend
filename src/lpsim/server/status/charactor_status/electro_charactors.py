@@ -344,7 +344,6 @@ class PactswornPathclearer_3_3(ElementalInfusionCharactorStatus):
         """
         return [ChangeObjectUsageAction(
             object_position = self.position,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 

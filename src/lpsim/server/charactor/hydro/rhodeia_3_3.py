@@ -193,7 +193,6 @@ class StreamingSurge_3_3(SkillTalent):
         for summon in summons:
             ret.append(ChangeObjectUsageAction(
                 object_position = summon.position,
-                change_type = 'DELTA',
                 change_usage = 1
             ))
         return ret
