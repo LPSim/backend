@@ -408,7 +408,8 @@ class SwirlChangeSummonBase(AttackerSummonBase):
 class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
     """
     Summons that will attack opposite, and generate status to self periodly,
-    usually defend status. e.g. Dehya, Lynette.
+    usually defend status. e.g. Dehya, Lynette. When the summon is removed,
+    it will also try to remove the status.
     """
     name: str
     version: str
