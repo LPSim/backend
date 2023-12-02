@@ -5,7 +5,7 @@ from ....utils.class_registry import register_class
 from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import CostValue, DamageValue
-from ...event import GameStartEventArguments, RoundPrepareEventArguments
+from ...event import RoundPrepareEventArguments
 
 from ...action import (
     Actions, CreateObjectAction, MakeDamageAction
@@ -18,8 +18,8 @@ from ...consts import (
     WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    PassiveSkillBase, CharactorBase, TalentBase
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalNormalAttackBase, 
+    ElementalSkillBase, CharactorBase, TalentBase
 )
 
 
@@ -154,16 +154,10 @@ class LightningLockdown(ElementalBurstBase):
         ]
 
 
-class ElectroCrystalCore(PassiveSkillBase):
+class ElectroCrystalCore(CreateStatusPassiveSkill):
     name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain electro crystal core
-        """
-        return [self.create_charactor_status(self.name)]
+    status_name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
+    regenerate_when_revive: bool = False
 
 
 # Talents

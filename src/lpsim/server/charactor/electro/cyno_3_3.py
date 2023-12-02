@@ -2,17 +2,15 @@ from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
 
-from ...event import GameStartEventArguments
-
-from ...action import Actions, ChangeObjectUsageAction, CreateObjectAction
+from ...action import Actions, ChangeObjectUsageAction
 from ...struct import Cost
 
 from ...consts import (
     DamageElementalType, DieColor, ElementType, FactionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -86,16 +84,9 @@ class SacredRiteWolfsSwiftness(ElementalBurstBase):
             raise AssertionError('No Pactsworn Pathclearer status')
 
 
-class LawfulEnforcer(PassiveSkillBase):
+class LawfulEnforcer(CreateStatusPassiveSkill):
     name: Literal['Lawful Enforcer'] = 'Lawful Enforcer'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain Pactsworn Pathclearer
-        """
-        return [self.create_charactor_status('Pactsworn Pathclearer')]
+    status_name: Literal['Pactsworn Pathclearer'] = 'Pactsworn Pathclearer'
 
 
 # Talents

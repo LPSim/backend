@@ -14,7 +14,7 @@ from ...utils.class_registry import register_base_class
 
 from ...utils import get_instance
 
-from ..event import MoveObjectEventArguments, UseSkillEventArguments
+from ..event import CharactorReviveEventArguments, GameStartEventArguments, MoveObjectEventArguments, UseSkillEventArguments
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
     PlayerActionLabels, SkillType, WeaponType, ElementType, FactionType, 
@@ -369,6 +369,43 @@ class PassiveSkillBase(SkillBase):
         Passive skills are always invalid, so it will return an empty list.
         """
         raise AssertionError('Try to get actions of a passive skill')
+        return []
+
+
+class CreateStatusPassiveSkill(PassiveSkillBase):
+    """
+    This passive skill will generate a charactor status when game start
+    for the charactor.
+
+    By default, the status will re-generate when the charactor revive.
+    If `regenerate_when_revive` is set to False, the status will not
+    re-generate when the charactor revive.
+    """
+    status_name: str
+    regenerate_when_revive: bool = True
+
+    def event_handler_GAME_START(
+        self, event: GameStartEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When game begin, gain status
+        """
+        return [self.create_charactor_status(self.status_name)]
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When charactor revive, gain status
+        """
+        if (
+            event.action.player_idx != self.position.player_idx
+            or event.action.charactor_idx != self.position.charactor_idx
+        ):
+            # not this charactor, do nothing
+            return []
+        if self.regenerate_when_revive:
+            return [self.create_charactor_status(self.status_name)]
         return []
 
 

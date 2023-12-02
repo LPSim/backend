@@ -4,7 +4,7 @@ from ....utils.class_registry import register_class
 
 from ...summon.base import AOESummonBase
 
-from ...event import GameStartEventArguments, RemoveObjectEventArguments
+from ...event import RemoveObjectEventArguments
 
 from ...action import Actions, CreateObjectAction, RemoveObjectAction
 from ...struct import Cost, ObjectPosition
@@ -14,8 +14,8 @@ from ...consts import (
     ElementType, FactionType, ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    PassiveSkillBase, CharactorBase, TalentBase
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalNormalAttackBase, 
+    ElementalSkillBase, CharactorBase, TalentBase
 )
 
 
@@ -51,16 +51,10 @@ class OminousStar(ElementalBurstBase):
         ]
 
 
-class FieryRebirth(PassiveSkillBase):
+class FieryRebirth(CreateStatusPassiveSkill):
     name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain electro crystal core
-        """
-        return [self.create_charactor_status(self.name)]
+    status_name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
+    regenerate_when_revive: bool = False
 
 
 # Talents

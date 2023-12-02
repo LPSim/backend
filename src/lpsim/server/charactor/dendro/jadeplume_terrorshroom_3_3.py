@@ -12,8 +12,8 @@ from ...consts import (
     ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, PhysicalNormalAttackBase, 
-    PassiveSkillBase, CharactorBase, SkillTalent
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -67,16 +67,9 @@ class FeatherSpreading(ElementalBurstBase):
         return ret
 
 
-class RadicalVitality(PassiveSkillBase):
+class RadicalVitality(CreateStatusPassiveSkill):
     name: Literal['Radical Vitality'] = 'Radical Vitality'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain stealth
-        """
-        return [self.create_charactor_status(self.name)]
+    status_name: Literal['Radical Vitality'] = 'Radical Vitality'
 
 
 # Talents
