@@ -2594,8 +2594,6 @@ class Match(BaseModel):
                 # have same status, only update status usage
                 old_usage = current_object.usage
                 new_usage = action.change_usage
-                assert action.change_type == 'DELTA', (
-                    'Currently only support delta change type.')
                 new_usage += old_usage
                 new_usage = min(max(new_usage, action.min_usage),
                                 action.max_usage)

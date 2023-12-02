@@ -276,7 +276,6 @@ class Timmie_3_3(CompanionBase):
         self.usage = 0
         return [ChangeObjectUsageAction(
             object_position = self.position,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 
@@ -292,7 +291,6 @@ class Timmie_3_3(CompanionBase):
             return []
         return [ChangeObjectUsageAction(
             object_position = self.position,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 

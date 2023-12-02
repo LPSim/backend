@@ -2,8 +2,8 @@ from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
 
-from ...event import CreateObjectEventArguments, GameStartEventArguments
-from ...action import Actions, ChangeObjectUsageAction, CreateObjectAction
+from ...event import CreateObjectEventArguments
+from ...action import Actions, ChangeObjectUsageAction
 from ...struct import Cost
 
 from ...consts import (
@@ -11,8 +11,8 @@ from ...consts import (
     ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -37,16 +37,10 @@ class Prowl(ElementalSkillBase):
         ]
 
 
-class StealthMaster(PassiveSkillBase):
+class StealthMaster(CreateStatusPassiveSkill):
     name: Literal['Stealth Master'] = 'Stealth Master'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain stealth
-        """
-        return [self.create_charactor_status('Stealth')]
+    status_name: Literal['Stealth'] = 'Stealth'
+    regenerate_when_revive: bool = False
 
 
 # Talents
@@ -88,7 +82,6 @@ class PaidinFull_3_3(SkillTalent):
         # add 1 usage
         return [ChangeObjectUsageAction(
             object_position = status.position,
-            change_type = 'DELTA',
             change_usage = 1
         )]
 

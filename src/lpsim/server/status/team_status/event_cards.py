@@ -228,7 +228,6 @@ class EnduringRock_3_3(RoundTeamStatus):
                 self.usage -= 1
                 return [ChangeObjectUsageAction(
                     object_position = status.position,
-                    change_type = 'DELTA',
                     change_usage = 3,
                 )] + self.check_should_remove()
         return list(self.check_should_remove())

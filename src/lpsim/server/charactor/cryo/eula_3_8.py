@@ -93,7 +93,6 @@ class FavoniusBladeworkEdel(PhysicalNormalAttackBase):
             # add LS usage
             ret.append(ChangeObjectUsageAction(
                 object_position = summons[LS_idx].position,
-                change_type = 'DELTA',
                 change_usage = 2,
             ))
         else:
@@ -134,7 +133,6 @@ class IcetideVortex(ElementalSkillBase):
                 usage = 3
             ret.append(ChangeObjectUsageAction(
                 object_position = summons[LS_idx].position,
-                change_type = 'DELTA',
                 change_usage = usage,
             ))
         else:

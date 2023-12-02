@@ -4,11 +4,9 @@ from ....utils.class_registry import register_class
 
 from ...modifiable_values import DamageIncreaseValue
 
-from ...event import GameStartEventArguments
-
 from ...summon.base import AttackerSummonBase
 
-from ...action import Actions, ChargeAction, CreateObjectAction
+from ...action import Actions, ChargeAction
 from ...struct import Cost
 
 from ...consts import (
@@ -16,8 +14,8 @@ from ...consts import (
     SkillType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, PhysicalNormalAttackBase, 
-    PassiveSkillBase, CharactorBase, SkillTalent
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -98,16 +96,9 @@ class SecretArtMusouShinsetsu(ElementalBurstBase):
         return ret
 
 
-class ChakraDesiderata(PassiveSkillBase):
+class ChakraDesiderata(CreateStatusPassiveSkill):
     name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain stealth
-        """
-        return [self.create_charactor_status(self.name)]
+    status_name: Literal['Chakra Desiderata'] = 'Chakra Desiderata'
 
 
 # Talents

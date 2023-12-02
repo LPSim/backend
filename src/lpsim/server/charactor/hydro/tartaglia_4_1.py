@@ -5,7 +5,8 @@ from ....utils.class_registry import register_class
 
 from ...modifiable_values import DamageValue
 from ...event import (
-    GameStartEventArguments, RoundEndEventArguments, SkillEndEventArguments
+    CharactorReviveEventArguments, GameStartEventArguments, 
+    RoundEndEventArguments, SkillEndEventArguments
 )
 from ...action import Actions, CreateObjectAction, MakeDamageAction
 from ...struct import Cost
@@ -15,9 +16,8 @@ from ...consts import (
     ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillBase, 
-    SkillTalent
+    ElementalBurstBase, ElementalSkillBase, PassiveSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillBase, SkillTalent
 )
 
 
@@ -142,7 +142,27 @@ class TideWithholder(PassiveSkillBase):
     themself.
     """
     name: Literal['Tide Withholder'] = 'Tide Withholder'
+    status_name: Literal['Ranged Stance'] = 'Ranged Stance'
     version: Literal['4.1'] = '4.1'
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When charactor revive, gain status
+        """
+        if (
+            event.action.player_idx != self.position.player_idx
+            or event.action.charactor_idx != self.position.charactor_idx
+        ):
+            # not this charactor, do nothing
+            return []
+        return [
+            self.create_charactor_status(
+                'Ranged Stance',
+                { 'version': self.version }
+            ),
+        ]
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Any

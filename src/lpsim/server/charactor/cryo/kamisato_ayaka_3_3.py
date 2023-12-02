@@ -106,7 +106,6 @@ class KamisatoArtSenho(PassiveSkillBase):
                 # add one usage to avoid disappear
                 return [ChangeObjectUsageAction(
                     object_position = status.position,
-                    change_type = 'DELTA',
                     change_usage = 1
                 )]
         return []

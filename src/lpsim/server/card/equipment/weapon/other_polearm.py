@@ -90,7 +90,6 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
                 self.usage -= 1
                 return [ChangeObjectUsageAction(
                     object_position = status.position,
-                    change_type = 'DELTA',
                     change_usage = 1,
                 )]
         return []

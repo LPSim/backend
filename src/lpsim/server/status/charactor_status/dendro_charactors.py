@@ -83,7 +83,6 @@ class SeedOfSkandha_3_7(UsageCharactorStatus):
                     # change usage first, so no need to claim new trigger
                     change_usage_actions.append(ChangeObjectUsageAction(
                         object_position = status.position,
-                        change_type = 'DELTA',
                         change_usage = -1,
                     ))
                     damage_actions.append(MakeDamageAction(
