@@ -11,9 +11,9 @@ def test_joy_4_2_and_cost_change_cards():
         [
             "sw_card",
             "choose 0",
-            "card 0 0",
-            "skill 0 15 14 13",
-            "skill 0 12 11 10",
+            "card 0 0 1",
+            "skill 0 1 14 13",
+            "skill 0 1 11 10",
             "end",
             "end",
             "end",
@@ -30,7 +30,7 @@ def test_joy_4_2_and_cost_change_cards():
             "TEST 1 p0c0 app",
             "TEST 1 p0c1 app",
             "TEST 1 p0c2 app",
-            "card 0 0",
+            "card 0 0 1",
             "TEST 1 p1c0 app",
             "TEST 1 p1c1 app",
             "TEST 1 p1c2 app",
@@ -887,7 +887,7 @@ def test_kokomi_2():
 if __name__ == '__main__':
     # import logging
     # logging.basicConfig(level = logging.INFO)
-    # test_joy_4_2_and_cost_change_cards()
+    test_joy_4_2_and_cost_change_cards()
     # test_chongyun_yoimiya_beidou()
     # test_razor_sara_cyno()
     # test_jean_kokomi_amber()

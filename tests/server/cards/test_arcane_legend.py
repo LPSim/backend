@@ -370,7 +370,7 @@ def test_joyous():
             "end",
             "sw_char 0 15",
             "sw_char 2 14",
-            "card 0 0",
+            "card 0 0 0",
             "TEST 3 p1 summon usage 1",
             "TEST 4 p0c0 pyro",
             "TEST 4 p0c4 pyro",
@@ -384,12 +384,12 @@ def test_joyous():
             "choose 2",
             "skill 1 15 14 13",
             "sw_char 1 12",
-            "card 0 0",
+            "card 0 0 0",
             "TEST 5 p0 team dendro core",
             "TEST 6 p1 all dendro except 2",
-            "skill 0 11 10 9",
-            "sw_char 0 8",
-            "skill 1 7 6 5",
+            "skill 0 1 10 9",
+            "sw_char 0 1",
+            "skill 1 1 6 5",
             "end",
             "skill 0 15 14 13",
             "sw_char 2 12",
@@ -499,7 +499,7 @@ def test_joyous():
     assert match.state != MatchState.ERROR
 
 
-def test_jpyous_2():
+def test_joyous_2():
     cmd_records = [
         [
             "sw_card",
@@ -517,7 +517,7 @@ def test_jpyous_2():
             "skill 1 12 11 10",
             "skill 0 9 8",
             "choose 0",
-            "card 0 0",
+            "card 0 0 0",
             "TEST 6 p1 all hydro except 2",
             "end"
         ]

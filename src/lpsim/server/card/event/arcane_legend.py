@@ -165,7 +165,10 @@ class CovenantOfRock_3_8(ArcaneLegendBase):
 class JoyousCelebration_4_2(ArcaneLegendBase):
     name: Literal['Joyous Celebration']
     version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(arcane_legend = True)
+    cost: Cost = Cost(
+        same_dice_number = 1,
+        arcane_legend = True
+    )
     apply_no_element_charactor: bool = False
 
     def is_valid(self, match: Any) -> bool:
