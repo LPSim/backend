@@ -2141,6 +2141,11 @@ class Match(BaseModel):
             raise AssertionError(
                 f'Cannot switch to defeated charactor {charactor_name}.'
             )
+        if table.active_charactor_idx == charactor_idx:
+            self._set_match_state(MatchState.ERROR)  # pragma: no cover
+            raise AssertionError(
+                f'Cannot switch to the active charactor {charactor_name}.'
+            )
         logging.info(
             f'player {player_idx} '
             f'from charactor {current_active_name}:{current_active_idx} '
