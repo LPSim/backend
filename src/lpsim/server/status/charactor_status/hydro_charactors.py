@@ -201,6 +201,9 @@ class MeleeStance_4_1(ElementalInfusionCharactorStatus,
         if not self.opposite_active_has_riptide(match):
             # opposite active charactor does not have Riptide
             return value
+        if value.damage_from_element_reaction:
+            # from elemental reaction
+            return value
         # add damage
         value.damage += 1
         return value
