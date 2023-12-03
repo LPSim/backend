@@ -14,14 +14,42 @@ of the game, and the last number is the patch version of this project.
   mark a card failed to use.
 - Added `/deck_code_data` endpoint in HTTPServer, which can get deck code data
   from server, and frontend can generate deck code without asking server.
+- Now default_version will be recorded in `Deck`. If not specified, it is 
+  `None`.
+- Now `/log` in `HTTPServer` will log match_config.
+- `AttackAndGenerateStatusSummonBase` is added for summons perform like Dehya's
+  Elemental Skill summon, which will generate status at each round, and when it
+  is removed, the corresponding status will also be removed.
+- `CreateStatusPassiveSkill` is implemented for charactors that will generate
+  status when they are created. 
+- Now costs of cards and skills will be recorded in `desc_registry`, and passed
+  to frontend by `/patch` in `HTTPServer`.
 
 ### Fixed
 - wrong description of Gambler's Earrings with version 3.3.
 - Typo of error message in class_registry.
+- When deck code contains unknown card number, it will raise error. After 
+  fixing this, it will ignore unknown card number.
+- RoundEffectSupports, e.g. Paimon, NRE, is not inherited from its 
+  corresponding base class (e.g. CompanionBase, ItemBase).
+- Wrong cost of Joyous Celebration.
+- Charactors that has status created at game start, e.g. Raiden Shogun, will 
+  not gain the status when revive. Now they will inherit 
+  `CreateStatusPassiveSkill` to gain the status and handle revive actions.
+- When charactor is stunned (e.g. Frozen), it can still use skill by equipping
+  Skill Talent cards.
+- Targtaglia will accidently increase additional damage caused by elemental
+  reaction, e.g. Electro-Charged.
 
 # Changed
 - Move template files to `templates` folder.
 - Define `AllCharactorFoodCard` for foods that will effect all charactors.
+- Now `CostLabels` contains `EQUIPMENT` and `EVENT` enum, to represent 
+  equipments (Weapons, Artifacts, most Talent cards) and event cards (Most
+  normal event cards, Arcane-legend cards, and some talents).
+- New `FactionType` is added for future charactors.
+- `ChangeUsageAction` removes `change_type`, it only supports change type of
+  `DELTA` now.
 
 ## [0.4.2.2] - 2023-11-18
 
