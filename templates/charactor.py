@@ -223,7 +223,6 @@ class CNAME_X_X(CharactorBase):
 
 # define descriptions of newly defined classes. Note key of skills and talents
 # have charactor names. For balance changes, only descs are needed to define.
-# TODO: class desc will change key
 charactor_descs: Dict[str, DescDictType] = {
     # charactor information. descs are optional but must define version number.
     # id is used to sort in the frontend.
