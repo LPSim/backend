@@ -10,10 +10,19 @@ ExpectedLanguageType = Literal['zh-CN', 'en-US']
 
 
 class DescDictType(TypedDict, total = False):
+    """
+    image_path: optional, image path
+    id: optional, id for sorting cards
+    names: name of the card, key is language type, value is name
+    descs: description of the card, key is version, value is dict of language
+        type and description
+    cost: cost of the card, key is version, value is dict of Cost type
+    """
     image_path: str
     id: int
     names: Dict[ExpectedLanguageType, str]
     descs: Dict[str, Dict[ExpectedLanguageType, str]]
+    cost: Dict[str, Dict[str, Any]]
 
 
 _default_json_path = __file__[:-len('desc_registry.py')] + 'default_desc.json'
@@ -95,7 +104,20 @@ def get_desc_patch() -> Dict[str, DescDictType]:
     return _desc_dict
 
 
+def update_cost(type: str, name: str, version: str, cost: Any) -> None:
+    """
+    update cost into desc dict.
+    """
+    if not desc_exist(type, name, version):
+        raise ValueError(f'cannot find desc for {type}/{name}/{version}')
+    full_name = f'{type}/{name}'
+    d = _desc_dict[full_name]
+    if 'cost' not in _desc_dict[full_name]:
+        d['cost'] = {}
+    d['cost'][version] = cost.dict()  # type: ignore
+
+
 __all__ = [
     'DescDictType', 'ExpectedLanguageType', 'update_desc', 'desc_exist',
-    'get_desc_patch',
+    'get_desc_patch', 'update_cost'
 ]

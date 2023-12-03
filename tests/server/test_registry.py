@@ -10,7 +10,7 @@ from src.lpsim.server.summon.base import SummonBase
 from src.lpsim.server.charactor.charactor_base import CharactorBase
 
 from src.lpsim.utils.desc_registry import (
-    DescDictType, desc_exist, get_desc_patch, update_desc
+    DescDictType, desc_exist, get_desc_patch, update_cost, update_desc
 )
 
 from src.lpsim.utils.class_registry import (
@@ -210,7 +210,42 @@ def test_get_class_list():
     assert len(nlist) == 8
 
 
+def test_register_cost():
+    dd_desc: Dict[str, DescDictType] = {
+        'CARD/DD': {
+            "names": {
+                'zh-CN': '滴滴',
+                'en-US': 'DD',
+            },
+            "id": 999998,
+            "image_path": "http://www.baidu.com",
+            "descs": {
+                '1.0': {
+                    'zh-CN': '滴滴',
+                    'en-US': 'DD',
+                }
+            }
+        }
+    }
+    dd_cost = Cost(same_dice_number = 1)
+    with pytest.raises(ValueError):
+        # no desc, cannot register cost
+        update_cost('CARD', 'DD', '1.0', dd_cost)
+    update_desc(dd_desc)
+    p = get_desc_patch()
+    assert 'CARD/DD' in p
+    assert 'cost' not in p['CARD/DD']
+    update_cost('CARD', 'DD', '1.0', dd_cost)
+    p = get_desc_patch()
+    assert 'CARD/DD' in p
+    assert 'cost' in p['CARD/DD']
+    assert '1.0' in p['CARD/DD']['cost']
+    assert p['CARD/DD']['cost']['1.0']['same_dice_number'] == 1
+    assert p['CARD/DD']['cost']['1.0']['any_dice_number'] == 0
+
+
 if __name__ == "__main__":
     test_class_registry()
     test_desc_registry()
     test_get_class_list()
+    test_register_cost()

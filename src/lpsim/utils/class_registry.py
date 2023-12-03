@@ -13,8 +13,7 @@ from typing import (
 )
 
 from ..server.consts import ObjectType
-
-from .desc_registry import DescDictType, desc_exist, update_desc
+from .desc_registry import DescDictType, desc_exist, update_cost, update_desc
 
 
 """
@@ -90,14 +89,16 @@ def register_class_one(cls: Type[Any]):
         desc_type = obj_type
         if obj_type == ObjectType.CHARACTOR:
             # for charactor, also check its skill descs
-            charactor = cls(name = name, version = version)
-            for skill in charactor.skills:
+            instance = cls(name = name, version = version)
+            for skill in instance.skills:
                 skill_type = f'SKILL_{name}_{skill.skill_type}'
                 if not desc_exist(skill_type, skill.name, version):
                     raise AssertionError(
                         f'Class {cls} name {name} version {version} skill '
                         f'{skill.name} is not found in descs'
                     )
+                # register skill costs
+                update_cost(skill_type, skill.name, version, skill.cost)
         if obj_type == ObjectType.TALENT:
             # for talent, its type name should change
             target_charactor_names = cls_type_hints['charactor_name'].__args__
@@ -105,17 +106,30 @@ def register_class_one(cls: Type[Any]):
             desc_type = f'TALENT_{target_charactor_names[0]}'
         for desc in descs:
             if desc == '':
+                desc_name = name
+            else:
+                desc_name = f'{name}_{desc}'
+            if desc == '':
                 # empty, no extra desc
-                if not desc_exist(desc_type, name, version):
+                if not desc_exist(desc_type, desc_name, version):
                     raise AssertionError(
                         f'Class {cls} name {name} version {version} is '
                         'not found in descs'
                     )
-            elif not desc_exist(desc_type, f'{name}_{desc}', version):
-                raise AssertionError(
-                    f'Class {cls} name {name}(desc: {desc}) version '
-                    f'{version} is not found in descs'
+            else:
+                if not desc_exist(desc_type, desc_name, version):
+                    raise AssertionError(
+                        f'Class {cls} name {name}(desc: {desc}) version '
+                        f'{version} is not found in descs'
+                    )
+            if 'cost' in cls_type_hints:
+                # has cost, register it
+                instance = cls(
+                    name = name, version = version, position = {
+                        'player_idx': -1, 'area': 'INVALID', 'id': -1
+                    }
                 )
+                update_cost(desc_type, desc_name, version, instance.cost)
     version = _version_to_int(version)
     register_success = False
     base_classes = cls.mro()
