@@ -40,8 +40,7 @@ class ObjectBase(BaseModel):
             will add desc to the name, i.e. `{name}_{desc}`, to find 
             descriptions. This is useful for objects that have different 
             descriptions with different state (talent effect activated etc.).
-            Defaults to empty string, and frontend will do 
-            nothing. TODO: implement on frontend.
+            Defaults to empty string, and frontend will do nothing. 
     """
     name: str
     desc: Literal[''] = ''
