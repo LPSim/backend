@@ -341,7 +341,7 @@ def test_other_all_element_resonance():
             "end",
             "end",
             "card 3 0 15",
-            "TEST 1 15 12 19 12 0 7",
+            "TEST 1 14 15 23 12 0 7",
             "sw_char 2 14",
             "sw_char 0 13"
         ],
@@ -402,7 +402,7 @@ def test_other_all_element_resonance():
             "TEST 6 p1c2 charge 1",
             "card 0 0 12",
             "card 2 0 12",
-            "TEST 1 15 12 19 14 0 8",
+            "TEST 1 14 15 23 14 0 8",
             "TEST 3 card 3 target no 1",
             "end"
         ]
@@ -640,4 +640,4 @@ if __name__ == '__main__':
     # test_woven_element()
     # test_enduring_rock()
     test_other_all_element_resonance()
-    test_other_all_element_resonance_2()
+    # test_other_all_element_resonance_2()

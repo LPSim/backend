@@ -20,7 +20,8 @@ from ..event import (
     RoundPrepareEventArguments,
 )
 from ..action import (
-    Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
+    ActionTypes, Actions, ChangeObjectUsageAction, CreateObjectAction, 
+    MakeDamageAction, RemoveObjectAction
 )
 from ..modifiable_values import DamageDecreaseValue, DamageValue
 from ..struct import Cost, ObjectPosition
@@ -106,13 +107,12 @@ class AttackerSummonBase(SummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         """
-        When round end, make damage to the opponent.
+        When round end, make damage to the opponent, and decrease self usage.
         """
         player_idx = self.position.player_idx
         assert self.usage > 0
-        self.usage -= 1
         damage_type = DamageType.DAMAGE
         target_table = match.player_tables[1 - player_idx]
         if self.damage_elemental_type == DamageElementalType.HEAL:
@@ -131,6 +131,10 @@ class AttackerSummonBase(SummonBase):
                         cost = Cost(),
                     )
                 ],
+            ),
+            ChangeObjectUsageAction(
+                object_position = self.position,
+                change_usage = -1
             )
         ]
 
@@ -174,10 +178,10 @@ class AOESummonBase(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
-        assert len(ret) == 1
-        assert ret[0].type == 'MAKE_DAMAGE'
+        damage_action = ret[0]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         target_table = match.player_tables[1 - self.position.player_idx]
         charactors = target_table.charactors
         for cid, charactor in enumerate(charactors):
@@ -185,7 +189,7 @@ class AOESummonBase(AttackerSummonBase):
                 continue
             if charactor.is_defeated:
                 continue
-            ret[0].damage_value_list.append(
+            damage_action.damage_value_list.append(
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,
@@ -206,7 +210,7 @@ class DeclareRoundEndAttackSummonBase(AttackerSummonBase):
 
     def event_handler_DECLARE_ROUND_END(
         self, event: DeclareRoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         """
         if usage larger than expected, return event_handler_ROUND_END
         """

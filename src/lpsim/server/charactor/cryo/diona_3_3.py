@@ -7,7 +7,7 @@ from ...summon.base import AttackerSummonBase
 from ...modifiable_values import DamageValue
 from ...event import RoundEndEventArguments
 
-from ...action import Actions, MakeDamageAction
+from ...action import Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
@@ -31,7 +31,7 @@ class DrunkenMist_3_3(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         our_active = match.player_tables[
             self.position.player_idx].get_active_charactor()

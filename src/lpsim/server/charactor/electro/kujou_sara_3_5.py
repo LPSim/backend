@@ -6,7 +6,9 @@ from ...event import RoundEndEventArguments
 
 from ...summon.base import AttackerSummonBase
 
-from ...action import Actions, CreateObjectAction, MakeDamageAction
+from ...action import (
+    Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction
+)
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
@@ -32,8 +34,10 @@ class TenguJuuraiAmbush_3_5(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction | CreateObjectAction]:
-        ret: List[MakeDamageAction | CreateObjectAction] = []
+    ) -> List[MakeDamageAction | CreateObjectAction | ChangeObjectUsageAction]:
+        ret: List[
+            MakeDamageAction | CreateObjectAction | ChangeObjectUsageAction
+        ] = []
         ret += super().event_handler_ROUND_END(event, match)
         active_idx = match.player_tables[
             self.position.player_idx].active_charactor_idx

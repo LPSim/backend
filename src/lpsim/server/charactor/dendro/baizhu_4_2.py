@@ -7,7 +7,10 @@ from ...summon.base import AttackerSummonBase
 from ...modifiable_values import DamageValue
 from ...event import MakeDamageEventArguments, RoundEndEventArguments
 
-from ...action import ActionTypes, Actions, CreateDiceAction, MakeDamageAction
+from ...action import (
+    ActionTypes, Actions, ChangeObjectUsageAction, CreateDiceAction, 
+    MakeDamageAction
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -34,11 +37,11 @@ class GossamerSprite_4_2(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         active_charactor = match.player_tables[
             self.position.player_idx].get_active_charactor()
-        make_damage_action = ret[-1]
+        make_damage_action = ret[0]
         assert make_damage_action.type == ActionTypes.MAKE_DAMAGE
         make_damage_action.damage_value_list.append(DamageValue(
             position = self.position,

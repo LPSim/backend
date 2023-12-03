@@ -6,7 +6,9 @@ from ...summon.base import AttackerSummonBase
 
 from ...event import RoundEndEventArguments
 
-from ...action import Actions, ChargeAction, MakeDamageAction
+from ...action import (
+    Actions, ChangeObjectUsageAction, ChargeAction, MakeDamageAction
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -41,7 +43,7 @@ class Jinni_4_2(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction | ChargeAction]:
+    ) -> List[MakeDamageAction | ChargeAction | ChangeObjectUsageAction]:
         active_charactor = match.player_tables[
             self.position.player_idx].get_active_charactor()
         charge = 1

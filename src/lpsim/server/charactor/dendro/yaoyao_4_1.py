@@ -7,7 +7,7 @@ from ...summon.base import AttackerSummonBase
 from ...modifiable_values import DamageValue
 from ...event import RoundEndEventArguments
 
-from ...action import Actions, MakeDamageAction
+from ...action import Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
@@ -38,7 +38,7 @@ class YueguiThrowingMode_4_1(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         """
         When in round end, attack enemy active charactor and heal our 
         charactor. When talent activated, and usage is 1, damage is increased

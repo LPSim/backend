@@ -8,7 +8,9 @@ from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 
-from ...action import ActionTypes, Actions, MakeDamageAction
+from ...action import (
+    ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -59,7 +61,7 @@ class DandelionField_3_3(AttackerSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         our_active = match.player_tables[
             self.position.player_idx].get_active_charactor()
