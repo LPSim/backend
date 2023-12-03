@@ -7,6 +7,9 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+
+## [0.4.2.3] - 2023-12-03
+
 ### Added
 - `get_class_by_base_class` for `ClassRegistry`, which can get all classes 
   that are inherited from the base class.
@@ -285,7 +288,8 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.2...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.3...HEAD
+[0.4.2.3]: https://github.com/LPSim/backend/releases/tag/v0.4.2.3
 [0.4.2.2]: https://github.com/LPSim/backend/releases/tag/v0.4.2.2
 [0.4.2.1]: https://github.com/LPSim/backend/releases/tag/v0.4.2.1
 [0.4.2.0]: https://github.com/LPSim/backend/releases/tag/v0.4.2.0
