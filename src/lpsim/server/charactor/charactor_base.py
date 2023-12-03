@@ -14,7 +14,10 @@ from ...utils.class_registry import register_base_class
 
 from ...utils import get_instance
 
-from ..event import CharactorReviveEventArguments, GameStartEventArguments, MoveObjectEventArguments, UseSkillEventArguments
+from ..event import (
+    CharactorReviveEventArguments, GameStartEventArguments, 
+    MoveObjectEventArguments, UseSkillEventArguments
+)
 from ..consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, ObjectType, 
     PlayerActionLabels, SkillType, WeaponType, ElementType, FactionType, 
@@ -438,8 +441,12 @@ class TalentBase(CardBase):
             # not in hand, cannot equip
             raise AssertionError('Talent is not in hand')
         table = match.player_tables[self.position.player_idx]
-        return (table.charactors[table.active_charactor_idx].name
-                == self.charactor_name)
+        charactor = table.charactors[table.active_charactor_idx]
+        return (
+            charactor.name == self.charactor_name
+            and charactor.is_alive
+            and not charactor.is_stunned
+        )
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
