@@ -4,7 +4,6 @@ from ....utils.class_registry import register_class
 
 from ...event import (
     AfterMakeDamageEventArguments, CharactorDefeatedEventArguments, 
-    GameStartEventArguments
 )
 
 from ...action import CreateObjectAction
@@ -15,8 +14,8 @@ from ...consts import (
     ObjectPositionType, WeaponType
 )
 from ..charactor_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
+    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
+    PhysicalNormalAttackBase, CharactorBase, SkillTalent
 )
 
 
@@ -34,16 +33,9 @@ class UpaShato(ElementalBurstBase):
     )
 
 
-class InfusedStonehide(PassiveSkillBase):
+class InfusedStonehide(CreateStatusPassiveSkill):
     name: Literal['Infused Stonehide'] = 'Infused Stonehide'
-
-    def event_handler_GAME_START(
-        self, event: GameStartEventArguments, match: Any
-    ) -> List[CreateObjectAction]:
-        """
-        When game begin, gain Stonehide
-        """
-        return [self.create_charactor_status('Stonehide')]
+    status_name: Literal['Stonehide'] = 'Stonehide'
 
 
 # Talents
