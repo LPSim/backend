@@ -204,7 +204,8 @@ class PlayerTable(BaseModel):
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
         2. objects belongs to charactor goes first
-            2.1. active charactor first, otherwise the default order.
+            2.1. active charactor first, then next, next ... until all alive
+                charactors are included.
             2.2. for one charactor, order is weapon, artifact, talent, status.
             2.3. for status, order is their index in status list, i.e. 
                 generated time.
@@ -213,12 +214,13 @@ class PlayerTable(BaseModel):
                 the list.
         """
         result: List[ObjectBase] = []
-        if self.active_charactor_idx != -1:
-            result += self.charactors[
-                self.active_charactor_idx].get_object_lists()
+        start_charactor_idx = self.active_charactor_idx
+        if start_charactor_idx == -1:
+            start_charactor_idx = 0
         for i in range(len(self.charactors)):
-            if i != self.active_charactor_idx:
-                result += self.charactors[i].get_object_lists()
+            target = (start_charactor_idx + i) % len(self.charactors)
+            if self.charactors[target].is_alive:
+                result += self.charactors[target].get_object_lists()
         result += self.team_status
         result += self.summons
         result += self.supports

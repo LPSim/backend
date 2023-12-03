@@ -3,6 +3,7 @@ import json
 import dictdiffer
 
 import pytest
+from src.lpsim.server.consts import ObjectType
 from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.server.match import Match, MatchState
@@ -1020,6 +1021,37 @@ def test_prediction():
     assert match.state != MatchState.ERROR
 
 
+def test_player_table_charactor_order():
+    deck_str = '''
+    default_version:4.0
+    charactor:Fischl
+    charactor:Mona
+    charactor:Nahida
+    Strategize*30
+    '''
+    deck = Deck.from_str(deck_str)
+    match = Match(random_state = get_random_state())
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    assert match.start()[0]
+    table = match.player_tables[0].copy(deep = True)
+    for active_idx in range(3):
+        table.active_charactor_idx = active_idx
+        objs = table.get_object_lists()
+        result = []
+        for obj in objs:
+            if obj.type == ObjectType.CHARACTOR:
+                result.append(obj.position.charactor_idx)
+        if active_idx == 0:
+            assert result == [0, 1, 2]
+        elif active_idx == 1:
+            assert result == [1, 2, 0]
+        elif active_idx == 2:
+            assert result == [2, 0, 1]
+        else:
+            raise AssertionError()
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -1033,4 +1065,5 @@ if __name__ == '__main__':
     # test_higher_version_compatible()
     # test_save_history()
     # test_generate_unused_cards()
-    test_prediction()
+    # test_prediction()
+    test_player_table_charactor_order()
