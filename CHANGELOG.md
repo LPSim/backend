@@ -40,6 +40,14 @@ of the game, and the last number is the patch version of this project.
   Skill Talent cards.
 - Targtaglia will accidently increase additional damage caused by elemental
   reaction, e.g. Electro-Charged.
+- Wrong charactor order when triggering events. Previously is active charactor
+  then left first; now is active charactor then next first.
+- Can switch to current active charactor from current active charactor in 
+  `Match`, though no cards or skills can trigger it now.
+- #12 When summon triggers other events that will stack self, e.g. Burning
+  Flame, if it is currently in max usage, it still keeps max usage after 
+  attacking. This is fixed by using `ChangeObjectUsageAction` instead of 
+  modifying its usage by itself directly.
 
 # Changed
 - Move template files to `templates` folder.
