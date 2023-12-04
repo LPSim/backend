@@ -290,7 +290,7 @@ class SkillEndAction(ActionBase):
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     position: ObjectPosition
-    target_position: ObjectPosition  # always initial active charactor now
+    target_position: ObjectPosition  # always poopnent initial active charactor now  # noqa: E501
     skill_type: SkillType
 
 

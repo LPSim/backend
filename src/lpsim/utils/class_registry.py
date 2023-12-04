@@ -113,8 +113,8 @@ def register_class_one(cls: Type[Any]):
                 # empty, no extra desc
                 if not desc_exist(desc_type, desc_name, version):
                     raise AssertionError(
-                        f'Class {cls} name {name} version {version} is '
-                        'not found in descs'
+                        f'Class {cls} name {name} version {version} type '
+                        f'{desc_type} is not found in descs'
                     )
             else:
                 if not desc_exist(desc_type, desc_name, version):
