@@ -186,17 +186,31 @@ class SkillBase(ObjectBase):
             ],
         )
 
-    def heal_self(self, match: Any, heal: int) -> MakeDamageAction:
+    def attack_self(
+        self, match: Any, damage: int, 
+        damage_elemental_type: DamageElementalType | None 
+        = DamageElementalType.PIERCING
+    ) -> MakeDamageAction:
+        """
+        Attack self with damage `damage` and type `damage_elemental_type`.
+        If `damage` is negative, it will heal self, and `damage_elemental_type`
+        is ignored. Cannot damage with 0 damage.
+        """
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
+        damage_type = DamageType.DAMAGE
+        assert damage != 0
+        if damage < 0:
+            damage_type = DamageType.HEAL
+            damage_elemental_type = DamageElementalType.HEAL
         return MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
-                    damage_type = DamageType.HEAL,
+                    damage_type = damage_type,
                     target_position = charactor.position,
-                    damage = - heal,
-                    damage_elemental_type = DamageElementalType.HEAL,
+                    damage = damage,
+                    damage_elemental_type = damage_elemental_type,
                     cost = Cost(),
                 )
             ],

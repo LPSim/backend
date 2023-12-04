@@ -60,7 +60,7 @@ class SpiritSoother(ElementalBurstBase):
             heal = 3
         damage_action = self.attack_opposite_active(match, self.damage, 
                                                     self.damage_type)
-        heal_action = self.heal_self(match, heal)
+        heal_action = self.attack_self(match, -heal)
         damage_action.damage_value_list += heal_action.damage_value_list
         self.damage = 4
         return [
