@@ -141,6 +141,8 @@ class CreateDiceAction(ActionBase):
             the following generate rules will be activated.
         random (bool): Whether to randomly generate the color of dice.
         different (bool): Whether to generate different colors of dice.
+            if you want to generate random but never OMNI die, generate one 
+            different die. If multiple, use multiple action.
     """
     type: Literal[ActionTypes.CREATE_DICE] = ActionTypes.CREATE_DICE
     player_idx: int

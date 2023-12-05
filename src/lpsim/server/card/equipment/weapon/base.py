@@ -30,7 +30,6 @@ class WeaponBase(CardBase):
         | CostLabels.EQUIPMENT.value
     )
 
-    usage: int = 0
     damage_increase: int = 1  # Almost all weapons increase the damage by 1
     remove_when_used: bool = False
 
