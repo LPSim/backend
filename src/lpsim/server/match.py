@@ -2323,13 +2323,18 @@ class Match(BaseModel):
             charge_after = charactor.charge,
         )]
 
-    def _action_charactor_defeated(self, action: CharactorDefeatedAction) \
-            -> List[CharactorDefeatedEventArguments]:
+    def _action_charactor_defeated(
+        self, action: CharactorDefeatedAction
+    ) -> List[CharactorDefeatedEventArguments | RemoveObjectEventArguments]:
         """
         Charactor defeated action, all equipments and status are removed, 
         and is marked as defeated. Currently not support PVE character
-        disappear features.
+        disappear features. Event arguments returned contains
+        CharactorDefeatedEventArguments and RemoveObjectEventArguments.
         """
+        ret: List[
+            CharactorDefeatedEventArguments | RemoveObjectEventArguments
+        ] = []
         player_idx = action.player_idx
         charactor_idx = action.charactor_idx
         table = self.player_tables[player_idx]
@@ -2349,6 +2354,12 @@ class Match(BaseModel):
         ] + charactor.status
         for obj in removed_objects:
             if obj is not None:
+                ret.append(RemoveObjectEventArguments(
+                    action = RemoveObjectAction(
+                        object_position = obj.position,
+                    ),
+                    object_name = obj.name
+                ))
                 self.trashbin.append(obj)
         charactor.weapon = None
         charactor.artifact = None
@@ -2361,10 +2372,11 @@ class Match(BaseModel):
         if table.active_charactor_idx == charactor_idx:
             table.active_charactor_idx = -1  # reset active charactor
             need_switch = True
-        return [CharactorDefeatedEventArguments(
+        ret.append(CharactorDefeatedEventArguments(
             action = action,
             need_switch = need_switch,
-        )]
+        ))
+        return ret
 
     def _action_charactor_revive(self, action: CharactorReviveAction) \
             -> List[CharactorReviveEventArguments]:
