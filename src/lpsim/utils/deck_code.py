@@ -10,8 +10,13 @@ import json
 # load name map and forbid list
 deck_code_data = json.load(open(__file__.replace('deck_code.py', 
                                                  'deck_code_data.json')))
-name_map = deck_code_data['name_map']
-forbid_list = deck_code_data['forbid_list']
+name_map = deck_code_data['name_map'][:]
+forbid_list = deck_code_data['forbid_list'][:]
+charactors_idx = []
+for i in range(len(name_map)):
+    if name_map[i].startswith('charactor:'):
+        charactors_idx.append(i)
+        name_map[i] = name_map[i][10:]
 
 
 # create forbid word trie
@@ -59,10 +64,6 @@ class Trie:
 forbidden_trie = Trie()
 for forbid in forbid_list:
     forbidden_trie.insert(forbid)
-
-
-# mark charactors, if in the list, it is a charactor card.
-charactors_idx = list(range(60))
 
 
 def deck_code_to_deck_str(deck_code: str, version: str | None = None) -> str:
