@@ -4,6 +4,7 @@ Collect descriptions.
 import json
 import logging
 from typing import Any, Dict, Literal, TypedDict
+from .deck_code import name_map
 
 
 ExpectedLanguageType = Literal['zh-CN', 'en-US']
@@ -101,6 +102,23 @@ def get_desc_patch() -> Dict[str, DescDictType]:
     """
     Get desc patch.
     """
+    a = []
+    for name in name_map:
+        for key in _desc_dict:
+            forbids = ['SKILL_', 'ARAVAR/', '_STATUS/']
+            is_forbid = False
+            for f in forbids:
+                if f in key:
+                    is_forbid = True
+                    break
+            if is_forbid:
+                continue
+            if f'/{name}' in key:
+                a.append(_desc_dict[key]['names']['zh-CN'])
+                break
+        else:
+            raise ValueError(f'cannot find desc for {name}')
+    print(json.dumps(a, ensure_ascii = False, indent = 4))
     return _desc_dict
 
 

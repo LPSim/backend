@@ -174,7 +174,10 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
     raise ValueError('in generating deck code: retry time exceeded')
 
 
-__all__ = ['deck_code_to_deck_str', 'deck_str_to_deck_code', 'deck_code_data']
+__all__ = [
+    'deck_code_to_deck_str', 'deck_str_to_deck_code', 'deck_code_data',
+    'name_map'
+]
 
 
 if __name__ == '__main__':
