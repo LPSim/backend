@@ -37,7 +37,7 @@ if __name__ == '__main__':
     )
     main.match.set_deck([deck, deck])
     main.match.config.max_same_card_number = 30
-    main.match.config.history_level = True
+    main.match.config.history_level = 10
     main.match.config.check_deck_restriction = False
     main.match.config.initial_hand_size = 20
     main.match.config.max_hand_size = 30
