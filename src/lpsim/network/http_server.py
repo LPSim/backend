@@ -5,6 +5,7 @@ from typing import Literal, List
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from pydantic import BaseModel
 import uvicorn
 
@@ -96,6 +97,8 @@ class HTTPServer():
             allow_methods=['*'],
             allow_headers=['*'],
         )
+        # Add the GZipMiddleware to the app
+        app.add_middleware(GZipMiddleware)
 
         # @app.on_event('startup')
         # async def startup_event():
