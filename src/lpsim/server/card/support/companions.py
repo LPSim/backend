@@ -823,7 +823,14 @@ class MasterZhang_3_8(RoundEffectCompanionBase):
         decrease_number = 1
         table = match.player_tables[self.position.player_idx]
         for charactor in table.charactors:
-            if charactor.weapon is not None:
+            if (
+                charactor.weapon is not None 
+                and self.card_cost_label & CostLabels.WEAPON.value > 0
+                or charactor.artifact is not None 
+                and self.card_cost_label & CostLabels.ARTIFACT.value > 0
+                or charactor.talent is not None 
+                and self.card_cost_label & CostLabels.TALENT.value > 0
+            ):
                 decrease_number += 1
         result = []
         for _ in range(decrease_number):

@@ -2144,6 +2144,85 @@ def test_chefmao_dunyarzad():
     assert match.state != MatchState.ERROR
 
 
+def test_yayoi_fix():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "end",
+            "end",
+            "end",
+            "end"
+        ],
+        [
+            "sw_card 2 1",
+            "choose 2",
+            "card 1 0 15",
+            "card 1 1 14 13",
+            "end",
+            "card 2 2 15",
+            "end",
+            "card 0 0",
+            "end",
+            "card 2 1",
+            "card 4 2 15 14 13",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.3
+        charactor:Yoimiya@3.8
+        charactor:Keqing@3.3
+        charactor:Dehya@4.1
+        Yayoi Nanatsuki*10
+        Tenacity of the Millelith*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     test_timmie()
@@ -2161,3 +2240,4 @@ if __name__ == '__main__':
     # test_xudong()
     # test_hanachirusato()
     test_chefmao_dunyarzad()
+    test_yayoi_fix()
