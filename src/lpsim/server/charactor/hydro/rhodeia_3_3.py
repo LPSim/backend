@@ -74,6 +74,7 @@ class RhodeiaElementSkill(ElementalSkillBase):
         elemental_dice_number = 3
     )
     summon_number: int = 1
+    version: Literal['3.3'] = '3.3'
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -130,7 +131,9 @@ class RhodeiaElementSkill(ElementalSkillBase):
             name_idxs.append(self.get_next_summon_names(match, name_idxs))
         ret: List[ChargeAction | CreateObjectAction] = []
         for idx in name_idxs:
-            ret.append(self.create_summon(mimic_names[idx]))
+            ret.append(self.create_summon(
+                mimic_names[idx], { 'version': self.version }
+            ))
         ret.append(self.charge_self(1))
         return ret
 
