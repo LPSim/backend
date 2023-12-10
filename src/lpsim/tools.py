@@ -4,18 +4,27 @@ Tools that based on other modules.
 import json
 from typing import List, Tuple
 
+from .server.event_handler import OmnipotentGuideEventHandler_3_3
+
 from .server.deck import Deck
-from .server.match import Match, MatchState
+from .server.match import Match, MatchConfig, MatchState
 from .agents.interaction_agent import InteractionAgent
 
 
-def read_log(log_str: str) -> Tuple[List[InteractionAgent], Match]:
+def read_log(
+    log_str: str, use_16_omni: bool | None = None
+) -> Tuple[List[InteractionAgent], Match]:
     """
     Read log and return agents and a match.
-    TODO: whata about MatchConfig, history and prediction?
 
     Args:
-        log_str (str): log string with JSON format.
+        log_str (str): log string with JSON format. It must contain 
+            `start_deck`, `match_random_state` and `command_history`, and 
+            optionally `match_config`.
+        use_16_omni (bool | None, optional): If True, use OmnipotentGuide.
+            If False, not use it. If None, determined by dice number from
+            match_config, if config exists and is 16 then True, otherwise 
+            False.
     """
     data = json.loads(log_str)
     if 'version' not in data:
@@ -28,6 +37,18 @@ def read_log(log_str: str) -> Tuple[List[InteractionAgent], Match]:
             else:
                 decks.append(Deck(**d))
         match = Match(random_state = data['match_random_state'])
+        if 'match_config' in data:
+            match.config = MatchConfig(**data['match_config'])
+        if use_16_omni is None:
+            if (
+                'match_config' in data
+                and data['match_config']['initial_dice_number'] == 16
+            ):
+                use_16_omni = True
+            else:
+                use_16_omni = False
+        if use_16_omni:
+            match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
         match.set_deck(decks)
         commands = data['command_history']
         agents: List[InteractionAgent] = []
