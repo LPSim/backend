@@ -1382,6 +1382,8 @@ def test_aquila_favonia():
             "sw_char 0 15",
             "choose 2",
             "TEST 1 0 2 8 8 9 0",
+            "sw_char 1 0",
+            "skill 0 0 1 2",
             "end"
         ],
         [
@@ -1400,7 +1402,10 @@ def test_aquila_favonia():
             "end",
             "card 1 1 15 14 13",
             "skill 0 12 11 10",
-            "skill 0 9 8 7"
+            "skill 0 9 8 7",
+            "sw_char 0 0",
+            "TEST 1 0 2 8 5 9 0",
+            "end"
         ]
     ]
     agent_0 = InteractionAgent(
@@ -1722,6 +1727,6 @@ if __name__ == '__main__':
     # test_fruit_of_fullfillment()
     # test_sacrificial()
     # test_wolf_gravestone()
-    # test_aquila_favonia()
+    test_aquila_favonia()
     # test_skyward()
-    test_favonius_lighting_elegy()
+    # test_favonius_lighting_elegy()

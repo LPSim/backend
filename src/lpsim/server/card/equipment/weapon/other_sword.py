@@ -27,7 +27,7 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         """
-        If self use elemental skill, create one corresponding dice
+        If self is active and opposite use skill and has usage, heal 1 HP
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = False,
@@ -35,6 +35,12 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
             target_area = ObjectPositionType.SKILL
         ):
             # not equipped or not opponent use skill
+            return []
+        if (
+            self.position.charactor_idx != match.player_tables[
+                self.position.player_idx].active_charactor_idx
+        ):
+            # not active
             return []
         if self.usage == 0:
             # no usage
