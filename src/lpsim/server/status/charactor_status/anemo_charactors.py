@@ -200,7 +200,9 @@ class YakshasMask_3_7(ElementalInfusionCharactorStatus, RoundCharactorStatus):
         ):
             # self use plunge attack, increase damage by 2
             value.damage += 2
-        if value.damage_elemental_type == DamageElementalType.ANEMO:
+        if (  # pragma: no branch
+            value.damage_elemental_type == DamageElementalType.ANEMO
+        ):
             # anemo damage, increase damage by 1
             value.damage += 1
         return value

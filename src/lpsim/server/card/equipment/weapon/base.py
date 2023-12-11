@@ -119,9 +119,6 @@ class WeaponBase(CardBase):
         ):
             # not current charactor using skill
             return value
-        if value.damage_from_element_reaction:
-            # from elemental reaction
-            return value
         if value.damage_elemental_type == DamageElementalType.PIERCING:
             # piercing damage
             return value

@@ -215,9 +215,6 @@ class SashiMiPlatter_3_7(RoundCharactorStatus):
         ):
             # not this charactor use elemental burst, not modify
             return value
-        if value.damage_from_element_reaction:
-            # element reaction, not modify
-            return value
         if value.damage_elemental_type == DamageElementalType.PIERCING:
             # piercing, not modify
             return value
@@ -248,7 +245,7 @@ class TandooriRoastChicken_3_7(RoundCharactorStatus):
         ):
             # not this charactor use elemental skill, not modify
             return value
-        if self.usage <= 0:
+        if self.usage <= 0:  # pragma: no cover
             # no usage, not modify
             return value
         # elemental burst, modify
