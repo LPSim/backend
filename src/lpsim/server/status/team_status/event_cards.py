@@ -247,6 +247,9 @@ class WhereIstheUnseenRazor_4_0(RoundTeamStatus):
         """
         decrease weapons cost by 2
         """
+        if value.position.player_idx != self.position.player_idx:
+            # not self charactor, do nothing
+            return value
         if value.cost.label & self.decrease_target == 0:
             # not weapon, do nothing
             return value
