@@ -109,7 +109,7 @@ class Katheryne_3_3(Katheryne_3_6):
     cost: Cost = Cost(any_dice_number = 2)
 
 
-class Timaeus_3_3(UsageWithRoundRestrictionSupportBase):
+class Timaeus_3_3(UsageWithRoundRestrictionSupportBase, CompanionBase):
     name: Literal['Timaeus']
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
