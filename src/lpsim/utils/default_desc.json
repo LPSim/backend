@@ -1428,8 +1428,8 @@
         "en-US": "In this Round, when an opposing character is defeated during your Action, you can continue to act again when that Action ends. (You must have at least 2 Mondstadt characters in your deck to add this card to your deck.)"
       },
       "4.1": {
-        "zh-CN": "本回合中，轮到我方行动期间有对方角色被击倒时：本次行动结束后，我方可以再连续行动一次。可用次数：1（牌组包含至少2个「蒙德」角色，才能加入牌组）",
-        "en-US": "In this Round, when an opposing character is defeated during your Action, you can continue to act again when that Action ends. (You must have at least 2 Mondstadt characters in your deck to add this card to your deck.)"
+        "zh-CN": "本回合中，我方使用技能后：将下一个我方后台角色切换到场上。",
+        "en-US": "In this Round, when you use a Skill: Switch your next character in to be the active character."
       }
     },
     "image_path": "cardface/Event_Event_Fengyuziyou.png",
