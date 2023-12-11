@@ -9696,12 +9696,12 @@
   },
   "WEAPON/Aquila Favonia": {
     "names": {
-      "zh-CN": "西风剑",
-      "en-US": "Aquila Favonia"
+      "zh-CN": "风鹰剑",
+      "en-US": "Favonius Sword"
     },
     "descs": {
       "3.3": {
-        "zh-CN": "角色造成的伤害+1。角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）（「单手剑」角色才能装备。角色最多装备1件「武器」）",
+        "zh-CN": "角色造成的伤害+1。对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）（「单手剑」角色才能装备。角色最多装备1件「武器」）",
         "en-US": "The character deals +1 DMG. After the opposing character uses a Skill: If the character with this attached is the active character, heal this character for 1 HP. (Max twice per Round) "
       }
     },
@@ -9738,12 +9738,12 @@
   },
   "WEAPON/Favonius Sword": {
     "names": {
-      "zh-CN": "风鹰剑",
-      "en-US": "Favonius Sword"
+      "zh-CN": "西风剑",
+      "en-US": "Aquila Favonia"
     },
     "descs": {
       "3.7": {
-        "zh-CN": "角色造成的伤害+1。对方使用技能后：如果所附属角色为「出战角色」，则治疗该角色1点。（每回合至多2次）（「单手剑」角色才能装备。角色最多装备1件「武器」）",
+        "zh-CN": "角色造成的伤害+1。角色使用「元素战技」后：角色额外获得1点充能。（每回合1次）（「单手剑」角色才能装备。角色最多装备1件「武器」）",
         "en-US": "The character deals +1 DMG. After the character uses an Elemental Skill: The character gains one additional Energy. (Once per Round)"
       }
     },
