@@ -107,7 +107,7 @@ class FerventFlames_3_3(RoundCharactorStatus):
         If we trigger pyro elemental reaction, add 3 damage.
         """
         if not value.is_corresponding_charactor_use_damage_skill(
-            self.position, match, None
+            self.position, match, None, False
         ):
             # not this charactor use skill, do nothing
             return value

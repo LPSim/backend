@@ -112,7 +112,8 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         self,
         object_position: ObjectPosition,
         match: Any,
-        skill_type: SkillType | None
+        skill_type: SkillType | None,
+        ignore_elemental_reaction: bool = True
     ) -> bool:
         """
         Most objects modifying damage when current charactor
@@ -127,6 +128,8 @@ class DamageElementEnhanceValue(ModifiableValueBase):
             object_position: The position of the object to check.
             match: The match object.
             skill_type: If not None, the skill type should match.
+            ignore_elemental_reaction: If True, elemental reaction damages will
+                not be considered.
         """
         if self.damage_type != DamageType.DAMAGE:
             # not damage
@@ -149,6 +152,9 @@ class DamageElementEnhanceValue(ModifiableValueBase):
                 object_position.player_idx].active_charactor_idx
         if self.position.charactor_idx != charactor_idx:
             # not same charactor
+            return False
+        if ignore_elemental_reaction and self.damage_from_element_reaction:
+            # elemental reaction damage
             return False
         if skill_type is not None:
             skill = match.get_object(self.position)

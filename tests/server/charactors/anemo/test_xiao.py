@@ -83,7 +83,7 @@ def test_xiao():
             "sw_char 2 10",
             "sw_char 0 9",
             "sw_char 2 8",
-            "TEST 1 22 10 16 21 3 16",
+            "TEST 1 22 10 16 21 5 18",
             "end"
         ]
     ]

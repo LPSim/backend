@@ -1598,7 +1598,7 @@ def test_favonius_lighting_elegy():
             "TEST 1 21 17 30 30 27 25",
             "skill 2 5 4 3",
             "skill 1 2 1 0",
-            "TEST 1 19 17 30 24 24 17",
+            "TEST 1 19 17 30 24 25 18",
             "end",
             "TEST 3 p0 usage 1 2",
             "TEST 3 p1 usage 3 2",
@@ -1620,10 +1620,10 @@ def test_favonius_lighting_elegy():
             "skill 2 11 10 9",
             "skill 1 8 7 6",
             "sw_char 0 5",
-            "TEST 1 21 17 30 24 24 17",
+            "TEST 1 21 17 30 24 25 18",
             "skill 1 4 3 2",
             "end",
-            "TEST 1 17 17 30 14 24 17",
+            "TEST 1 17 17 30 14 25 18",
             "end"
         ]
     ]
@@ -1727,6 +1727,6 @@ if __name__ == '__main__':
     # test_fruit_of_fullfillment()
     # test_sacrificial()
     # test_wolf_gravestone()
-    test_aquila_favonia()
+    # test_aquila_favonia()
     # test_skyward()
-    # test_favonius_lighting_elegy()
+    test_favonius_lighting_elegy()
