@@ -68,6 +68,11 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
         if self.usage == 0:
             # no usage
             return []
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
+        if charactor.hp == 0:
+            # charactor is dying
+            return []
         damage = event.final_damage
         if not self.position.check_position_valid(
             damage.target_position, match, player_idx_same = True,
@@ -77,9 +82,6 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
             return []
         # create die
         self.usage -= 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx
-        ]
         return [CreateDiceAction(
             player_idx = self.position.player_idx,
             number = 1,
