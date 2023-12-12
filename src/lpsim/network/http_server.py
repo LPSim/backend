@@ -180,10 +180,10 @@ class HTTPServer():
                 self.command_history = [[], []]
                 for source, target in zip(current_cmd_hist,
                                           self.command_history):
-                    for idx, cmd in source:
+                    for idx, cmd, order in source:
                         if idx >= match_state_idx:
                             break
-                        target.append([idx, cmd])
+                        target.append([idx, cmd, order])
             elif match_state is not None:
                 match = match_state
                 match._save_history()
@@ -392,7 +392,8 @@ class HTTPServer():
                         match.step()
             # after success respond, save command into command history
             self.command_history[player_idx].append([
-                current_history_length - 1, command
+                current_history_length - 1, command, 
+                len(self.command_history[0] + self.command_history[1])
             ])
             # generate response
             ret = []
@@ -441,8 +442,7 @@ class HTTPServer():
         log format:
             match_random_state: initial random state of match
             start_deck: start deck string of players
-            command_history: command history of players, different from
-                self.command_history, it do not contain idx of history.
+            command_history: command history of players.
         """
         if self.match_random_state is None:
             raise RuntimeError('Cannot save log when match random state is '
@@ -451,8 +451,7 @@ class HTTPServer():
         data = {
             'match_random_state': self.match_random_state,
             'start_deck': [x.to_str() for x in self.start_deck],
-            'command_history': [[y[1] for y in x] 
-                                for x in self.command_history],
+            'command_history': self.command_history,
             'match_config': self.match.config.dict(),
         }
         data_str = json.dumps(data)
