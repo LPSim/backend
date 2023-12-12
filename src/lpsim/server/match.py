@@ -1297,7 +1297,7 @@ class Match(BaseModel):
             if cidx == table.active_charactor_idx or charactor.is_defeated:
                 continue
             dice_cost = Cost(any_dice_number = 1)
-            dice_cost.label = CostLabels.SWITCH_CHARACTOR
+            dice_cost.label = CostLabels.SWITCH_CHARACTOR.value
             dice_cost_value = CostValue(
                 cost = dice_cost,
                 position = active_charactor.position,
