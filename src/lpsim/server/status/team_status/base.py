@@ -243,7 +243,6 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.infused_elemental_type == DamageElementalType.PHYSICAL:
-            raise NotImplementedError('Not tested part')
             # not set elemental type manually, get it from name
             element = self.name.split(' ')[0].upper()
             assert element in [

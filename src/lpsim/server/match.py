@@ -1822,7 +1822,6 @@ class Match(BaseModel):
             )
             if len(draw_cards) < number and action.draw_if_filtered_not_enough:
                 # draw blacklist cards
-                raise NotImplementedError('Not tested part.')
                 length = number - len(draw_cards)
                 draw_cards += blacklist[:length]
                 blacklist = blacklist[length:]

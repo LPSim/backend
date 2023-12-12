@@ -170,7 +170,6 @@ class PlayerTable(BaseModel):
             for support in self.supports:
                 if support.id == position.id:
                     return support
-            raise NotImplementedError('Not tested part')
             return None
         elif position.area == ObjectPositionType.HAND:
             if (
@@ -186,15 +185,7 @@ class PlayerTable(BaseModel):
             for card in self.table_deck:
                 if card.id == position.id:
                     return card
-            else:
-                raise NotImplementedError('Not tested part')
-            # TODO: if charactor defeated can draw card?
             return None
-        # elif position.area == ObjectPositionType.DICE:
-        #     if position.id == self.dice.id:
-        #         return self.dice
-        #     else:
-        #         return None
         else:
             raise AssertionError(f'Unknown area {position.area}.')
 

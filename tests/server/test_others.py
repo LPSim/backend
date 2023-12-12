@@ -1,10 +1,18 @@
-from typing import Literal
+from typing import Dict, Literal
 import pytest
+from src.lpsim.utils.desc_registry import DescDictType
+
+from src.lpsim.server.status.team_status.base import (
+    ElementalInfusionTeamStatus, TeamStatusBase
+)
+from src.lpsim.utils.class_registry import get_instance, register_class
 
 from src.lpsim.agents.random_agent import RandomAgent
 from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.action import CreateDiceAction, MoveObjectAction
-from src.lpsim.server.consts import ObjectPositionType
+from src.lpsim.server.action import (
+    CreateDiceAction, DrawCardAction, MoveObjectAction
+)
+from src.lpsim.server.consts import DamageElementalType, ObjectPositionType
 from src.lpsim.server.deck import Deck
 from src.lpsim.server.interaction import SwitchCardResponse
 from src.lpsim.server.object_base import ObjectBase
@@ -315,10 +323,227 @@ def test_immutable_position():
         del position.area
 
 
+def test_get_non_exist_object():
+    match = Match()
+    deck_str = """
+    charactor:Nahida
+    Strategize*30
+    """
+    deck = Deck.from_str(deck_str)
+    match.config.charactor_number = None
+    match.config.max_same_card_number = 999
+    match.set_deck([deck, deck])
+    assert match.start()[0]
+    match.step()
+    assert match.get_object(ObjectPosition(
+        player_idx = 0,
+        id = 0,
+        area = ObjectPositionType.DECK
+    )) is None
+    assert match.get_object(ObjectPosition(
+        player_idx = 0,
+        id = 0,
+        area = ObjectPositionType.SUPPORT
+    )) is None
+
+
+def test_vanilla_element_infusion_team_status():
+    class EIC_3_3(ElementalInfusionTeamStatus):
+        version: Literal['3.3'] = '3.3'
+        position: ObjectPosition = ObjectPosition(
+            player_idx = -1,
+            area = ObjectPositionType.INVALID,
+            id = -1,
+        )
+        usage: int = 2
+        max_usage: int = 2
+    desc: Dict[str, DescDictType] = {
+        'TEAM_STATUS/Electro Elemental Infusion': {
+            'names': {
+                'zh-CN': '雷元素附魔',
+                'en-US': 'Electro Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '雷元素附魔',
+                    'en-US': 'Electro Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Geo Elemental Infusion': {
+            'names': {
+                'zh-CN': '岩元素附魔',
+                'en-US': 'Geo Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '岩元素附魔',
+                    'en-US': 'Geo Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Pyro Elemental Infusion': {
+            'names': {
+                'zh-CN': '火元素附魔',
+                'en-US': 'Pyro Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '火元素附魔',
+                    'en-US': 'Pyro Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Hydro Elemental Infusion': {
+            'names': {
+                'zh-CN': '水元素附魔',
+                'en-US': 'Hydro Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '水元素附魔',
+                    'en-US': 'Hydro Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Cryo Elemental Infusion': {
+            'names': {
+                'zh-CN': '冰元素附魔',
+                'en-US': 'Cryo Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '冰元素附魔',
+                    'en-US': 'Cryo Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Anemo Elemental Infusion': {
+            'names': {
+                'zh-CN': '风元素附魔',
+                'en-US': 'Anemo Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '风元素附魔',
+                    'en-US': 'Anemo Elemental Infusion',
+                },
+            }
+        },
+        'TEAM_STATUS/Dendro Elemental Infusion': {
+            'names': {
+                'zh-CN': '草元素附魔',
+                'en-US': 'Dendro Elemental Infusion',
+            },
+            'descs': {
+                '3.3': {
+                    'zh-CN': '草元素附魔',
+                    'en-US': 'Dendro Elemental Infusion',
+                },
+            }
+        },
+    }
+    register_class(EIC_3_3, desc)
+    electro_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Electro Elemental Infusion'
+    })
+    assert (
+        electro_ele_status.infused_elemental_type
+        == DamageElementalType.ELECTRO
+    )
+    geo_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Geo Elemental Infusion'
+    })
+    assert (
+        geo_ele_status.infused_elemental_type
+        == DamageElementalType.GEO
+    )
+    pyro_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Pyro Elemental Infusion'
+    })
+    assert (
+        pyro_ele_status.infused_elemental_type
+        == DamageElementalType.PYRO
+    )
+    hydro_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Hydro Elemental Infusion'
+    })
+    assert (
+        hydro_ele_status.infused_elemental_type
+        == DamageElementalType.HYDRO
+    )
+    cryo_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Cryo Elemental Infusion'
+    })
+    assert (
+        cryo_ele_status.infused_elemental_type
+        == DamageElementalType.CRYO
+    )
+    anemo_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Anemo Elemental Infusion'
+    })
+    assert (
+        anemo_ele_status.infused_elemental_type
+        == DamageElementalType.ANEMO
+    )
+    dendro_ele_status = get_instance(TeamStatusBase, {
+        'name': 'Dendro Elemental Infusion'
+    })
+    assert (
+        dendro_ele_status.infused_elemental_type
+        == DamageElementalType.DENDRO
+    )
+
+
+def test_blacklist_draw_card():
+    match = Match()
+    deck_str = """
+    charactor:Nahida
+    Strategize*29
+    Fresh Wind of Freedom
+    """
+    deck = Deck.from_str(deck_str)
+    match.config.charactor_number = None
+    match.config.max_same_card_number = 999
+    match.set_deck([deck, deck])
+    assert match.start()[0]
+    match.step()
+    match.respond(SwitchCardResponse(
+        request = match.requests[0],  # type: ignore
+        card_idxs = [1, 2, 3, 4]
+    ))
+    match.respond(SwitchCardResponse(
+        request = match.requests[0],  # type: ignore
+        card_idxs = [1, 2, 3, 4]
+    ))
+    assert len(match.player_tables[0].hands) == 5
+    assert len(match.player_tables[1].hands) == 5
+    for i in range(1, 5):
+        assert match.player_tables[0].hands[i].name == 'Strategize'
+        assert match.player_tables[1].hands[i].name == 'Strategize'
+    # then test whitelist draw card but not enough
+    match._action_draw_card(DrawCardAction(
+        player_idx = 0,
+        number = 2,
+        whitelist_names = ['Fresh Wind of Freedom'],
+        draw_if_filtered_not_enough = False
+    ))
+    assert len(match.player_tables[0].hands) == 5
+    match._action_draw_card(DrawCardAction(
+        player_idx = 0,
+        number = 2,
+        whitelist_names = ['Fresh Wind of Freedom'],
+        draw_if_filtered_not_enough = True
+    ))
+    assert len(match.player_tables[0].hands) == 7
+
+
 if __name__ == '__main__':
     # test_object_position_validation()
     # test_match_config_and_match_errors()
     # test_objectbase_wrong_handler_name()
     # test_create_dice()
-    test_id_wont_duplicate()
-    test_remove_non_exist_equip()
+    # test_id_wont_duplicate()
+    # test_remove_non_exist_equip()
+    test_vanilla_element_infusion_team_status()
+    test_blacklist_draw_card()
