@@ -7,6 +7,33 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.2.4] - 2023-12-13
+
+### Added
+- added `http_log_replay.py` to replay logs.
+
+### Fixed
+- errors in `main.py`.
+- typos in `deck_code_data.json`.
+- Yayoi Nantsuki decreases Artifact cost based on Weapon number.
+- Timaeus and Wagner is not treated as Companion.
+- Aquila Favonia will heal charactor when it is not active.
+- Where is the Unseen Razor will decrease opponent weapon cost.
+- Tenacity of the Millelith will generate dice when the charactor is defeated
+  during the attack.
+
+### Changed
+- `heal_self` is changed to `attack_self` in `SkillBase`.
+- `CharactorDefeatedAction` will also return `RemoveObjectEventArguments`.
+- `deck_code_data` structure is changed. Charactors will have `charactor:`
+  prefix.
+- `HTTPServer` now use GZip.
+- Rhodeia's Elemental Skill will give version hint when generating summons.
+- `is_corresponding_charactor_use_damage_skill` from Damage values
+  will ignore damages that is caused by elemental reaction.
+- Some redundant assertions are removed.
+- `command_history` in `HTTPServer.log` is changed, now it will record the
+  corresponding frame number and command order in the history.
 
 ## [0.4.2.3] - 2023-12-03
 
@@ -288,7 +315,8 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.3...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.4...HEAD
+[0.4.2.4]: https://github.com/LPSim/backend/releases/tag/v0.4.2.4
 [0.4.2.3]: https://github.com/LPSim/backend/releases/tag/v0.4.2.3
 [0.4.2.2]: https://github.com/LPSim/backend/releases/tag/v0.4.2.2
 [0.4.2.1]: https://github.com/LPSim/backend/releases/tag/v0.4.2.1
