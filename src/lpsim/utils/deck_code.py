@@ -169,7 +169,8 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
             + card_str + [''] * (30 - len(card_str))
         )
         deck_code = _deck_str_to_deck_code_one(name_list, checksum)
-        if not forbidden_trie.search(deck_code):
+        code_lower = deck_code.lower().replace('+', '')
+        if not forbidden_trie.search(code_lower):
             return deck_code
     raise ValueError('in generating deck code: retry time exceeded')
 
