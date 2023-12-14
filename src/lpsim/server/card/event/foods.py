@@ -402,7 +402,7 @@ class TandooriRoastChicken_3_7(AllCharactorFoodCard):
 class ButterCrab_3_7(AllCharactorFoodCard):
     name: Literal['Butter Crab']
     version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 1)
+    cost: Cost = Cost(any_dice_number = 2)
 
     can_eat_only_if_damaged: bool = False
 

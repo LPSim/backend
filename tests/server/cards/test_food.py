@@ -1128,18 +1128,18 @@ def test_guoba_meatroll_egg_sashimi_crab():
             "TEST 2 p0c0 usage 1 1",
             "TEST 3 card 2 cannot use",
             "end",
-            "card 0 0 15",
-            "sw_char 1 14",
+            "card 0 0 15 0",
+            "sw_char 1 1",
             "TEST 1 5 6 10 0 0 4",
-            "sw_char 2 13",
-            "sw_char 1 12",
+            "sw_char 2 1",
+            "sw_char 1 1",
             "TEST 1 2 2 7 0 0 4",
-            "sw_char 0 11",
-            "sw_char 1 10",
+            "sw_char 0 1",
+            "sw_char 1 1",
             "choose 2",
             "TEST 1 2 0 7 0 0 4",
             "TEST 3 card 0 cannot use",
-            "card 1 0 9 8 7",
+            "card 1 0 1 8 7",
             "TEST 4 no card can use",
             "end",
             "sw_char 1 15",
@@ -1489,15 +1489,15 @@ def test_guoba_egg():
 
 
 if __name__ == '__main__':
-    test_adeptus_temptation()
-    test_lotus_flower_crisp()
-    test_lotus_flower_crisp_and_reflection()
-    test_mond_hash()
-    test_tandoori()
-    test_pizza()
-    test_full_and_tandoori()
-    test_north_chicken()
-    test_north_chicken_2()
+    # test_adeptus_temptation()
+    # test_lotus_flower_crisp()
+    # test_lotus_flower_crisp_and_reflection()
+    # test_mond_hash()
+    # test_tandoori()
+    # test_pizza()
+    # test_full_and_tandoori()
+    # test_north_chicken()
+    # test_north_chicken_2()
     test_guoba_meatroll_egg_sashimi_crab()
-    test_meatroll()
+    # test_meatroll()
     test_guoba_egg()
