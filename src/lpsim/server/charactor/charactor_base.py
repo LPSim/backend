@@ -459,7 +459,6 @@ class TalentBase(CardBase):
         return (
             charactor.name == self.charactor_name
             and charactor.is_alive
-            and not charactor.is_stunned
         )
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
@@ -527,6 +526,21 @@ class SkillTalent(TalentBase):
         | CostLabels.EQUIPMENT.value
     )
     skill: str
+
+    def is_valid(self, match: Any) -> bool:
+        """
+        Only corresponding charactor is active charactor can equip this card.
+        """
+        if self.position.area != ObjectPositionType.HAND:
+            # not in hand, cannot equip
+            raise AssertionError('Talent is not in hand')
+        table = match.player_tables[self.position.player_idx]
+        charactor = table.charactors[table.active_charactor_idx]
+        return (
+            charactor.name == self.charactor_name
+            and charactor.is_alive
+            and not charactor.is_stunned
+        )
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:
         """

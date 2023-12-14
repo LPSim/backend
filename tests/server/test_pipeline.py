@@ -1052,6 +1052,86 @@ def test_player_table_charactor_order():
             raise AssertionError()
 
 
+def test_frozen_cannot_use_skill_talent():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 2",
+            "skill 1 15 14 13",
+            "sw_char 1 12",
+            "skill 1 11 10 9"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "skill 1 15 14 13",
+            "TEST 1 no card can use",
+            "end"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Electro Hypostasis
+        charactor:Kaeya
+        charactor:Mona
+        Cold-Blooded Strike*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while True:
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                for req in match.requests:
+                    assert req.name != 'UseCardRequest'
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -1066,4 +1146,5 @@ if __name__ == '__main__':
     # test_save_history()
     # test_generate_unused_cards()
     # test_prediction()
-    test_player_table_charactor_order()
+    # test_player_table_charactor_order()
+    test_frozen_cannot_use_skill_talent()
