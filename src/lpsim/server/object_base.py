@@ -113,7 +113,7 @@ class CardBase(ObjectBase):
         id = -1,
     )
     cost: Cost
-    cost_label: int = CostLabels.CARD.value
+    cost_label: int
     remove_when_used: bool = True
     target_position_type_multiple: Literal[False] = False
 
