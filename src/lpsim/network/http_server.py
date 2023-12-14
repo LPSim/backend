@@ -1,4 +1,5 @@
 import json
+import uuid
 import os
 import datetime
 from typing import Literal, List
@@ -36,6 +37,7 @@ class DeckData(BaseModel):
 class RespondData(BaseModel):
     player_idx: int
     command: str
+    uuid: str
 
 
 class HTTPServer():
@@ -71,6 +73,7 @@ class HTTPServer():
                 'history_level must be at least 10 for HTTPServer')
         match, random_state = get_new_match(
             self.decks, match_config = match_config)
+        self.uuid = str(uuid.uuid4())
         self.match = match
         self.match_random_state = random_state
         self.agent_0 = InteractionAgent(player_idx = 0, 
@@ -205,7 +208,9 @@ class HTTPServer():
                 self.command_history = [[], []]
                 self.start_deck = [x.player_deck_information 
                                    for x in match.player_tables]
+            self.uuid = str(uuid.uuid4())
             return {
+                'uuid': self.uuid,
                 'idx': match_state_idx,
                 'match': match.dict(),
                 'type': 'FULL',
@@ -293,7 +298,8 @@ class HTTPServer():
 
         @app.get('/state/{mode}/{state_idx}/{player_idx}')
         async def get_game_state(
-            mode: Literal['one', 'after'], state_idx: int, player_idx: int
+            mode: Literal['one', 'after'], state_idx: int, player_idx: int,
+            uuid: str | None = None
         ):
             """
             Return list of state and its index.
@@ -309,6 +315,10 @@ class HTTPServer():
             player_idx is 0 or 1: fetch data for player idx (currently not 
                 implemented)
             """
+            if state_idx > 0 and uuid != self.uuid:
+                # not initial state, but uuid different
+                raise HTTPException(status_code = 404, 
+                                    detail = 'UUID not match')
             match = self.match
             # player idx check
             if player_idx < -1 or player_idx > 1:
@@ -327,6 +337,7 @@ class HTTPServer():
                 # ask for the state after the last state
                 return JSONResponse([])
             result = [{
+                'uuid': self.uuid,
                 'idx': state_idx,
                 'match': match._history[state_idx].dict(),
                 'type': 'FULL',
@@ -334,6 +345,7 @@ class HTTPServer():
             if mode == 'after':
                 result += [
                     {
+                        'uuid': self.uuid,
                         'idx': state_idx + 1 + idx,
                         'match_diff': diff,
                         'type': 'DIFF',
@@ -359,6 +371,9 @@ class HTTPServer():
 
         @app.post('/respond')
         async def post_respond(data: RespondData):
+            if data.uuid != self.uuid:
+                raise HTTPException(status_code = 404, 
+                                    detail = 'UUID not match')
             match = self.match
             player_idx = data.player_idx
             command = data.command
@@ -402,12 +417,14 @@ class HTTPServer():
                     match._history_diff[current_history_length:],)):
                 if idx == 0:
                     ret.append({
+                        'uuid': self.uuid,
                         'idx': idx + current_history_length,
                         'match': state.dict(),
                         'type': 'FULL',
                     })
                 else:
                     ret.append({
+                        'uuid': self.uuid,
                         'idx': idx + current_history_length,
                         'match_diff': diff,
                         'type': 'DIFF',
