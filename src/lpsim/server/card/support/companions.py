@@ -119,6 +119,7 @@ class Timaeus_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
 
     def play(self, match: Any) -> List[Actions]:
+        UsageWithRoundRestrictionSupportBase.play(self, match)
         self.usage = 2
         return []
 
