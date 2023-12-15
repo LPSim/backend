@@ -149,7 +149,7 @@ class Dehya_4_1(CharactorBase):
         | IncinerationDrive
     ] = []
     faction: List[FactionType] = [
-        FactionType.SUMERU
+        FactionType.SUMERU, FactionType.THE_EREMITES
     ]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
