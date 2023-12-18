@@ -159,10 +159,15 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
         card_str += [i] * number
     if len(charactor_str) > 3 or len(card_str) > 30:
         raise ValueError('too many charactors or cards')
-    for _ in range(max_retry_time):
+    rand_checksum = list(range(256))
+    random.shuffle(rand_checksum)
+    for i in range(max_retry_time):
         # generate random checksum and shuffle cards
-        checksum = random.randint(0, 255)
-        random.shuffle(card_str)
+        if i > 255:
+            checksum = random.randint(0, 255)
+            random.shuffle(card_str)
+        else:
+            checksum = rand_checksum[i]
         # fill empty with ''
         name_list = (
             charactor_str + [''] * (3 - len(charactor_str))
