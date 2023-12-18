@@ -134,7 +134,7 @@ class HTTPServer():
             }
 
         @app.post('/reset')
-        async def reset(data: ResetData):
+        async def post_reset(data: ResetData):
             """
             Reset the match. 
             If match_state_idx is not None, the match will be reset to the
@@ -150,13 +150,7 @@ class HTTPServer():
             Return: The dict contains last state with its idx of the match if 
                 success.
             """
-            if self.reset_log_save_path is not None:
-                # save log
-                if not os.path.exists(self.reset_log_save_path):
-                    os.makedirs(self.reset_log_save_path)
-                filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S.%f')
-                filename += '.json'
-                self.save_log(os.path.join(self.reset_log_save_path, filename))
+            self.save_log(self.reset_log_save_file)
             match = self.match
             fixed_random_seed = data.fixed_random_seed
             if fixed_random_seed:
@@ -449,6 +443,20 @@ class HTTPServer():
         if len(argv):
             raise ValueError('positional arguments not supported')
         uvicorn.run(self.app, **kwargs)
+
+    @property
+    def reset_log_save_file(self) -> str | None:
+        """
+        Return the save file path of reset log.
+        """
+        # save log
+        if self.reset_log_save_path is None:
+            return None
+        if not os.path.exists(self.reset_log_save_path):
+            os.makedirs(self.reset_log_save_path)
+        filename = datetime.datetime.now().strftime('%Y%m%d_%H%M%S.%f')
+        filename += '.json'
+        return os.path.join(self.reset_log_save_path, filename)
 
     def save_log(self, file_path: str | None = None) -> str:
         """
