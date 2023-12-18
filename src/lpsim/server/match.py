@@ -94,6 +94,7 @@ from .event import (
 from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
     CombatActionValue,
+    FullCostValue,
     ModifiableValueBase,
     InitialDiceColorValue,
     ModifiableValueTypes, RerollValue, CostValue,
@@ -1176,9 +1177,10 @@ class Match(BaseModel):
                 related to the value is executed.
         """
         if mode == 'TEST':
-            assert value.type == ModifiableValueTypes.COST, (
-                'Only cost can be modified in test mode.'
-            )
+            assert value.type in [
+                ModifiableValueTypes.COST,
+                ModifiableValueTypes.FULL_COST
+            ], 'Only costs can be modified in test mode.'
         object_list = self.get_object_list()
         modifier_name = f'value_modifier_{value.type.name}'
         for obj in object_list:
@@ -1189,6 +1191,14 @@ class Match(BaseModel):
             if func is not None:
                 logging.debug(f'Modify value {value.type.name} for {name}.')
                 value = func(value, self, mode)
+
+    def _modify_cost_value(
+        self, cost_value: CostValue, mode: Literal['TEST', 'REAL'],
+    ) -> FullCostValue:
+        self._modify_value(cost_value, mode)
+        full_cost_value = FullCostValue.from_cost_value(cost_value)
+        self._modify_value(full_cost_value, mode)
+        return full_cost_value
 
     def _predict_skill(self, player_idx: int) -> None:
         """
@@ -1303,7 +1313,8 @@ class Match(BaseModel):
                 position = active_charactor.position,
                 target_position = charactor.position
             )
-            self._modify_value(dice_cost_value, mode = 'TEST')
+            dice_cost_value = self._modify_cost_value(
+                dice_cost_value, mode = 'TEST')
             charge, arcane_legend = table.get_charge_and_arcane_legend()
             if not dice_cost_value.cost.is_valid(
                 dice_colors = table.dice.colors,
@@ -1377,7 +1388,7 @@ class Match(BaseModel):
                     position = skill.position,
                     target_position = None
                 )
-                self._modify_value(cost_value, mode = 'TEST')
+                cost_value = self._modify_cost_value(cost_value, 'TEST')
                 dice_colors = table.dice.colors
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
@@ -1404,7 +1415,7 @@ class Match(BaseModel):
                     position = card.position,
                     target_position = None
                 )
-                self._modify_value(cost_value, mode = 'TEST')
+                cost_value = self._modify_cost_value(cost_value, 'TEST')
                 dice_colors = table.dice.colors
                 charge, arcane_legend = table.get_charge_and_arcane_legend()
                 if cost_value.cost.is_valid(
@@ -1524,10 +1535,7 @@ class Match(BaseModel):
             cost = cost,
             target_position = target_charactors.position
         )
-        self._modify_value(
-            value = cost_value,
-            mode = 'REAL'
-        )
+        cost_value = self._modify_cost_value(cost_value, 'REAL')
         actions.append(SwitchCharactorAction.from_response(response))
         actions.append(ActionEndAction(
             action_label = PlayerActionLabels.SWITCH.value,
@@ -1622,10 +1630,7 @@ class Match(BaseModel):
             cost = cost,
             target_position = None
         )
-        self._modify_value(
-            value = cost_value,
-            mode = 'REAL'
-        )
+        cost_value = self._modify_cost_value(cost_value, 'REAL')
         action_label, combat_action = skill.get_action_type(self)
         actions: List[Actions] = [
             RemoveDiceAction(
@@ -1666,10 +1671,7 @@ class Match(BaseModel):
             cost = cost,
             target_position = None
         )
-        self._modify_value(
-            value = cost_value,
-            mode = 'REAL'
-        )
+        cost_value = self._modify_cost_value(cost_value, 'REAL')
         actions: List[Actions] = [
             RemoveDiceAction(
                 player_idx = response.player_idx,

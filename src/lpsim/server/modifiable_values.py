@@ -16,7 +16,12 @@ class ModifiableValueTypes(str, Enum):
     INITIAL_DICE_COLOR = 'INITIAL_DICE_COLOR'
     REROLL = 'REROLL'
     COMBAT_ACTION = 'COMBAT_ACTION'
+
+    # Cost is used in most situations that decrease cost. Full cost is used
+    # only for effects that should decrease cost to 0, which is performed after
+    # normal cost decrease. Until 4.2, only Timaeus and Wagner has this effect.
     COST = 'COST'
+    FULL_COST = 'FULL_COST'
 
     # damage calculation is split into 4 parts: increase, multiply and 
     # decrease. damage will be first increased, then multiplied, 
@@ -69,6 +74,24 @@ class CostValue(ModifiableValueBase):
         self.original_value.cost = self.original_value.cost.copy(deep = True)
         self.original_value.cost.original_value = None
         self.cost.original_value = self.original_value.cost.copy(deep = True)
+
+
+class FullCostValue(CostValue):
+    type: ModifiableValueTypes = ModifiableValueTypes.FULL_COST
+
+    def __init__(self, *argv, **kwargs):
+        # full cost is used after normal cost decrease, so no need to refresh
+        # its original value, just copy normal cost value.
+        BaseModel.__init__(self, *argv, **kwargs)
+
+    @staticmethod
+    def from_cost_value(value: CostValue) -> 'FullCostValue':
+        return FullCostValue(
+            position = value.position,
+            target_position = value.target_position,
+            cost = value.cost,
+            original_value = value.original_value,
+        )
 
 
 class CombatActionValue(ModifiableValueBase):
