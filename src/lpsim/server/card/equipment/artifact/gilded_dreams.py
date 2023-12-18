@@ -19,7 +19,7 @@ class ShadowOfTheSandKing_4_2(RoundEffectArtifactBase):
     max_usage_per_round: int = 1
 
     def equip(self, match: Any) -> List[Actions]:
-        return [
+        return super().equip(match) + [
             DrawCardAction(
                 player_idx = self.position.player_idx,
                 number = 1,

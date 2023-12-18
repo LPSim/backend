@@ -443,7 +443,7 @@ class StoneAndContracts_3_7(NationResonanceCardBase):
                 area = ObjectPositionType.TEAM_STATUS,
                 id = -1,
             ),
-            object_arguments = {},
+            object_arguments = { 'version': self.version },
         )]
 
 
