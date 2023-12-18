@@ -80,6 +80,8 @@ class HTTPServer():
                                         only_use_command = True)
         self.agent_1 = InteractionAgent(player_idx = 1, 
                                         only_use_command = True)
+        # used to record all uploaded deck codes to the server
+        self.uploaded_deck_codes = []
 
         if len(self.decks) == 0:
             # no deck input at init, create two empty decks.
@@ -254,6 +256,8 @@ class HTTPServer():
                     detail = f'Deck not legal. {deck_check_info}'
                 )
             self.decks[player_idx] = deck
+            deck_code = deck.to_deck_code()
+            self.uploaded_deck_codes.append(deck_code)
 
         @app.post('/deck')
         async def post_deck(data: DeckData):
