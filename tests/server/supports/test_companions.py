@@ -2312,6 +2312,92 @@ def test_timaeus_fix():
     assert match.state != MatchState.ERROR
 
 
+def test_timaeus_fix_2():
+    cmd_records = [
+        [
+            "sw_card 2 1",
+            "choose 2",
+            "card 3 0",
+            "card 2 0 15 14",
+            "card 1 0",
+            "end",
+            "sw_char 1 15",
+            "card 0 0 14 13",
+            "end"
+        ],
+        [
+            "sw_card 3 2",
+            "choose 2",
+            "end",
+            "card 1 0 15 14",
+            "card 1 0",
+            "card 1 0",
+            "sw_char 1 13"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Baizhu
+        charactor:Nilou
+        charactor:Noelle
+        Wagner*10
+        Golden House*10
+        The Bell*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_rana()
     # test_timmie()
@@ -2330,4 +2416,4 @@ if __name__ == '__main__':
     # test_hanachirusato()
     # test_chefmao_dunyarzad()
     # test_yayoi_fix()
-    test_timaeus_fix()
+    test_timaeus_fix_2()

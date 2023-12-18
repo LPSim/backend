@@ -2,7 +2,7 @@ from typing import Any, Dict, Literal, List
 
 from ....utils.class_registry import register_base_class, register_class
 
-from ...modifiable_values import CombatActionValue, CostValue
+from ...modifiable_values import CombatActionValue, CostValue, FullCostValue
 
 from ...dice import Dice
 
@@ -135,9 +135,9 @@ class Timaeus_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         self.usage += 1
         return []
 
-    def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
-    ) -> CostValue:
+    def value_modifier_FULL_COST(
+        self, value: FullCostValue, match: Any, mode: Literal['REAL', 'TEST']
+    ) -> FullCostValue:
         """
         When in support, and self equip, and usage is enough, and has round
         usage, decrease cost.
