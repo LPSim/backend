@@ -256,8 +256,11 @@ class HTTPServer():
                     detail = f'Deck not legal. {deck_check_info}'
                 )
             self.decks[player_idx] = deck
-            deck_code = deck.to_deck_code()
-            self.uploaded_deck_codes.append(deck_code)
+            try:
+                deck_code = deck.to_deck_code()
+                self.uploaded_deck_codes.append(deck_code)
+            except Exception:
+                pass
 
         @app.post('/deck')
         async def post_deck(data: DeckData):
