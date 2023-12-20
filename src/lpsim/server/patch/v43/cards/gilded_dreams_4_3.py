@@ -20,6 +20,7 @@ class GildedDreams_4_3(ShadowOfTheSandKing_4_2):
         When equipped, create one elemental dice. If there are 3 different
         elemental dice in your team, create one omni dice.
         """
+        super().equip(match)
         charactors = match.player_tables[self.position.player_idx].charactors
         equip_charactor = charactors[self.position.charactor_idx]
         ret: List[CreateDiceAction] = [

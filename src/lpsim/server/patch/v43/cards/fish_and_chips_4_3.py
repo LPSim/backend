@@ -34,7 +34,7 @@ class FishAndChipsStatus_4_3(RoundCharactorStatus, UsageCharactorStatus):
             # not charactor use skill, not modify
             return value
         # modify
-        if value.cost.decrease_cost(value.cost.elemental_dice_color):
+        if value.cost.decrease_cost(value.cost.elemental_dice_color):  # pragma: no branch  # noqa: E501
             # decrease success
             if mode == 'REAL':
                 self.usage -= 1

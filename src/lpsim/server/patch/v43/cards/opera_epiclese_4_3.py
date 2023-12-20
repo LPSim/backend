@@ -42,7 +42,6 @@ class OperaEpiclese_4_3(LocationBase, UsageWithRoundRestrictionSupportBase):
                 for equip in equips:
                     if equip is not None:
                         equip_costs[player_idx] += equip.cost.total_dice_cost
-                        equip_costs[player_idx] += equip.cost.charge
         if (
             equip_costs[self.position.player_idx] 
             < equip_costs[1 - self.position.player_idx]

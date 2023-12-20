@@ -99,12 +99,6 @@ class BeaconOfTheReedSeaStatus_4_3(UsageCharactorStatus):
         ):
             # not current charactor using skill
             return value
-        if value.damage_from_element_reaction:
-            # from elemental reaction
-            return value
-        if value.damage_type != DamageType.DAMAGE:
-            # not damage
-            return value
         # modify damage
         assert mode == 'REAL'
         value.damage += self.usage
