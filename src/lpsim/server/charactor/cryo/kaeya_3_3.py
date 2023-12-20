@@ -104,7 +104,7 @@ class ColdBloodedStrike_3_3(SkillTalent):
                 DamageValue(
                     position = self.position,
                     damage_type = DamageElementalType.HEAL,
-                    target_position = self.position,
+                    target_position = charactor.position,
                     damage = -2,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = Cost(),

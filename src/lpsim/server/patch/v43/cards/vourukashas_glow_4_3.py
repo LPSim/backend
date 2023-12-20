@@ -59,11 +59,13 @@ class VourukashasGlow_4_3(HeartOfKhvarenasBrilliance_4_3):
         if self.position.area != ObjectPositionType.CHARACTOR:
             # not equipped
             return []
+        charactor = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx]
         return [MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
-                    target_position = self.position,
+                    target_position = charactor.position,
                     damage = -1,
                     damage_type = DamageType.HEAL,
                     damage_elemental_type = DamageElementalType.HEAL,
