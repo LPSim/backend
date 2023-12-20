@@ -10,13 +10,19 @@ logging.basicConfig(level = logging.INFO)
 
 if __name__ == '__main__':
     log_path = 'logs.json'
-    log_path = r'.\src\lpsim\server\patch\v43\tests\test_alhaitham'
     if len(sys.argv) > 1:
         log_path = sys.argv[1]
     log_str = open(log_path).read()
-    agents, match = read_log(log_str)
+    agents, match = read_log(log_str, use_16_omni = None)
+    # for i in range(2):
+    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
+    #     for c in charactors:
+    #         c.hp = c.max_hp = 30
     match.config.history_level = 10
-    interact_match_with_agents(agents[0], agents[1], match)
+    try:
+        interact_match_with_agents(agents[0], agents[1], match)
+    except Exception:
+        print('!!!!! ERROR: play log failed, play to last success log. !!!!!')
     server = HTTPServer(
         decks = ['', ''],
         match_config = MatchConfig(
