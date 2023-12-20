@@ -7,6 +7,87 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.3.1] - 2023-12-20
+
+### Added
+- HTTP Server will send uuid to frontend, and frontend will send uuid to server
+  in response and state request (except state request that start with 0). If
+  uuid is not matched, server will return error.
+- New data for Version 4.3
+  - Added new charactors and their talents:
+    - Layla
+    - Light's Remit
+    - Yelan
+    - Turn Control
+    - Lyney
+    - Conclusive Ovation
+    - Lynette
+    - A Cold Blade Like a Shadow
+    - Gorou
+    - Rushing Hound: Swift as the Wind
+    - Alhaitham
+    - Structuration
+    - Signora
+    - Pain for Pain
+    - Eremite Scorching Loremaster
+    - Scorpocalypse
+    - Thunder Manifestation
+    - Grieving Echo
+    - Dvalin
+    - Rending Vortex
+    - Azhdaha
+    - Lunar Cycles Unending
+  - Added new Action Cards:
+    - Lost Prayer to the Sacred Winds
+    - Tulaytullah's Remembrance
+    - Beacon of the Reed Sea
+    - Primordial Jade Winged-Spear
+    - Light of Foliar Incision
+    - Gilded Dreams
+    - Flowing Rings
+    - Echoes of an Offering
+    - Heart of Khvarena's Brilliance
+    - Vourukasha's Glow
+    - Weeping Willow of the Lake
+    - Opera Epiclese
+    - Mamere
+    - Seed Dispensary
+    - Memento Lens
+    - Passing of Judgment
+    - The Boar Princess
+    - Falls and Fortune
+    - Flickering Four-Leaf Sigil
+    - Fish and Chips
+- `deck_code_data.json` is updated for new cards
+
+### Changed
+- Balance changes in Version 4.3
+  - Dehya
+  - Rhodeia of Loch
+  - Fatui Pyro Agent
+  - Wind and Freedom
+  - Stone and Contracts
+  - Joyous Celebration
+  - Timaeus
+  - Wagner
+  - Ocean-Huled Clam
+- Default values for CardBase.cost_label is removed. Cards should explicitly
+  set cost_label for them.
+- `http_log_replay.py` now supports new type of logs, and when error occurs,
+  it will give warning and start a HTTP server with successfully replayed 
+  match.
+- Minor changes in `pytest.ini`.
+- `SummonBase` now must contain damage and damege_element_type.
+
+### Fixed
+- Timaeus cannot decrease cost when drawed in the round (i.e. Liben, 
+  Strategize).
+- Cost of Butter Crab is wrong.
+- Base talents (not triggering skills) cannot use when charactor is stunned
+  (e.g. Frozen).
+- Bug in deck code generation, which will generate invalid codes.
+- Wrong log information for DrawCardAction.
+
 ## [0.4.2.4] - 2023-12-13
 
 ### Added
@@ -315,7 +396,8 @@ of the game, and the last number is the patch version of this project.
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.2.4...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.3.1...HEAD
+[0.4.3.1]: https://github.com/LPSim/backend/releases/tag/v0.4.3.1
 [0.4.2.4]: https://github.com/LPSim/backend/releases/tag/v0.4.2.4
 [0.4.2.3]: https://github.com/LPSim/backend/releases/tag/v0.4.2.3
 [0.4.2.2]: https://github.com/LPSim/backend/releases/tag/v0.4.2.2
