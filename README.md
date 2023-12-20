@@ -14,14 +14,14 @@ This project is under AGPL-3.0 license.
 
 ## Progress
 
-All charactors and cards with their balance changes until 4.1 are done.
+All charactors and cards with their balance changes until 4.3 are done.
 
-:sparkles: NEW: 4.2 charactors and cards, as well as balance changes are 
+:sparkles: NEW: 4.3 charactors and cards, as well as balance changes are 
 implemented. 
 
 ## Feature
 
-- All charactors and cards until 4.1 are implemented.
+- All charactors and cards with latest version are implemented.
 - Support using different version of charactors and cards in a same deck.
 - Support serve as a mini server to interact with the match.
 - A frontend is provided to interact with the server.
@@ -47,12 +47,6 @@ released on PyPI.
 ### Installation by source
 
 Clone this repository and install the package by `pip install .`. 
-Note that you may miss `src/lpsim/_version.py` and cause `setuptools-scm`
-error, you can create this file manually and write:
-```python
-__version__ = 'unknown'
-__version_tuple__ = (0, 0, 0)
-```
 
 ### HTTP Server
 
