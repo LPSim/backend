@@ -1,23 +1,20 @@
 import os
 from src.lpsim import MatchState
 from tests.utils_for_test import (
-    check_usage, get_test_id_from_command, make_respond, set_16_omni, 
-    read_from_log_json
+    check_usage, get_test_id_from_command, 
+    make_respond, set_16_omni, read_from_log_json
 )
 
 
-def test_timaeus_wagner_v43_draw_card():
+def test_eremite():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 
-                     'jsons', 
-                     'test_timaeus_wagner.json')
+        os.path.join(os.path.dirname(__file__), 'jsons', 'test_eremite.json')
     )
     # add omnipotent guide
     set_16_omni(match)
     match.start()
     match.step()
     new_commands = [[], []]
-
     while True:
         if match.need_respond(0):
             agent = agent_0
@@ -38,9 +35,15 @@ def test_timaeus_wagner_v43_draw_card():
             elif test_id == 3:
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].supports, cmd[3:])
-            elif test_id == 6:
+            elif test_id == 4:
                 pidx = int(cmd[2][1])
-                assert len(match.player_tables[pidx].hands) == int(cmd[3])
+                check_usage(match.player_tables[pidx].team_status, cmd[3:])
+            elif test_id == 8:
+                charges = []
+                for table in match.player_tables:
+                    for c in table.charactors:
+                        charges.append(c.charge)
+                assert charges == [int(x) for x in cmd[2:]]
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -53,4 +56,4 @@ def test_timaeus_wagner_v43_draw_card():
 
 
 if __name__ == '__main__':
-    test_timaeus_wagner_v43_draw_card()
+    test_eremite()

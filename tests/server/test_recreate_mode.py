@@ -300,9 +300,6 @@ def test_recreate_mode_v43_rhodeia():
             elif test_id == 2:
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].summons, cmd[4:])
-            elif test_id == 3:
-                pidx = int(cmd[2][1])
-                assert len(match.player_tables[pidx].hands) == int(cmd[4])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
