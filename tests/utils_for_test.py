@@ -135,13 +135,13 @@ def read_from_log_json(path: str) -> Tuple[
     config = MatchConfig(**data['match_config'])
     random_state = data['match_random_state']
     commands = data['command_history']
-    # if isinstance(commands[0][0], (list, tuple)):
-    #     # new version, extract only string
-    #     commands = [
-    #         [
-    #             y[1] for y in commands
-    #         ] for x in commands
-    #     ]
+    if isinstance(commands[0][0], (list, tuple)):  # pragma: no cover
+        # new version, extract only string
+        commands = [
+            [
+                y[1] for y in x
+            ] for x in commands
+        ]
     agent_0 = InteractionAgent(
         player_idx = 0,
         verbose_level = 0,
