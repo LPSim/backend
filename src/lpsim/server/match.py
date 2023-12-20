@@ -1859,7 +1859,7 @@ class Match(BaseModel):
         if len(blacklist):
             table.table_deck += blacklist
             self._random_shuffle(table.table_deck)
-        names = [x.name for x in table.table_deck[:number]]
+        names = [x.name for x in draw_cards]
         for card in draw_cards:
             card.position = card.position.set_area(ObjectPositionType.HAND)
         table.hands.extend(draw_cards)
