@@ -276,7 +276,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "Your party's characters deal +1 Geo DMG.\nDuration (Rounds): 2 (Can stack, Can stack till 3 Rounds)",  # noqa: E501
                 "zh-CN": "我方角色造成的岩元素伤害+1。\n持续回合：2（可叠加，最多叠加到3回合）"  # noqa: E501
             }
-        }
+        },
+        "image_path": "status/Gorou_E.png"
     },
     "SKILL_Gorou_ELEMENTAL_BURST/Juuga: Forward Unto Victory": {
         "names": {

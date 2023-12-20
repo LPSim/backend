@@ -17,7 +17,7 @@ class FlickeringFourLeafSigilStatus_4_3(CharactorStatusBase):
     version: Literal["4.3"] = "4.3"
     usage: int = 0
     max_usage: int = 0
-    icon_type: IconType = IconType.SPECIAL  # TODO check icon
+    icon_type: IconType = IconType.SPECIAL
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Match

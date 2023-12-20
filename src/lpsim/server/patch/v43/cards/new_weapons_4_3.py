@@ -80,6 +80,7 @@ class TulaytullahsRemembrance_4_3(RoundEffectWeaponBase):
 
 
 class BeaconOfTheReedSeaStatus_4_3(UsageCharactorStatus):
+    # TODO: in official implementation, two status are separated.
     name: Literal["Beacon of the Reed Sea"] = "Beacon of the Reed Sea"
     version: Literal["4.3"] = "4.3"
     usage: int = 1

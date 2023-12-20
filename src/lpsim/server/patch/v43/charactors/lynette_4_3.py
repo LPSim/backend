@@ -16,7 +16,7 @@ from ....event import (
 )
 from ....struct import Cost
 from ....consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
+    DamageElementalType, DieColor, ElementType, FactionType, IconType, 
     ObjectPositionType, WeaponType
 )
 from ....charactor.charactor_base import (
@@ -33,6 +33,7 @@ class OverawingAssault_4_3(RoundEndAttackCharactorStatus):
     max_usage: int = 1
     damage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.PIERCING
+    icon_type: IconType = IconType.DEBUFF
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any

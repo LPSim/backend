@@ -36,7 +36,8 @@ class BreakthroughStatus_4_3(ElementalInfusionCharactorStatus):
     usage: int = 1
     max_usage: int = 3
     infused_elemental_type: ElementType = ElementType.HYDRO
-    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+    icon_type: Literal[
+        IconType.ELEMENT_ENCHANT_WATER] = IconType.ELEMENT_ENCHANT_WATER
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Match
@@ -270,7 +271,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "After your character uses a Normal Attack: Deal 1 Hydro DMG. If the remaining Duration (Rounds) is only 1, this DMG increases by 1.\nDuration (Rounds): 2",  # noqa: E501
                 "zh-CN": "我方角色普通攻击后：造成2点水元素伤害。\n持续回合：2"
             }
-        }
+        },
+        "image_path": "status/Yelan_E.png"
     },
     "SKILL_Yelan_PASSIVE/Breakthrough": {
         "names": {

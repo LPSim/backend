@@ -13,11 +13,12 @@ from .....utils.desc_registry import DescDictType
 
 
 class FallsAndFortuneStatus_4_3(RoundTeamStatus):
+    # TODO both player have the status
     name: Literal["Falls and Fortune"] = "Falls and Fortune"
     version: Literal["4.3"] = "4.3"
     usage: int = 1
     max_usage: int = 1
-    icon_type: IconType = IconType.SPECIAL
+    icon_type: IconType = IconType.DEBUFF
 
     def value_modifier_COST(
         self, value: CostValue, match: Match, mode: Literal['TEST', 'REAL'],

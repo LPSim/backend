@@ -59,7 +59,7 @@ class StoneFacetsElementalAbsorption_4_3(CharactorStatusBase):
     version: Literal['4.3'] = '4.3'
     usage: int = 0
     max_usage: int = 0
-    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     current_damage_element: DamageElementalType = DamageElementalType.GEO
     absorbed_elements: List[DamageElementalType] = []
@@ -402,7 +402,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": ""
             }
         },
-        "image_path": "cardface/Char_Monster_Dahaka_Ice.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_DahakaIce.png",  # noqa: E501
     },
     "CHARACTOR/Azhdaha_ELECTRO": {
         "names": {
@@ -415,7 +415,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": ""
             }
         },
-        "image_path": "cardface/Char_Monster_Dahaka_Elec.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_DahakaElec.png",  # noqa: E501
     },
     "CHARACTOR/Azhdaha_PYRO": {
         "names": {
@@ -428,7 +428,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": ""
             }
         },
-        "image_path": "cardface/Char_Monster_Dahaka_Fire.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_DahakaFire.png",  # noqa: E501
     },
     "CHARACTOR/Azhdaha_HYDRO": {
         "names": {
@@ -441,7 +441,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": ""
             }
         },
-        "image_path": "cardface/Char_Monster_Dahaka_Water.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_DahakaWater.png",  # noqa: E501
     },
     "SKILL_Azhdaha_NORMAL_ATTACK/Sundering Charge": {
         "names": {
@@ -525,7 +525,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "After this character takes Cryo/Hydro/Pyro/Electro DMG: If this character currently has not absorbed the power of this element, remove this effect, and then this character performs Elemental Absorption.",  # noqa: E501
                 "zh-CN": "角色受到冰/水/火/雷元素伤害后：如果角色当前未汲取该元素的力量，则移除此状态，然后角色汲取对应元素的力量。"  # noqa: E501
             }
-        }
+        },
+        "image_path": "status/Dahaka_S.png"
     },
     "SKILL_Azhdaha_ELEMENTAL_BURST/Decimating Rockfall": {
         "names": {

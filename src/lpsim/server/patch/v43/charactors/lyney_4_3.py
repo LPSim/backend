@@ -24,7 +24,7 @@ class PropSurplus_4_3(CharactorStatusBase):
     version: Literal['4.3'] = '4.3'
     usage: int = 1
     max_usage: int = 3
-    icon_type: IconType = IconType.OTHERS
+    icon_type: IconType = IconType.BUFF
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Match,

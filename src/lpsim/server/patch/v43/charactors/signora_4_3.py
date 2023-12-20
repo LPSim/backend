@@ -16,7 +16,7 @@ from ....match import Match
 from ....struct import Cost, ObjectPosition
 from ....consts import (
     DAMAGE_TYPE_TO_ELEMENT, ELEMENT_TO_DIE_COLOR, CostLabels, 
-    DamageElementalType, DieColor, ElementType, FactionType, 
+    DamageElementalType, DieColor, ElementType, FactionType, IconType, 
     ObjectPositionType, WeaponType
 )
 from ....charactor.charactor_base import (
@@ -73,6 +73,7 @@ class IceSealedCrimsonWitchOfEmbers_4_3(ReviveCharactorStatus):
     ] = 'Ice-Sealed Crimson Witch of Embers'
     version: Literal['4.3'] = '4.3'
     heal: int = 1
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_ROUND_PREPARE(
         self, event: PlayerActionStartEventArguments, match: Match
@@ -98,13 +99,18 @@ class SheerCold_4_3(RoundEndAttackCharactorStatus):
 
     # will modify when init
     damage_elemental_type: DamageElementalType = DamageElementalType.PIERCING
+    icon_type: Literal[
+        IconType.DEBUFF_ELEMENT_ICE, IconType.DEBUFF_ELEMENT_FIRE
+    ] = IconType.DEBUFF_ELEMENT_ICE
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.name == 'Sheer Cold':
             self.damage_elemental_type = DamageElementalType.CRYO
+            self.icon_type = IconType.DEBUFF_ELEMENT_ICE
         elif self.name == 'Blazing Heat':
             self.damage_elemental_type = DamageElementalType.PYRO
+            self.icon_type = IconType.DEBUFF_ELEMENT_FIRE
         else:
             raise AssertionError(f'Unknown name {self.name}')
 
@@ -412,7 +418,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": ""
             }
         },
-        "image_path": "cardface/Char_Monster_LaSignora_Fire.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_LaSignoraHarbinger.png",  # noqa: E501
     },
     "SKILL_Signora_NORMAL_ATTACK/Frostblade Hailstorm": {
         "names": {
@@ -520,7 +526,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "When the Action Phase starts: If the attached character has no more than 4 HP, remove this effect.\nWhen attached character is defeated: Remove this effect, ensure that character $[K54|s1] and heal them to 1 HP.\n\nWhen this effect is removed: Attached character will transform into the Crimson Witch of Embers state.",  # noqa: E501
                 "zh-CN": "行动阶段开始时：如果所附属角色生命值不多于4，则移除此效果。\n所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。\n\n此效果被移除时：所附属角色转换为「焚尽的炽炎魔女」形态。"  # noqa: E501
             }
-        }
+        },
+        "image_path": "status/LaSignora_S.png"
     },
     "SKILL_Signora_PASSIVE/Might of Delusion": {
         "names": {

@@ -31,9 +31,7 @@ class ChiselLightMirror_4_3(ElementalInfusionCharactorStatus,
     max_usage: int = 3
 
     infused_elemental_type: DamageElementalType = DamageElementalType.DENDRO
-    # TODO check icon
-    icon_type: Literal[
-        IconType.ELEMENT_ENCHANT_GRASS] = IconType.ELEMENT_ENCHANT_GRASS
+    icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Match
@@ -248,7 +246,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "Physical DMG dealt by the character is converted to Dendro DMG.\nAfter this character performs a Normal Attack: Deals 1 Dendro DMG. If this Skill is a Charged Attack, this state's Duration (Rounds) +1.\nDuration (Rounds): 2 (Can stack, max 3 stacks)",  # noqa: E501
                 "zh-CN": "角色造成的物理伤害变为草元素伤害。\n角色普通攻击后：造成1点草元素伤害。如果此技能为重击，则使此状态的持续回合+1。\n持续回合：2（可叠加，最多叠加到3回合）"  # noqa: E501
             }
-        }
+        },
+        "image_path": "status/Alhatham_S.png"
     },
     "SKILL_Alhaitham_ELEMENTAL_BURST/Particular Field: Fetters of Phenomena": {
         "names": {

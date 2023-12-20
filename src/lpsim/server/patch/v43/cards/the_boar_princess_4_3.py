@@ -18,7 +18,7 @@ class TheBoarPrincessStatus_4_3(RoundTeamStatus):
     version: Literal["4.3"] = "4.3"
     usage: int = 2
     max_usage: int = 2
-    icon_type: IconType = IconType.SPECIAL
+    icon_type: IconType = IconType.BUFF
 
     def event_handler_REMOVE_OBJECT(
         self, event: RemoveObjectEventArguments, match: Match

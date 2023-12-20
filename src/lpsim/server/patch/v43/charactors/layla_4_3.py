@@ -295,7 +295,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "After one of your characters uses a Skill: Gain 1 Night Star. If possible, consume 4 Night Stars to deal 1 Cryo DMG.",  # noqa: E501
                 "zh-CN": "我方角色使用技能后：累积1枚「晚星」。如可能，就消耗4枚「晚星」，造成1点冰元素伤害。"  # noqa: E501
             }
-        }
+        },
+        "image_path": "status/Layla_S.png"
     },
     "SKILL_Layla_ELEMENTAL_BURST/Dream of the Star-Stream Shaker": {
         "names": {

@@ -84,7 +84,7 @@ class LightningRod_4_3(CharactorStatusBase):
     version: Literal['4.3'] = '4.3'
     usage: int = 1
     max_usage: int = 1
-    icon_type: IconType = IconType.OTHERS
+    icon_type: IconType = IconType.DEBUFF
 
     def value_modifier_DAMAGE_INCREASE(
         self, value: DamageIncreaseValue, match: Match, 
@@ -443,7 +443,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "After a character on whose side of the field this card is on uses a Skill: Attach Lightning Rod to the active character on that side. (Once per Round)",  # noqa: E501
                 "zh-CN": "所在阵营角色使用技能后：对所在阵营出战角色附属雷鸣探知。（每回合1次）"
             }
-        }
+        },
+        "image_path": "status/Debuff_Raijin_S.png"
     },
     "TALENT_Thunder Manifestation/Grieving Echo": {
         "names": {
