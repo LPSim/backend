@@ -428,8 +428,8 @@ desc: Dict[str, DescDictType] = {
     },
     "SKILL_Signora_NORMAL_ATTACK/Fire Normal Attack": {
         "names": {
-            "en-US": "Fire Normal Attack",
-            "zh-CN": "火普攻"
+            "en-US": "Crimson Lotus Moth",
+            "zh-CN": "红莲之蛾"
         },
         "descs": {
             "4.3": {
@@ -452,8 +452,8 @@ desc: Dict[str, DescDictType] = {
     },
     "SKILL_Signora_ELEMENTAL_SKILL/Fire Elemental Skill": {
         "names": {
-            "en-US": "Fire Elemental Skill",
-            "zh-CN": "火元素战技"
+            "en-US": "Decimating Lash",
+            "zh-CN": "烬灭之鞭"
         },
         "descs": {
             "4.3": {
@@ -500,8 +500,8 @@ desc: Dict[str, DescDictType] = {
     },
     "SKILL_Signora_ELEMENTAL_BURST/Pyro Burst": {
         "names": {
-            "en-US": "Pyro Burst",
-            "zh-CN": "火元素爆发"
+            "en-US": "Whirling Blaze",
+            "zh-CN": "燃焰旋织"
         },
         "descs": {
             "4.3": {
