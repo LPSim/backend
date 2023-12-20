@@ -107,3 +107,7 @@ def test_...():
 
     # simulate ends, check final state
     assert match.state != MatchState.ERROR
+
+
+if __name__ == '__main__':
+    test_...()

@@ -76,6 +76,7 @@ if __name__ == '__main__':
     match.config.initial_dice_number = 16
 
     server.match = match
+    server.match_random_state = get_random_state()
     server.match.start()
     server.match._save_history()
     server.match.step()
