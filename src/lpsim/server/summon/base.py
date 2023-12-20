@@ -35,6 +35,8 @@ class SummonBase(ObjectBase):
     version: str
     usage: int
     max_usage: int
+    damage_elemental_type: DamageElementalType
+    damage: int
 
     # icon type is used to show the icon on the summon top right. 
     icon_type: Literal[
