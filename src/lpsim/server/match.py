@@ -2194,6 +2194,9 @@ class Match(BaseModel):
             )
             table = self.player_tables[damage.target_position.player_idx]
             charactor = table.charactors[damage.target_position.charactor_idx]
+            assert damage.target_position.id == charactor.id, (
+                'Damage target position should be charactor, id not match. '
+            )
             assert charactor.is_alive, (
                 'Damage target charactor should be alive.'
             )
