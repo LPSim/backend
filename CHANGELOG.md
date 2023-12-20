@@ -87,6 +87,7 @@ of the game, and the last number is the patch version of this project.
   (e.g. Frozen).
 - Bug in deck code generation, which will generate invalid codes.
 - Wrong log information for DrawCardAction.
+- Wrong target of Kaeya's Talent when healing self.
 
 ## [0.4.2.4] - 2023-12-13
 
