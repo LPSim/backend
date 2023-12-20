@@ -1,9 +1,11 @@
+import json
 import numpy as np
-from typing import List, Any
+from typing import List, Any, Tuple
 from src.lpsim.agents.interaction_agent import (
     InteractionAgent, InteractionAgent_V1_0
 )
-from src.lpsim.server.match import Match
+from src.lpsim.server.match import Match, MatchConfig
+from src.lpsim.server.deck import Deck
 from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.agents.agent_base import AgentBase
 from src.lpsim.server.struct import ObjectPosition
@@ -112,8 +114,46 @@ def get_pidx_cidx(cmd):
     return int(cmd[2][1]), int(cmd[2][3])
 
 
-def check_usage(data, usage_strs):
+def check_usage(data, usage_strs: List[str]):
     usage = [int(x) for x in usage_strs]
     assert len(data) == len(usage)
     for u, d in zip(usage, data):
         assert u == d.usage
+
+
+def read_from_log_json(path: str) -> Tuple[
+    Match, InteractionAgent, InteractionAgent
+]:
+    """
+    read from log json file, return Match instance and two agents.
+    """
+    data = json.load(open(path, 'r', encoding = 'utf-8'))
+    decks = [
+        Deck.from_str(data['start_deck'][0]),
+        Deck.from_str(data['start_deck'][1])
+    ]
+    config = MatchConfig(**data['match_config'])
+    random_state = data['match_random_state']
+    commands = data['command_history']
+    # if isinstance(commands[0][0], (list, tuple)):
+    #     # new version, extract only string
+    #     commands = [
+    #         [
+    #             y[1] for y in commands
+    #         ] for x in commands
+    #     ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = commands[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = commands[1],
+        only_use_command = True
+    )
+    match = Match(random_state = random_state, config = config)
+    match.set_deck(decks)
+    return match, agent_0, agent_1
