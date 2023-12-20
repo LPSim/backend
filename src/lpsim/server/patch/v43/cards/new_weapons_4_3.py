@@ -199,6 +199,10 @@ class PrimordialJadeWingedSpear_4_3(WeaponBase):
     weapon_type: Literal[WeaponType.POLEARM] = WeaponType.POLEARM
     max_damage: int = 3
 
+    def equip(self, match: Match) -> List[Actions]:
+        self.damage_increase = 1
+        return []
+
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Match
     ) -> List[Actions]:

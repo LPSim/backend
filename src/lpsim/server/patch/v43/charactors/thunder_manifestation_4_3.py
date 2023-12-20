@@ -98,7 +98,7 @@ class LightningRod_4_3(CharactorStatusBase):
             # no usage left, do nothing
             return value
         if not value.is_corresponding_charactor_receive_damage(
-            self.position, match
+            self.position, match, ignore_piercing = False
         ):
             # not corresponding charactor, do nothing
             return value

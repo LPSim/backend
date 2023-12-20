@@ -196,7 +196,7 @@ class LightsRemit_4_3(SkillTalent):
             # not self attack, return
             return []
         obj = match.get_object(event.damages[0].final_damage.position)
-        if obj is None:
+        if obj is None:  # pragma: no cover
             # obj is None, return
             return []
         if obj.name != 'Shooting Star':

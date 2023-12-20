@@ -106,7 +106,7 @@ class SheerCold_4_3(RoundEndAttackCharactorStatus):
         elif self.name == 'Blazing Heat':
             self.damage_elemental_type = DamageElementalType.PYRO
         else:
-            raise ValueError(f'Unknown name {self.name}')
+            raise AssertionError(f'Unknown name {self.name}')
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Match
@@ -184,7 +184,7 @@ class SignoraNormalAttack(SignoraSkillValidCheck, ElementalNormalAttackBase):
         elif self.name == 'Fire Normal Attack':
             self.damage_type = DamageElementalType.PYRO
         else:
-            raise ValueError(f'Unknown name {self.name}')
+            raise AssertionError(f'Unknown name {self.name}')
         self.cost = Cost(
             elemental_dice_color = ELEMENT_TO_DIE_COLOR[
                 DAMAGE_TYPE_TO_ELEMENT[self.damage_type]
@@ -217,7 +217,7 @@ class SignoraElementalSkill(SignoraSkillValidCheck, ElementalSkillBase):
         elif self.name == 'Fire Elemental Skill':
             self.damage_type = DamageElementalType.PYRO
         else:
-            raise ValueError(f'Unknown name {self.name}')
+            raise AssertionError(f'Unknown name {self.name}')
         self.cost.elemental_dice_color = ELEMENT_TO_DIE_COLOR[
             DAMAGE_TYPE_TO_ELEMENT[self.damage_type]]
 
@@ -227,7 +227,7 @@ class SignoraElementalSkill(SignoraSkillValidCheck, ElementalSkillBase):
         elif self.damage_type == DamageElementalType.PYRO:
             status_name = 'Blazing Heat'
         else:
-            raise ValueError(f'Unknown damage type {self.damage_type}')
+            raise AssertionError(f'Unknown damage type {self.damage_type}')
         return super().get_actions(match) + [
             self.create_opposite_charactor_status(match, status_name)
         ]
@@ -255,7 +255,7 @@ class CarmineChrysalis(SignoraSkillValidCheck, ElementalBurstBase):
             self.position.charactor_idx].status
         target_status = None
         for s in status_list:
-            if s.name == 'Ice-Sealed Crimson Witch of Embers':
+            if s.name == 'Ice-Sealed Crimson Witch of Embers':  # pragma: no branch  # noqa: E501
                 target_status = s
                 break
         else:

@@ -155,7 +155,7 @@ class SpiritOfOmensPower(PassiveSkillBase):
         ):
             # not self receive damage, do nothing
             return []
-        if charactor.is_defeated:
+        if charactor.is_defeated:  # pragma: no cover
             # self defeated, do nothing
             return []
         if charactor.hp > 7:

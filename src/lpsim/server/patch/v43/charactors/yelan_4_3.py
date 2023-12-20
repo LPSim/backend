@@ -105,7 +105,7 @@ class LingeringLifeline(ElementalSkillBase):
         status = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx].status
         for s in status:
-            if s.name == 'Breakthrough':
+            if s.name == 'Breakthrough':  # pragma: no branch
                 break_through = s
                 break
         else:
