@@ -87,5 +87,59 @@ def test_deck_code():
     assert check_deck_str_same(deck_str, deck_code_to_deck_str(deck_code_rev))
 
 
+def test_deck_doce_shuffle():
+    deck_str = '''
+        charactor:Yelan
+        charactor:Chongyun
+        charactor:Kamisato Ayaka
+        Sacrificial Bow
+        King's Squire
+        Light of Foliar Incision
+        Light of Foliar Incision
+        Gambler's Earrings
+        Gambler's Earrings
+        Wagner
+        Wagner
+        Chef Mao
+        Chef Mao
+        Liben
+        Liben
+        Dunyarzad
+        Dunyarzad
+        Master Zhang
+        Mamere
+        Mamere
+        Elemental Resonance: Woven Ice
+        Elemental Resonance: Woven Ice
+        Elemental Resonance: Shattering Ice
+        Elemental Resonance: Shattering Ice
+        Stone and Contracts
+        Leave It to Me!
+        Heavy Strike
+        The Legend of Vennessa
+        The Legend of Vennessa
+        Northern Smoked Chicken
+        Northern Smoked Chicken
+        Minty Meat Rolls
+        Minty Meat Rolls
+    '''
+    deck_str = '\n'.join([x.strip() for x in deck_str.strip().split('\n')])
+    # deck_code = 'tqYl1KmzpYX2a7GxsjWVbiixtvWlPGu0rgUWdqizsqa23LG3s5am3KiysZX1JHi1tsWl'  # noqa: E501
+    # deck_str = deck_code_to_deck_str(deck_code)
+    deck_str_sorted = sorted(deck_str.strip().split('\n'))
+    for _ in range(100):  # pragma: no branch
+        deck_code_2 = deck_str_to_deck_code(deck_str)
+        deck_str_2 = deck_code_to_deck_str(deck_code_2)
+        deck_str_2_sorted = sorted(deck_str_2.strip().split('\n'))
+        assert deck_str_sorted == deck_str_2_sorted
+        if deck_str != deck_str_2:  # pragma: no branch
+            break
+    else:
+        raise AssertionError(
+            'this deck code should shuffle to generate valid code, '
+            'but with 100 times no different code is generated!')
+
+
 if __name__ == "__main__":
     test_deck_code()
+    test_deck_doce_shuffle()
