@@ -10,7 +10,8 @@ from ....status.charactor_status.base import (
 from .....utils import BaseModel
 from ....event import (
     CreateObjectEventArguments, MakeDamageEventArguments, 
-    PlayerActionStartEventArguments, RoundPrepareEventArguments
+    PlayerActionStartEventArguments, RemoveObjectEventArguments, 
+    RoundPrepareEventArguments
 )
 from ....match import Match
 from ....struct import Cost, ObjectPosition
@@ -372,8 +373,8 @@ class Signora_4_3(CharactorBase):
         ]
 
     def event_handler_REMOVE_OBJECT(
-        self, event: RemoveObjectAction, match: Match
-    ):
+        self, event: RemoveObjectEventArguments, match: Match
+    ) -> List[Actions]:
         """
         When Ice-Sealed Crimson Witch of Embers is removed, transform self 
         element and desc.
