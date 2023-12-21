@@ -9,13 +9,13 @@ from tests.utils_for_test import (
 
 def template():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_lynette.json')
+        os.path.join(os.path.dirname(__file__), 'jsons', 'test_new_4_transform.json')  # noqa: E501
     )
     # modify hp
-    for i in range(2):
-        charactors = match.player_tables[i].player_deck_information.charactors
-        for c in charactors:
-            c.hp = c.max_hp = 30
+    # for i in range(2):
+    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
+    #     for c in charactors:
+    #         c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)
     match.start()
@@ -32,15 +32,16 @@ def template():
             raise AssertionError('No need respond.')
         # add tests
         enable = [
-            1,  # hp
-            2,  # summon
-            3,  # support
-            4,  # team status
-            5,  # charactor status
-            6,  # hands
-            7,  # dice
-            8,  # charge
-            9,  # summon element
+            # 1,  # hp
+            # 2,  # summon
+            # 3,  # support
+            # 4,  # team status
+            # 5,  # charactor status
+            # 6,  # hands
+            # 7,  # dice
+            # 8,  # charge
+            # 9,  # summon element
+            10,  # charactor desc
         ]
         # 1 for hp
         hp_str = 'TEST 1'
@@ -75,6 +76,9 @@ def template():
                     charactor_str += f' {s.usage}'
                 if 5 in enable:
                     nc.append(charactor_str)
+                cdesc_str = f'TEST 10 p{tnum}c{cnum} |{c.desc}|'
+                if c.is_alive:
+                    nc.append(cdesc_str)
             # 6 for hands
             hands_str = f'TEST 6 p{tnum} {len(table.hands)}'
             if 6 in enable:
@@ -148,6 +152,11 @@ def template():
                 assert len(match.player_tables[pidx].summons) == len(cmd[3:])
                 for i, s in enumerate(match.player_tables[pidx].summons):
                     assert s.damage_elemental_type.value == cmd[3 + i]
+            elif test_id == 10:
+                pidx, cidx = get_pidx_cidx(cmd)
+                desc = match.player_tables[pidx].charactors[cidx].desc
+                cmd_desc = ' '.join(cmd[3:])[1:-1]
+                assert desc == cmd_desc
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond

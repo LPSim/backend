@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ...event import CreateObjectEventArguments, RemoveObjectEventArguments
+
 from ....utils.class_registry import register_class
 
 from ...action import Actions
@@ -60,6 +62,7 @@ class ConquerorOfEvilGuardianYaksha_3_7(SkillTalent):
 
 class Xiao_3_7(CharactorBase):
     name: Literal['Xiao']
+    desc: Literal['', 'transform'] = ''
     version: Literal['3.7'] = '3.7'
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
@@ -85,6 +88,28 @@ class Xiao_3_7(CharactorBase):
             ),
             BaneOfAllEvil(),
         ]
+
+    def _update_desc(self, match):
+        status = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx].status
+        for s in status:
+            if s.name == "Yaksha's Mask":
+                self.desc = "transform"
+                return
+        else:
+            self.desc = ''
+
+    def event_handler_REMOVE_OBJECT(
+        self, event: RemoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
 
 
 register_class(Xiao_3_7 | ConquerorOfEvilGuardianYaksha_3_7)

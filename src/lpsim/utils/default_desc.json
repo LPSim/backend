@@ -1667,6 +1667,19 @@
     "id": 1404,
     "image_path": "cardface/Char_Avatar_Cyno.png"
   },
+  "CHARACTOR/Cyno_transform": {
+    "names": {
+      "zh-CN": "赛诺",
+      "en-US": "Cyno"
+    },
+    "descs": {
+      "3.3": {
+        "zh-CN": "",
+        "en-US": "\"Judicator of Secrets\" Cyno"
+      }
+    },
+    "image_path": "cardface/Char_Avatar_Cyno02.png"
+  },
   "CHARACTOR/Dehya": {
     "names": {
       "zh-CN": "迪希雅",
@@ -2387,6 +2400,23 @@
     "id": 1204,
     "image_path": "cardface/Char_Avatar_Tartaglia.png"
   },
+  "CHARACTOR/Tartaglia_transform": {
+    "names": {
+      "zh-CN": "达达利亚",
+      "en-US": "Tartaglia"
+    },
+    "descs": {
+      "3.7": {
+        "zh-CN": "",
+        "en-US": "\"Childe\" Tartaglia"
+      },
+      "4.1": {
+        "zh-CN": "",
+        "en-US": "\"Childe\" Tartaglia"
+      }
+    },
+    "image_path": "cardface/Char_Avatar_Tartaglia02.png"
+  },
   "CHARACTOR/Tighnari": {
     "names": {
       "zh-CN": "提纳里",
@@ -2429,6 +2459,19 @@
     "id": 1506,
     "image_path": "cardface/Char_Avatar_Wanderer.png"
   },
+  "CHARACTOR/Wanderer_transform": {
+    "names": {
+      "zh-CN": "流浪者",
+      "en-US": "Wanderer"
+    },
+    "descs": {
+      "4.1": {
+        "zh-CN": "",
+        "en-US": "\"Eons Adrift\" Wanderer"
+      }
+    },
+    "image_path": "cardface/Char_Avatar_Wanderer02.png"
+  },
   "CHARACTOR/Xiangling": {
     "names": {
       "zh-CN": "香菱",
@@ -2460,6 +2503,19 @@
     },
     "id": 1504,
     "image_path": "cardface/Char_Avatar_Xiao.png"
+  },
+  "CHARACTOR/Xiao_transform": {
+    "names": {
+      "zh-CN": "魈",
+      "en-US": "Xiao"
+    },
+    "descs": {
+      "3.7": {
+        "zh-CN": "",
+        "en-US": "\"Vigilant Yaksha\" Xiao"
+      }
+    },
+    "image_path": "cardface/Char_Avatar_Xiao02.png"
   },
   "CHARACTOR/Xingqiu": {
     "names": {

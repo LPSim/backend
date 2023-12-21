@@ -5,8 +5,8 @@ from ....utils.class_registry import register_class
 
 from ...modifiable_values import DamageValue
 from ...event import (
-    CharactorReviveEventArguments, GameStartEventArguments, 
-    RoundEndEventArguments, SkillEndEventArguments
+    CharactorReviveEventArguments, CreateObjectEventArguments, 
+    GameStartEventArguments, RoundEndEventArguments, SkillEndEventArguments
 )
 from ...action import Actions, CreateObjectAction, MakeDamageAction
 from ...struct import Cost
@@ -235,6 +235,7 @@ class AbyssalMayhemHydrospout_4_1(SkillTalent):
 
 class Tartaglia_4_1(CharactorBase):
     name: Literal['Tartaglia']
+    desc: Literal['', 'transform'] = ''
     version: Literal['4.1'] = '4.1'
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
@@ -258,6 +259,18 @@ class Tartaglia_4_1(CharactorBase):
             HavocObliteration(),
             TideWithholder(),
         ]
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        status = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx].status
+        for s in status:
+            if s.name == 'Melee Stance':
+                self.desc = 'transform'
+                return []
+        self.desc = ''
+        return []
 
 
 register_class(Tartaglia_4_1 | AbyssalMayhemHydrospout_4_1)

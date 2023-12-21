@@ -3,7 +3,10 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_class
 
 from ...modifiable_values import CostValue, DamageValue
-from ...event import SkillEndEventArguments, SwitchCharactorEventArguments
+from ...event import (
+    CreateObjectEventArguments, RemoveObjectEventArguments, 
+    SkillEndEventArguments, SwitchCharactorEventArguments
+)
 
 from ...action import (
     ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction, 
@@ -219,6 +222,7 @@ class GalesOfReverie_4_1(SkillTalent):
 
 class Wanderer_4_1(CharactorBase):
     name: Literal['Wanderer']
+    desc: Literal['', 'transform'] = ''
     version: Literal['4.1'] = '4.1'
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
@@ -235,6 +239,28 @@ class Wanderer_4_1(CharactorBase):
             HanegaSongOfTheWind(),
             KyougenFiveCeremonialPlays(),
         ]
+
+    def _update_desc(self, match):
+        status = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx].status
+        for s in status:
+            if s.name == "Windfavored":
+                self.desc = "transform"
+                return
+        else:
+            self.desc = ''
+
+    def event_handler_REMOVE_OBJECT(
+        self, event: RemoveObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
 
 
 register_class(Wanderer_4_1 | GalesOfReverie_4_1)

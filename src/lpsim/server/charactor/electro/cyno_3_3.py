@@ -1,5 +1,9 @@
 from typing import Any, List, Literal
 
+from ...event import (
+    ChangeObjectUsageEventArguments, CreateObjectEventArguments
+)
+
 from ....utils.class_registry import register_class
 
 from ...action import Actions, ChangeObjectUsageAction
@@ -124,6 +128,7 @@ class FeatherfallJudgment_4_2(SkillTalent):
 
 class Cyno_3_3(CharactorBase):
     name: Literal['Cyno']
+    desc: Literal['', 'transform'] = ''
     version: Literal['3.3'] = '3.3'
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
@@ -147,6 +152,30 @@ class Cyno_3_3(CharactorBase):
             SacredRiteWolfsSwiftness(),
             LawfulEnforcer()
         ]
+
+    def _update_desc(self, match: Any):
+        status = match.player_tables[self.position.player_idx].charactors[
+            self.position.charactor_idx].status
+        for s in status:
+            if s.name == 'Pactsworn Pathclearer':  # pragma: no branch
+                if s.usage >= 4:
+                    self.desc = 'transform'
+                else:
+                    self.desc = ''
+                return
+        self.desc = ''
+
+    def event_handler_CHANGE_OBJECT_USAGE(
+        self, event: ChangeObjectUsageEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Any
+    ) -> List[Actions]:
+        self._update_desc(match)
+        return []
 
 
 register_class(Cyno_3_3 | FeatherfallJudgment_3_3 | FeatherfallJudgment_4_2)
