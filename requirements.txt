@@ -2,7 +2,7 @@ build==1.0.3
 setuptools==68.2.2
 setuptools_scm==7.1.0
 twine==4.0.2
-numpy==1.24.3
+numpy
 pydantic==1.10.8
 typing_extensions==4.6.2
 pytest==7.4.0
