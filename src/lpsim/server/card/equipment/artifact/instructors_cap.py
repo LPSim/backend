@@ -15,6 +15,8 @@ from .base import RoundEffectArtifactBase
 
 
 class InstructorsCap_3_3(RoundEffectArtifactBase):
+    # TODO electro hypostasis triggers reaction for second punch,
+    # may generate dice for the next attack. Same as Chang and parametric?
     name: Literal["Instructor's Cap"]
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(any_dice_number = 2)

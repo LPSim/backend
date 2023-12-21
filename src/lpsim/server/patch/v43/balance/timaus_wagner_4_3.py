@@ -64,9 +64,6 @@ desc: Dict[str, DescDictType] = {
     "SUPPORT/Wagner": {
         "descs": {
             "4.3": {
-                # weapon cost should not less than 3
-                # "zh-CN": "入场时附带2个「锻造原胚」。结束阶段：补充1个「锻造原胚」。入场时：如果牌组中携带了至少3种费用大于等于3的「武器」，从牌组中随机抽取1张「武器」。打出「武器」手牌时：如可能，则支付等同于「武器」总费用数量的「锻造原胚」，以免费装备此「武器」。（每回合1次）",  # noqa: E501
-                # "en-US": "Comes with 2 Forging Billet when played. End Phase: Gain 1 Forging Billet. When played: If you have not less than 3 types of Weapons that cost not less than 3 in your initial deck, draw 1 Weapon from your deck. When playing a Weapon Card: If possible, spend Forging Billet equal to the total cost of the Weapon and equip this Weapon for free. (Once per Round)",  # noqa: E501
                 "zh-CN": "入场时附带2个「锻造原胚」。结束阶段：补充1个「锻造原胚」。入场时：如果牌组中携带了至少3种「武器」，从牌组中随机抽取1张「武器」。打出「武器」手牌时：如可能，则支付等同于「武器」总费用数量的「锻造原胚」，以免费装备此「武器」。（每回合1次）",  # noqa: E501
                 "en-US": "Comes with 2 Forging Billet when played. End Phase: Gain 1 Forging Billet. When played: If you have not less than 3 types of Weapons in your initial deck, draw 1 Weapon from your deck. When playing a Weapon Card: If possible, spend Forging Billet equal to the total cost of the Weapon and equip this Weapon for free. (Once per Round)",  # noqa: E501
             }
@@ -75,8 +72,6 @@ desc: Dict[str, DescDictType] = {
     "SUPPORT/Timaeus": {
         "descs": {
             "4.3": {
-                # "zh-CN": "入场时附带2个「合成材料」。结束阶段：补充1个「合成材料」。入场时：如果牌组中携带了至少6张费用大于等于3的「圣遗物」，从牌组中随机抽取1张「圣遗物」。打出「圣遗物」手牌时：如可能，则支付等同于「圣遗物」总费用数量的「合成材料」，以免费装备此「圣遗物」。（每回合1次）",  # noqa: E501
-                # "en-US": "Comes with 2 Transmutation Materials when played. End Phase: Gain 1 Transmutation Material. When played: If you have not less than 6 Artifacts that cost not less than 3 in your initial deck, draw 1 Artifact from your deck. When playing an Artifact Card: If possible, spend Transmutation Materials equal to the total cost of the Artifact and equip this Artifact for free. (Once per Round)",  # noqa: E501
                 "zh-CN": "入场时附带2个「合成材料」。结束阶段：补充1个「合成材料」。入场时：如果牌组中携带了至少6张「圣遗物」，从牌组中随机抽取1张「圣遗物」。打出「圣遗物」手牌时：如可能，则支付等同于「圣遗物」总费用数量的「合成材料」，以免费装备此「圣遗物」。（每回合1次）",  # noqa: E501
                 "en-US": "Comes with 2 Transmutation Materials when played. When played: If you have not less than 6 Artifacts in your initial deck, draw 1 Artifact from your deck. End Phase: Gain 1 Transmutation Material. When playing an Artifact Card: If possible, spend Transmutation Materials equal to the total cost of the Artifact and equip this Artifact for free. (Once per Round)",  # noqa: E501
             }
