@@ -1958,7 +1958,7 @@
         "max_summon_number": 4,
         "max_support_number": 4,
         "make_skill_prediction": false,
-        "history_level": 10,
+        "history_level": 0,
         "recreate_mode": false,
         "random_object_information": {}
     }
