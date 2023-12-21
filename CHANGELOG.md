@@ -7,7 +7,7 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
-## [0.4.3.1] - 2023-12-20
+## [0.4.3.1] - 2023-12-21
 
 ### Added
 - HTTP Server will send uuid to frontend, and frontend will send uuid to server
@@ -78,6 +78,8 @@ of the game, and the last number is the patch version of this project.
   match.
 - Minor changes in `pytest.ini`.
 - `SummonBase` now must contain damage and damege_element_type.
+- Tartaglia, Xiao, Wanderer and Cyno will change its cardface when meets their
+  conditions.
 
 ### Fixed
 - Timaeus cannot decrease cost when drawed in the round (i.e. Liben, 
