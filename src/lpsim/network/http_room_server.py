@@ -1,4 +1,5 @@
 import os
+import platform
 import uvicorn
 import signal
 import time
@@ -45,7 +46,8 @@ class OneRoomWorker(Process):
 
                 @self.server.app.middleware('http')
                 async def post_timestamp_sender(request: Request, call_next):
-                    self.post_queue.put(time.time())
+                    if request.method == 'POST':
+                        self.post_queue.put(time.time())
                     response = await call_next(request)
                     return response
 
@@ -65,8 +67,9 @@ class OneRoomWorker(Process):
                             'decks': self.server.uploaded_deck_codes,
                         })
                         break
-                    except OSError as e:
-                        logging.error(e)
+                    except SystemExit:
+                        # start failed, send message to queue
+                        self.resp_queue.put('invalid and retry')
                 else:
                     self.resp_queue.put('server failed to start')
             except KeyboardInterrupt:
@@ -78,9 +81,10 @@ class HTTPRoomServer():
     """
     HTTP room server that host multiple rooms, each room is a HTTP server.
     Room will occupy a port, room server will deal with reqeusts from client,
-    to reset / start a new room etc, and tell client the connection pass and
+    to reset/start a new room etc, and tell client the room name and
     link of the server.
-    It only starts rooms with default rules now.
+    It only starts rooms with same rules now. When running on Linux, it will
+    collect deck codes of stopped rooms, but not on Windows.
 
     Args:
         max_rooms (int): Max number of rooms that can be created. All rooms
@@ -124,7 +128,14 @@ class HTTPRoomServer():
 
         self.deck_history: List[Tuple[str, str]] = []
 
-        self._check_time_interval = 10
+        self._check_time_interval = 5
+
+        if platform.system() == 'Windows':
+            logging.warning(
+                'Windows system detected, room server will use terminate '
+                'instead of graceful shutdown, and cannot collect uploaded '
+                'deck information.'
+            )
 
         self.app = FastAPI()
         app = self.app
@@ -151,17 +162,29 @@ class HTTPRoomServer():
                 cmd_q, resp_q, post_q = self.queues[idx]
                 cmd_q.put(
                     (init_args, self.run_args, self.room_port_range))
-                resp = resp_q.get()
-                if resp == 'server failed to start':
-                    return JSONResponse({ 'status': 'failed' })
-                else:
-                    self.room_names[idx] = room_name
-                    self.room_ports[idx] = int(resp)
-                    self.room_active_times[idx] = time.time()
-                    return JSONResponse({
-                        'port': self.room_ports[idx],
-                        'status': 'created'
-                    })
+                while True:
+                    resp = resp_q.get()
+                    if resp == 'server failed to start':
+                        return JSONResponse({ 'status': 'failed' })
+                    else:
+                        # is port, but may start failed, need to check
+                        # whether fail message is sent
+                        if resp_q.empty():
+                            # if is empty, wait a minute and check again
+                            time.sleep(0.1)
+                        if resp_q.empty():
+                            # queue empty, start success
+                            self.room_names[idx] = room_name
+                            self.room_ports[idx] = int(resp)
+                            self.room_active_times[idx] = time.time()
+                            return JSONResponse({
+                                'port': self.room_ports[idx],
+                                'status': 'created'
+                            })
+                        else:
+                            # start failed with message
+                            resp = resp_q.get()
+                            assert resp == 'invalid and retry'
 
         @app.delete('/room/{room_name}')
         def delete_room_name(room_name: str, password: str = ''):
@@ -170,9 +193,10 @@ class HTTPRoomServer():
             error.
             """
             if password != self.admin_password:
-                return JSONResponse({ 'status': 'wrong password' })
+                return JSONResponse(
+                    status_code = 403, content = 'wrong password')
             if room_name not in self.room_names:
-                return JSONResponse({ 'status': 'not exist' })
+                return JSONResponse({ 'status': 'not exist' }, 404)
             else:
                 idx = self.room_names.index(room_name)
                 self._delete_one_room(idx)
@@ -184,13 +208,18 @@ class HTTPRoomServer():
             Get all rooms' name and port.
             """
             if password != self.admin_password:
-                return JSONResponse({ 'status': 'wrong password' })
+                return JSONResponse(
+                    status_code = 403, content = 'wrong password')
             return JSONResponse({
                 'rooms': [
                     {
                         'name': name,
-                        'port': port
-                    } for name, port in zip(self.room_names, self.room_ports)
+                        'port': port,
+                        'timeout': int(self.room_timeout - time.time() + at),
+                    } for name, port, at in zip(
+                        self.room_names, self.room_ports, 
+                        self.room_active_times
+                    )
                     if name is not None
                 ]
             })
@@ -201,7 +230,8 @@ class HTTPRoomServer():
             Get all decks used in rooms.
             """
             if password != self.admin_password:
-                return JSONResponse({ 'status': 'wrong password' })
+                return JSONResponse(
+                    status_code = 403, content = 'wrong password')
             return JSONResponse(self.deck_history)
 
     def _create_room_workers(self):
@@ -251,6 +281,8 @@ class HTTPRoomServer():
         self._stop_interval = True
         while not self._stop_interval_success:
             time.sleep(0.1)
+        self._stop_interval = False
+        self._stop_interval_success = False
 
         # after run, stop all worker rooms
         for idx, (worker, queue, name) in enumerate(zip(
@@ -259,34 +291,47 @@ class HTTPRoomServer():
             if name is not None:
                 self._delete_one_room(idx)
 
-        for worker, queue in zip(self.workers, self.queues):
-            queue[0].put((None, None, None))
-            worker.join()
+        if platform.system() != 'Windows':
+            # for OS other than windows, send stop signal to all workers and 
+            # join
+            for worker, queue in zip(self.workers, self.queues):
+                queue[0].put((None, None, None))
+                worker.join()
 
     def _delete_one_room(self, room_idx: int):
+        if platform.system() == 'Windows':
+            self._delete_one_room_by_terminate(room_idx)
+        else:
+            self._delete_one_room_gracefully(room_idx)
+
+    def _delete_one_room_gracefully(self, room_idx: int):
         room_name = self.room_names[room_idx]
         assert room_name is not None
         worker = self.workers[room_idx]
         pid = worker.pid
-        for signame in ('CTRL_C_EVENT', 'SIGINT'):
-            if hasattr(signal, signame):
-                sig = getattr(signal, signame)
-                break
-        else:
-            raise RuntimeError('no signal found')
-        try:
-            os.kill(pid, sig)
-            if signame == 'CTRL_C_EVENT':
-                # for Windows, wait until receive propogated signal
-                while True:
-                    time.sleep(0.1)
-        except KeyboardInterrupt:
-            pass
+        os.kill(pid, signal.SIGINT)
         msg = self.queues[room_idx][1].get()
         decks = msg['decks']
         for deck in decks:
             self.deck_history.append((room_name, deck))
-        logging.warning(f'room {room_name}:{room_idx} stopped')
+        room_port = self.room_ports[room_idx]
+        logging.warning(f'room {room_name}:{room_idx}:{room_port} stopped')
+        self.room_names[room_idx] = None
+        self.room_ports[room_idx] = 0
+
+    def _delete_one_room_by_terminate(self, room_idx: int):
+        room_name = self.room_names[room_idx]
+        assert room_name is not None
+        worker = self.workers[room_idx]
+        pid = worker.pid
+        os.kill(pid, signal.SIGTERM)
+        room_port = self.room_ports[room_idx]
+        logging.warning(f'room {room_name}:{room_idx}:{room_port} terminated')
+        # as it terminates, we cannot receive deck histories, and we need to
+        # re-create a new worker.
+        new_worker = OneRoomWorker(*self.queues[room_idx])
+        new_worker.start()
+        self.workers[room_idx] = new_worker
         self.room_names[room_idx] = None
         self.room_ports[room_idx] = 0
 
