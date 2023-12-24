@@ -3,7 +3,7 @@ import uuid
 import os
 import datetime
 from typing import Literal, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -56,6 +56,8 @@ class HTTPServer():
             use default config.
         reset_log_save_path: if not None, save the log when reset match to the
             path. The log is encoded in json, and log name is the timestamp.
+        room_name: name of the room. If not empty, only request with
+            room=specified_room_name will be accepted.
     """
     def __init__(
         self, 
@@ -63,11 +65,13 @@ class HTTPServer():
         decks: List[Deck | str] = [],
         match_config: MatchConfig | None = None,
         reset_log_save_path: str | None = None,
+        room_name: str = ''
     ):
         self.app = FastAPI()
         self.decks = [Deck.from_str(deck) if isinstance(deck, str) else deck
                       for deck in decks]
         self.reset_log_save_path = reset_log_save_path
+        self.room_name = room_name
         if match_config is not None and match_config.history_level < 10:
             raise ValueError(
                 'history_level must be at least 10 for HTTPServer')
@@ -105,12 +109,22 @@ class HTTPServer():
         # Add the GZipMiddleware to the app
         app.add_middleware(GZipMiddleware)
 
-        # @app.on_event('startup')
-        # async def startup_event():
-        #     self.match = get_new_match(
-        #         decks = self.decks,
-        #         rich_mode = False
-        #     )
+        @app.middleware('http')
+        async def check_room_name(request: Request, call_next):
+            query_params = request.query_params
+            if (
+                self.room_name != ''
+                and (
+                    "room" not in query_params 
+                    or query_params["room"] != self.room_name
+                )
+            ):
+                return JSONResponse(
+                    status_code = 404,
+                    content = 'Room name wrong'
+                )
+            response = await call_next(request)
+            return response
 
         '''API hanlders for app'''
 
