@@ -1,3 +1,4 @@
+import logging
 import json
 import uuid
 import os
@@ -18,6 +19,41 @@ from ..agents import InteractionAgent
 from .utils import get_new_match
 from ..utils.deck_code import deck_code_data
 from .. import __version_tuple__, __version__  # type: ignore
+
+
+class EndpointFilter(logging.Filter):
+    """Filter class to exclude specific endpoints from log entries."""
+
+    def __init__(self, excluded_endpoints: list[str]) -> None:
+        """
+        Initialize the EndpointFilter class.
+
+        Args:
+            excluded_endpoints: A list of endpoints to be excluded from log 
+                entries.
+        """
+        self.excluded_endpoints = excluded_endpoints
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """
+        Filter out log entries for excluded endpoints.
+
+        Args:
+            record: The log record to be filtered.
+
+        Returns:
+            bool: True if the log entry should be included, False otherwise.
+        """
+        if (
+            record.args 
+            and len(record.args) >= 3 
+        ):
+            endpoint: str = record.args[2]  # type: ignore
+            for excluded_endpoint in self.excluded_endpoints:
+                if endpoint.startswith(excluded_endpoint):
+                    return False
+            return True
+        return False
 
 
 class ResetData(BaseModel):
@@ -58,6 +94,8 @@ class HTTPServer():
             path. The log is encoded in json, and log name is the timestamp.
         room_name: name of the room. If not empty, only request with
             room=specified_room_name will be accepted.
+        excluded_log_endpoints: endpoints that will not be logged. Default is
+            ['/request', '/state'].
     """
     def __init__(
         self, 
@@ -65,13 +103,17 @@ class HTTPServer():
         decks: List[Deck | str] = [],
         match_config: MatchConfig | None = None,
         reset_log_save_path: str | None = None,
-        room_name: str = ''
+        room_name: str = '',
+        excluded_log_endpoints: List[str] = ['/request', '/state'],
     ):
         self.app = FastAPI()
         self.decks = [Deck.from_str(deck) if isinstance(deck, str) else deck
                       for deck in decks]
         self.reset_log_save_path = reset_log_save_path
         self.room_name = room_name
+        self.excluded_log_endpoints = excluded_log_endpoints
+        logging.getLogger('uvicorn.access').addFilter(
+            EndpointFilter(self.excluded_log_endpoints))
         if match_config is not None and match_config.history_level < 10:
             raise ValueError(
                 'history_level must be at least 10 for HTTPServer')
