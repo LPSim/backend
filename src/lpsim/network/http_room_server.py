@@ -9,9 +9,12 @@ import threading
 from fastapi.responses import JSONResponse
 from typing import List, Tuple
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from multiprocessing import Process, Queue
 
 from .http_server import HTTPServer
+from .. import __version_tuple__, __version__  # type: ignore
 
 
 class OneRoomWorker(Process):
@@ -139,6 +142,29 @@ class HTTPRoomServer():
 
         self.app = FastAPI()
         app = self.app
+
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=allow_origins,
+            # allow_origins=['*'],
+            allow_credentials=True,
+            allow_methods=['*'],
+            allow_headers=['*'],
+        )
+        app.add_middleware(GZipMiddleware)
+
+        @app.get('/version')
+        async def get_version():
+            """
+            Return the version of lpsim.
+            """
+            return {
+                'version': __version__,
+                'version_tuple': __version_tuple__,
+                'info': {
+                    'class': 'HTTPRoomServer',
+                },
+            }
 
         @app.post('/room/{room_name}')
         def post_room_name(room_name: str):

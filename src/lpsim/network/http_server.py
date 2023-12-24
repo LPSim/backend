@@ -178,6 +178,9 @@ class HTTPServer():
             return {
                 'version': __version__,
                 'version_tuple': __version_tuple__,
+                'info': {
+                    'class': 'HTTPServer',
+                },
             }
 
         @app.get('/patch')

@@ -73,6 +73,16 @@ server side, make empty response on agent, return 404/500, or run JS failed on
 frontend. Please open console of frontend and check the error message on both
 sides.
 
+#### Room Server
+
+You can serve multiple matches by using room server. It manages multiple
+HTTP server instances, frontend can create new room and join existing room.
+When a new room is created, room server will tell frontend the room name and
+the port it runs, then frontend will connect to the HTTP server on that port.
+When a room is created for a long time and no POST request is received, it
+will be closed automatically. Refer to `lpsim/network/http_room_server.py` and
+`http_room_serve.py` for more details.
+
 ### Start a match non-interactively
 
 #### Define the deck
