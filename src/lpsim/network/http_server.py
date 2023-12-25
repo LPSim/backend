@@ -1,9 +1,10 @@
+import logging
 import json
 import uuid
 import os
 import datetime
 from typing import Literal, List
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.gzip import GZipMiddleware
@@ -18,6 +19,41 @@ from ..agents import InteractionAgent
 from .utils import get_new_match
 from ..utils.deck_code import deck_code_data
 from .. import __version_tuple__, __version__  # type: ignore
+
+
+class EndpointFilter(logging.Filter):
+    """Filter class to exclude specific endpoints from log entries."""
+
+    def __init__(self, excluded_endpoints: list[str]) -> None:
+        """
+        Initialize the EndpointFilter class.
+
+        Args:
+            excluded_endpoints: A list of endpoints to be excluded from log 
+                entries.
+        """
+        self.excluded_endpoints = excluded_endpoints
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """
+        Filter out log entries for excluded endpoints.
+
+        Args:
+            record: The log record to be filtered.
+
+        Returns:
+            bool: True if the log entry should be included, False otherwise.
+        """
+        if (
+            record.args 
+            and len(record.args) >= 3 
+        ):
+            endpoint: str = record.args[2]  # type: ignore
+            for excluded_endpoint in self.excluded_endpoints:
+                if endpoint.startswith(excluded_endpoint):
+                    return False
+            return True
+        return False
 
 
 class ResetData(BaseModel):
@@ -56,6 +92,10 @@ class HTTPServer():
             use default config.
         reset_log_save_path: if not None, save the log when reset match to the
             path. The log is encoded in json, and log name is the timestamp.
+        room_name: name of the room. If not empty, only request with
+            room=specified_room_name will be accepted.
+        excluded_log_endpoints: endpoints that will not be logged. Default is
+            ['/request', '/state'].
     """
     def __init__(
         self, 
@@ -63,11 +103,17 @@ class HTTPServer():
         decks: List[Deck | str] = [],
         match_config: MatchConfig | None = None,
         reset_log_save_path: str | None = None,
+        room_name: str = '',
+        excluded_log_endpoints: List[str] = ['/request', '/state'],
     ):
         self.app = FastAPI()
         self.decks = [Deck.from_str(deck) if isinstance(deck, str) else deck
                       for deck in decks]
         self.reset_log_save_path = reset_log_save_path
+        self.room_name = room_name
+        self.excluded_log_endpoints = excluded_log_endpoints
+        logging.getLogger('uvicorn.access').addFilter(
+            EndpointFilter(self.excluded_log_endpoints))
         if match_config is not None and match_config.history_level < 10:
             raise ValueError(
                 'history_level must be at least 10 for HTTPServer')
@@ -105,12 +151,22 @@ class HTTPServer():
         # Add the GZipMiddleware to the app
         app.add_middleware(GZipMiddleware)
 
-        # @app.on_event('startup')
-        # async def startup_event():
-        #     self.match = get_new_match(
-        #         decks = self.decks,
-        #         rich_mode = False
-        #     )
+        @app.middleware('http')
+        async def check_room_name(request: Request, call_next):
+            query_params = request.query_params
+            if (
+                self.room_name != ''
+                and (
+                    "room" not in query_params 
+                    or query_params["room"] != self.room_name
+                )
+            ):
+                return JSONResponse(
+                    status_code = 404,
+                    content = 'Room name wrong'
+                )
+            response = await call_next(request)
+            return response
 
         '''API hanlders for app'''
 
@@ -122,6 +178,9 @@ class HTTPServer():
             return {
                 'version': __version__,
                 'version_tuple': __version_tuple__,
+                'info': {
+                    'class': 'HTTPServer',
+                },
             }
 
         @app.get('/patch')
