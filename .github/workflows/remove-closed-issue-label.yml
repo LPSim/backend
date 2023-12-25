@@ -1,0 +1,29 @@
+name: Remove Workon Label
+on:
+  issues:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  remove_label:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Remove label
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          let req = {
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          };
+          const labelToRemove = 'workon';
+          const issue = await github.rest.issues.get(req);
+          const labels = issue.data.labels;
+          const hasLabel = labels.some(label => label.name === labelToRemove);
+          if (hasLabel) {
+            await github.rest.issues.removeLabel({...req, name: labelToRemove});
+          }
