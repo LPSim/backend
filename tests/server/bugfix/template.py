@@ -9,8 +9,9 @@ from tests.utils_for_test import (
 
 def template():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_new_4_transform.json')  # noqa: E501
+        os.path.join(os.path.dirname(__file__), 'jsons', 'test_counter_reset_when_revive.json')  # noqa: E501
     )
+    match.config.history_level = 0
     # modify hp
     # for i in range(2):
     #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
@@ -32,16 +33,16 @@ def template():
             raise AssertionError('No need respond.')
         # add tests
         enable = [
-            # 1,  # hp
+            1,  # hp
             # 2,  # summon
             # 3,  # support
             # 4,  # team status
-            # 5,  # charactor status
+            5,  # charactor status
             # 6,  # hands
             # 7,  # dice
             # 8,  # charge
             # 9,  # summon element
-            10,  # charactor desc
+            # 10,  # charactor desc
         ]
         # 1 for hp
         hp_str = 'TEST 1'
@@ -77,7 +78,7 @@ def template():
                 if 5 in enable:
                     nc.append(charactor_str)
                 cdesc_str = f'TEST 10 p{tnum}c{cnum} |{c.desc}|'
-                if c.is_alive:
+                if c.is_alive and 10 in enable:
                     nc.append(cdesc_str)
             # 6 for hands
             hands_str = f'TEST 6 p{tnum} {len(table.hands)}'
@@ -166,7 +167,6 @@ def template():
 
     # simulate ends, check final state
     assert match.state != MatchState.ERROR
-    print(json.dumps(new_commands, indent = 4))
     open('111.json', 'w').write((json.dumps(new_commands, indent = 4)))
 
 

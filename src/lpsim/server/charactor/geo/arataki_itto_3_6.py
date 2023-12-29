@@ -39,6 +39,10 @@ class Ushi_3_6(DefendSummonBase):
 
     create_status_triggered: bool = False
 
+    def renew(self, new_status: 'Ushi_3_6') -> None:
+        self.create_status_triggered = new_status.create_status_triggered
+        return super().renew(new_status)
+
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Any
     ) -> List[CreateObjectAction]:
