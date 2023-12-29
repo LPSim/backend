@@ -293,7 +293,10 @@ class CreateSystemEventHandlerObject(BaseModel):
             if event_handler.name == self.handler_name:
                 target_event_handler = event_handler
                 break
-        assert target_event_handler is not None
+        else:
+            raise ValueError(
+                f'event handler {self.handler_name} not found'
+            )
         return target_event_handler
 
 
