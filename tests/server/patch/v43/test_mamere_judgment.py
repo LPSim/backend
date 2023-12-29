@@ -452,8 +452,115 @@ def test_mamere_no_default():
     assert match.state != MatchState.ERROR
 
 
+def test_mamere_judgment_2():
+    """
+    When food card is disabled by judgment, it still can call mamere to draw
+    card.
+    """
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 1",
+            "card 0 0 15",
+            "card 1 0",
+            "card 2 0",
+            "skill 1 14 13 12",
+            "card 0 0",
+            "TEST 1 10 8 10 10 7 10",
+            "TEST 2 p0 hand 3",
+            "TEST 2 p1 hand 0",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "card 0 0 15",
+            "card 1 0",
+            "card 2 0",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0",
+            "card 0 0 14",
+            "skill 1 13 12 11"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.3
+        charactor:Kaedehara Kazuha
+        charactor:Klee
+        charactor:Kaeya
+        Passing of Judgment
+        Mamere*10
+        Sweet Madame*10
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    match.config.max_hand_size = 999
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0].strip().split(' ')
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                # a sample of HP check based on the command string.
+                hps = cmd[2:]
+                hps = [int(x) for x in hps]
+                hps = [hps[:3], hps[3:]]
+                check_hp(match, hps)
+            elif test_id == 2:
+                pidx = int(cmd[2][1])
+                assert int(cmd[-1]) == len(match.player_tables[pidx].hands)
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_mamere_judgment()
-    test_judgment_one_round()
-    test_judge_arcane()
-    test_mamere_no_default()
+    # test_mamere_judgment()
+    # test_judgment_one_round()
+    # test_judge_arcane()
+    # test_mamere_no_default()
+    test_mamere_judgment_2()

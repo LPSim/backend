@@ -68,11 +68,6 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     def event_handler_USE_CARD(
         self, event: UseCardEventArguments, match: Match
     ) -> List[Actions]:
-        # TODO if use food card failed, will mamere generate new card?
-        # currently not.
-        if not event.use_card_success:
-            # use card failed, return
-            return []
         if self.position.area != ObjectPositionType.SUPPORT:
             # not placed to support, do original action
             return super().event_handler_USE_CARD(event, match)
