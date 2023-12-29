@@ -52,6 +52,7 @@ class Icicle_3_3(SwitchActionTeamStatus):
 
 
 class IcyQuill_3_7(UsageTeamStatus):
+    # TODO: has talent effect
     name: Literal['Icy Quill'] = 'Icy Quill'
     version: Literal['3.7'] = '3.7'
     usage: int = 3

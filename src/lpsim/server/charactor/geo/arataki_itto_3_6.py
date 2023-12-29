@@ -5,7 +5,10 @@ from ....utils.class_registry import register_class
 from ...summon.base import DefendSummonBase
 
 from ...modifiable_values import DamageIncreaseValue
-from ...event import ReceiveDamageEventArguments, RoundPrepareEventArguments
+from ...event import (
+    CharactorReviveEventArguments, ReceiveDamageEventArguments, 
+    RoundPrepareEventArguments
+)
 
 from ...action import Actions, CreateObjectAction
 from ...struct import Cost
@@ -177,6 +180,19 @@ class AratakiItto_3_6(CharactorBase):
     ) -> List[Actions]:
         # reset normal attack counter
         self.normal_attack_this_round = 0
+        return []
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When self is revived, clear counter
+        """
+        if (
+            event.action.player_idx == self.position.player_idx
+            and event.action.charactor_idx == self.position.charactor_idx
+        ):
+            self.normal_attack_this_round = 0
         return []
 
     def value_modifier_DAMAGE_INCREASE(

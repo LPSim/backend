@@ -1,5 +1,7 @@
 from typing import Any, List, Literal
 
+from ...event import CharactorReviveEventArguments
+
 from ....utils.class_registry import register_class
 
 from ...summon.base import AOESummonBase
@@ -62,6 +64,19 @@ class FrostflakeArrow(ElementalNormalAttackBase, AOESkillBase):
     )
 
     use_counter: int = 0
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When self is revived, clear counter
+        """
+        if (
+            event.action.player_idx == self.position.player_idx
+            and event.action.charactor_idx == self.position.charactor_idx
+        ):
+            self.use_counter = 0
+        return []
 
     def get_actions(self, match: Any) -> List[Actions]:
         """

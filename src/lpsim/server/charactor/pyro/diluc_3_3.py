@@ -3,7 +3,7 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_class
 
 from ...modifiable_values import CostValue
-from ...event import RoundPrepareEventArguments
+from ...event import CharactorReviveEventArguments, RoundPrepareEventArguments
 
 from ...action import Actions
 from ...struct import Cost
@@ -36,6 +36,19 @@ class SearingOnslaught(ElementalSkillBase):
         When in round prepare, reset counter
         """
         self.counter = 0
+        return []
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When self is revived, clear counter
+        """
+        if (
+            event.action.player_idx == self.position.player_idx
+            and event.action.charactor_idx == self.position.charactor_idx
+        ):
+            self.counter = 0
         return []
 
     def value_modifier_COST(

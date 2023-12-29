@@ -6,7 +6,7 @@ from ....utils.class_registry import register_class
 from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageValue
-from ...event import SkillEndEventArguments
+from ...event import CharactorReviveEventArguments, SkillEndEventArguments
 
 from ...action import Actions, CharactorReviveAction, MakeDamageAction
 from ...struct import Cost
@@ -103,6 +103,19 @@ class AdeptusArtPreserverOfFortune(ElementalBurstBase):
     )
 
     revive_usage: int = 2
+
+    def event_handler_CHARACTOR_REVIVE(
+        self, event: CharactorReviveEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        When self is revived, reset revive usage
+        """
+        if (
+            event.action.player_idx == self.position.player_idx
+            and event.action.charactor_idx == self.position.charactor_idx
+        ):
+            self.revive_usage = 2
+        return []
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
