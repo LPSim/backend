@@ -285,7 +285,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "End Phase: Deals 1 Anemo DMG.\nUsage(s): 2\n\nWhen your active character takes DMG: Decreases DMG taken by 1. (Once per Round)\nWhen your character(s) take Cryo/Hydro/Pyro/Electro DMG: Change the Elemental Type of this card. (Once before leaving play)",  # noqa: E501
                 "zh-CN": "结束阶段：造成1点风元素伤害。\n可用次数：2\n\n我方出战角色受到伤害时：抵消1点伤害。（每回合1次）\n我方角色受到冰/水/火/雷伤害时：转换此牌的元素类型。（离场前仅限一次）"  # noqa: E501
             }
-        }
+        },
+        "image_path": "cardface/Summon_Linette.png",  # noqa: E501
     },
     "TALENT_Lynette/A Cold Blade Like a Shadow": {
         "names": {
