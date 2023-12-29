@@ -10,11 +10,11 @@ import random
 
 from ..utils.class_registry import register_base_class
 
-from .event import UseCardEventArguments
+from .event import GameStartEventArguments, UseCardEventArguments
 from ..utils import BaseModel
 from typing import List, Literal, Any, Tuple, get_origin, get_type_hints
 from pydantic import validator
-from .action import Actions, ActionTypes, RemoveCardAction
+from .action import Actions, ActionTypes, CreateObjectAction, RemoveCardAction
 from .consts import (
     ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
 )
@@ -256,6 +256,45 @@ class MultiTargetEventCardBase(EventCardBase):
             match (Any): The match object.
         """
         raise NotImplementedError()
+
+
+class CreateSystemEventHandlerObject(BaseModel):
+    """
+    objects that will create system event handler at game start
+    """
+    handler_name: str
+
+    available_handler_in_deck: List[ActionTypes] = [
+        ActionTypes.GAME_START,
+    ]
+
+    def event_handler_GAME_START(
+        self, event: GameStartEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When game start, create event handler with specified name
+        """
+        return [CreateObjectAction(
+            object_name = self.handler_name,
+            object_position = ObjectPosition(
+                player_idx = -1,
+                area = ObjectPositionType.SYSTEM,
+                id = -1,
+            ),
+            object_arguments = {},
+        )]
+
+    def _get_event_handler(self, match: Any):
+        """
+        get created event handler object. If not found, raise error.
+        """
+        target_event_handler: Any = None
+        for event_handler in match.event_handlers:
+            if event_handler.name == self.handler_name:
+                target_event_handler = event_handler
+                break
+        assert target_event_handler is not None
+        return target_event_handler
 
 
 # CardBases = CardBase | MultiTargetEventCardBase

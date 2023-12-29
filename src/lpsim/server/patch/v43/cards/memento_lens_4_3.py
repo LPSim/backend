@@ -2,6 +2,10 @@ from typing import Dict, List, Literal, Tuple, Type
 
 from pydantic import PrivateAttr
 
+from ....object_base import CreateSystemEventHandlerObject
+
+from ....event_handler import SystemEventHandlerBase
+
 from ....consts import ObjectPositionType
 from ....modifiable_values import CostValue
 from ....match import Match
@@ -9,7 +13,7 @@ from ....card.support.companions import CompanionBase
 from ....card.support.locations import LocationBase
 from ....card.equipment.artifact.base import ArtifactBase
 from ....card.equipment.weapon.base import WeaponBase
-from ....action import ActionTypes, Actions
+from ....action import Actions
 from ....event import UseCardEventArguments
 from ....struct import Cost
 from .....utils.class_registry import register_class
@@ -17,19 +21,16 @@ from .....utils.desc_registry import DescDictType
 from ....card.support.items import RoundEffectItemBase
 
 
-class MementoLens_4_3(RoundEffectItemBase):
-    name: Literal["Memento Lens"]
+class MementoLensEventHandler_4_3(SystemEventHandlerBase):
+    """
+    Record used cards that matches type for both players.
+    """
+    name: Literal["Memento Lens"] = "Memento Lens"
     version: Literal["4.3"] = "4.3"
-    cost: Cost = Cost(same_dice_number = 1)
-    played_card_names: Dict[str, int] = {}
     _accept_card_types: Tuple[Type] = PrivateAttr(
         (WeaponBase, ArtifactBase, LocationBase, CompanionBase)
     )
-    max_usage_per_round: int = 1
-    # mark USE_CARD as avaliable in deck to record used cards
-    available_handler_in_deck: List[ActionTypes] = [
-        ActionTypes.USE_CARD, 
-    ]
+    card_used: List[Dict[str, int]] = [{}, {}]
 
     def event_handler_USE_CARD(
         self, event: UseCardEventArguments, match: Match
@@ -37,18 +38,21 @@ class MementoLens_4_3(RoundEffectItemBase):
         """
         If self played an accepted card type, record it.
         """
-        if event.action.card_position.id == self.id:
-            # self, do normal play
-            return super().event_handler_USE_CARD(event, match)
-        if event.action.card_position.player_idx != self.position.player_idx:
-            # not self play, do nothing
-            return []
+        player_idx = event.action.card_position.player_idx
         card = event.card
         if not isinstance(card, self._accept_card_types):
             # not accepted card type, do nothing
             return []
-        self.played_card_names[card.name] = 1
+        self.card_used[player_idx][card.name] = 1
         return []
+
+
+class MementoLens_4_3(CreateSystemEventHandlerObject, RoundEffectItemBase):
+    name: Literal["Memento Lens"]
+    version: Literal["4.3"] = "4.3"
+    cost: Cost = Cost(same_dice_number = 1)
+    max_usage_per_round: int = 1
+    handler_name: str = 'Memento Lens'
 
     def value_modifier_COST(
         self, value: CostValue, match: Match, mode: Literal["REAL", "TEST"]
@@ -68,7 +72,9 @@ class MementoLens_4_3(RoundEffectItemBase):
             return value
         card = match.get_object(value.position)
         assert card is not None
-        if card.name not in self.played_card_names:
+        target_handler = self._get_event_handler(match)
+        played_card_names = target_handler.card_used[self.position.player_idx]
+        if card.name not in played_card_names:
             # not played card, do nothing
             return value
         # decrease cost
@@ -97,7 +103,17 @@ desc: Dict[str, DescDictType] = {
         "image_path": "cardface/Assist_Prop_Mirror.png",  # noqa: E501
         "id": 323006
     },
+    "SYSTEM/Memento Lens": {
+        "names": {
+            "en-US": "Memento Lens",
+            "zh-CN": "留念镜"
+        },
+        "descs": {
+            "4.3": {
+            }
+        },
+    },
 }
 
 
-register_class(MementoLens_4_3, desc)
+register_class(MementoLens_4_3 | MementoLensEventHandler_4_3, desc)

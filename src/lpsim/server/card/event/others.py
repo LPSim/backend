@@ -6,17 +6,15 @@ from typing import Any, List, Literal, Tuple
 
 from ....utils.class_registry import register_class
 
-from ...event import (
-    CharactorDefeatedEventArguments, RoundPrepareEventArguments
-)
-
 from ...consts import (
     DieColor, ObjectPositionType, ObjectType, PlayerActionLabels, SkillType
 )
 
-from ...object_base import EventCardBase, MultiTargetEventCardBase
+from ...object_base import (
+    CreateSystemEventHandlerObject, EventCardBase, MultiTargetEventCardBase
+)
 from ...action import (
-    ActionTypes, Actions, ChangeObjectUsageAction, ChargeAction, 
+    ActionTypes, ChangeObjectUsageAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
     GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
     SkillEndAction, SwitchCharactorAction, UseSkillAction
@@ -131,17 +129,14 @@ class Strategize_3_3(EventCardBase):
         )]
 
 
-class IHaventLostYet_4_0(EventCardBase):
+class IHaventLostYet_4_0(CreateSystemEventHandlerObject, EventCardBase):
     name: Literal["I Haven't Lost Yet!"]
     version: Literal['4.0'] = '4.0'
     cost: Cost = Cost()
 
     activated: bool = False
 
-    available_handler_in_deck: List[ActionTypes] = [
-        ActionTypes.CHARACTOR_DEFEATED, 
-        ActionTypes.ROUND_PREPARE
-    ]
+    handler_name: str = 'I Haven\'t Lost Yet!'
 
     def is_valid(self, match: Any) -> bool:
         team_status = match.player_tables[self.position.player_idx].team_status
@@ -149,7 +144,8 @@ class IHaventLostYet_4_0(EventCardBase):
             if status.name == self.name:
                 # activated in this round
                 return False
-        return self.activated
+        handler = self._get_event_handler(match)
+        return handler.defeated[self.position.player_idx]
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # no targets
@@ -184,26 +180,6 @@ class IHaventLostYet_4_0(EventCardBase):
                 object_arguments = {}
             )
         ]
-
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        Reset activated.
-        """
-        self.activated = False
-        return []
-
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        Mark activated.
-        """
-        if self.position.player_idx != event.action.player_idx:
-            return []
-        self.activated = True
-        return []
 
 
 class IHaventLostYet_3_3(IHaventLostYet_4_0):

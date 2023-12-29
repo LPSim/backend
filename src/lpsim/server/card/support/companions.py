@@ -1,4 +1,6 @@
-from typing import Any, Dict, Literal, List
+from typing import Any, Literal, List
+
+from ...object_base import CreateSystemEventHandlerObject
 
 from ....utils.class_registry import register_base_class, register_class
 
@@ -466,37 +468,14 @@ class ChangTheNinth_3_3(CompanionBase):
         return []
 
 
-class Ellin_3_3(RoundEffectCompanionBase):
-    """
-    TODO: When draw in the round and play, should also decrease cost.
-    """
+class Ellin_3_3(CreateSystemEventHandlerObject, RoundEffectCompanionBase):
     name: Literal['Ellin']
     version: Literal['3.3'] = '3.3'
     cost: Cost = Cost(same_dice_number = 2)
     usage: int = 0
     max_usage_per_round: int = 1
-    recorded_skill_ids: Dict[int, None] = {}
 
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        self.recorded_skill_ids.clear()
-        return super().event_handler_ROUND_PREPARE(event, match)
-
-    def event_handler_SKILL_END(
-        self, event: SkillEndEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        Record skill id when skill end.
-        """
-        if self.position.area != ObjectPositionType.SUPPORT:
-            # not in support area, do nothing
-            return []
-        if event.action.position.player_idx != self.position.player_idx:
-            # not self player
-            return []
-        self.recorded_skill_ids[event.action.position.id] = None
-        return []
+    handler_name: str = 'Ellin'
 
     def value_modifier_COST(
         self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
@@ -507,7 +486,6 @@ class Ellin_3_3(RoundEffectCompanionBase):
         if (
             self.position.area != ObjectPositionType.SUPPORT
             or self.usage <= 0
-            or value.position.id not in self.recorded_skill_ids
             or value.position.player_idx != self.position.player_idx
             or value.cost.label & (
                 CostLabels.NORMAL_ATTACK.value
@@ -515,7 +493,11 @@ class Ellin_3_3(RoundEffectCompanionBase):
                 | CostLabels.ELEMENTAL_BURST.value
             ) == 0
         ):
-            # no usage, not self player, not recorded skill id or not skill
+            # no usage, not self player or not skill
+            return value
+        ellin_event_handler = self._get_event_handler(match)
+        if value.position.id not in ellin_event_handler.recorded_skill_ids:
+            # skill id not recorded, do nothing
             return value
         # decrease
         if value.cost.decrease_cost(value.cost.elemental_dice_color):

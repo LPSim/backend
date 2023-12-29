@@ -2,15 +2,15 @@ from typing import Any, Dict, List, Literal, Type, get_args
 
 from pydantic import PrivateAttr
 
-from ....action import Actions, CreateObjectAction
+from ....action import ActionTypes, Actions, CreateObjectAction
 from .....utils.desc_registry import DescDictType
 from .....utils.class_registry import (
-    get_class_list_by_base_class, register_class
+    get_class_list_by_base_class, get_instance, register_class
 )
 from ....card.support.locations import LocationBase
 from ....match import Match
 from ....consts import IconType, ObjectPositionType
-from ....event import UseCardEventArguments
+from ....event import GameStartEventArguments, UseCardEventArguments
 from ....card.support.items import ItemBase
 from ....card.event.foods import FoodCardBase
 from ....struct import Cost, ObjectPosition
@@ -30,6 +30,40 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     _accept_card_types: Type = PrivateAttr(
         LocationBase | FoodCardBase | ItemBase | CompanionBase
     )
+
+    available_handler_in_deck: List[ActionTypes] = [ActionTypes.GAME_START]
+
+    def _get_candidate_list(self, match: Match) -> List[str]:
+        kwargs: Dict[str, Any] = { 'exclude': set([self.name]) }
+        default_version = match.player_tables[
+            self.position.player_idx
+        ].player_deck_information.default_version
+        if default_version is not None:
+            kwargs['version'] = default_version
+        candidate_list = get_class_list_by_base_class(
+            self._accept_card_types, 
+            **kwargs
+        )
+        return candidate_list
+
+    def event_handler_GAME_START(
+        self, event: GameStartEventArguments, match: Match
+    ) -> List[Actions]:
+        """
+        check all cards that able to generate. If they contains GAME_START
+        event and available in deck, call them.
+        """
+        candidate_list = self._get_candidate_list(match)
+        candidate_instance = [
+            get_instance(self._accept_card_types, {
+                'name': name, 'version': self.version
+            }) for name in candidate_list
+        ]
+        res: List[Actions] = []
+        for i in candidate_instance:
+            if ActionTypes.GAME_START in i.available_handler_in_deck:
+                res += i.event_handler_GAME_START(event, match)
+        return res
 
     def event_handler_USE_CARD(
         self, event: UseCardEventArguments, match: Match
@@ -59,18 +93,8 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
                 break
         if is_target_type:
             # using target type, generate new card
-
+            candidate_list = self._get_candidate_list(match)
             # get candidate list for target type, except self
-            kwargs: Dict[str, Any] = { 'exclude': set([self.name]) }
-            default_version = match.player_tables[
-                self.position.player_idx
-            ].player_deck_information.default_version
-            if default_version is not None:
-                kwargs['version'] = default_version
-            candidate_list = get_class_list_by_base_class(
-                self._accept_card_types, 
-                **kwargs
-            )
             random_target = candidate_list[
                 int(match._random() * len(candidate_list))
             ]

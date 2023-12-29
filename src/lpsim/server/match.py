@@ -586,6 +586,8 @@ class Match(BaseModel):
                     id = charactor_copy.id
                 )
                 charactor_copy.renew_id()
+                for skill in charactor_copy.skills:
+                    skill.renew_id()
                 player_table.charactors.append(charactor_copy)
             # copy cards
             if self.config.recreate_mode:
@@ -2446,10 +2448,10 @@ class Match(BaseModel):
             target_class = CardBase
             target_list = table.hands
             target_name = 'hand'
-        # elif action.object_position.area == ObjectPositionType.SYSTEM:
-        #     target_classes = SystemEventHandlers
-        #     target_list = self.event_handlers
-        #     target_name = 'system event handler'
+        elif action.object_position.area == ObjectPositionType.SYSTEM:
+            target_class = SystemEventHandlerBase
+            target_list = self.event_handlers
+            target_name = 'system event handler'
         else:
             raise NotImplementedError(
                 f'Create object action for area {action.object_position.area} '

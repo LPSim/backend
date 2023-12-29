@@ -1205,8 +1205,8 @@ def test_katheryne_tian_ellin():
             "skill 0 7 6 5",
             "TEST 2 p1 support 0 0 0 1",
             "card 2 0 4 3",
-            "TEST 3 skill 0 cost 2",
-            "skill 0 2 1",
+            "TEST 3 skill 0 cost 1",
+            "skill 0 2",
             "end"
         ],
         [
@@ -1249,7 +1249,7 @@ def test_katheryne_tian_ellin():
             "TEST 3 skill 0 cost 0",
             "TEST 3 skill 1 cost 0",
             "skill 0",
-            "TEST 2 p0 support 1 0 0 1",
+            "TEST 2 p0 support 1 0 0 0",
             "TEST 2 p1 support 0 0 0 1",
             "TEST 3 skill 0 cost 2",
             "TEST 3 skill 1 cost 2",
@@ -2399,6 +2399,8 @@ def test_timaeus_fix_2():
 
 
 if __name__ == '__main__':
+    # import logging
+    # logging.basicConfig(level = logging.INFO)
     # test_rana()
     # test_timmie()
     # test_liben()
@@ -2408,7 +2410,7 @@ if __name__ == '__main__':
     # test_chang_nine()
     # test_paimon_kujirai()
     # test_master_zhang()
-    # test_katheryne_tian_ellin()
+    test_katheryne_tian_ellin()
     # test_wagner_timaeus()
     # test_chef_mao()
     # test_dunyazard()

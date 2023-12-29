@@ -15,6 +15,8 @@ from .event import (
     CharactorDefeatedEventArguments,
     RoundEndEventArguments,
     DrawCardEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 from .action import (
     Actions,
@@ -175,6 +177,52 @@ class OmnipotentGuideEventHandler_3_3(SystemEventHandlerBase):
         return value
 
 
+class EllinEventHandler_3_3(SystemEventHandlerBase):
+    """
+    This handler will record all skill ids used in this round.
+    """
+    name: Literal['Ellin'] = 'Ellin'
+    version: Literal['3.3'] = '3.3'
+    recorded_skill_ids: Dict[int, None] = {}
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.recorded_skill_ids.clear()
+        return []
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[Actions]:
+        """
+        Record skill id when skill end.
+        """
+        self.recorded_skill_ids[event.action.position.id] = None
+        return []
+
+
+class IHaventLostYetEventHandler_3_3(SystemEventHandlerBase):
+    """
+    This handler will record whether anyone is defeated this round for each
+    player.
+    """
+    name: Literal['I Haven\'t Lost Yet!'] = 'I Haven\'t Lost Yet!'
+    version: Literal['3.3'] = '3.3'
+    defeated: List[bool] = [False, False]
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.defeated = [False, False]
+        return []
+
+    def event_handler_CHARACTOR_DEFEATED(
+        self, event: CharactorDefeatedEventArguments, match: Any
+    ) -> List[Actions]:
+        self.defeated[event.action.player_idx] = True
+        return []
+
+
 SystemEventHandler = SystemEventHandler_3_4
 
 
@@ -201,11 +249,32 @@ event_handler_descs: Dict[str, DescDictType] = {
             }
         }
     },
+    "SYSTEM/Ellin": {
+        "names": {
+            "zh-CN": "艾琳",
+            "en-US": "Ellin"
+        },
+        "descs": {
+            "3.3": {
+            }
+        }
+    },
+    "SYSTEM/I Haven't Lost Yet!": {
+        "names": {
+            "zh-CN": "本大爷还没有输！",
+            "en-US": "I Haven't Lost Yet!"
+        },
+        "descs": {
+            "3.3": {
+            }
+        }
+    },
 }
 
 
 register_class(
     SystemEventHandler_3_3 | OmnipotentGuideEventHandler_3_3 
-    | SystemEventHandler_3_4,
+    | SystemEventHandler_3_4 | EllinEventHandler_3_3 
+    | IHaventLostYetEventHandler_3_3,
     event_handler_descs
 )
