@@ -367,6 +367,21 @@ class Match(BaseModel):
             ))
         self._init_random_state()
 
+    def new_match_from_history(self, history_idx: int) -> 'Match':
+        """
+        return a new match from history of current match. Histories after 
+        history_idx will be removed, and histories before history_idx is still
+        valid.
+        """
+        history = self._history[:]
+        history_diff = self._history_diff[:]
+        if len(history) <= history_idx or history_idx < 0:
+            raise AssertionError('State not found')
+        match = history[history_idx].copy(deep = True)
+        match._history = history[:history_idx + 1]
+        match._history_diff = history_diff[:history_idx + 1]
+        return match
+
     def copy(self, *argv, **kwargs) -> 'Match':
         """
         Copy the match, and init random state of new match.

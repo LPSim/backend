@@ -224,14 +224,10 @@ class HTTPServer():
             match_state = data.match_state
             match_state_idx = data.match_state_idx
             if match_state_idx is not None:
-                history = match._history[:]
-                history_diff = match._history_diff[:]
-                if len(history) <= match_state_idx or match_state_idx < 0:
-                    raise HTTPException(status_code = 404, 
-                                        detail = 'State not found')
-                match = history[match_state_idx].copy(deep = True)
-                match._history = history[:match_state_idx + 1]
-                match._history_diff = history_diff[:match_state_idx + 1]
+                try:
+                    match = self.match.new_match_from_history(match_state_idx)
+                except AssertionError as e:
+                    raise HTTPException(status_code = 404, detail = str(e))
                 self.match = match
                 # remove command history that after match_state_idx. No need to
                 # change match random state and start deck.
@@ -397,22 +393,26 @@ class HTTPServer():
             if state_idx == len(match._history):
                 # ask for the state after the last state
                 return JSONResponse([])
-            result = [{
-                'uuid': self.uuid,
-                'idx': state_idx,
-                'match': match._history[state_idx].dict(),
-                'type': 'FULL',
-            }]
+            result = []
+            if state_idx == 0:
+                # first is 0, add full state and change state_idx to 1
+                result = [{
+                    'uuid': self.uuid,
+                    'idx': state_idx,
+                    'match': match._history[state_idx].dict(),
+                    'type': 'FULL',
+                }]
+                state_idx = 1
             if mode == 'after':
                 result += [
                     {
                         'uuid': self.uuid,
-                        'idx': state_idx + 1 + idx,
+                        'idx': state_idx + idx,
                         'match_diff': diff,
                         'type': 'DIFF',
                     } 
                     for idx, diff 
-                    in enumerate(match._history_diff[state_idx + 1:])
+                    in enumerate(match._history_diff[state_idx:])
                 ]
             return JSONResponse(result)
 
@@ -481,7 +481,7 @@ class HTTPServer():
             for idx, [state, diff] in enumerate(zip(
                     match._history[current_history_length:],
                     match._history_diff[current_history_length:],)):
-                if idx == 0:
+                if idx == 0 and current_history_length == 0:
                     ret.append({
                         'uuid': self.uuid,
                         'idx': idx + current_history_length,
