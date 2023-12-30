@@ -294,7 +294,7 @@ class CreateSystemEventHandlerObject(BaseModel):
                 target_event_handler = event_handler
                 break
         else:
-            raise ValueError(
+            raise AssertionError(
                 f'event handler {self.handler_name} not found'
             )
         return target_event_handler
