@@ -74,6 +74,7 @@ class RespondData(BaseModel):
     player_idx: int
     command: str
     uuid: str
+    frame_number: int = -1
 
 
 class HTTPServer():
@@ -434,6 +435,11 @@ class HTTPServer():
             if data.uuid != self.uuid:
                 raise HTTPException(status_code = 404, 
                                     detail = 'UUID not match')
+            if data.frame_number != -1:
+                # contains frame number, should match with current frame number
+                if data.frame_number + 1 < len(self.match._history):
+                    # old respond, ignore
+                    return JSONResponse([])
             match = self.match
             player_idx = data.player_idx
             command = data.command
