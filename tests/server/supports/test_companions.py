@@ -378,7 +378,7 @@ def test_liben():
             "sw_char 0 3",
             "sw_char 1 3",
             "end",
-            "TEST 1 p0 usage 3 2",
+            "TEST 1 p0 usage 3 3",
             "reroll"
         ],
         [
@@ -2403,14 +2403,14 @@ if __name__ == '__main__':
     # logging.basicConfig(level = logging.INFO)
     # test_rana()
     # test_timmie()
-    # test_liben()
+    test_liben()
     # test_setaria()
     # test_liusu()
     # test_tubby()
     # test_chang_nine()
     # test_paimon_kujirai()
     # test_master_zhang()
-    test_katheryne_tian_ellin()
+    # test_katheryne_tian_ellin()
     # test_wagner_timaeus()
     # test_chef_mao()
     # test_dunyazard()

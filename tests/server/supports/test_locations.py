@@ -1,3 +1,8 @@
+from typing import Any, List
+from src.lpsim.server.event import RoundEndEventArguments
+from src.lpsim.server.struct import ObjectPosition
+from src.lpsim.server.consts import DieColor, ObjectPositionType
+from src.lpsim.server.card.support.companions import Liben_3_3
 from src.lpsim.server.card.support.locations import Vanarana_3_7
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
@@ -551,10 +556,10 @@ def test_vanarana():
                     )
                     assert len(supports) == 8
                     colors = [
+                        ['GEO', 'GEO'],
+                        ['DENDRO', 'DENDRO'],
                         ['CRYO', 'CRYO'],
                         ['PYRO', 'PYRO'],
-                        ['ELECTRO', 'ELECTRO'],
-                        ['GEO', 'GEO'],
                         ['CRYO', 'CRYO'],
                         ['CRYO', 'HYDRO'],
                         ['ELECTRO', 'ANEMO'],
@@ -1197,6 +1202,76 @@ def test_fenglong():
     assert match.state != MatchState.ERROR
 
 
+def generate_colors(color_str: str) -> List[DieColor]:
+    """
+    Generate colors from a string.
+    """
+    color_str = color_str.upper()
+    colors = []
+    for c in color_str:
+        if c == 'C':
+            colors.append(DieColor.CRYO)
+        elif c == 'P':
+            colors.append(DieColor.PYRO)
+        elif c == 'H':
+            colors.append(DieColor.HYDRO)
+        elif c == 'E':
+            colors.append(DieColor.ELECTRO)
+        elif c == 'A':
+            colors.append(DieColor.ANEMO)
+        elif c == 'G':
+            colors.append(DieColor.GEO)
+        elif c == 'D':
+            colors.append(DieColor.DENDRO)
+        elif c == 'O':
+            colors.append(DieColor.OMNI)
+        else:
+            raise AssertionError(f'Unknown color {c}')
+    return colors
+
+
+def test_vanarana_liben():
+    match = Match()
+    Vanarana = Vanarana_3_7(name = 'Vanarana')
+    Liben = Liben_3_3(name = 'Liben')
+    Vanarana.position = ObjectPosition(
+        player_idx = 0,
+        area = ObjectPositionType.SUPPORT,
+        id = -1
+    )
+    event = RoundEndEventArguments(
+        player_go_first = 0,
+        round = 1,
+        initial_card_draw = 0,
+    )
+    Liben.position = Vanarana.position
+
+    def doit(
+        color_str: str, l_usage: int, v_usage: int, v_color: Any = None
+    ):
+        match.player_tables[0].dice.colors = generate_colors(color_str)
+        Liben.event_handler_ROUND_END(event, match)
+        Vanarana.event_handler_ROUND_END(event, match)
+        assert Liben.usage == l_usage
+        assert Vanarana.usage == v_usage
+        if v_color is not None:
+            assert Vanarana.colors == v_color
+        Liben.usage = Vanarana.usage = 0
+        Vanarana.colors = []
+
+    doit('', 0, 0)
+    doit('o', 1, 1)
+    doit('oo', 2, 2)
+    doit('aa', 1, 2)
+    doit('pg', 2, 2)
+    doit('aoo', 3, 2, ['ANEMO', 'OMNI'])
+    doit('oo', 2, 2, ['OMNI', 'OMNI'])
+    doit('cchhooo', 3, 2, ['CRYO', 'CRYO'])
+    doit('eehhhooo', 3, 2, ['HYDRO', 'HYDRO'])
+    doit('ddd', 1, 2)
+    doit('eaaa', 2, 2, ['ANEMO', 'ANEMO'])
+
+
 if __name__ == '__main__':
     # test_liyue_harbor()
     # test_tenshukaku()
@@ -1205,4 +1280,5 @@ if __name__ == '__main__':
     # test_library()
     # test_cathedral_inn_sangonomiya()
     # test_golden_house()
-    test_jade_dawn_narukami_chinju()
+    # test_jade_dawn_narukami_chinju()
+    test_vanarana_liben()

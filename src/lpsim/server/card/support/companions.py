@@ -1,4 +1,4 @@
-from typing import Any, Literal, List
+from typing import Any, Dict, Literal, List, Tuple
 
 from ...object_base import CreateSystemEventHandlerObject
 
@@ -13,9 +13,10 @@ from .base import (
     UsageWithRoundRestrictionSupportBase
 )
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, CostLabels, DamageElementalType, DamageType, 
-    DieColor, ElementType, ELEMENT_TO_DIE_COLOR, ElementalReactionType, 
-    IconType, ObjectPositionType, PlayerActionLabels, SkillType
+    DIE_COLOR_TO_ELEMENT, ELEMENT_DEFAULT_ORDER, CostLabels, 
+    DamageElementalType, DamageType, DieColor, ElementType, 
+    ELEMENT_TO_DIE_COLOR, ElementalReactionType, IconType, ObjectPositionType, 
+    PlayerActionLabels, SkillType
 )
 from ...struct import Cost, ObjectPosition
 from ...action import (
@@ -342,6 +343,40 @@ class Liben_3_3(CompanionBase):
         self.usage = 0
         return []
 
+    def _sort_colors(
+            self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
+        """
+        Sort colors. Omni always last, others has two keys, 1. number of
+        this color, 2. default order. 
+        Return: List[Tuple[number, default_order, color]]. For Omni, the 
+        default order is filled with 0.
+        """
+        colors_dict: Dict[DieColor, int] = { DieColor.OMNI: 0 }
+        for element in ELEMENT_DEFAULT_ORDER:
+            colors_dict[ELEMENT_TO_DIE_COLOR[element]] = 0
+        for color in colors:
+            colors_dict[color] += 1
+        # first: number, second: default order, third: color
+        colors_lists: List[Tuple[int, int, DieColor]] = []
+        # specially handle OMNI
+        omni_num = 0
+        for color in colors_dict:
+            if colors_dict[color] == 0:
+                continue
+            if color == DieColor.OMNI:
+                omni_num = colors_dict[color]
+                continue
+            colors_lists.append((
+                colors_dict[color], 
+                ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]), 
+                color
+            ))
+        # number desc, default order asc
+        colors_lists.sort(key = lambda x: (-x[0], x[1]))
+        if omni_num > 0:
+            colors_lists.append((omni_num, 0, DieColor.OMNI))
+        return colors_lists
+
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
     ) -> List[RemoveDiceAction]:
@@ -353,18 +388,17 @@ class Liben_3_3(CompanionBase):
             return []
         collect_order: List[DieColor] = []
         dice: Dice = match.player_tables[self.position.player_idx].dice
-        colors = dice.colors
-        # collect die in element default order
-        for element in ELEMENT_DEFAULT_ORDER:
-            color = ELEMENT_TO_DIE_COLOR[element]
-            if color in colors:
-                collect_order.append(color)
-        # collect OMNI at last
-        for color in colors:
-            if color == DieColor.OMNI:
-                collect_order.append(color)
+        colors_lists = self._sort_colors(dice.colors)
+        omni_num = 0
+        if len(colors_lists) == 0:
+            # no dice, do nothing
+            return []
+        if colors_lists[-1][2] == DieColor.OMNI:
+            omni_num = colors_lists.pop()[0]
+        # generate collect order
+        color_order = [x[2] for x in colors_lists] + [DieColor.OMNI] * omni_num
         # only collect dice if usage is not full
-        collect_order = collect_order[: self.max_usage - self.usage]
+        collect_order = color_order[: self.max_usage - self.usage]
         self.usage += len(collect_order)
         return [RemoveDiceAction(
             player_idx = self.position.player_idx,

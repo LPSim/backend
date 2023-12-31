@@ -1,4 +1,4 @@
-from typing import Any, List, Literal
+from typing import Any, Dict, List, Literal, Tuple
 
 from ....utils.class_registry import register_base_class, register_class
 from ...dice import Dice
@@ -19,8 +19,9 @@ from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
 from ...consts import (
-    ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, CostLabels, 
-    DamageElementalType, DamageType, DieColor, IconType, ObjectPositionType
+    DIE_COLOR_TO_ELEMENT, ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, 
+    CostLabels, DamageElementalType, DamageType, DieColor, IconType, 
+    ObjectPositionType
 )
 from .base import (
     RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
@@ -429,6 +430,40 @@ class Vanarana_3_7(LocationBase):
         self.colors = []
         return ret
 
+    def _sort_colors(
+            self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
+        """
+        Sort colors. Omni always last, others has two keys, 1. number of
+        this color, 2. default order. 
+        Return: List[Tuple[number, default_order, color]]. For Omni, the 
+        default order is filled with 0.
+        """
+        colors_dict: Dict[DieColor, int] = { DieColor.OMNI: 0 }
+        for element in ELEMENT_DEFAULT_ORDER:
+            colors_dict[ELEMENT_TO_DIE_COLOR[element]] = 0
+        for color in colors:
+            colors_dict[color] += 1
+        # first: number, second: default order, third: color
+        colors_lists: List[Tuple[int, int, DieColor]] = []
+        # specially handle OMNI
+        omni_num = 0
+        for color in colors_dict:
+            if colors_dict[color] == 0:
+                continue
+            if color == DieColor.OMNI:
+                omni_num = colors_dict[color]
+                continue
+            colors_lists.append((
+                colors_dict[color], 
+                ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]), 
+                color
+            ))
+        # number desc, default order asc
+        colors_lists.sort(key = lambda x: (-x[0], x[1]))
+        if omni_num > 0:
+            colors_lists.append((omni_num, 0, DieColor.OMNI))
+        return colors_lists
+
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
     ) -> List[RemoveDiceAction]:
@@ -445,32 +480,17 @@ class Vanarana_3_7(LocationBase):
         if len(current_dice_colors) == 0:
             # no dice, do nothing
             return []
-        dice_map = {}
-        for color in current_dice_colors:
-            if color not in dice_map:
-                dice_map[color] = 0
-            dice_map[color] += 1
-        # first try to gather two same element dice
-        for element in ELEMENT_DEFAULT_ORDER:
-            color = ELEMENT_TO_DIE_COLOR[element]
-            if (
-                color in dice_map 
-                and dice_map[color] >= 2
-                and len(self.colors) < 2
-            ):
-                self.colors = [color, color]
-        if len(self.colors) < 2:
-            # if not enough, gather any two dice
-            for element in ELEMENT_DEFAULT_ORDER:
-                color = ELEMENT_TO_DIE_COLOR[element]
-                if color in dice_map and len(self.colors) < 2:
-                    self.colors.append(color)
-        if len(self.colors) < 2:
-            # if not enough, gather omni
-            if DieColor.OMNI in dice_map:
-                self.colors.append(DieColor.OMNI)
-                if len(self.colors) < 2 and dice_map[DieColor.OMNI] >= 2:
-                    self.colors.append(DieColor.OMNI)
+        colors_lists = self._sort_colors(current_dice_colors)
+        assert len(colors_lists) > 0
+        # if first has more than 2, take two of them
+        if colors_lists[0][0] >= 2:
+            self.colors = [colors_lists[0][2]] * 2
+        else:
+            # otherwise, take first one
+            self.colors = [colors_lists[0][2]]
+            # if has second, take second one
+            if len(colors_lists) >= 2:
+                self.colors += [colors_lists[1][2]]
         self.usage = len(self.colors)
         dice_idxs = current_dice.colors_to_idx(self.colors)
         return [RemoveDiceAction(
