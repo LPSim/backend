@@ -7,7 +7,9 @@ from ...summon.base import AttackerSummonBase
 from ...modifiable_values import DamageValue
 from ...event import RoundEndEventArguments
 
-from ...action import Actions, ChangeObjectUsageAction, MakeDamageAction
+from ...action import (
+    ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -54,19 +56,19 @@ class YueguiThrowingMode_4_1(AttackerSummonBase):
         for c in charactors:
             if c.is_alive and c.damage_taken > selected_charactor.damage_taken:
                 selected_charactor = c
-        # heal charactor, and do default actions
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = selected_charactor.position,
-                    damage = -self.damage,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost(),
-                )
-            ],
-        )] + ret
+        damage_action = ret[0]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
+        damage_action.damage_value_list.append(
+            DamageValue(
+                position = self.position,
+                damage_type = DamageType.HEAL,
+                target_position = selected_charactor.position,
+                damage = -self.damage,
+                damage_elemental_type = DamageElementalType.HEAL,
+                cost = Cost(),
+            )
+        )
+        return ret
 
 
 # Skills
