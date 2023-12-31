@@ -204,10 +204,17 @@ class MatchConfig(BaseModel):
     level is positive; for actions, histories will be recorded after the 
     action is done, and the record_level of the action is lower or equal to
     history level. 
+    By default, history is compressed, which means that only the difference
+    between two consecutive histories, and the first and last history, is
+    recorded. If compress_history is set to False, all histories will be
+    recorded. When compressed, it will consume less memory, but it will take
+    more time in calling Match.new_match_from_history.
+
     NOTE: It is slow to save history, normally should not use it in
     non-frontend tasks.
     """
     history_level: int = 0
+    compress_history: bool = True
 
     """
     config that used to re-create the match easier. when replay mode is 
@@ -375,11 +382,24 @@ class Match(BaseModel):
         """
         history = self._history[:]
         history_diff = self._history_diff[:]
-        if len(history) <= history_idx or history_idx < 0:
+        if len(history_diff) <= history_idx or history_idx < 0:
             raise AssertionError('State not found')
-        match = history[history_idx].copy(deep = True)
-        match._history = history[:history_idx + 1]
-        match._history_diff = history_diff[:history_idx + 1]
+        if self.config.compress_history:
+            # calculate the target history
+            target_history_dict = history[0].dict()
+            for diff in history_diff[1:history_idx + 1]:
+                dictdiffer.patch(diff, target_history_dict, in_place = True)
+            target_history = Match(**target_history_dict)
+            match = target_history.copy(deep = True)
+            match._history = [history[0]]
+            if history_idx > 0:
+                match._history.append(target_history)
+            match._history_diff = history_diff[:history_idx + 1]
+        else:
+            target_history = history[history_idx]
+            match = target_history.copy(deep = True)
+            match._history = history[:history_idx + 1]
+            match._history_diff = history_diff[:history_idx + 1]
         return match
 
     def copy(self, *argv, **kwargs) -> 'Match':
@@ -432,6 +452,16 @@ class Match(BaseModel):
                 if d[0] == 'remove':
                     for i in range(len(d[2])):
                         d[2][i] = (d[2][i][0], None)
+            if len(diff) == 0:
+                # no different, drop the last history
+                self._history.pop()
+                self._history_diff.pop()
+        if self.config.compress_history:
+            # If compress history, only save the first and last history.
+            # When self._history length larger than 2, only keep the first and
+            # last history.
+            if len(self._history) > 2:
+                self._history = [self._history[0], self._history[-1]]
 
     def _debug_save_appeared_object_names_to_file(self):  # pragma: no cover
         # save appeared object names and descs
@@ -490,6 +520,9 @@ class Match(BaseModel):
         Return the history of the match in jsonl format.
         if filename is set, save the history to file.
         """
+        assert not self.config.compress_history, (
+            'History is compressed, cannot get history json.'
+        )
         res = [match.json() for match in self._history]
         if filename is not None:
             with open(filename, 'w') as f:

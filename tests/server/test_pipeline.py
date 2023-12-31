@@ -792,6 +792,7 @@ def test_save_history():
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
+    match.config.compress_history = False
     test_step = 100
     assert match.start()[0]
     match.step()
@@ -845,6 +846,7 @@ def test_save_history_2():
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
+    match.config.compress_history = False
     test_step = 10
     assert match.start()[0]
     match.step()
@@ -889,7 +891,7 @@ def test_generate_unused_cards():
     for _ in range(test_step):
         make_respond(agent_0, match, assertion = False)
         make_respond(agent_1, match, assertion = False)
-    assert len(match._history) > test_step  # should record history
+    assert len(match._history_diff) > test_step  # should record history
     assert match.state != MatchState.ERROR
 
 
@@ -1160,6 +1162,7 @@ def test_new_match_from_history():
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
+    match.config.compress_history = False
     assert match.start()[0]
     match.step()
     for _ in range(10):
@@ -1178,11 +1181,72 @@ def test_new_match_from_history():
     for _ in range(10):
         make_respond(agent_0, initial_match, assertion = False)
         make_respond(agent_1, initial_match, assertion = False)
+    assert len(initial_match._history) == len(match_10._history)
+    assert len(initial_match._history_diff) == len(match_10._history_diff)
+    assert remove_ids(initial_match.copy(deep = True)) == remove_ids(match_10)
+    for _ in range(10):
+        make_respond(agent_0, initial_match, assertion = False)
+        make_respond(agent_1, initial_match, assertion = False)
+    assert len(initial_match._history) == len(match._history)
+    assert len(initial_match._history_diff) == len(match._history_diff)
+    assert remove_ids(initial_match) == remove_ids(match)
+
+
+def test_new_match_from_history_compressed():
+    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
+    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    match = Match(random_state = get_random_state(100))
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Rhodeia of Loch
+        charactor:Kamisato Ayaka
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        Timmie*5
+        '''
+    )
+    for charactor in deck.charactors:
+        charactor.hp = charactor.max_hp = 99
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 10
+    match.config.card_number = None
+    match.config.charactor_number = None
+    match.config.check_deck_restriction = False
+    match.config.history_level = 10  # record important history
+    assert match.start()[0]
+    match.step()
+    for _ in range(10):
+        make_respond(agent_0, match, assertion = False)
+        make_respond(agent_1, match, assertion = False)
+    idx_10 = len(match._history_diff) - 1
+    for _ in range(10):
+        make_respond(agent_0, match, assertion = False)
+        make_respond(agent_1, match, assertion = False)
+    assert len(match._history_diff) > 20  # should record history
+    initial_match = match.new_match_from_history(0)
+    match_10 = match.new_match_from_history(idx_10)
+    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
+    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    initial_match.step()
+    for _ in range(10):
+        make_respond(agent_0, initial_match, assertion = False)
+        make_respond(agent_1, initial_match, assertion = False)
+    assert len(initial_match._history) == len(match_10._history)
+    assert len(initial_match._history_diff) == len(match_10._history_diff)
     assert remove_ids(initial_match.copy(deep = True)) == remove_ids(match_10)
     for _ in range(10):
         make_respond(agent_0, initial_match, assertion = False)
         make_respond(agent_1, initial_match, assertion = False)
     assert remove_ids(initial_match) == remove_ids(match)
+    assert len(initial_match._history) == len(match._history)
+    assert len(initial_match._history_diff) == len(match._history_diff)
 
 
 if __name__ == '__main__':
@@ -1197,8 +1261,10 @@ if __name__ == '__main__':
     # test_plunge_mark()
     # test_higher_version_compatible()
     # test_save_history()
+    # test_save_history_2()
     # test_generate_unused_cards()
     # test_prediction()
     # test_player_table_charactor_order()
     # test_frozen_cannot_use_skill_talent()
     test_new_match_from_history()
+    test_new_match_from_history_compressed()

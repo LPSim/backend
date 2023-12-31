@@ -242,7 +242,7 @@ class HTTPServer():
             elif match_state is not None:
                 match = match_state
                 match._save_history()
-                match_state_idx = len(match._history) - 1
+                match_state_idx = len(match._history_diff) - 1
                 # when reset by match_state, cannot record history with only
                 # match random state, set to None to notify that cannot save.
                 self.command_history = [[], []]
@@ -385,12 +385,12 @@ class HTTPServer():
                 raise HTTPException(status_code = 404, 
                                     detail = 'player data fetch not suppoted')
             # state idx check
-            if state_idx < -1 or state_idx > len(match._history):
+            if state_idx < -1 or state_idx > len(match._history_diff):
                 raise HTTPException(status_code = 404, 
                                     detail = 'State not found')
             if state_idx == -1:
-                state_idx = len(match._history) - 1
-            if state_idx == len(match._history):
+                state_idx = len(match._history_diff) - 1
+            if state_idx == len(match._history_diff):
                 # ask for the state after the last state
                 return JSONResponse([])
             result = []
@@ -399,7 +399,7 @@ class HTTPServer():
                 result = [{
                     'uuid': self.uuid,
                     'idx': state_idx,
-                    'match': match._history[state_idx].dict(),
+                    'match': match._history[0].dict(),
                     'type': 'FULL',
                 }]
                 state_idx = 1
@@ -437,13 +437,13 @@ class HTTPServer():
                                     detail = 'UUID not match')
             if data.frame_number != -1:
                 # contains frame number, should match with current frame number
-                if data.frame_number + 1 < len(self.match._history):
+                if data.frame_number + 1 < len(self.match._history_diff):
                     # old respond, ignore
                     return JSONResponse([])
             match = self.match
             player_idx = data.player_idx
             command = data.command
-            current_history_length = len(match._history)
+            current_history_length = len(match._history_diff)
             if not match.need_respond(player_idx):
                 raise HTTPException(status_code = 404, 
                                     detail = 'Not your turn')
@@ -478,14 +478,14 @@ class HTTPServer():
             ])
             # generate response
             ret = []
-            for idx, [state, diff] in enumerate(zip(
-                    match._history[current_history_length:],
-                    match._history_diff[current_history_length:],)):
+            for idx, diff in enumerate(
+                match._history_diff[current_history_length:]
+            ):
                 if idx == 0 and current_history_length == 0:
                     ret.append({
                         'uuid': self.uuid,
                         'idx': idx + current_history_length,
-                        'match': state.dict(),
+                        'match': match._history[0].dict(),
                         'type': 'FULL',
                     })
                 else:
