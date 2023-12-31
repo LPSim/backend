@@ -1,122 +1,89 @@
-# Lochfolk Prinzessin Simulator (LPSim): A Genius Invokation TCG Simulator
+# Lochfolk Prinzessin Simulator (LPSim): 水皇模拟器，一个七圣召唤模拟器
 
 ---
 
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 
-[中文简介](docs/README.ch.md)
+### [**English README**](README.en.md)
 
-Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
-TCG, written with Python 3.10 using Pydantic and FastAPI.
+该仓库为水皇模拟器的后端，用来模拟七圣召唤对局，使用Python 3.10编写，使用Pydantic和FastAPI。
 
-This project is under AGPL-3.0 license.
+该项目使用AGPL-3.0协议。如果您有任何基于此项目的二次开发和分发，请遵守该协议。
 
-## Progress
+## 声明
 
-All charactors and cards with their balance changes until 4.3 are done.
+本项目仅供学习交流使用，前端界面仅用于展示对局状态和方便代码调试。所有相关代码基于AGPLv3协议开源。项目与米哈游公司无关，所有游戏素材版权归米哈游公司所有。本项目及其代码仓库中不包含米哈游具有版权的图像素材，或是任何与米哈游产品相关的任何非公开信息。
 
-:sparkles: NEW: 4.3 charactors and cards, as well as balance changes are 
-implemented. 
+## 项目进度
 
-## Feature
+以实现所有4.3版本及以前的角色和卡牌，包括平衡性调整。
 
-- All charactors and cards with latest version are implemented.
-- Support using different version of charactors and cards in a same deck.
-- Support serve as a mini server to interact with the match.
-- A frontend is provided to interact with the server.
-- Consistent when load from a state and continue running.
-- 100% Coverage of codes.
+:sparkles: NEW: 4.3版本角色和卡牌，以及平衡性调整已实现。
 
-## Usage
+## 特性
 
-This project works with Python 3.10 or newer.
+- 已实现所有截止当前版本的角色和卡牌，包括其历史版本。
+- 支持在同一套卡组中使用不同版本的角色和卡牌。
+- 支持作为一个小型服务器与客户端交互。
+- 提供了一个前端用来与服务器交互。
+- 可以从任意状态加载并继续运行，保持结果不变。
+- 100%代码覆盖率。
 
-### Installation by pip
+## 使用方法
 
-To install the newest release version, use `pip install lpsim`. You can find
-the newest release version on [PyPI](https://pypi.org/project/lpsim/), and
-you can find the change log on [CHANGELOG.md](CHANGELOG.md).
+该项目需要Python 3.10或更新版本。
 
-To install the newest development version, use 
-`pip install lpsim -i https://test.pypi.org/simple/`. When new commits are
-pushed to `master` branch and pass all tests, a new version will be released 
-on test PyPI. When new tag is pushed to `master` branch, a new version will be
-released on PyPI.
+### 使用pip安装
 
-### Installation by source
+使用`pip install lpsim`安装最新的发布版本。你可以在[PyPI](https://pypi.org/project/lpsim/)找到最新的发布版本，在[CHANGELOG.md](CHANGELOG.md)找到更新日志。
 
-Clone this repository and install the package by `pip install .`. 
+使用`pip install lpsim -i https://test.pypi.org/simple/`安装最新的开发版本。当新的提交被推送到`master`分支并通过所有测试时，新的版本将会被发布到Test PyPI。当新的版本tag被推送到`master`分支时，新的版本将会被发布到PyPI。
 
-### HTTP Server
+### 使用源码安装
 
-Use FastAPI to provide a HTTP server, which can be used to interact with the
-match. To run a server, use the following command:
+克隆该仓库并使用`pip install .`安装。
+
+### HTTP服务器
+
+#### 对局服务器
+
+使用FastAPI提供一个HTTP对局服务器，用来与客户端交互。使用以下命令运行服务器：
 ```
 from lpsim.network import HTTPServer
 server = HTTPServer()
 server.run()
 ```
 
-It will open a FastAPI server on `localhost:8000`, and accept connections
-from anywhere. When initialize HTTPServer, you can set decks and match configs
-to create a match with specified rules.
+它将在`localhost:8000`上开启一个FastAPI服务器，并接受任意来源的连接。在初始化HTTPServer时，你可以设置卡组和对局配置来创建一个带有指定规则的对局。
 
-To start the match, open a 
-[frontend web page](https://lpsim.zyr17.cn/index.html), change server
-URL on top right (default is `http://localhost:8000`), and follow the 
-instructions on the page to set Deck and start match between two players.
+启动服务器后，打开[前端页面](https://lpsim.zyr17.cn/index.html)，在右上角修改服务器URL（默认为`http://localhost:8000`），按照页面上的指示设置卡组，并开始对局。
 
-Currently exception
-management is chaos, errors may set game state to ERROR, raise Exception on
-server side, make empty response on agent, return 404/500, or run JS failed on
-frontend. Please open console of frontend and check the error message on both
-sides.
+目前异常处理比较混乱，错误可能导致游戏状态变为ERROR，服务器抛出异常，客户端返回空响应，返回404/500，或者前端运行JS失败。请打开前端的控制台，并在前端后后端查看错误信息。
 
-#### Room Server
+#### 房间服务器
 
-You can serve multiple matches by using room server. It manages multiple
-HTTP server instances, frontend can create new room and join existing room.
-When a new room is created, room server will tell frontend the room name and
-the port it runs, then frontend will connect to the HTTP server on that port.
-When a room is created for a long time and no POST request is received, it
-will be closed automatically. Refer to `lpsim/network/http_room_server.py` and
-`http_room_serve.py` for more details.
+你可以使用房间服务器来提供多个对局。它管理多个HTTP服务器实例，前端可以创建新的房间或加入已有的房间。当一个新的房间被创建时，房间服务器会告诉前端房间名和它运行的端口，然后前端会连接到该端口上的HTTP服务器。当一个房间创建了很长时间并且没有收到POST请求时，它会自动关闭。更多细节请参考`lpsim/network/http_room_server.py`和`http_room_serve.py`。
 
-### Start a match non-interactively
+### 非交互对局
 
-#### Define the deck
+非交互对局主要用于代码测试和AI训练。你可以按照下述流程进行。
 
-To start a match, you should firstly 
-define decks for both players. Supports text-based or json-based deck 
-definition. Usually, `Deck.from_str` is enough to define a deck, which contains
-charactors and cards definition, and can control their versions. The deck 
-string in the following sample code shows the syntax of deck definition,
-all cards are based on 4.1 version, except Wind and Freedom, which is based on
-4.0 version (As it has not changed after 3.7, when specify version 4.0, deck
-will automatically choose 3.7 version).
-Refer to `server/deck.py` for details.
+#### 定义卡组
 
-#### Run the match
+开始对局之前，需要先定义卡组。卡组可以使用文本或JSON格式定义。通常使用`Deck.from_str`就足够了，它可以定义角色和卡牌，以及控制它们的版本。下面的示例代码中的卡组字符串展示了卡组定义的语法，所有卡牌都使用4.1版本，除了风与自由，它使用4.0版本（因为它在3.7版本之后没有改变，当指定4.0版本时，卡组会自动选择3.7版本）。同时，也支持使用牌组分享码导入牌组。更多细节请参考`server/deck.py`。
 
-1. Initialize a fresh `server.Match` instance.
-2. Use the `set_deck` function to assign decks for players.
-3. Modify the `Match.config` if specific configurations are necessary.
-4. Once the decks are set, initiate the match using the `Match.start` function. 
-   This initializes the match according to the configurations and decks.
-   If error occured (e.g. deck is not valid), it will print error message and
-   return False.
-5. Progress through the match by employing the `Match.step` function. 
-   By default, the step function will continually execute until the match 
-   either ends or generates requests requiring responses.
+#### 开始对局
 
-In order to manage responses, the project includes a selection of simple 
-agents within the `agents` module. These agents can generate 
-responses to various requests. Notably, the `InteractionAgent` is equipped 
-to interpret command lines and formulate responses. This is useful both 
-in console environments and within frontend interfaces.
+1. 初始化一个新的`server.Match`实例。
+2. 使用`set_deck`函数为玩家分配卡组。
+3. 如果需要，修改`Match.config`。
+4. 卡组设置完成后，使用`Match.start`函数开始对局。它会根据配置和卡组初始化对局。如果出现错误（例如卡组不合法），它会返回False和具体错误信息。
+5. 使用`Match.step`函数推进对局。默认情况下，该函数会持续执行，直到对局结束或者生成需要响应的请求。
 
-#### Sample code
+为了更方便的响应请求，在`agents`模块中项目包含了一些简单的代理。这些代理可以响应各种请求。特别的，`InteractionAgent`可以解析命令行并生成响应，使用命令行交互时较为方便。同时，该代理也是前端和后端交互时使用的代理。
+
+#### 示例代码
 
 ```python
 from lpsim import Match, Deck
@@ -165,75 +132,45 @@ while not match.is_game_end():
 print(f'winner is {match.winner}')
 ```
 
-### Customize cards and charactors
+### 自定义角色和卡牌
 
-To customize cards and charactors, you need to understand the actions,
-event handlers and value modifiers. All interaction are done by actions, and
-all actions are triggered by events. Value modifiers are for modifying values
-such as dice cost and damage. The easiest way to implement a new object is to
-copy an existing card/charactor/skill/status... and modify it. 
+自定义角色和卡牌前，你需要了解actions, event handlers和value modifiers。所有与对局的交互（一个实例需要修改对局中其他实例的状态）都是通过actions完成的，所有的actions都是由events触发的。value modifiers用来修改值，例如骰子消耗和伤害数值/类型。最简单的实现一个新的对象的方法是参考并复制一个已有的卡牌/角色/技能/状态...并修改它。你可以在细节中找到更多信息。
 
-`templates/charactor.py` is a template for charactors. You can copy it
-and modify it to implement a new charactor. You can define any object that is
-related to the charactor, e.g. skills, talents, summons, status. Then, you 
-should create the description for these objects, which is used in the frontend,
-and class registry will reject objects without description. Finally, register
-all objects as well as their descriptions to class registry with 
-`register_class` function. Note the template uses relative imports, as it is
-used for creating new official charactors. You need to change them to absolute
-imports if you want to create a new charactor outside this project.
+`templates/charactor.py`是一个角色的模板。你可以复制它并修改它来实现一个新的角色。你可以定义任何与角色相关的对象，例如技能、天赋、召唤、状态。然后，你需要为这些对象创建描述，描述将会在前端中使用，class registry会拒绝没有描述的对象。最后，使用`register_class`函数将所有对象以及它们的描述注册到class registry中，就可以在对局中使用它们了。注意，模板使用了relative import，因为它用来创建新的官方角色。如果你想在项目外创建一个新的自定义角色，你需要将它们改为absolute import。
 
-Define a new card is relatively simple, you can refer to `templates/card.py`,
-it defined a new card "Big Strategize" which costs 2 any dice and draws 3 
-cards. As a sample of custom card, it uses absolute import, so you can use it
-outside this project.
+定义一个新的卡牌相对简单，你可以参考`templates/card.py`，它定义了一个新的卡牌“大心海”，它消耗2个任意骰子并抽3张牌。作为自定义卡牌的示例，在这个文件里使用了absolute import，因此可以在项目外直接使用。
 
-You can manually register new objects and use them in the match.
-Take "Big Strategize" for example, install `lpsim` first, then type
-`import templates.card` after `import lpsim`. Then you can create a HTTP
-server by `a = HTTPServer(); a.run()` to see that a new card is added to the 
-candidate card list.
+你可以手动注册新的对象并在对局中使用它们。以“大心海”为例，首先安装`lpsim`，然后在`import lpsim`之后输入`import templates.card`。然后你可以通过`a = HTTPServer(); a.run()`创建一个HTTP服务器，你会发现修改卡组时一个新的卡牌被添加到了候选卡牌列表中。总代码如下，在项目根目录运行：
 
-## Details
+```python
+import lpsim
+import templates.card
+a = lpsim.HTTPServer()
+a.run()
+```
 
-Pydantic to save & load states of match, exported data is complete to restore
-from certain state and continue running, and also easy for frontend to render
-the game states.
+## 细节
 
-High compatible with different version of charactors or cards. You can start a
-match between version 3.8 Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu 
-Kenki.
+使用Pydantic保存和加载对局状态，导出的数据可以用来恢复对局到某个状态并继续运行，也可以用来渲染前端的对局状态。
 
-Interact by request and response. When request list is not empty, agents need
-to response to one of the request. When multiple players need to response,
-(e.g. switch card and choose charactor at startup),
-their requests will be generated simultaneously.
+兼容不同版本的角色和卡牌。例如你可以开启一个3.8版本的双岩一斗和3.3版本的双岩剑鬼的对局，或者使用3.3的神宵和3.7的申鹤配合4.3的新行动牌和装备。
 
-All modifications to the match table are orchestrated through actions. 
-Each action triggers an event and has the potential to activate subsequent 
-actions. These newly activated actions are appended to the top of the existing 
-action list, akin to a stacked-lists structure. Refer to definition of 
-`EventFrame`.
+通过`request`和`response`来交互。当`request`列表不为空时，代理需要响应其中的一个请求。当多个玩家需要响应时（例如在游戏开始时选择角色和卡牌），它们的请求会同时生成。
 
-Objects integrated into this system introduce two types of triggers: event 
-handlers and value modifiers. Event handlers function to monitor events and 
-produce lists of actions in response. Value modifiers is used on edit 
-mutable values and updating internal states if is necessary. Modifiable values
-applies to attributes like initial dice color, damage, and cost.
+对局中的所有修改都是通过`action`来实现的。每个`action`都会触发一个事件，并且可能会激活后续的`action`。这些新激活的`action`会被添加到现有的`action`列表的顶部，类似于堆栈列表的结构，参考`EventFrame`类的实现。
 
-All codes are tested with pytest and 100% coverage (except defensive codes,
-which are marked with `# pragma: no cover`). With the support of different
-version compatibility, when a new version is implemented, all past tests
-should be passed without modification.
+对局中所有的对象包含两种触发器：event handlers和value modifiers。事件处理器用来监控事件并产生响应的`action`列表。值修改器用来修改可变值并在必要时更新内部状态。可修改的值包括初始骰子颜色、伤害和消耗等。
 
-## Contribution
+所有的代码都使用pytest进行测试，覆盖率100%（除了防御性代码，它们被标记为`# pragma: no cover`）。由于完全兼容不同版本，当实现了新的版本时，所有已有测试都应该通过而不需要修改。
 
-Contributions are welcomed, however, currently there is no detailed guide for
-contribution. To add new charactor related objects (Charactor, Skill, Talent,
-Summon, Status), please refer to `templates/charactor.py` and implemented
-charactors.
-To add a new card, please refer to existing card implementations in 
-`server/card`.
+## 贡献
 
-You can contact author with QQ group 945778865. The answer of the question
-to enter the group is the chinese name of the simulator 水皇模拟器.
+欢迎合作开发项目代码，但是目前没有详细的贡献指南。如果你想添加新的角色相关的对象（角色、技能、天赋、召唤、状态），请参考`server/charactor/template.py`和已经实现的角色。如果你想添加新的卡牌，请参考`server/card`中已经实现的卡牌。
+
+你可以通过QQ群945778865联系作者，咨询开发和使用上的问题，进群问题的答案是模拟器的中文名。
+
+开发这个项目花费了大量(本来用来打牌和打模拟宇宙的)时间。如果你觉得这个项目有帮助，您可以通过微信支持作者。
+
+<p align="center">
+    <img src="docs/wechat.png" alt="wechat" width="150">
+</p>
