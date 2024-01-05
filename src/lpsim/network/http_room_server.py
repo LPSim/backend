@@ -64,6 +64,7 @@ class OneRoomWorker(Process):
                         # try to occupy random port from room_port_range
                         self.port = random.randint(*room_port_range)
                         self.server.run(**run_args, port = self.port)
+                        self.server.save_log(self.server.reset_log_save_file)
                         # when receive sigint, gracefully end server and send
                         # message to queue
                         self.resp_queue.put({
