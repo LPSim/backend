@@ -2045,12 +2045,12 @@ def test_chefmao_dunyarzad():
             "card 5 0",
             "TEST 1 p0 hand 7",
             "card 3 3",
-            "TEST 1 p0 hand 7",
+            "TEST 1 p0 hand 6",
             "card 0 0",
-            "TEST 1 p0 hand 8",
+            "TEST 1 p0 hand 7",
             "sw_char 1 15",
             "card 0 0",
-            "TEST 1 p0 hand 7",
+            "TEST 1 p0 hand 6",
             "end"
         ],
         [
@@ -2416,6 +2416,6 @@ if __name__ == '__main__':
     # test_dunyazard()
     # test_xudong()
     # test_hanachirusato()
-    # test_chefmao_dunyarzad()
+    test_chefmao_dunyarzad()
     # test_yayoi_fix()
     test_timaeus_fix_2()

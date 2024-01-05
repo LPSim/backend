@@ -15,7 +15,7 @@ from .base import (
 from ...consts import (
     DIE_COLOR_TO_ELEMENT, ELEMENT_DEFAULT_ORDER, CostLabels, 
     DamageElementalType, DamageType, DieColor, ElementType, 
-    ELEMENT_TO_DIE_COLOR, ElementalReactionType, IconType, ObjectPositionType, 
+    ELEMENT_TO_DIE_COLOR, ElementalReactionType, IconType, ObjectPositionType,
     PlayerActionLabels, SkillType
 )
 from ...struct import Cost, ObjectPosition
@@ -749,27 +749,30 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
             draw_if_filtered_not_enough = False,
         )]
 
-    def event_handler_USE_CARD(
-        self, event: UseCardEventArguments, match: Any
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Any
     ) -> List[Actions]:
         """
         Do limited action to draw a support card if needed
         """
+        ret = super().event_handler_MOVE_OBJECT(event, match)
         if self.position.area == ObjectPositionType.SUPPORT:
             # on support area, do effect
-            if (
-                event.action.card_position.player_idx 
-                != self.position.player_idx
-            ):
+            position = event.action.target_position
+            if position.id == self.id:
+                # self move, do nothing
+                return ret
+            if position.player_idx != self.position.player_idx:
                 # not our charactor use card, do nothing
-                return []
-            if event.card.cost.label & CostLabels.COMPANION.value == 0:
+                return ret
+            obj = match.get_object(position)
+            if obj.cost.label & CostLabels.COMPANION.value == 0:
                 # not companion card, do nothing
-                return []
+                return ret
             # our use companion card, do limited action
             return self.do_limited_action(match)
         # otherwise, do normal response
-        return super().event_handler_USE_CARD(event, match)
+        return ret
 
 
 class Dunyarzad_3_7(Dunyarzad_4_1): 
