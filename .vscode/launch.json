@@ -12,7 +12,8 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                // NEED TO INSTALL Command Variable plugin!
+                "PYTHONPATH": "${workspaceFolder}${command:extension.commandvariable.envListSep}${workspaceFolder}/src",
             },
             "justMyCode": true
         },
@@ -26,7 +27,8 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}",
             "env": {
-                "PYTHONPATH": "${workspaceFolder}"
+                "PYTHONPATH": "${workspaceFolder}${command:extension.commandvariable.envListSep}${workspaceFolder}/src",
+                // "PYTHONPATH": "${workspaceFolder}/src",
             },
             "justMyCode": true
         },
