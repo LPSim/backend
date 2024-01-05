@@ -2412,7 +2412,8 @@ class Match(BaseModel):
                     action = RemoveObjectAction(
                         object_position = obj.position,
                     ),
-                    object_name = obj.name
+                    object_name = obj.name,
+                    object_type = obj.type,
                 ))
                 self.trashbin.append(obj)
         charactor.weapon = None
@@ -2607,6 +2608,7 @@ class Match(BaseModel):
             return [RemoveObjectEventArguments(
                 action = action,
                 object_name = removed_equip.name,
+                object_type = removed_equip.type,
             )]
         else:
             raise NotImplementedError(
@@ -2625,6 +2627,7 @@ class Match(BaseModel):
                 return [RemoveObjectEventArguments(
                     action = action,
                     object_name = current_object.name,
+                    object_type = current_object.type,
                 )]
         self._set_match_state(MatchState.ERROR)  # pragma no cover
         raise AssertionError(

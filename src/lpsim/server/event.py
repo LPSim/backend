@@ -1,7 +1,7 @@
 from .struct import ObjectPosition
 from ..utils import BaseModel
 from typing import Any, Literal, List
-from .consts import DieColor, ElementalReactionType, ElementType
+from .consts import DieColor, ElementalReactionType, ElementType, ObjectType
 from .action import (
     ActionTypes, 
     ActionBase,
@@ -280,6 +280,7 @@ class RemoveObjectEventArguments(EventArgumentsBase):
     type: Literal[ActionTypes.REMOVE_OBJECT] = ActionTypes.REMOVE_OBJECT
     action: RemoveObjectAction
     object_name: str
+    object_type: ObjectType
 
 
 class ChangeObjectUsageEventArguments(EventArgumentsBase):

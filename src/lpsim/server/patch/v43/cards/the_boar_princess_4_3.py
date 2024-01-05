@@ -4,7 +4,7 @@ from .....utils.class_registry import register_class
 
 from ....status.team_status.base import RoundTeamStatus
 
-from ....consts import DieColor, IconType, ObjectPositionType
+from ....consts import DieColor, IconType, ObjectPositionType, ObjectType
 from ....action import CreateDiceAction, CreateObjectAction, RemoveObjectAction
 from ....match import Match
 from ....event import RemoveObjectEventArguments, RoundPrepareEventArguments
@@ -26,12 +26,21 @@ class TheBoarPrincessStatus_4_3(RoundTeamStatus):
         """
         When self equipment removed from charactor, create one omni die
         """
-        if event.action.object_position.player_idx != self.position.player_idx:
+        position = event.action.object_position
+        if position.player_idx != self.position.player_idx:
             # not self
             return []
-        if event.action.object_position.area != ObjectPositionType.CHARACTOR:
+        if position.area != ObjectPositionType.CHARACTOR:
             # not remove charactor objects, i.e. equipments
             return []
+        if event.object_type == ObjectType.TALENT:
+            # is talent, it should be removed because of charactor defeated.
+            charactor = match.player_tables[position.player_idx].charactors[
+                position.charactor_idx]
+            if charactor.is_alive:
+                # charactor is still alive, it should be because of
+                # talent overwritten.
+                return []
         assert self.usage > 0
         self.usage -= 1
         return [CreateDiceAction(
