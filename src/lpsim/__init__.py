@@ -1,6 +1,5 @@
 from .server.deck import Deck  # noqa: F401
 from .server.match import Match, MatchState  # noqa: F401
-from .network import HTTPServer, HTTPRoomServer  # noqa: F401
 from .utils import (  # noqa: F401
     register_class, DescDictType, update_desc, deck_str_to_deck_code,
     deck_code_to_deck_str
