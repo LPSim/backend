@@ -1,11 +1,9 @@
-from typing import List, Literal, Any, get_origin, get_type_hints
-
+from typing import List, Literal, Any
 from pydantic import validator
 
+from ...utils import accept_same_or_higher_version
 from ...utils.class_registry import register_base_class
-
 from ..object_base import ObjectBase
-
 from ..consts import (
     ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, IconType, 
     ObjectPositionType, ObjectType, DamageElementalType, DamageType
@@ -46,26 +44,8 @@ class SummonBase(ObjectBase):
     status_icon_type: Literal[IconType.NONE] = IconType.NONE
 
     @validator('version', pre = True)
-    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
-        msg = 'version annotation must be Literal with one str'
-        if not isinstance(v, str):
-            raise NotImplementedError(msg)
-        version_hints = get_type_hints(cls)['version']
-        if get_origin(version_hints) != Literal:
-            raise NotImplementedError(msg)
-        version_hints = version_hints.__args__
-        if len(version_hints) > 1:
-            raise NotImplementedError(msg)
-        version_hint = version_hints[0]
-        if values['strict_version_validation'] and v != version_hint:
-            raise ValueError(
-                f'version {v} is not equal to {version_hint}'
-            )
-        if v < version_hint:
-            raise ValueError(
-                f'version {v} is lower than {version_hint}'
-            )
-        return version_hint
+    def accept_same_or_higher_version(cls, v: str, values):
+        return accept_same_or_higher_version(cls, v, values)
 
     def renew(self, new_status: 'SummonBase') -> None:
         """

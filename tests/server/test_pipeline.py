@@ -1,8 +1,11 @@
 import time
 import json
+from typing import Literal
 import dictdiffer
 
 import pytest
+from src.lpsim.utils.class_registry import get_instance
+from src.lpsim.server.summon.base import SummonBase
 from src.lpsim.server.consts import ObjectType
 from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
@@ -10,6 +13,7 @@ from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from src.lpsim.agents.random_agent import RandomAgent
 from src.lpsim.agents.interaction_agent import InteractionAgent
+from src.lpsim.server.charactor.electro.fischl_3_3 import Oz_3_3
 from tests.utils_for_test import (
     get_test_id_from_command, set_16_omni, make_respond, remove_ids, 
     get_random_state, check_hp
@@ -1249,6 +1253,69 @@ def test_new_match_from_history_compressed():
     assert len(initial_match._history_diff) == len(match._history_diff)
 
 
+def test_version_validation():
+    with pytest.raises(ValueError):
+        _ = get_instance(SummonBase, {
+            'name': 'Oz',
+            'version': 3.7
+        })
+    with pytest.raises(AssertionError):
+        _ = get_instance(SummonBase, {
+            'name': 'Oz',
+            'version': '2.5'
+        })
+    with pytest.raises(ValueError):
+        _ = get_instance(SummonBase, {
+            'name': 'Oz',
+            'strict_version_validation': True,
+            'version': '3.5'
+        })
+    default_pos = {
+        'player_idx': 0,
+        'id': -1,
+        'area': 'SUMMON'
+    }
+    _ = get_instance(SummonBase, {
+        'name': 'Oz',
+        'version': '3.5',
+        'position': default_pos,
+    })
+    with pytest.raises(ValueError):
+        _ = Oz_3_3(**{
+            'name': 'Oz',
+            'version': 3.7,
+        })
+    with pytest.raises(ValueError):
+        _ = Oz_3_3(**{
+            'name': 'Oz',
+            'version': '2.5',
+            'position': default_pos,
+        })
+    with pytest.raises(ValueError):
+        _ = Oz_3_3(**{
+            'name': 'Oz',
+            'strict_version_validation': True,
+            'version': '3.5',
+            'position': default_pos,
+        })
+    _ = Oz_3_3(**{
+        'name': 'Oz',
+        'version': '3.5',
+        'position': default_pos,
+    })
+
+    # multiple version hints
+    class OOZZ(Oz_3_3):
+        version: Literal['3.4', '3.5']
+
+    with pytest.raises(ValueError):
+        _ = OOZZ(**{
+            'name': 'Oz',
+            'version': '3.5',
+            'position': default_pos,
+        })
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -1266,5 +1333,6 @@ if __name__ == '__main__':
     # test_prediction()
     # test_player_table_charactor_order()
     # test_frozen_cannot_use_skill_talent()
-    test_new_match_from_history()
-    test_new_match_from_history_compressed()
+    # test_new_match_from_history()
+    # test_new_match_from_history_compressed()
+    test_version_validation()

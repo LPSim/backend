@@ -1,4 +1,7 @@
 from typing import Literal
+from pydantic import validator
+
+from ...utils import accept_same_or_higher_version
 from ..consts import IconType, ObjectType
 from ..object_base import ObjectBase
 
@@ -8,6 +11,7 @@ class StatusBase(ObjectBase):
     Base class of status.
     """
     name: str
+    strict_version_validation: bool = False  # default accept higher versions
     version: str
     show_usage: bool = True
     usage: int
@@ -16,6 +20,10 @@ class StatusBase(ObjectBase):
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'ADD'
 
     icon_type: IconType
+
+    @validator('version', pre = True)
+    def accept_same_or_higher_version(cls, v: str, values):
+        return accept_same_or_higher_version(cls, v, values)
 
     def renew(self, new_status: 'StatusBase') -> None:
         """
