@@ -135,14 +135,6 @@ def register_class_one(cls: Type[Any]):
     base_classes = cls.mro()
     for base_class in base_classes:
         if base_class in _class_set:
-            if base_class.__name__ == 'CharactorBase':
-                # is a charactor, check if talent type hint is original
-                talent_hint = cls_type_hints['talent']
-                assert len(talent_hint.__args__) == 2
-                assert talent_hint.__args__[0].__name__ == 'TalentBase', (
-                    cls
-                )
-                assert talent_hint.__args__[1] is type(None)
             register_success = True
             for name in names:
                 if name not in _class_dict[base_class]:

@@ -1,7 +1,7 @@
 import pydantic
 import os
 import importlib
-from typing import List
+from typing import List, Literal, get_origin, get_type_hints
 from .class_registry import (  # noqa: F401
     register_class, get_instance, get_class_list_by_base_class
 )
@@ -49,6 +49,28 @@ def import_all_modules(
             file = file[:-3]
         if file not in exceptions:  # pragma: no branch
             importlib.import_module('.' + file, package = name)
+
+
+def accept_same_or_higher_version(cls, v: str, values):
+    msg = 'version annotation must be Literal with one str'
+    if not isinstance(v, str):
+        raise ValueError(msg)
+    version_hints = get_type_hints(cls)['version']
+    if get_origin(version_hints) != Literal:
+        raise ValueError(msg)
+    version_hints = version_hints.__args__
+    if len(version_hints) > 1:
+        raise ValueError(msg)
+    version_hint = version_hints[0]
+    if values['strict_version_validation'] and v != version_hint:
+        raise ValueError(
+            f'version {v} is not equal to {version_hint}'
+        )
+    if v < version_hint:
+        raise ValueError(
+            f'version {v} is lower than {version_hint}'
+        )
+    return version_hint
 
 
 if __name__ == "__main__":

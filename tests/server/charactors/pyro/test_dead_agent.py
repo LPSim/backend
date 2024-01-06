@@ -94,13 +94,14 @@ def test_dead_agent():
         )
         from src.lpsim.server.consts import ObjectPositionType
         from src.lpsim.server.struct import ObjectPosition
-        charactor.talent = PaidinFull_3_3(name = 'Paid in Full')
-        charactor.talent.position = ObjectPosition(
+        talent = PaidinFull_3_3(name = 'Paid in Full')
+        talent.position = ObjectPosition(
             player_idx = charactor.position.player_idx,
             charactor_idx = charactor.position.charactor_idx,
             area = ObjectPositionType.CHARACTOR,
-            id = charactor.talent.id
+            id = talent.id
         )
+        charactor.attachs.append(talent)
     match.step()
 
     while True:

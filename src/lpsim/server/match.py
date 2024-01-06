@@ -2401,25 +2401,17 @@ class Match(BaseModel):
             f'charactor {charactor.name}:{charactor_idx} '
             f'defeated.'
         )
-        removed_objects = [
-            charactor.weapon,
-            charactor.artifact,
-            charactor.talent,
-        ] + charactor.status
+        removed_objects = charactor.attachs
         for obj in removed_objects:
-            if obj is not None:
-                ret.append(RemoveObjectEventArguments(
-                    action = RemoveObjectAction(
-                        object_position = obj.position,
-                    ),
-                    object_name = obj.name,
-                    object_type = obj.type,
-                ))
-                self.trashbin.append(obj)
-        charactor.weapon = None
-        charactor.artifact = None
-        charactor.talent = None
-        charactor.status = []
+            ret.append(RemoveObjectEventArguments(
+                action = RemoveObjectAction(
+                    object_position = obj.position,
+                ),
+                object_name = obj.name,
+                object_type = obj.type,
+            ))
+            self.trashbin.append(obj)
+        charactor.attachs = []
         charactor.element_application = []
         charactor.is_alive = False
         charactor.charge = 0
@@ -2468,12 +2460,14 @@ class Match(BaseModel):
         # charactor_idx = action.object_position.charactor_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_class = TeamStatusBase
-            target_list = table.team_status
+            target_list = renew_target_list = table.team_status
             target_name = 'team status'
         elif action.object_position.area \
                 == ObjectPositionType.CHARACTOR_STATUS:
             target_class = CharactorStatusBase
             target_list = table.charactors[
+                action.object_position.charactor_idx].attachs
+            renew_target_list = table.charactors[
                 action.object_position.charactor_idx].status
             charactor = table.charactors[action.object_position.charactor_idx]
             if charactor.is_defeated:
@@ -2488,18 +2482,18 @@ class Match(BaseModel):
             target_name = 'charactor status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_class = SummonBase
-            target_list = table.summons
+            target_list = renew_target_list = table.summons
             target_name = 'summon'
         elif action.object_position.area == ObjectPositionType.HAND:
             assert len(table.hands) < self.config.max_hand_size, (
                 'Cannot create hand card when hand is full.'
             )
             target_class = CardBase
-            target_list = table.hands
+            target_list = renew_target_list = table.hands
             target_name = 'hand'
         elif action.object_position.area == ObjectPositionType.SYSTEM:
             target_class = SystemEventHandlerBase
-            target_list = self.event_handlers
+            target_list = renew_target_list = self.event_handlers
             target_name = 'system event handler'
         else:
             raise NotImplementedError(
@@ -2514,7 +2508,7 @@ class Match(BaseModel):
         )
         if target_name != 'hand':
             # if not create hand, not allow to create same name object
-            for csnum, current_object in enumerate(target_list):
+            for csnum, current_object in enumerate(renew_target_list):
                 if current_object.name == target_object.name:
                     # have same name object, only update status usage
                     current_object.renew(target_object)  # type: ignore
@@ -2543,10 +2537,15 @@ class Match(BaseModel):
             f'created new {target_name} {action.object_name}.'
         )
         target_list.append(target_object)  # type: ignore
+        create_idx = len(target_list) - 1
+        if target_name == 'charactor status':
+            # is charactor status, the idx should be status idx not attach idx
+            charactor = table.charactors[action.object_position.charactor_idx]
+            create_idx = len(charactor.status) - 1
         return [CreateObjectEventArguments(
             action = action,
             create_result = 'NEW',
-            create_idx = len(target_list) - 1,
+            create_idx = create_idx,
         )]
 
     def _action_remove_object(self, action: RemoveObjectAction) \
@@ -2564,7 +2563,7 @@ class Match(BaseModel):
         elif action.object_position.area \
                 == ObjectPositionType.CHARACTOR_STATUS:
             target_list = table.charactors[
-                action.object_position.charactor_idx].status
+                action.object_position.charactor_idx].attachs
             target_name = 'charactor status'
             assert table.charactors[
                 action.object_position.charactor_idx].is_alive, (
@@ -2586,24 +2585,25 @@ class Match(BaseModel):
             if charactor.weapon is not None and charactor.weapon.id == \
                     action.object_position.id:
                 removed_equip = charactor.weapon
-                charactor.weapon = None
                 target_name = 'weapon'
+                target_type = ObjectType.WEAPON
             elif charactor.artifact is not None and charactor.artifact.id == \
                     action.object_position.id:
                 removed_equip = charactor.artifact
-                charactor.artifact = None
                 target_name = 'artifact'
+                target_type = ObjectType.ARTIFACT
             elif charactor.talent is not None and charactor.talent.id == \
                     action.object_position.id:
                 removed_equip = charactor.talent
-                charactor.talent = None
                 target_name = 'talent'
+                target_type = ObjectType.TALENT
             else:
                 raise AssertionError(
                     f'player {player_idx} tried to remove non-exist equipment '
                     f'from charactor {charactor.name} with id '
                     f'{action.object_position.id}.'
                 )
+            removed_equip = charactor.remove_equip(target_type)
             self.trashbin.append(removed_equip)  # type: ignore
             return [RemoveObjectEventArguments(
                 action = action,
@@ -2721,21 +2721,18 @@ class Match(BaseModel):
             artifact = charactor.artifact
             talent = charactor.talent
             if weapon is not None and weapon.id == action.object_position.id:
-                charactor.weapon = None
-                current_list = [weapon]
+                current_list = [charactor.remove_equip(ObjectType.WEAPON)]
                 current_name = 'weapon'
             elif artifact is not None and artifact.id == \
                     action.object_position.id:
-                charactor.artifact = None
-                current_list = [artifact]
+                current_list = [charactor.remove_equip(ObjectType.ARTIFACT)]
                 current_name = 'artifact'
             elif talent is not None and \
                     talent.id == action.object_position.id:
                 raise NotImplementedError(
                     'Talent cannot be moved now.'
                 )
-                charactor.talent = None
-                current_list = [talent]
+                current_list = [charactor.remove_equip(ObjectType.TALENT)]
                 current_name = 'talent'
             else:
                 raise AssertionError(
@@ -2775,21 +2772,19 @@ class Match(BaseModel):
                     current_object.position = action.target_position
                     if current_object.type == ObjectType.ARTIFACT:
                         assert charactor.artifact is None
-                        charactor.artifact = current_object  # type: ignore
                         target_name = 'artifact'
                     elif current_object.type == ObjectType.TALENT:
                         assert charactor.talent is None
-                        charactor.talent = current_object  # type: ignore
                         target_name = 'talent'
                     elif current_object.type == ObjectType.WEAPON:
                         assert charactor.weapon is None
-                        charactor.weapon = current_object  # type: ignore
                         target_name = 'weapon'
                     else:
                         raise NotImplementedError(
                             f'Move object action as eqipment with type '
                             f'{current_object.type} is not implemented.'
                         )
+                    charactor.attachs.append(current_object)  # type: ignore
                     logging.info(
                         f'player {player_idx} '
                         f'moved {current_name} {current_object.name} '

@@ -606,37 +606,21 @@ class CharactorBase(ObjectBase):
     # charactor status
     hp: int = -1
     charge: int = 0
-    weapon: WeaponBase | None = None
-    artifact: ArtifactBase | None = None
-    talent: TalentBase | None = None
-    status: List[CharactorStatusBase] = []
     element_application: List[ElementType] = []
     is_alive: bool = True
 
-    @validator('status', each_item = True, pre = True)
-    def parse_status(cls, v):
-        return get_instance(CharactorStatusBase, v)
+    # objects attached to the charactor, including equips and charactor status
+    attachs: List[
+        CharactorStatusBase | WeaponBase | ArtifactBase | TalentBase] = []
 
-    @validator('weapon', pre = True)
-    def parse_weapon(cls, v):
-        if v is None:
-            return v
-        return get_instance(WeaponBase, v)
-
-    @validator('artifact', pre = True)
-    def parse_artifact(cls, v):
-        if v is None:
-            return v
-        return get_instance(ArtifactBase, v)
-
-    @validator('talent', pre = True)
-    def parse_talent(cls, v):
-        if v is None:
-            return v
-        return get_instance(TalentBase, v)
+    @validator('attachs', each_item = True, pre = True)
+    def parse_attachs(cls, v):
+        obj = get_instance(
+            CharactorStatusBase | WeaponBase | ArtifactBase | TalentBase, v)
+        return obj
 
     @validator('version', pre = True)
-    def accept_same_or_higher_version(cls, v: str, values):  # pragma: no cover
+    def accept_same_or_higher_version(cls, v: str, values):
         return accept_same_or_higher_version(cls, v, values)
 
     def __init__(self, *argv, **kwargs):
@@ -678,6 +662,61 @@ class CharactorBase(ObjectBase):
         raise NotImplementedError
 
     @property
+    def status(self) -> List[CharactorStatusBase]:
+        """
+        Get all status of the charactor.
+        """
+        return [
+            x for x in self.attachs if isinstance(x, CharactorStatusBase)
+        ]
+
+    @property
+    def weapon(self) -> WeaponBase | None:
+        """
+        Get weapon of the charactor.
+        """
+        for x in self.attachs:
+            if isinstance(x, WeaponBase):
+                return x
+        return None
+
+    @property
+    def artifact(self) -> ArtifactBase | None:
+        """
+        Get artifact of the charactor.
+        """
+        for x in self.attachs:
+            if isinstance(x, ArtifactBase):
+                return x
+        return None
+
+    @property
+    def talent(self) -> TalentBase | None:
+        """
+        Get talent of the charactor.
+        """
+        for x in self.attachs:
+            if isinstance(x, TalentBase):
+                return x
+        return None
+
+    def remove_equip(
+        self, equip_type: ObjectType
+    ) -> WeaponBase | ArtifactBase | TalentBase:
+        """
+        Remove equip from charactor, and return the removed object.
+        """
+        assert equip_type in [
+            ObjectType.WEAPON, ObjectType.ARTIFACT, ObjectType.TALENT
+        ]
+        for idx, obj in enumerate(self.attachs):
+            if obj.type == equip_type:
+                ret = self.attachs.pop(idx)
+                assert isinstance(ret, WeaponBase | ArtifactBase | TalentBase)
+                return ret
+        raise AssertionError('Equip not found')
+
+    @property
     def is_defeated(self) -> bool:
         return not self.is_alive
 
@@ -713,13 +752,7 @@ class CharactorBase(ObjectBase):
         result: List[ObjectBase] = [self]
         for skill in self.skills:
             result.append(skill)
-        if self.weapon is not None:
-            result.append(self.weapon)
-        if self.artifact is not None:
-            result.append(self.artifact)
-        if self.talent is not None:
-            result.append(self.talent)
-        result += self.status
+        result += self.attachs
         return result
 
     def get_object(self, position: ObjectPosition) -> ObjectBase | None:
