@@ -6,7 +6,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
-TCG, written with Python 3.10 using Pydantic and FastAPI.
+TCG, written with Python 3.10 using Pydantic and FastAPI. This project has
+another [frontend repository](https://github.com/LPSim/frontend) which contains 
+a frontend page to interact with this backend.
 
 This project is under AGPL-3.0 license. If you have any secondary development
 and distribution based on this project, please comply with this license.
@@ -14,7 +16,8 @@ and distribution based on this project, please comply with this license.
 ## Disclaimer
 
 This project is for learning and communication only. The frontend is only used
-for displaying game states and debugging. All related codes are open source
+for displaying game states and debugging, and you should delete all related 
+files in 24 hours after donwloading. All related codes are open source
 under AGPLv3 license. This project is not related to miHoYo, and all game
 materials are owned by miHoYo. This project and its code repository do not
 contain any image materials owned by miHoYo, or any non-public information
