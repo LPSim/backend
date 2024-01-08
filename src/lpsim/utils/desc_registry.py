@@ -82,6 +82,15 @@ def update_desc(desc_dict: Dict[str, DescDictType]) -> None:
     """
     Update descriptions.
     """
+    for key in desc_dict.keys():
+        if (
+            key[:16] == 'CHARACTOR_STATUS'
+            or key[:5] == 'SKILL'
+            or key[:6] == 'SUMMON'
+            or key[:11] == 'TEAM_STATUS'
+        ):
+            if 'id' in desc_dict[key]:
+                raise ValueError(f'id should not be in {key}')
     _merge_dict(desc_dict, _desc_dict)
 
 

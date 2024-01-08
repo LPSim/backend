@@ -241,8 +241,49 @@ def test_register_cost():
     assert p['CARD/DD']['cost']['1.0']['any_dice_number'] == 0
 
 
+def test_wrong_id():
+    wrong_prefix = ['CHARACTOR_STATUS', 'SKILL', 'SUMMON', 'TEAM_STATUS']
+    for wp in wrong_prefix:
+        wrong_id_desc: Dict[str, DescDictType] = {
+            f'{wp}/DD': {
+                "names": {
+                    'zh-CN': '滴滴',
+                    'en-US': 'DD',
+                },
+                "id": 999998,
+                "image_path": "http://www.baidu.com",
+                "descs": {
+                    '1.0': {
+                        'zh-CN': '滴滴',
+                        'en-US': 'DD',
+                    }
+                }
+            }
+        }
+        with pytest.raises(ValueError):
+            update_desc(wrong_id_desc)
+    for wp in wrong_prefix:
+        right_desc: Dict[str, DescDictType] = {
+            f'{wp}/DDD': {
+                "names": {
+                    'zh-CN': '滴滴',
+                    'en-US': 'DD',
+                },
+                "image_path": "http://www.baidu.com",
+                "descs": {
+                    '1.0': {
+                        'zh-CN': '滴滴',
+                        'en-US': 'DD',
+                    }
+                }
+            }
+        }
+        update_desc(right_desc)
+
+
 if __name__ == "__main__":
     test_class_registry()
     test_desc_registry()
     test_get_class_list()
     test_register_cost()
+    test_wrong_id()
