@@ -229,34 +229,6 @@ class SwitchCharactorAction(ActionBase):
 # 10
 
 
-class MakeDamageAction(ActionBase):
-    """
-    Action for making damage. Heal treats as negative damage. Elemental 
-    applies to the charactor (e.g. Kokomi) treats as zero damage.
-
-    Args:
-        damage_value_list (List[DamageValue]): The damage values to make.
-        do_charactor_change (bool): Whether to change charactor after making
-            damage.
-        charactor_change_idx (List[int]): The charactor indices of the 
-            charactor who will be changed to for each player. If it is -1,
-            this damage will not explicitly change the charactor. It should 
-            not be a defeated charactor.
-    """
-    type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
-    record_level: int = 10
-    damage_value_list: List[DamageValue]
-
-    # charactor change
-    charactor_change_idx: List[int] = [-1, -1]
-
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        for damage_value in self.damage_value_list:
-            assert damage_value.position.id == self.damage_value_list[
-                0].position.id, 'all damage should from same source'
-
-
 class ChargeAction(ActionBase):
     """
     Action for charging.
@@ -296,9 +268,6 @@ class SkillEndAction(ActionBase):
     skill_type: SkillType
 
 
-# 15
-
-
 class CharactorDefeatedAction(ActionBase):
     """
     Action for charactor defeated.
@@ -307,6 +276,9 @@ class CharactorDefeatedAction(ActionBase):
         ActionTypes.CHARACTOR_DEFEATED
     player_idx: int
     charactor_idx: int
+
+
+# 15
 
 
 class CreateObjectAction(ActionBase):
@@ -358,6 +330,41 @@ class MoveObjectAction(ActionBase):
     target_position: ObjectPosition
     # for Master of Weaponry etc. in 4.1, when mark true, reset round usage
     reset_usage: bool = False
+
+
+class MakeDamageAction(ActionBase):
+    """
+    Action for making damage. Heal treats as negative damage. Elemental 
+    applies to the charactor (e.g. Kokomi) treats as zero damage.
+
+    It can also contain charactor change and object creation (caused by 
+    elemental reaction or skill effects). They will be executed right after
+    making damage, and gives corresponding events. 
+
+    Args:
+        damage_value_list (List[DamageValue]): The damage values to make.
+        do_charactor_change (bool): Whether to change charactor after making
+            damage.
+        charactor_change_idx (List[int]): The charactor indices of the 
+            charactor who will be changed to for each player. If it is -1,
+            this damage will not explicitly change the charactor. It should 
+            not be a defeated charactor.
+        create_objects (List[CreateObjectAction]): The objects to create after
+            making damage.
+    """
+    type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
+    record_level: int = 10
+    damage_value_list: List[DamageValue]
+    create_objects: List[CreateObjectAction] = []
+
+    # charactor change
+    charactor_change_idx: List[int] = [-1, -1]
+
+    def __init__(self, *argv, **kwargs):
+        super().__init__(*argv, **kwargs)
+        for damage_value in self.damage_value_list:
+            assert damage_value.position.id == self.damage_value_list[
+                0].position.id, 'all damage should from same source'
 
 
 # 20
@@ -435,17 +442,17 @@ Actions = (
     | ActionEndAction
     | SwitchCharactorAction
     # 10
-    | MakeDamageAction
     | ChargeAction
     | UseSkillAction
     | UseCardAction
     | SkillEndAction
-    # 15
     | CharactorDefeatedAction
+    # 15
     | CreateObjectAction
     | RemoveObjectAction
     | ChangeObjectUsageAction
     | MoveObjectAction
+    | MakeDamageAction
     # 20
     | ConsumeArcaneLegendAction
     | GenerateChooseCharactorRequestAction

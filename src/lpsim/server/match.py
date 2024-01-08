@@ -2210,10 +2210,13 @@ class Match(BaseModel):
             last_active_charactor_idx = current_active_idx,
         )]
 
-    def _action_make_damage(self, action: MakeDamageAction) \
-            -> List[ReceiveDamageEventArguments | MakeDamageEventArguments 
-                    | AfterMakeDamageEventArguments 
-                    | SwitchCharactorEventArguments]:
+    def _action_make_damage(
+        self, action: MakeDamageAction
+    ) -> List[
+        ReceiveDamageEventArguments | MakeDamageEventArguments 
+        | AfterMakeDamageEventArguments | SwitchCharactorEventArguments
+        | CreateObjectEventArguments
+    ]:
         """
         Make damage action. It contains make damage, heal and element 
         application. It will return two types of events:
@@ -2225,14 +2228,26 @@ class Match(BaseModel):
             NOTE: only charactor switch of charactor received this damage will
             trigger this event, charactor switch of attacker (Kazuha, Kenki, 
             When the Crane Returned) should be another SwtichCharactorAction.
+            TODO is it possible to have charactor switch of attacker in
+                make damage action?
+        3. CreateObjectEventArguments: If this damage action contains create
+            object, i.e. massive skills that deal damage and create object,
+            or triggered dendro reaction, etc. A CreateObjectEventArguments
+            will be generated.
         NOTE: side effects by elemental reaction is handled by system event
         handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
         switch_charactor: List[int] = action.charactor_change_idx
-        events: List[ReceiveDamageEventArguments | MakeDamageEventArguments 
-                     | AfterMakeDamageEventArguments
-                     | SwitchCharactorEventArguments] = []
+        create_objects: List[CreateObjectAction] = action.create_objects
+        assert self.event_handlers[0].name == 'System'
+        # version used in side effect generation
+        version: str = self.event_handlers[0].version
+        events: List[
+            ReceiveDamageEventArguments | MakeDamageEventArguments 
+            | AfterMakeDamageEventArguments | SwitchCharactorEventArguments 
+            | CreateObjectEventArguments
+        ] = []
         infos: List[ReceiveDamageEventArguments] = []
         while len(damage_lists) > 0:
             damage = damage_lists.pop(0)
@@ -2272,14 +2287,17 @@ class Match(BaseModel):
                 if nci is not None:
                     switch_charactor[player_idx] = nci
             # apply elemental reaction, update damage and append new damages
-            damage, new_damages = apply_elemental_reaction(
+            damage, new_damages, new_object = apply_elemental_reaction(
                 table.charactors,
                 table.active_charactor_idx,
                 damage, 
                 elemental_reaction, 
                 reacted_elements,
+                version,
             )
             damage_lists += new_damages
+            if new_object is not None:
+                create_objects.append(new_object)
             # apply 3-step damage modification
             self._modify_value(damage, 'REAL')
             damage = DamageMultiplyValue.from_increase_value(damage)
@@ -2339,6 +2357,9 @@ class Match(BaseModel):
                 )
                 sw_events = self._action_switch_charactor(sw_action)
                 events += sw_events
+        for co_action in create_objects:
+            co_events = self._action_create_object(co_action)
+            events += co_events
         return events
 
     def _action_charge(self, action: ChargeAction) \
@@ -2519,7 +2540,6 @@ class Match(BaseModel):
                     return [CreateObjectEventArguments(
                         action = action,
                         create_result = 'RENEW',
-                        create_idx = csnum,
                     )]
         if (target_name == 'summon' 
                 and len(target_list) >= self.config.max_summon_number):
@@ -2537,15 +2557,9 @@ class Match(BaseModel):
             f'created new {target_name} {action.object_name}.'
         )
         target_list.append(target_object)  # type: ignore
-        create_idx = len(target_list) - 1
-        if target_name == 'charactor status':
-            # is charactor status, the idx should be status idx not attach idx
-            charactor = table.charactors[action.object_position.charactor_idx]
-            create_idx = len(charactor.status) - 1
         return [CreateObjectEventArguments(
             action = action,
             create_result = 'NEW',
-            create_idx = create_idx,
         )]
 
     def _action_remove_object(self, action: RemoveObjectAction) \

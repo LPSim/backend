@@ -313,9 +313,13 @@ class GoldenChalicesBounty_4_2(TeamStatusBase):
             # not teams status dendro core
             return []
         # is dendro core, remove it and create bountiful core
-        dendro_core = match.player_tables[
-            self.position.player_idx].team_status[event.create_idx]
-        assert dendro_core.name == 'Dendro Core'
+        dendro_core = None
+        for s in match.player_tables[self.position.player_idx].team_status:
+            if s.name == 'Dendro Core':
+                dendro_core = s
+                break
+        else:
+            raise AssertionError('Dendro Core not found')
         return [
             RemoveObjectAction(
                 object_position = dendro_core.position,
