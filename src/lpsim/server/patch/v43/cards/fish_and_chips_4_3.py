@@ -74,7 +74,6 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "本回合中，该角色下次使用技能时少花费1个元素骰。"
             }
         },
-        "id": 333013
     },
 }
 

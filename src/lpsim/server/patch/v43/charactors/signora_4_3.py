@@ -554,7 +554,6 @@ desc: Dict[str, DescDictType] = {
             }
         },
         "image_path": "cardface/Modify_Talent_LaSignora.png",  # noqa: E501
-        "id": 221021
     },
     "TALENT_Signora/Pain for Pain": {
         "names": {
