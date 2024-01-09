@@ -70,8 +70,9 @@ class UniversalDiagnosis(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
-            self.create_summon('Gossamer Sprite')]
+        return super().get_actions(match, [
+            self.create_summon('Gossamer Sprite')
+        ])
 
 
 class HolisticRevivification(ElementalBurstBase):

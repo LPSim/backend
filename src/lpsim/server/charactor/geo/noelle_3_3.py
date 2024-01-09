@@ -25,8 +25,9 @@ class Breastplate(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        ret.append(self.create_team_status('Full Plate'))
+        ret = super().get_actions(match, [
+            self.create_team_status('Full Plate')
+        ])
         return ret
 
 
@@ -41,8 +42,9 @@ class SweepingTime(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        ret.append(self.create_charactor_status('Sweeping Time'))
+        ret = super().get_actions(match, [
+            self.create_charactor_status('Sweeping Time')
+        ])
         return ret
 
 

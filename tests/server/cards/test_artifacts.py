@@ -1185,9 +1185,9 @@ def test_emblem_of_severed_fate():
             "skill 2 15 14 13 12",
             "card 9 0 11",
             "skill 2 10 9 8 7",
-            "TEST 1 19 21 30 30 15 19",
+            "TEST 1 19 21 30 30 15 21",
             "sw_char 2 6",
-            "TEST 1 19 21 29 30 15 19",
+            "TEST 1 19 21 29 30 15 21",
             "end"
         ],
         [
@@ -1214,7 +1214,7 @@ def test_emblem_of_severed_fate():
             "end",
             "TEST 1 19 26 30 30 15 26",
             "sw_char 2 15",
-            "TEST 1 19 26 30 30 15 19",
+            "TEST 1 19 26 30 30 15 21",
             "skill 2 14 13 12",
             "card 3 0 11",
             "skill 2 10 9 8"
@@ -1510,6 +1510,6 @@ if __name__ == '__main__':
     # test_lucky_dog()
     # test_big_elemental_artifacts()
     # test_advanturer_traveling_doctor()
-    # test_emblem_of_severed_fate()
+    test_emblem_of_severed_fate()
     # test_shadow_of_chiwang()
     test_millelith_2()

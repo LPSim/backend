@@ -201,22 +201,14 @@ class FortunePreservingTalisman_4_0(UsageTeamStatus):
     version: Literal['4.0'] = '4.0'
     usage: int = 3
     max_usage: int = 3
-    newly_created: bool = True
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
-
-    def renew(self, new_status: 'FortunePreservingTalisman_4_0') -> None:
-        """
-        Reset newly created
-        """
-        super().renew(new_status)
-        self.newly_created = new_status.newly_created
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
-        if self.newly_created:
-            # newly created, mark as false and no effect
-            self.newly_created = False
+        skill = match.get_object(event.action.position)
+        if skill.name == 'Adeptus Art: Preserver of Fortune':
+            # is Preserver of Fortune, do nothing
             return []
         if event.action.position.player_idx != self.position.player_idx:
             # not our player skill made damage, do nothing

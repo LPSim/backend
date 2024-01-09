@@ -4,7 +4,7 @@ from ....utils.class_registry import register_class
 
 from ...summon.base import DeclareRoundEndAttackSummonBase
 
-from ...action import Actions, RemoveObjectAction
+from ...action import ActionTypes, Actions, RemoveObjectAction
 from ...struct import Cost
 
 from ...consts import (
@@ -67,6 +67,8 @@ class GreatSecretArtTenkoKenshin(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         ret = super().get_actions(match)
+        damage_action = ret[1]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         summons = match.player_tables[self.position.player_idx].summons
         sakura: SesshouSakura_3_7 | None = None
         for summon in summons:
@@ -75,12 +77,13 @@ class GreatSecretArtTenkoKenshin(ElementalBurstBase):
                 break
         if sakura is not None:
             # destroy and add status
-            ret.append(RemoveObjectAction(object_position = sakura.position))
-            ret.append(self.create_team_status('Tenko Thunderbolts'))
+            ret = [RemoveObjectAction(object_position = sakura.position)] + ret
+            damage_action.create_objects.append(
+                self.create_team_status('Tenko Thunderbolts'))
             if self.is_talent_equipped(match):
                 # add status
-                ret.append(self.create_charactor_status(
-                    "The Shrine's Sacred Shade"))
+                damage_action.create_objects.append(
+                    self.create_charactor_status("The Shrine's Sacred Shade"))
         return ret
 
 

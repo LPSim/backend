@@ -49,9 +49,9 @@ class KamisatoArtSoumetsu(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Frostflake Seki no To')
-        ]
+        ])
 
 
 class KamisatoArtSenho(PassiveSkillBase):

@@ -79,12 +79,12 @@ class SkywardSonnet(ElementalSkillBase):
         talent_activated = False
         if self.is_talent_equipped(match):
             talent_activated = True
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status(
                 'Stormzone', 
                 {'talent_activated': talent_activated}
             )
-        ]
+        ])
 
 
 class WindsGrandOde(ElementalBurstBase):
@@ -102,7 +102,9 @@ class WindsGrandOde(ElementalBurstBase):
         Attack and create object
         """
         # create summon first, so it can change element immediately.
-        return [self.create_summon('Stormeye')] + super().get_actions(match)
+        return super().get_actions(match, [
+            self.create_summon('Stormeye')
+        ])
 
 
 # Talents

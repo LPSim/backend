@@ -41,9 +41,6 @@ class ShootingStar_4_3(TeamStatusBase):
     4. When max_usage reached, deal 1 Cryo DMG and clear usage
     5. When deal DMG, if has layla with talent, draw 1 card. (This is 
         performed by talent card)
-
-    TODO: when using layla E second time with 2 Night Star, will it remain 1
-        Night Star?
     """
     name: Literal['Shooting Star'] = 'Shooting Star'
     version: Literal['4.3'] = '4.3'
@@ -165,9 +162,9 @@ class DreamOfTheStarStreamShaker(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Celestial Dreamsphere'),
-        ]
+        ])
 
 
 class LightsRemit_4_3(SkillTalent):

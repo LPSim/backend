@@ -16,15 +16,14 @@ class Raincutter(R_3_6):
         """
         Attack, application and create version 3.3 object
         """
-        ret = [
+        return [
             self.charge_self(-2),
-            self.attack_opposite_active(match, self.damage, self.damage_type),
+            self.attack_opposite_active(match, self.damage, self.damage_type, [
+                self.create_team_status('Rainbow Bladework', {
+                    'version': '3.3'
+                })
+            ]),
             self.element_application_self(match, DamageElementalType.HYDRO)
-        ]
-        return ret + [
-            self.create_team_status('Rainbow Bladework', {
-                'version': '3.3'
-            })
         ]
 
 

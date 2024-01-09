@@ -43,7 +43,7 @@ class MirrorReflectionOfDoom(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [self.create_summon('Reflection')]
+        return super().get_actions(match, [self.create_summon('Reflection')])
 
 
 class StellarisPhantasm(ElementalBurstBase):
@@ -57,9 +57,9 @@ class StellarisPhantasm(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        ret.append(self.create_team_status('Illusory Bubble'))
-        return ret
+        return super().get_actions(match, [
+            self.create_team_status('Illusory Bubble')
+        ])
 
 
 class IllusoryTorrent(PassiveSkillBase):

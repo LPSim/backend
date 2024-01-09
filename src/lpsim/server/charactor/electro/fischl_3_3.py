@@ -28,7 +28,7 @@ class Nightrider(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [self.create_summon('Oz')]
+        return super().get_actions(match, [self.create_summon('Oz')])
 
 
 class MidnightPhantasmagoria(ElementalBurstBase, AOESkillBase):

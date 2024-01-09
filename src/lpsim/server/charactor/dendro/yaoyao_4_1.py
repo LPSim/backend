@@ -107,9 +107,9 @@ class MoonjadeDescent(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('Adeptal Legacy')
-        ]
+        ])
 
 
 # Talents

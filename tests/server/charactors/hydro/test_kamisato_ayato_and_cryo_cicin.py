@@ -188,5 +188,89 @@ def test_ayato_fatui_cryo_cicin():
     assert match.state != MatchState.ERROR
 
 
+def test_ayato_skill_patch():
+    cmd_records = [
+        [
+            "sw_card",
+            "choose 0",
+            "skill 1 15 14 13",
+            "TEST 1 p0c0 status 3",
+            "TEST 1 p1c1 status 2",
+            "end"
+        ],
+        [
+            "sw_card",
+            "choose 1",
+            "skill 1 15 14 13"
+        ]
+    ]
+    agent_0 = InteractionAgent(
+        player_idx = 0,
+        verbose_level = 0,
+        commands = cmd_records[0],
+        only_use_command = True
+    )
+    agent_1 = InteractionAgent(
+        player_idx = 1,
+        verbose_level = 0,
+        commands = cmd_records[1],
+        only_use_command = True
+    )
+    # initialize match. It is recommended to use default random state to make
+    # replay unchanged.
+    match = Match(random_state = get_random_state())
+    # deck information
+    deck = Deck.from_str(
+        '''
+        default_version:4.2
+        charactor:Kamisato Ayato
+        charactor:Kamisato Ayato@3.6
+        charactor:Tighnari
+        Lotus Flower Crisp*15
+        '''
+    )
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.charactor_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    # check whether random_first_player is enabled.
+    match.config.random_first_player = False
+    # check whether in rich mode (16 omni each round)
+    set_16_omni(match)
+    match.start()
+    match.step()
+
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # do tests
+        while True:
+            cmd = agent.commands[0]
+            test_id = get_test_id_from_command(agent)
+            if test_id == 0:
+                # id 0 means current command is not a test command.
+                break
+            elif test_id == 1:
+                cmd = cmd.split()
+                pidx, cidx = get_pidx_cidx(cmd)
+                status = match.player_tables[pidx].charactors[cidx].status
+                check_usage(status, cmd[4:])
+            else:
+                raise AssertionError(f'Unknown test id {test_id}')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+
+    # simulate ends, check final state
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_ayato_fatui_cryo_cicin()
+    # test_ayato_fatui_cryo_cicin()
+    test_ayato_skill_patch()

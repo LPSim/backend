@@ -1,9 +1,15 @@
 from typing import Dict, List, Literal
 
+from pydantic import PrivateAttr
+
 from ....action import (
     ActionTypes, Actions, CreateObjectAction, MakeDamageAction, 
+    RemoveObjectAction, 
 )
-from ....event import RemoveObjectEventArguments
+from ....event import (
+    CreateObjectEventArguments, RemoveObjectEventArguments, 
+    RoundPrepareEventArguments
+)
 from .....utils.class_registry import register_class
 from ....status.charactor_status.base import (
     PrepareCharactorStatus, UsageCharactorStatus
@@ -13,7 +19,7 @@ from ....match import Match
 from ....struct import Cost
 from ....consts import (
     DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    IconType, ObjectPositionType, WeaponType
+    IconType, ObjectPositionType, ObjectType, WeaponType
 )
 from ....charactor.charactor_base import (
     CharactorBase, ElementalBurstBase, ElementalSkillBase, 
@@ -51,46 +57,6 @@ class TotalCollapse_4_3(UsageCharactorStatus):
             value.damage += 2
         return value
 
-    def event_handler_REMOVE_OBJECT(
-        self, event: RemoveObjectEventArguments, match: Match
-    ) -> List[CreateObjectAction]:
-        """
-        When self removed, and self is active, and found opposite talent 
-        Dvalin, create Total Collapse on next standby charactor.
-        """
-        if event.action.object_position.id != self.position.id:
-            # not self removed
-            return []
-        if (
-            match.player_tables[self.position.player_idx].active_charactor_idx 
-            != self.position.charactor_idx
-        ):
-            # self not active
-            return []
-        opposite_charactors = match.player_tables[
-            1 - self.position.player_idx].charactors
-        for charactor in opposite_charactors:
-            if charactor.is_defeated:
-                continue
-            if charactor.name == 'Dvalin' and charactor.talent is not None:
-                # found opposite talent Dvalin
-                target = match.player_tables[
-                    self.position.player_idx].next_charactor_idx()
-                # has next charactor
-                if target is not None:
-                    target_charactor = match.player_tables[
-                        self.position.player_idx].charactors[target]
-                    return [
-                        CreateObjectAction(
-                            object_name = 'Total Collapse',
-                            object_position 
-                            = target_charactor.position.set_area(
-                                ObjectPositionType.CHARACTOR_STATUS),
-                            object_arguments = {}
-                        )
-                    ]
-        return []
-
 
 class PerpetualCleansingStatus_4_3(PrepareCharactorStatus):
     name: Literal['Perpetual Cleansing'] = 'Perpetual Cleansing'
@@ -116,11 +82,11 @@ class TempestuousBarrage(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_opposite_charactor_status(
                 match, 'Total Collapse', {}
             )
-        ]
+        ])
 
 
 class DvalinsCleansing(ElementalSkillBase):
@@ -133,9 +99,9 @@ class DvalinsCleansing(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Perpetual Cleansing', {})
-        ]
+        ])
 
 
 class PerpetualCleansing(ElementalSkillBase):
@@ -164,8 +130,10 @@ class PerpetualCleansing(ElementalSkillBase):
                         cost = self.cost.copy(),
                     )
                 ],
+                create_objects = [
+                    self.create_charactor_status('Ultimate Cleansing', {})
+                ]
             ),
-            self.create_charactor_status('Ultimate Cleansing', {})
         ]
 
 
@@ -194,9 +162,8 @@ class UltimateCleansing(ElementalSkillBase):
                         damage_elemental_type = self.damage_type,
                         cost = self.cost.copy(),
                     )
-                ],
+                ]
             ),
-            self.create_charactor_status('Ultimate Cleansing', {})
         ]
 
 
@@ -212,6 +179,8 @@ class CaelestinumFinaleTermini(ElementalBurstBase):
 
     def get_actions(self, match: Match) -> List[Actions]:
         ret = super().get_actions(match)
+        damage_action = ret[1]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         table = match.player_tables[1 - self.position.player_idx]
         for charactor in table.charactors:
             if table.active_charactor_idx == charactor.position.charactor_idx:
@@ -219,7 +188,7 @@ class CaelestinumFinaleTermini(ElementalBurstBase):
             if charactor.is_defeated:
                 continue
             # apply status
-            ret.append(
+            damage_action.create_objects.append(
                 CreateObjectAction(
                     object_name = 'Total Collapse',
                     object_position = charactor.position.set_area(
@@ -239,6 +208,73 @@ class RendingVortex_4_3(SkillTalent):
         elemental_dice_number = 3
     )
     skill: Literal['Tempestuous Barrage'] = 'Tempestuous Barrage'
+    round_usage: int = 1
+    _max_round_usage: int = PrivateAttr(1)
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Match
+    ) -> List[Actions]:
+        self.round_usage = self._max_round_usage
+        return []
+
+    def event_handler_CREATE_OBJECT(
+        self, event: CreateObjectEventArguments, match: Match
+    ) -> List[CreateObjectAction]:
+        """
+        when Total collapse is renew create, treat it as old one removed.
+        """
+        if event.create_result != 'RENEW':
+            # not renew, do nothing
+            return []
+        # make fake event arguments
+        fake_event = RemoveObjectEventArguments(
+            action = RemoveObjectAction(
+                object_position = event.action.object_position,
+            ),
+            object_name = event.action.object_name,
+            # no effect, set one default
+            object_type = ObjectType.CHARACTOR_STATUS,
+        )
+        ret = self.event_handler_REMOVE_OBJECT(fake_event, match)
+        return ret
+
+    def event_handler_REMOVE_OBJECT(
+        self, event: RemoveObjectEventArguments, match: Match
+    ) -> List[CreateObjectAction]:
+        """
+        When opposite Total Collapse removed, and opposite is active, and found 
+        self is in charactor, create Total Collapse on next standby charactor.
+        """
+        if self.round_usage <= 0:
+            # no usage
+            return []
+        if event.object_name != 'Total Collapse':
+            # not Total Collapse
+            return []
+        if not self.position.check_position_valid(
+            event.action.object_position, match, player_idx_same = False,
+            source_area = ObjectPositionType.CHARACTOR,
+            target_is_active_charactor = True, 
+        ):
+            # not from opposite active charactor, or self not equipped
+            return []
+        # is opposite active, append Total Collapse to next standby charactor
+        table = match.player_tables[1 - self.position.player_idx]
+        target = table.next_charactor_idx()
+        if target is None:
+            # no target, do nothing
+            return []
+        self.round_usage -= 1
+        target_charactor = table.charactors[target]
+        return [
+            CreateObjectAction(
+                object_name = 'Total Collapse',
+                object_position 
+                = target_charactor.position.set_area(
+                    ObjectPositionType.CHARACTOR_STATUS),
+                object_arguments = {}
+            )
+        ]
 
 
 class Dvalin_4_3(CharactorBase):

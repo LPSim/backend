@@ -68,6 +68,8 @@ class FoulLegacyRagingTide(ElementalSkillBase, AttachRiptideWhenSkillEnd):
         create object then attack
         """
         return [
+            # Tartaglia need to create the status first, otherwise cannot 
+            # receive the damage increase
             self.create_charactor_status(
                 'Melee Stance',
                 { 'version': self.version }

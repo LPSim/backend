@@ -2240,7 +2240,7 @@ class Match(BaseModel):
         """
         damage_lists = action.damage_value_list[:]
         switch_charactor: List[int] = action.charactor_change_idx
-        create_objects: List[CreateObjectAction] = action.create_objects
+        create_objects: List[CreateObjectAction] = []
         assert self.event_handlers[0].name == 'System'
         # version used in side effect generation
         version: str = self.event_handlers[0].version
@@ -2358,6 +2358,7 @@ class Match(BaseModel):
                 )
                 sw_events = self._action_switch_charactor(sw_action)
                 events += sw_events
+        create_objects += action.create_objects
         for co_action in create_objects:
             co_events = self._action_create_object(co_action)
             events += co_events
@@ -2492,7 +2493,7 @@ class Match(BaseModel):
             renew_target_list = table.charactors[
                 action.object_position.charactor_idx].status
             charactor = table.charactors[action.object_position.charactor_idx]
-            if charactor.is_defeated:
+            if charactor.is_defeated:  # pragma: no cover
                 logging.warning(
                     'Trying to create status for defeated charactor '
                     f'{action.object_position.player_idx}:'

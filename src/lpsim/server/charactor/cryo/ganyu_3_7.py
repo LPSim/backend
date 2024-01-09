@@ -48,9 +48,9 @@ class TrailOftheQilin(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('Ice Lotus'),
-        ]
+        ])
 
 
 class FrostflakeArrow(ElementalNormalAttackBase, AOESkillBase):
@@ -111,9 +111,9 @@ class CelestialShower(ElementalBurstBase, AOESkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Sacred Cryo Pearl')
-        ]
+        ])
 
 
 # Talents

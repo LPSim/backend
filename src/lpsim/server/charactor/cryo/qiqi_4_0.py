@@ -122,9 +122,9 @@ class AdeptusArtPreserverOfFortune(ElementalBurstBase):
         Make damage and create status. Then if has talent and has revive usage,
         revive all defeated charactors with 2 hp.
         """
-        ret = super().get_actions(match) + [
+        ret = super().get_actions(match, [
             self.create_team_status('Fortune-Preserving Talisman')
-        ]
+        ])
         if not self.is_talent_equipped(match):
             # no talent
             return ret

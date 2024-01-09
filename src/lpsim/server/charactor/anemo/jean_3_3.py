@@ -122,6 +122,10 @@ class DandelionBreeze(ElementalBurstBase):
         charactors = match.player_tables[self.position.player_idx].charactors
         heal_action = MakeDamageAction(
             damage_value_list = [],
+            create_objects = [
+                self.create_summon(
+                    'Dandelion Field', { 'version': self.version })
+            ]
         )
         for charactor in charactors:
             if charactor.is_alive:
@@ -136,9 +140,6 @@ class DandelionBreeze(ElementalBurstBase):
                     )
                 )
         ret.append(heal_action)
-        ret.append(self.create_summon('Dandelion Field', {
-            'version': self.version
-        }))
         return ret
 
 

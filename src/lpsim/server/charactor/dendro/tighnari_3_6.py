@@ -45,9 +45,9 @@ class VijnanaPhalaMine(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Vijnana Suffusion'),
-        ]
+        ])
 
 
 class FashionersTanglevineShaft(ElementalBurstBase, AOESkillBase):

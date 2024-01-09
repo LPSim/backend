@@ -7,7 +7,8 @@ from ...event import RoundEndEventArguments
 from ...summon.base import AttackerSummonBase
 
 from ...action import (
-    Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction
+    ActionTypes, Actions, ChangeObjectUsageAction, CreateObjectAction, 
+    MakeDamageAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -39,9 +40,11 @@ class TenguJuuraiAmbush_3_5(AttackerSummonBase):
             MakeDamageAction | CreateObjectAction | ChangeObjectUsageAction
         ] = []
         ret += super().event_handler_ROUND_END(event, match)
+        damage_action = ret[0]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         active_idx = match.player_tables[
             self.position.player_idx].active_charactor_idx
-        ret.append(CreateObjectAction(
+        damage_action.create_objects.append(CreateObjectAction(
             object_name = 'Crowfeather Cover',
             object_position = ObjectPosition(
                 player_idx = self.position.player_idx,
@@ -77,9 +80,9 @@ class TenguStormcall(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Tengu Juurai: Ambush')
-        ]
+        ])
 
 
 class SubjugationKoukouSendou(ElementalBurstBase):
@@ -96,9 +99,9 @@ class SubjugationKoukouSendou(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Tengu Juurai: Stormcluster')
-        ]
+        ])
 
 
 # Talents

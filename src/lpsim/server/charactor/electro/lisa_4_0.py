@@ -48,14 +48,12 @@ class LightningTouch(ElementalNormalAttackBase):
         """
         Do attack; if charged attack, attach conductive
         """
-        ret = super().get_actions(match)
         if not match.player_tables[self.position.player_idx].charge_satisfied:
             # not charged attack
-            return ret
-        ret.append(self.create_opposite_charactor_status(
-            match, 'Conductive', {}
-        ))
-        return ret
+            return super().get_actions(match)
+        return super().get_actions(match, [
+            self.create_opposite_charactor_status(match, 'Conductive', {})
+        ])
 
 
 class VioletArc(ElementalSkillBase):
@@ -82,11 +80,10 @@ class VioletArc(ElementalSkillBase):
                 break
         if conductive is None:
             # no conductive
-            return super().get_actions(match) + [
+            return super().get_actions(match, [
                 self.create_opposite_charactor_status(
-                    match, 'Conductive', {}
-                )
-            ]
+                    match, 'Conductive', {})
+            ])
         else:
             # has conductive
             self.damage += conductive.usage
@@ -109,9 +106,9 @@ class LightningRose(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon(self.name)
-        ]
+        ])
 
 
 # Talents

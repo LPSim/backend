@@ -152,9 +152,9 @@ class MistySummons(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Cryo Cicins', { 'version': self.version }),
-        ]
+        ])
 
 
 class BlizzardBranchBlossom(ElementalBurstBase):
@@ -174,10 +174,16 @@ class BlizzardBranchBlossom(ElementalBurstBase):
         if cicin is not None:
             args['usage'] = 1 + cicin.usage
             args['max_usage'] = 1 + cicin.usage
-        return super().get_actions(match) + [
-            self.element_application_self(match, DamageElementalType.CRYO),
-            self.create_team_status('Flowing Cicin Shield', args)
+        ret = [
+            self.charge_self(-self.cost.charge),
+            self.attack_opposite_active(
+                match, self.damage, self.damage_type, 
+                [self.create_team_status('Flowing Cicin Shield', args)]
+            ),
         ]
+        app = self.element_application_self(match, DamageElementalType.CRYO)
+        ret[1].damage_value_list += app.damage_value_list
+        return ret
 
 
 # Talents

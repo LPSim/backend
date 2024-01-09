@@ -42,7 +42,7 @@ class InfluxBlast(ElementalSkillBase):
                     break
             if exist_status is not None:
                 break
-        ret: List[Actions] = []
+        ret: List[RemoveObjectAction] = []
         if exist_status:
             ret.append(RemoveObjectAction(
                 object_position = exist_status.position
@@ -54,11 +54,18 @@ class InfluxBlast(ElementalSkillBase):
                 'max_usage': 3,
                 'is_talent_activated': True,
             }
-        return super().get_actions(match) + ret + [
+        o_status = self.create_opposite_charactor_status(
+            match, 'Refraction', args)
+        if len(ret) > 0 and o_status.object_position.check_position_valid(
+            ret[0].object_position, match, player_idx_same = True, 
+            charactor_idx_same = True
+        ):
+            # attach to same charactor, do not remove
+            ret = []
+        return ret + super().get_actions(match, [
             self.create_opposite_charactor_status(
-                match, 'Refraction', args
-            )
-        ]
+                match, 'Refraction', args)
+        ])
 
 
 # Talents

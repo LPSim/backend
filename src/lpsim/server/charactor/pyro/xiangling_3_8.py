@@ -5,7 +5,7 @@ from ....utils.class_registry import register_class
 
 from ...summon.base import AttackerSummonBase
 
-from ...action import Actions
+from ...action import ActionTypes, Actions
 from ...struct import Cost
 
 from ...consts import (
@@ -50,11 +50,16 @@ class GuobaAttack(ElementalSkillBase):
         """
         Attack and create object
         """
-        ret: List[Actions] = []
         if self.is_talent_equipped(match):
             ret = super().get_actions(match)
-        ret.append(self.create_summon('Guoba'))
-        ret.append(self.charge_self(1))
+            damage_action = ret[0]
+            assert damage_action.type == ActionTypes.MAKE_DAMAGE
+            damage_action.create_objects.append(self.create_summon('Guoba'))
+        else:
+            ret: List[Actions] = [
+                self.create_summon('Guoba'),
+                self.charge_self(1)
+            ]
         return ret
 
 
@@ -69,9 +74,9 @@ class Pyronado(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('Pyronado')
-        ]
+        ])
 
 
 # Talents

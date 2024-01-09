@@ -163,7 +163,6 @@ class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
     version: Literal['3.3'] = '3.3'
     usage: int = 2
     max_usage: int = 2
-    newly_created: bool = True
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     trigger_skill_type: SkillType | None = None
@@ -174,11 +173,9 @@ class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
-        """
-        If newly created, should not trigger immediately.
-        """
-        if self.newly_created:
-            self.newly_created = False
+        skill = match.get_object(event.action.position)
+        if skill.name == 'Pyronado':
+            # Xiangling use burst Pyronado
             return []
         return super().event_handler_SKILL_END(event, match)
 

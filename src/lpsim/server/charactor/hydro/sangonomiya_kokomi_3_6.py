@@ -91,11 +91,13 @@ class KuragesOath(ElementalSkillBase):
         """
         application and create object
         """
-        return [
+        ret = [
             self.charge_self(1),
             self.element_application_self(match, DamageElementalType.HYDRO),
-            self.create_summon('Bake-Kurage'),
         ]
+        summon = self.create_summon('Bake-Kurage')
+        ret[1].create_objects.append(summon)
+        return ret
 
 
 class NereidsAscension(ElementalBurstBase):
@@ -113,13 +115,12 @@ class NereidsAscension(ElementalBurstBase):
         damage, heal and create charactor status
         """
         ret = super().get_actions(match)
-        action = MakeDamageAction(
-            damage_value_list = []
-        )
+        damage_action = ret[1]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         charactors = match.player_tables[self.position.player_idx].charactors
         for charactor in charactors:
             if charactor.is_alive:
-                action.damage_value_list.append(DamageValue(
+                damage_action.damage_value_list.append(DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
                     target_position = charactor.position,
@@ -127,8 +128,8 @@ class NereidsAscension(ElementalBurstBase):
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = Cost(),
                 ))
-        ret.append(action)
-        ret.append(self.create_charactor_status('Ceremonial Garment'))
+        damage_action.create_objects.append(
+            self.create_charactor_status('Ceremonial Garment'))
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         summons = match.player_tables[
@@ -143,7 +144,8 @@ class NereidsAscension(ElementalBurstBase):
             if talent.version == '3.5':
                 # if has 3.5 talent, re-create Bake-Kurage
                 if kurage_found:
-                    ret.append(self.create_summon('Bake-Kurage'))
+                    damage_action.create_objects.append(
+                        self.create_summon('Bake-Kurage'))
             elif talent.version == '4.2':
                 # with 4.2 talent
                 if kurage_found is not None:
@@ -156,10 +158,12 @@ class NereidsAscension(ElementalBurstBase):
                     )
                 else:
                     # otherwise, create kurage with 1 usage
-                    ret.append(self.create_summon('Bake-Kurage', {
-                        'usage': 1,
-                        'max_usage': 1,
-                    }))
+                    damage_action.create_objects.append(
+                        self.create_summon('Bake-Kurage', {
+                            'usage': 1,
+                            'max_usage': 1,
+                        })
+                    )
             else:
                 raise NotImplementedError
         return ret

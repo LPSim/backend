@@ -1,6 +1,8 @@
 from typing import Dict, List, Literal
 
-from ....action import Actions, MakeDamageAction, RemoveObjectAction
+from ....action import (
+    ActionTypes, Actions, MakeDamageAction, RemoveObjectAction
+)
 from .....utils.class_registry import register_class
 from ....status.charactor_status.base import CharactorStatusBase
 from ....summon.base import AttackerSummonBase
@@ -108,8 +110,12 @@ class PropArrow(ElementalNormalAttackBase):
 
     def get_actions(self, match: Match) -> List[Actions]:
         ret = super().get_actions(match)
-        ret.append(self.create_summon('Grin-Malkin Hat'))
-        ret.append(self.create_charactor_status('Prop Surplus'))
+        damage_action = ret[0]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
+        damage_action.create_objects += [
+            self.create_summon('Grin-Malkin Hat'), 
+            self.create_charactor_status('Prop Surplus')
+        ]
         charactor = match.player_tables[self.position.player_idx].charactors[
             self.position.charactor_idx]
         if charactor.hp >= 6:
@@ -131,8 +137,12 @@ class WondrousTrickMiracleParade(ElementalBurstBase):
 
     def get_actions(self, match: Match) -> List[Actions]:
         ret = super().get_actions(match)
-        ret.append(self.create_summon('Grin-Malkin Hat'))
-        ret.append(self.create_charactor_status('Prop Surplus'))
+        damage_action = ret[1]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
+        damage_action.create_objects += [
+            self.create_summon('Grin-Malkin Hat'), 
+            self.create_charactor_status('Prop Surplus')
+        ]
         return ret
 
 
