@@ -8,9 +8,13 @@ from tests.utils_for_test import (
 
 
 def template():
-    match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_counter_reset_when_revive.json')  # noqa: E501
-    )
+    json_fname = 'test_dvalin_talent_2.json'
+    json_path = os.path.join(os.path.dirname(__file__), 'jsons', json_fname)
+    match, agent_0, agent_1 = read_from_log_json(json_path)
+    json_data = json.loads(open(json_path, 'r', encoding = 'utf8').read())
+    if 'command_history_raw' in json_data:
+        raise AssertionError('command_history_raw already exists!')
+    json_data['command_history_raw'] = json_data['command_history']
     match.config.history_level = 0
     # modify hp
     # for i in range(2):
@@ -167,7 +171,8 @@ def template():
 
     # simulate ends, check final state
     assert match.state != MatchState.ERROR
-    open('111.json', 'w').write((json.dumps(new_commands, indent = 4)))
+    json_data['command_history'] = new_commands
+    open('111.json', 'w').write((json.dumps(json_data, indent = 4)))
 
 
 if __name__ == '__main__':

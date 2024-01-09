@@ -51,9 +51,9 @@ class DominusLapidis(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Stone Stele')
-        ]
+        ])
 
 
 class DominusLapidisStrikingStone(ElementalSkillBase):
@@ -70,10 +70,10 @@ class DominusLapidisStrikingStone(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Stone Stele'),
             self.create_team_status('Jade Shield')
-        ]
+        ])
 
 
 class PlanetBefall(ElementalBurstBase):
@@ -90,11 +90,11 @@ class PlanetBefall(ElementalBurstBase):
         """
         Attack target, and create status for target
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_opposite_charactor_status(
                 match, 'Petrification', {}
             )
-        ]
+        ])
 
 
 # Talents

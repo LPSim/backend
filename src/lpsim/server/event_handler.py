@@ -10,7 +10,6 @@ from .object_base import ObjectBase
 from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor, ObjectType
 from .event import (
-    ReceiveDamageEventArguments,
     AfterMakeDamageEventArguments,
     CharactorDefeatedEventArguments,
     RoundEndEventArguments,
@@ -26,7 +25,6 @@ from .action import (
     RemoveCardAction
 )
 from .modifiable_values import InitialDiceColorValue, RerollValue
-from .elemental_reaction import elemental_reaction_side_effect
 
 
 class SystemEventHandlerBase(ObjectBase):
@@ -79,23 +77,6 @@ class SystemEventHandler_3_3(SystemEventHandlerBase):
                     remove_type = 'BURNED'
                 ))
         return actions
-
-    def event_handler_RECEIVE_DAMAGE(
-        self, event: ReceiveDamageEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        After receive damage, generate side effects of elemental reaction.
-        """
-        reaction = event.elemental_reaction
-        player_idx = event.final_damage.target_position.player_idx
-        charactor_idx = event.final_damage.target_position.charactor_idx
-        act = elemental_reaction_side_effect(
-            reaction, player_idx, charactor_idx, 
-            version = self.version
-        )
-        if act is not None:
-            return [act]
-        return []
 
     def event_handler_AFTER_MAKE_DAMAGE(
         self, event: AfterMakeDamageEventArguments, match: Any

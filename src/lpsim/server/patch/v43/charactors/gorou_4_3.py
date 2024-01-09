@@ -3,8 +3,8 @@ from typing import Dict, List, Literal
 from ....status.team_status.base import RoundTeamStatus
 from .....utils.class_registry import register_class
 from ....action import (
-    Actions, ChangeObjectUsageAction, CreateObjectAction, DrawCardAction, 
-    MakeDamageAction
+    ActionTypes, Actions, ChangeObjectUsageAction, CreateObjectAction, 
+    DrawCardAction, MakeDamageAction
 )
 from ....event import (
     RoundEndEventArguments, RoundPrepareEventArguments, SkillEndEventArguments
@@ -72,13 +72,15 @@ class GeneralsGlory_4_3(AttackerSummonBase):
             MakeDamageAction | ChangeObjectUsageAction | CreateObjectAction
         ] = []
         ret += super().event_handler_ROUND_END(event, match)
+        damage_action = ret[0]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         charactors = match.player_tables[self.position.player_idx].charactors
         geo_number = 0
         for charactor in charactors:
             if charactor.element == ElementType.GEO:
                 geo_number += 1
         if geo_number >= 2:
-            ret.append(CreateObjectAction(
+            damage_action.create_objects.append(CreateObjectAction(
                 object_name = 'Crystallize',
                 object_position = ObjectPosition(
                     player_idx = self.position.player_idx,
@@ -100,9 +102,9 @@ class InuzakaAllRoundDefense(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('General\'s War Banner')
-        ]
+        ])
 
 
 class JuugaForwardUntoVictory(ElementalBurstBase):
@@ -117,10 +119,10 @@ class JuugaForwardUntoVictory(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('General\'s War Banner'),
             self.create_summon('General\'s Glory')
-        ]
+        ])
 
 
 class RushingHoundSwiftAsTheWind_4_3(SkillTalent):

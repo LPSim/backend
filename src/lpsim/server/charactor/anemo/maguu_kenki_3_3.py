@@ -4,7 +4,7 @@ from ....utils.class_registry import register_class
 
 from ..charactor_base import PhysicalNormalAttackBase
 
-from ...action import ActionTypes, Actions
+from ...action import Actions
 
 from .maguu_kenki_3_4 import MaguuKenki_3_4 as MK_3_4
 from .maguu_kenki_3_4 import BlusteringBlade as BB_3_4
@@ -19,13 +19,9 @@ class BlusteringBlade(BB_3_4):
         """
         gather two actions
         """
-        actions = super().get_actions(match)
-        attack_actions = super(BB_3_4, self).get_actions(match)
-        assert len(actions) == 2
-        summon_action = actions[0]
-        assert summon_action.type == ActionTypes.CREATE_OBJECT
-        attack_actions.append(summon_action)
-        return attack_actions
+        return super(BB_3_4, self).get_actions(match, [
+            self.create_summon('Shadowsword: Lone Gale'),
+        ])
 
 
 class FrostyAssault(FA_3_4):
@@ -35,13 +31,9 @@ class FrostyAssault(FA_3_4):
         """
         gather two actions
         """
-        actions = super().get_actions(match)
-        attack_actions = super(FA_3_4, self).get_actions(match)
-        assert len(actions) == 2
-        summon_action = actions[0]
-        assert summon_action.type == ActionTypes.CREATE_OBJECT
-        attack_actions.append(summon_action)
-        return attack_actions
+        return super(FA_3_4, self).get_actions(match, [
+            self.create_summon('Shadowsword: Galloping Frost'),
+        ])
 
 
 class MaguuKenki_3_3(MK_3_4):

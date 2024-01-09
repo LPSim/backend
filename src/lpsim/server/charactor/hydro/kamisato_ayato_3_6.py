@@ -1,13 +1,14 @@
-from typing import List, Literal
+from typing import Any, List, Literal
+
+from ...action import Actions
 
 from ....utils.class_registry import register_class
 
-from ..charactor_base import PhysicalNormalAttackBase
+from ..charactor_base import ElementalSkillBase, PhysicalNormalAttackBase
 from ...struct import Cost
-from ...consts import DieColor
+from ...consts import DamageElementalType, DieColor
 from .kamisato_ayato_4_1 import KamisatoAyato_4_1 as KA_4_1
 from .kamisato_ayato_4_1 import KamisatoArtSuiyuu as KAS_4_1
-from .kamisato_ayato_4_1 import KamisatoArtKyouka
 
 
 class KamisatoArtSuiyuu(KAS_4_1):
@@ -17,6 +18,24 @@ class KamisatoArtSuiyuu(KAS_4_1):
         elemental_dice_number = 3,
         charge = 3
     )
+
+
+class KamisatoArtKyouka(ElementalSkillBase):
+    name: Literal['Kamisato Art: Kyouka'] = 'Kamisato Art: Kyouka'
+    damage: int = 2
+    damage_type: DamageElementalType = DamageElementalType.HYDRO
+    cost: Cost = Cost(
+        elemental_dice_color = DieColor.HYDRO,
+        elemental_dice_number = 3
+    )
+
+    def get_actions(self, match: Any) -> List[Actions]:
+        """
+        Attack and create object
+        """
+        return super().get_actions(match, [
+            self.create_charactor_status('Takimeguri Kanka'),
+        ])
 
 
 class KamisatoAyato_3_6(KA_4_1):

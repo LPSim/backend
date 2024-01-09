@@ -36,7 +36,6 @@ class StellarRestoration(ElementalSkillBase):
         """
         If Lightning Stiletto in hand, do not create another one.
         """
-        ret = super().get_actions(match)
         table = match.player_tables[self.position.player_idx]
         hands = table.hands[:]
         if table.using_hand is not None:
@@ -53,12 +52,12 @@ class StellarRestoration(ElementalSkillBase):
                 area = ObjectPositionType.HAND,
                 id = -1
             )
-            ret.append(CreateObjectAction(
+            return super().get_actions(match, [CreateObjectAction(
                 object_name = 'Lightning Stiletto',
                 object_position = position,
                 object_arguments = {}
-            ))
-        return ret
+            )])
+        return super().get_actions(match)
 
 
 class StarwardSword(ElementalBurstBase, AOESkillBase):

@@ -31,9 +31,9 @@ class JadeScreen(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status(self.name),
-        ]
+        ])
 
 
 class Starshatter(ElementalBurstBase):

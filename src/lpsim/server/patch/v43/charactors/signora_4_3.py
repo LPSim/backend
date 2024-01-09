@@ -235,9 +235,9 @@ class SignoraElementalSkill(SignoraSkillValidCheck, ElementalSkillBase):
             status_name = 'Blazing Heat'
         else:
             raise AssertionError(f'Unknown damage type {self.damage_type}')
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_opposite_charactor_status(match, status_name)
-        ]
+        ])
 
 
 class CarmineChrysalis(SignoraSkillValidCheck, ElementalBurstBase):

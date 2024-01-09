@@ -80,8 +80,9 @@ class FloralBrush(ElementalSkillBase):
         if charactor.talent is None:
             # no talent equipped
             return ret
-        ret = [self.create_team_status('Floral Sidewinder')] + ret
-        return ret
+        return super().get_actions(match, [
+            self.create_team_status('Floral Sidewinder')
+        ])
 
 
 class TrumpCardKitty(ElementalBurstBase):
@@ -98,9 +99,9 @@ class TrumpCardKitty(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Cuilein-Anbar')
-        ]
+        ])
 
 
 # Talents

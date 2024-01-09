@@ -1,21 +1,16 @@
 from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
-
 from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
-
 from ...struct import Cost, ObjectPosition
-
 from ...consts import (
     CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
     SkillType
 )
-
 from ...action import (
     ActionTypes, Actions, CreateObjectAction, MakeDamageAction, 
     RemoveObjectAction
 )
-
 from ...event import (
     CharactorDefeatedEventArguments, CreateObjectEventArguments, 
     MakeDamageEventArguments, RoundPrepareEventArguments, 
@@ -405,6 +400,12 @@ class Refraction_3_3(RoundCharactorStatus):
         super().__init__(*argv, **kwargs)
         if self.is_talent_activated:
             self.desc = 'talent'
+
+    def renew(self, new_status: 'Refraction_3_3') -> None:
+        if new_status.is_talent_activated:
+            self.desc = 'talent'
+            self.is_talent_activated = True
+        return super().renew(new_status)
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any

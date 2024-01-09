@@ -29,8 +29,7 @@ class AllSchemesToKnow(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret: List[Actions] = []
-        damage_ret = super().get_actions(match)
+        ret: List[CreateObjectAction] = []
         # get target charactors and active charactor.
         player_idx = self.position.player_idx
         target_table = match.player_tables[1 - player_idx]
@@ -67,8 +66,7 @@ class AllSchemesToKnow(ElementalSkillBase):
                         )
                     )
         # apply damage after apply status.
-        ret += damage_ret
-        return ret
+        return super().get_actions(match, ret)
 
 
 class AllSchemesToKnowTathata(ElementalSkillBase):
@@ -83,8 +81,7 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret: List[Actions] = []
-        damage_ret = super().get_actions(match)
+        ret: List[CreateObjectAction] = []
         # get target charactors and active charactor.
         player_idx = self.position.player_idx
         target_table = match.player_tables[1 - player_idx]
@@ -102,8 +99,7 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
                     object_arguments = {},
                 )
             )
-        ret += damage_ret
-        return ret
+        return super().get_actions(match, ret)
 
 
 class IllusoryHeart(ElementalBurstBase):
@@ -117,9 +113,9 @@ class IllusoryHeart(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
-        ret.append(self.create_team_status('Shrine of Maya'))
-        return ret
+        return super().get_actions(match, [
+            self.create_team_status('Shrine of Maya')
+        ])
 
 
 class TheSeedOfStoredKnowledge_3_7(SkillTalent):

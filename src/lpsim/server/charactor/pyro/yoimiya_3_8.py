@@ -66,9 +66,9 @@ class RyuukinSaxifrage(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('Aurous Blaze')
-        ]
+        ])
 
 
 # Talents

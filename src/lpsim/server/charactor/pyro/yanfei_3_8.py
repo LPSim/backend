@@ -38,11 +38,11 @@ class SignedEdict(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Scarlet Seal', {
                 'version': self.version,
             })
-        ]
+        ])
 
 
 class DoneDeal(ElementalBurstBase):
@@ -56,10 +56,10 @@ class DoneDeal(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Scarlet Seal'),
             self.create_charactor_status('Brilliance'),
-        ]
+        ])
 
 
 # Talents

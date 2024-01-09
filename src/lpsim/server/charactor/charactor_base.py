@@ -73,7 +73,10 @@ class SkillBase(ObjectBase):
         """
         return True
 
-    def get_actions(self, match: Any) -> List[Actions]:
+    def get_actions(
+        self, match: Any, 
+        create_object_actions: List[CreateObjectAction] | None = None
+    ) -> List[Actions]:
         """
         The skill is triggered, and get actions of the skill.
         By default, it will generate three actions:
@@ -82,19 +85,42 @@ class SkillBase(ObjectBase):
         2. ChargeAction to charge the active charactor by 1.
         """
         return [
-            self.attack_opposite_active(match, self.damage, self.damage_type),
+            self.attack_opposite_active(
+                match, self.damage, self.damage_type, create_object_actions),
             self.charge_self(1),
         ]
 
     def event_handler_USE_SKILL(
         self, event: UseSkillEventArguments, match: Any
-    ):
+    ):  # pragma: no cover
         """
         When use skill event triggered, check if this skill is used.
         If so, return self.get_actions()
         """
         if event.action.skill_position == self.position:
-            return self.get_actions(match)
+            ret = self.get_actions(match)
+            has_damage = False
+            has_creation = False
+            from ..action import ActionTypes
+            for action in ret:
+                if action.type == ActionTypes.MAKE_DAMAGE:
+                    has_damage = True
+                if action.type == ActionTypes.CREATE_OBJECT:
+                    has_creation = True
+            if has_damage and has_creation:
+                import logging
+                # import time
+                # import os
+                logging.warning(
+                    f'Skill {self.name} has both damage and creation'
+                )
+                # with open(
+                #     f'logs/damage_create/{os.getpid()}-{time.time()}.txt', 
+                #     'w', 
+                #     encoding = 'utf8'
+                # ) as f:
+                #     f.write(f'{self.name}\n')
+            return ret
         return []
 
     # commonly used function for skills
@@ -165,11 +191,14 @@ class SkillBase(ObjectBase):
 
     def attack_opposite_active(
         self, match: Any, damage: int, damage_type: DamageElementalType,
+        create_object_actions: List[CreateObjectAction] | None = None
     ) -> MakeDamageAction:
         assert damage > 0
         target_table = match.player_tables[1 - self.position.player_idx]
         target_charactor_idx = target_table.active_charactor_idx
         target_charactor = target_table.charactors[target_charactor_idx]
+        if create_object_actions is None:
+            create_object_actions = []
         return MakeDamageAction(
             damage_value_list = [
                 DamageValue(
@@ -181,6 +210,7 @@ class SkillBase(ObjectBase):
                     cost = self.cost.copy(),
                 )
             ],
+            create_objects = create_object_actions,
         )
 
     def attack_self(
@@ -301,14 +331,18 @@ class ElementalBurstBase(SkillBase):
             charge = charge
         )
 
-    def get_actions(self, match: Any) -> List[Actions]:
+    def get_actions(
+        self, match: Any,
+        create_object_actions: List[CreateObjectAction] | None = None
+    ) -> List[Actions]:
         """
         When using elemental burst, the charge of the active charactor will be
         reduced by `self.charge`.
         """
         return [
             self.charge_self(-self.cost.charge),
-            self.attack_opposite_active(match, self.damage, self.damage_type),
+            self.attack_opposite_active(
+                match, self.damage, self.damage_type, create_object_actions),
         ]
 
 
@@ -322,6 +356,7 @@ class AOESkillBase(SkillBase):
 
     def attack_opposite_active(
         self, match: Any, damage: int, damage_type: DamageElementalType,
+        create_object_actions: List[CreateObjectAction] | None = None
     ) -> MakeDamageAction:
         """
         For AOE, modify attack opposite to also attack back charactors
@@ -330,6 +365,8 @@ class AOESkillBase(SkillBase):
         target_charactor_idx = target_table.active_charactor_idx
         target_charactor = target_table.charactors[target_charactor_idx]
         charactors = target_table.charactors
+        if create_object_actions is None:
+            create_object_actions = []
         damage_action = MakeDamageAction(
             damage_value_list = [
                 DamageValue(
@@ -341,6 +378,7 @@ class AOESkillBase(SkillBase):
                     cost = self.cost.copy(),
                 )
             ],
+            create_objects = create_object_actions,
         )
         for cid, charactor in enumerate(charactors):
             if cid == target_table.active_charactor_idx:

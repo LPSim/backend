@@ -7,7 +7,7 @@ from ...event import MakeDamageEventArguments, SkillEndEventArguments
 from ...summon.base import SwirlChangeSummonBase
 
 from ...action import (
-    Actions, CreateObjectAction, SwitchCharactorAction
+    Actions, CreateObjectAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -45,24 +45,20 @@ class Chihayaburu(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret: List[Actions] = [
-            # create status first, so it can change element
-            self.create_charactor_status('Midare Ranzan: New'),
-        ]
-        # make damage
-        ret.append(self.attack_opposite_active(
-            match, self.damage, self.damage_type))
         # switch charactor
         next_charactor = match.player_tables[
             self.position.player_idx].next_charactor_idx()
-        if next_charactor is not None:
-            ret.append(
-                SwitchCharactorAction(
-                    player_idx = self.position.player_idx,
-                    charactor_idx = next_charactor,
-                )
-            )
-        ret.append(self.charge_self(1))
+        if next_charactor is None:
+            next_charactor = -1
+        attack = self.attack_opposite_active(
+            match, self.damage, self.damage_type,
+            [self.create_charactor_status('Midare Ranzan: New')]
+        )
+        attack.charactor_change_idx[self.position.player_idx] = next_charactor
+        ret = [
+            attack,
+            self.charge_self(1)
+        ]
         return ret
 
 
@@ -77,11 +73,9 @@ class KazuhaSlash(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return [
+        return super().get_actions(match, [
             self.create_summon('Autumn Whirlwind'),
-            self.attack_opposite_active(match, self.damage, self.damage_type),
-            self.charge_self(1),
-        ]
+        ])
 
 
 # Talents

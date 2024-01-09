@@ -93,9 +93,9 @@ class UniversalityAnElaborationOnForm(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Chisel-Light Mirror')
-        ]
+        ])
 
 
 class ParticularFieldFettersOfPhenomena(ElementalBurstBase):
@@ -120,12 +120,12 @@ class ParticularFieldFettersOfPhenomena(ElementalBurstBase):
                 break
         if status is None:
             # attack and create 3-stack status
-            return super().get_actions(match) + [
+            return super().get_actions(match, [
                 self.create_charactor_status(
                     'Chisel-Light Mirror',
                     { 'usage': 3 }
                 )
-            ]
+            ])
         else:
             # attack and change status usage
             has_talent = self.is_talent_equipped(match)

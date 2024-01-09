@@ -32,11 +32,11 @@ class FantasticVoyage(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_team_status('Inspiration Field', {
                 'talent_activated': self.is_talent_equipped(match)
             })
-        ]
+        ])
 
 
 # Talents

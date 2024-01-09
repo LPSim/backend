@@ -244,8 +244,9 @@ class AzhdahaOtherElementalSkill(ElementalSkillBase):
     def get_actions(
         self, match: Match
     ) -> List[Actions]:
-        return super().get_actions(match) + [self.create_charactor_status(
-            'Stone Facets: Elemental Crystallization')]
+        return super().get_actions(match, [self.create_charactor_status(
+            'Stone Facets: Elemental Crystallization')
+        ])
 
 
 class DecimatingRockfall(ElementalBurstBase):

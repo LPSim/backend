@@ -32,9 +32,9 @@ class Prowl(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Stealth')
-        ]
+        ])
 
 
 class StealthMaster(CreateStatusPassiveSkill):
@@ -77,8 +77,13 @@ class PaidinFull_3_3(SkillTalent):
             return []
         charactor = match.player_tables[
             self.position.player_idx].charactors[self.position.charactor_idx]
-        status = charactor.status[event.create_idx]
-        assert status.name == 'Stealth'
+        status = None
+        for s in charactor.status:
+            if s.name == 'Stealth':
+                status = s
+                break
+        else:
+            raise AssertionError('Stealth not found')
         # add 1 usage
         return [ChangeObjectUsageAction(
             object_position = status.position,

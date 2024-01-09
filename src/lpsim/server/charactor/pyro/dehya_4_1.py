@@ -57,9 +57,9 @@ class MoltenInferno(ElementalSkillBase):
                 break
         if summon_exists:
             # make damage and create summon
-            return super().get_actions(match) + [
+            return super().get_actions(match, [
                 self.create_summon(summon_name),
-            ]
+            ])
         return [
             self.create_summon(summon_name),
             self.charge_self(1)
@@ -77,9 +77,9 @@ class LeonineBite(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_charactor_status('Incineration Drive'),
-        ]
+        ])
 
 
 class IncinerationDrive(ElementalBurstBase):

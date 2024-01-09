@@ -145,8 +145,8 @@ class IcetideVortex(ElementalSkillBase):
                 # has Grimheart, return
                 return ret
         # no Grimheart, add Grimheart
-        ret.append(self.create_charactor_status(
-            'Grimheart', { 'version': self.version }))
+        ret[0].create_objects = [self.create_charactor_status(
+            'Grimheart', { 'version': self.version })]
         return ret
 
 
@@ -165,9 +165,9 @@ class GlacialIllumination(ElementalBurstBase):
         """
         Attack and summon
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('Lightfall Sword', { 'version': self.version })
-        ]
+        ])
 
 
 # Talents
