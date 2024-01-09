@@ -1,6 +1,6 @@
 import os
 import logging
-
+import copy
 import numpy as np
 from typing import Literal, List, Any, Dict, Tuple
 from enum import Enum
@@ -388,6 +388,7 @@ class Match(BaseModel):
             # calculate the target history
             target_history_dict = history[0].dict()
             for diff in history_diff[1:history_idx + 1]:
+                diff = copy.deepcopy(diff)
                 dictdiffer.patch(diff, target_history_dict, in_place = True)
             target_history = Match(**target_history_dict)
             match = target_history.copy(deep = True)
