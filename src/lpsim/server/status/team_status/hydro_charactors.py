@@ -284,12 +284,6 @@ class PrayerOfTheCrimsonCrown_3_8(ElementalInfusionTeamStatus,
 
 
 class GoldenChalicesBounty_4_2(TeamStatusBase):
-    """
-    TODO:
-    Currently after a dendro core is generated, it removes dendro core and
-    create bountiful core. But it will clear existing dendro core. Need to be
-    fixed, as dendro core can be triggerd by Abyss Summon.
-    """
     name: Literal["Golden Chalice's Bounty"] = "Golden Chalice's Bounty"
     version: Literal['4.2'] = '4.2'
     usage: int = 0
@@ -312,18 +306,21 @@ class GoldenChalicesBounty_4_2(TeamStatusBase):
         ):
             # not teams status dendro core
             return []
-        # is dendro core, remove it and create bountiful core
-        dendro_core = None
-        for s in match.player_tables[self.position.player_idx].team_status:
-            if s.name == 'Dendro Core':
-                dendro_core = s
-                break
-        else:
-            raise AssertionError('Dendro Core not found')
-        return [
-            RemoveObjectAction(
+        ret: List[RemoveObjectAction | CreateObjectAction] = []
+        if event.create_result == 'NEW':
+            # is dendro core and newly create, remove it and create bountiful 
+            # core
+            dendro_core = None
+            for s in match.player_tables[self.position.player_idx].team_status:
+                if s.name == 'Dendro Core':
+                    dendro_core = s
+                    break
+            else:
+                raise AssertionError('Dendro Core not found')
+            ret.append(RemoveObjectAction(
                 object_position = dendro_core.position,
-            ),
+            ))
+        return ret + [
             CreateObjectAction(
                 object_name = 'Bountiful Core',
                 object_position = ObjectPosition(
