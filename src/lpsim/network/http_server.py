@@ -1,7 +1,9 @@
+import asyncio
 import logging
 import json
 import uuid
 import os
+import time
 import datetime
 from typing import Literal, List
 from fastapi import FastAPI, HTTPException, Request
@@ -106,6 +108,8 @@ class HTTPServer():
         reset_log_save_path: str | None = None,
         room_name: str = '',
         excluded_log_endpoints: List[str] = ['/request', '/state'],
+        get_state_timeout: float = 10,
+        get_state_sleeptime: float = 0.5,
     ):
         self.app = FastAPI()
         self.decks = [Deck.from_str(deck) if isinstance(deck, str) else deck
@@ -113,6 +117,10 @@ class HTTPServer():
         self.reset_log_save_path = reset_log_save_path
         self.room_name = room_name
         self.excluded_log_endpoints = excluded_log_endpoints
+        # timeout and sleeptime for long polling get state. If do not want to
+        # perform long polling, set timeout to less than 0.
+        self.get_state_timeout = get_state_timeout
+        self.get_state_sleeptime = get_state_sleeptime
         logging.getLogger('uvicorn.access').addFilter(
             EndpointFilter(self.excluded_log_endpoints))
         if match_config is not None and match_config.history_level < 10:
@@ -390,31 +398,40 @@ class HTTPServer():
                                     detail = 'State not found')
             if state_idx == -1:
                 state_idx = len(match._history_diff) - 1
-            if state_idx == len(match._history_diff):
-                # ask for the state after the last state
-                return JSONResponse([])
-            result = []
-            if state_idx == 0:
-                # first is 0, add full state and change state_idx to 1
-                result = [{
-                    'uuid': self.uuid,
-                    'idx': state_idx,
-                    'match': match._history[0].dict(),
-                    'type': 'FULL',
-                }]
-                state_idx = 1
-            if mode == 'after':
-                result += [
-                    {
+            start_time = time.time()
+            while time.time() - start_time < self.get_state_timeout:
+                if state_idx > 0 and self.uuid != uuid:
+                    # during waiting data change, uuid changed. new match 
+                    # started, return empty result
+                    return JSONResponse([])
+                if state_idx == len(match._history_diff):
+                    # ask for the state after the last state, wait until
+                    # timeout to try to get new state
+                    await asyncio.sleep(self.get_state_sleeptime)
+                    continue
+                result = []
+                if state_idx == 0:
+                    # first is 0, add full state and change state_idx to 1
+                    result = [{
                         'uuid': self.uuid,
-                        'idx': state_idx + idx,
-                        'match_diff': diff,
-                        'type': 'DIFF',
-                    } 
-                    for idx, diff 
-                    in enumerate(match._history_diff[state_idx:])
-                ]
-            return JSONResponse(result)
+                        'idx': state_idx,
+                        'match': match._history[0].dict(),
+                        'type': 'FULL',
+                    }]
+                    state_idx = 1
+                if mode == 'after':
+                    result += [
+                        {
+                            'uuid': self.uuid,
+                            'idx': state_idx + idx,
+                            'match_diff': diff,
+                            'type': 'DIFF',
+                        } 
+                        for idx, diff 
+                        in enumerate(match._history_diff[state_idx:])
+                    ]
+                return JSONResponse(result)
+            return JSONResponse([])
 
         @app.get('/request/{player_idx}')
         async def get_request(player_idx: int):
