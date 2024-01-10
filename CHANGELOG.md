@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The second and third number in the version number are the same as the version 
 of the game, and the last number is the patch version of this project.
 
+## [Unreleased]
+
+## [0.4.3.3] - 2024-01-11
+
+### Changed
+- When the room is closed in `HTTPRoomServer`, it will try to save room log
+  of current match.
+- Objects with version check use `accept_same_or_higher_version` function.
+- #38 When making damage, objects may be created, and their event arguments
+  will be trigger after whole damage action, including object creation is done.
+- Make assertion on wrong id settings in `DescDictType`. With wrong id,
+  frontend may have unexpected behavior.
+- `HTTPServer` now use long-polling when dealing with get states.
+
+### Fixed
+- #39 The Boar Princess cannot be triggered when charactor is defeated with 
+  talents.
+- #2 Dunyarzad draw card effect will be trigger when it is covered by the new 
+  support.
+- #35 Equipments will always trigger earlier than charactor status.
+- Some wrong descriptions.
+- With memory compression, reset match to a given index will break the diff
+  history.
+- Dvalin talent can trigger more than once.
+- Xiangling's elemental skill with talent will charge 2 points.
+- `read_log` in tools support parsing logs with new format.
+- Creating Bountyful Core will remove existing Dendro Core.
+- Kazuha with elemental skill will not be attacked when breaking Baizhu's 
+  elemental burst shield.
+
 ## [0.4.3.2] - 2024-01-01
 
 Happy New Year 2024! New year comes in coding time!
@@ -426,7 +456,8 @@ Happy New Year 2024! New year comes in coding time!
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.3.2...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.3.3...HEAD
+[0.4.3.3]: https://github.com/LPSim/backend/releases/tag/v0.4.3.3
 [0.4.3.2]: https://github.com/LPSim/backend/releases/tag/v0.4.3.2
 [0.4.3.1]: https://github.com/LPSim/backend/releases/tag/v0.4.3.1
 [0.4.2.4]: https://github.com/LPSim/backend/releases/tag/v0.4.2.4
