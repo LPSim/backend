@@ -7,7 +7,7 @@ from ...event import MakeDamageEventArguments, SkillEndEventArguments
 from ...summon.base import SwirlChangeSummonBase
 
 from ...action import (
-    Actions, CreateObjectAction
+    Actions, CreateObjectAction, SwitchCharactorAction
 )
 from ...struct import Cost, ObjectPosition
 
@@ -45,20 +45,23 @@ class Chihayaburu(ElementalSkillBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
+        ret: List[Actions] = []
+        # make damage
+        ret.append(self.attack_opposite_active(
+            match, self.damage, self.damage_type,
+            [self.create_charactor_status('Midare Ranzan: New')],
+        ))
         # switch charactor
         next_charactor = match.player_tables[
             self.position.player_idx].next_charactor_idx()
-        if next_charactor is None:
-            next_charactor = -1
-        attack = self.attack_opposite_active(
-            match, self.damage, self.damage_type,
-            [self.create_charactor_status('Midare Ranzan: New')]
-        )
-        attack.charactor_change_idx[self.position.player_idx] = next_charactor
-        ret = [
-            attack,
-            self.charge_self(1)
-        ]
+        if next_charactor is not None:
+            ret.append(
+                SwitchCharactorAction(
+                    player_idx = self.position.player_idx,
+                    charactor_idx = next_charactor,
+                )
+            )
+        ret.append(self.charge_self(1))
         return ret
 
 
