@@ -1343,7 +1343,7 @@ def test_round_end_all_lose():
     match.config.card_number = None
     match.config.charactor_number = None
     match.config.check_deck_restriction = False
-    match.config.player_go_first = 0
+    match.config.random_first_player = False
     match.config.history_level = 0
     set_16_omni(match)
     assert match.start()[0]
