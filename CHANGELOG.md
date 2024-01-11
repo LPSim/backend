@@ -34,6 +34,7 @@ of the game, and the last number is the patch version of this project.
 - Creating Bountyful Core will remove existing Dendro Core.
 - Kazuha with elemental skill will not be attacked when breaking Baizhu's 
   elemental burst shield.
+- #40 `match.config.max_round_number` takes no effect.
 
 ## [0.4.3.2] - 2024-01-01
 
