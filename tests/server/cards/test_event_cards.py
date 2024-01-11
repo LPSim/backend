@@ -1470,6 +1470,7 @@ def test_star_quick_dream_vennessa_exile():
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
+    match.config.max_round_number = 999
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
     match.start()

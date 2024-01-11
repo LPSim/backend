@@ -1316,6 +1316,50 @@ def test_version_validation():
         })
 
 
+def test_round_end_all_lose():
+    agent_0 = NothingAgent(player_idx = 0)
+    agent_1 = NothingAgent(player_idx = 1)
+    match = Match()
+    deck = Deck.from_str(
+        '''
+        default_version:4.0
+        charactor:Rhodeia of Loch
+        charactor:Kamisato Ayaka
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        Timmie*5
+        '''
+    )
+    round_number = 5
+    match.set_deck([deck, deck])
+    match.config.max_round_number = round_number
+    match.config.max_same_card_number = 30
+    match.config.max_hand_size = 30
+    match.config.initial_hand_size = 10
+    match.config.card_number = None
+    match.config.charactor_number = None
+    match.config.check_deck_restriction = False
+    match.config.player_go_first = 0
+    match.config.history_level = 0
+    set_16_omni(match)
+    assert match.start()[0]
+    match.step()
+    for i in range(round_number + 1):  # +1 to perform sw_card and choose
+        assert match.state not in [
+            MatchState.ENDED,
+            MatchState.ERROR
+        ]
+        make_respond(agent_0, match, assertion = False)
+        make_respond(agent_1, match, assertion = False)
+        target_round_number = max(i, 0)
+        assert match.round_number == target_round_number
+    assert match.state == MatchState.ENDED
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -1336,3 +1380,4 @@ if __name__ == '__main__':
     # test_new_match_from_history()
     # test_new_match_from_history_compressed()
     test_version_validation()
+    test_round_end_all_lose()

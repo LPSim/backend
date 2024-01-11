@@ -878,6 +878,10 @@ class Match(BaseModel):
                 assert len(self.player_tables) == 2
                 self.winner = 1 - pnum
                 return True
+        if self.round_number >= self.config.max_round_number:
+            # reach max round number
+            self.winner = -1
+            return True
         return False
 
     def _next_action(self):

@@ -976,6 +976,7 @@ def test_big_elemental_artifacts():
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
+    match.config.max_round_number = 999
     match.start()
     match.step()
 
