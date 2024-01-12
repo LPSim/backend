@@ -1,25 +1,21 @@
 # type: ignore
 
 
-from typing import Any, List, Literal
+from typing import List, Literal
 
-from ...utils.class_registry import register_class
+from lpsim.utils.class_registry import register_class
 
-from ...utils.desc_registry import DescDictType
-
-from ...summon.base import ShieldSummonBase, AttackerSummonBase
-
-from ...modifiable_values import CombatActionValue, DamageIncreaseValue
-from ...event import RoundPrepareEventArguments
-
-from ...action import Actions, CreateObjectAction
-from ...struct import Cost, ObjectPosition
-
-from ...consts import (
+from lpsim.utils.desc_registry import DescDictType
+from lpsim.server.summon.base import ShieldSummonBase, AttackerSummonBase
+from lpsim.server.modifiable_values import CombatActionValue, DamageIncreaseValue
+from lpsim.server.event import RoundPrepareEventArguments
+from lpsim.server.action import Actions, CreateObjectAction
+from lpsim.server.struct import Cost, ObjectPosition
+from lpsim.consts import (
     ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DamageType, DieColor, 
     ElementType, FactionType, ObjectPositionType, WeaponType
 )
-from ..charactor_base import (
+from lpsim.server.charactor.charactor_base import (
     ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
     PhysicalNormalAttackBase, PassiveSkillBase, CharactorBase, SkillTalent
 )
@@ -37,7 +33,7 @@ class ...(RoundCharactorStatus):
 
     def event_handler_...(
         self, event: ..., 
-        match: Any
+        match: Match
     ) -> List[Actions]:
         ...
 
@@ -51,7 +47,7 @@ class ...(UsageCharactorStatus):
 
     def event_handler_...(
         self, event: ..., 
-        match: Any
+        match: Match
     ) -> List[Actions]:
         ...
 
@@ -117,15 +113,15 @@ class ...(ElementalSkillBase):
         elemental_dice_number = 3
     )
 
-    def get_actions(self, match: Any) -> List[Actions]:
+    def get_actions(self, match: Match) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match) + [
+        return super().get_actions(match, [
             self.create_summon('...'),
             self.create_charactor_status('...'),
             self.create_team_status('...'),
-        ]
+        ])
 
 
 class ...(ElementalBurstBase):
@@ -138,7 +134,7 @@ class ...(ElementalBurstBase):
         charge = ...
     )
 
-    def get_actions(self, match: Any) -> List[Actions]:
+    def get_actions(self, match: Match) -> List[Actions]:
         ...
 
 
@@ -147,7 +143,7 @@ class ...(PassiveSkillBase):
     usage: int = ...
 
     def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
+        self, event: RoundPrepareEventArguments, match: Match
     ) -> List[Actions]:
         """
         When in round prepare, reset usage
@@ -157,7 +153,7 @@ class ...(PassiveSkillBase):
 
     def value_modifier_...(
         self, value: ..., 
-        match: Any,
+        match: Match,
         mode: Literal['TEST', 'REAL'],
     ) -> ...:
         # triggers value modifier
@@ -180,7 +176,7 @@ class ...(SkillTalent):
 
     def event_handler_...(
         self, event: ..., 
-        match: Any
+        match: Match
     ) -> List[Actions]:
         # triggers event handler
 
@@ -190,7 +186,7 @@ class ...(SkillTalent):
 
 # charactor class name should contain its version.
 class CNAME_X_X(CharactorBase):
-    name: Literal["CNAME"]
+    name: Literal['CNAME']
     version: Literal['VERSION'] = 'VERSION'
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
