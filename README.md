@@ -1,3 +1,10 @@
+# 该分支用于测试性能，直接编译会报错，请使用master分支
+
+使用所有测试中运行较慢的七七test case测试性能。命令为：
+```bash
+python -m kernprof -l tests/server/charactors/cryo/test_qiqi.py
+```
+
 # Lochfolk Prinzessin Simulator (LPSim): 水皇模拟器，一个七圣召唤模拟器
 
 ---
