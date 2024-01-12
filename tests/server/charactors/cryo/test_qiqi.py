@@ -193,4 +193,5 @@ def test_qiqi():
 
 
 if __name__ == '__main__':
-    test_qiqi()
+    for i in range(20):
+        test_qiqi()

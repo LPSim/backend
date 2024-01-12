@@ -6,13 +6,11 @@ from typing import Literal, List, Any, Dict, Tuple
 from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
+from line_profiler import LineProfiler
 
 from .summon.base import SummonBase
-
 from .status.team_status.base import TeamStatusBase
-
 from .status.charactor_status.base import CharactorStatusBase
-
 from ..utils import BaseModel, get_instance
 from .deck import Deck
 from .player_table import PlayerTable
@@ -714,6 +712,7 @@ class Match(BaseModel):
                     self._set_match_state(MatchState.ERROR)  # pragma no cover
                     raise AssertionError(error_message)
 
+    @profile
     def step(self, run_continuously: bool = True) -> bool:
         """
         Simulate one step of the match, or run continuously until a response
@@ -884,6 +883,7 @@ class Match(BaseModel):
             return True
         return False
 
+    @profile
     def _next_action(self):
         """
         Do one action in `self.event_frames`. If the last event frame has

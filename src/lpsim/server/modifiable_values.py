@@ -1,3 +1,4 @@
+from line_profiler import LineProfiler
 from enum import Enum
 from typing import List, Any
 from ..utils import BaseModel
@@ -45,6 +46,7 @@ class ModifiableValueBase(BaseModel):
     original_value: Any = None
     position: ObjectPosition
 
+    @profile
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.original_value is None:
@@ -68,6 +70,7 @@ class CostValue(ModifiableValueBase):
     target_position: ObjectPosition | None
     cost: Cost
 
+    @profile
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.cost = self.cost.copy(deep = True)
