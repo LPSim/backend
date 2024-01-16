@@ -70,11 +70,11 @@ server.run()
 ```
 
 It will open a FastAPI server on `localhost:8000`, and accept connections
-from anywhere. When initialize HTTPServer, you can set decks and match configs
+from localhost. When initialize HTTPServer, you can set decks and match configs
 to create a match with specified rules.
 
 To start the match, open a 
-[frontend web page](https://lpsim.zyr17.cn/index.html), change server
+[frontend web page](https://lpsim.github.io/frontend), change server
 URL on top right (default is `http://localhost:8000`), and follow the 
 instructions on the page to set Deck and start match between two players.
 
