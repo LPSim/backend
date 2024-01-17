@@ -133,7 +133,7 @@ class NRE_4_1(RoundEffectItemBase):
             ):
                 # not our charactor use card, do nothing
                 return []
-            if event.card.cost.label & CostLabels.FOOD.value == 0:
+            if event.card_cost.label & CostLabels.FOOD.value == 0:
                 # not food card, do nothing
                 return []
             # our use food card, draw new food card

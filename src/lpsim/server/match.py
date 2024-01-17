@@ -1425,7 +1425,7 @@ class Match(BaseModel):
             return
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(self):
-                cost = skill.cost.copy(deep = True)
+                cost = skill.cost.copy()
                 if (
                     skill.skill_type == SkillType.NORMAL_ATTACK
                     and table.charge_satisfied
@@ -1464,7 +1464,7 @@ class Match(BaseModel):
         cards = table.hands
         for cid, card in enumerate(cards):
             if card.is_valid(self):
-                cost = card.cost.copy(deep = True)
+                cost = card.cost.copy()
                 cost_value = CostValue(
                     cost = cost,
                     position = card.position,
@@ -1585,6 +1585,7 @@ class Match(BaseModel):
         target_charactors = table.charactors[
             response.request.target_charactor_idx]
         cost = response.request.cost.original_value
+        assert cost is not None
         cost_value = CostValue(
             position = active_charactor.position,
             cost = cost,
@@ -1680,6 +1681,7 @@ class Match(BaseModel):
         skill = self.player_tables[response.player_idx].charactors[
             request.charactor_idx].skills[request.skill_idx]
         cost = response.request.cost.original_value
+        assert cost is not None
         cost_value = CostValue(
             position = skill.position,
             cost = cost,
@@ -1721,6 +1723,7 @@ class Match(BaseModel):
         table = self.player_tables[response.player_idx]
         card = table.hands[request.card_idx]
         cost = response.request.cost.original_value
+        assert cost is not None
         cost_value = CostValue(
             position = card.position,
             cost = cost,
@@ -2136,10 +2139,17 @@ class Match(BaseModel):
             mode = 'REAL'
         )
         if (
-            combat_action_value.original_value.do_combat_action
-            and combat_action_value.action_label 
-            & (PlayerActionLabels.END.value | PlayerActionLabels.SKILL.value)
-            != 0
+            action.do_combat_action
+            and (
+                (
+                    combat_action_value.action_label 
+                    & (
+                        PlayerActionLabels.END.value 
+                        | PlayerActionLabels.SKILL.value
+                    )
+                )
+                != 0
+            )
         ):
             # did any combat action that is not switch, remove plunging mark
             self.player_tables[player_idx].plunge_satisfied = False
@@ -2256,7 +2266,7 @@ class Match(BaseModel):
         infos: List[ReceiveDamageEventArguments] = []
         while len(damage_lists) > 0:
             damage = damage_lists.pop(0)
-            damage_original = damage.copy(deep = True)
+            damage_original = damage.copy()
             assert (
                 damage.target_position.area == ObjectPositionType.CHARACTOR
             ), (
@@ -2917,7 +2927,8 @@ class Match(BaseModel):
 
         return [UseCardEventArguments(
             action = action,
-            card = card,
+            card_name = card.name,
+            card_cost = card.cost,
             use_card_success = use_card_value.use_card
         )]
 

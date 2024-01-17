@@ -43,14 +43,7 @@ class ModifiableValueBase(BaseModel):
     value modifiers to update its value in-place.
     """
     type: ModifiableValueTypes
-    original_value: Any = None
     position: ObjectPosition
-
-    @profile
-    def __init__(self, *argv, **kwargs):
-        super().__init__(*argv, **kwargs)
-        if self.original_value is None:
-            self.original_value = self.copy(deep = True)
 
 
 class InitialDiceColorValue(ModifiableValueBase):
@@ -73,10 +66,9 @@ class CostValue(ModifiableValueBase):
     @profile
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        self.cost = self.cost.copy(deep = True)
-        self.original_value.cost = self.original_value.cost.copy(deep = True)
-        self.original_value.cost.original_value = None
-        self.cost.original_value = self.original_value.cost.copy(deep = True)
+        self.cost = self.cost.copy()
+        if self.cost.original_value is None:  # pragma: no branch
+            self.cost.original_value = self.cost.copy()
 
 
 class FullCostValue(CostValue):
@@ -93,7 +85,6 @@ class FullCostValue(CostValue):
             position = value.position,
             target_position = value.target_position,
             cost = value.cost,
-            original_value = value.original_value,
         )
 
 
@@ -133,6 +124,20 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         else:
             assert self.damage_type == DamageType.ELEMENT_APPLICATION
             assert self.damage == 0, 'Element application should be 0'
+
+    def copy(self, *argv, **kwargs) -> 'DamageElementEnhanceValue':
+        assert len(argv) == 0 and len(kwargs) == 0, (
+            'No parameters are allowed when copying.'
+        )
+        return DamageElementEnhanceValue(
+            position = self.position,
+            damage_type = self.damage_type,
+            target_position = self.target_position,
+            damage = self.damage,
+            damage_elemental_type = self.damage_elemental_type,
+            cost = self.cost.copy(),
+            damage_from_element_reaction = self.damage_from_element_reaction,
+        )
 
     def is_corresponding_charactor_use_damage_skill(
         self,

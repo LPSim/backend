@@ -32,6 +32,7 @@ class SeedDispensary_4_3(ItemBase, UsageWithRoundRestrictionSupportBase):
         if card label match and original cost greater than threshold, 
         reduce cost.
         """
+        assert value.cost.original_value is not None
         if (
             self.position.area == ObjectPositionType.SUPPORT
             and value.position.player_idx == self.position.player_idx

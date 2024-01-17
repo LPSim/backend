@@ -2,11 +2,14 @@ import time
 import json
 from typing import Literal
 import dictdiffer
-
 import pytest
+
+from src.lpsim.server.struct import Cost, ObjectPosition
+from src.lpsim.server.event import UseCardEventArguments
+from src.lpsim.server.action import ActionTypes, UseCardAction
 from src.lpsim.utils.class_registry import get_instance
 from src.lpsim.server.summon.base import SummonBase
-from src.lpsim.server.consts import ObjectType
+from src.lpsim.server.consts import ObjectPositionType, ObjectType
 from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from src.lpsim.server.match import Match, MatchState
@@ -1360,6 +1363,27 @@ def test_round_end_all_lose():
     assert match.state == MatchState.ENDED
 
 
+def test_use_card_event_serialize():
+    card_event = UseCardEventArguments(
+        action = UseCardAction(
+            card_position = ObjectPosition(
+                player_idx = 0,
+                area = ObjectPositionType.HAND,
+                id = 0
+            ),
+            target = None
+        ),
+        card_cost = Cost(),
+        card_name = 'Test',
+        use_card_success = True
+    )
+    assert card_event.card_cost.original_value is None
+    card_event = UseCardEventArguments(**json.loads(card_event.json()))
+    assert card_event.card_cost.original_value is None
+    assert card_event.action.type == ActionTypes.USE_CARD
+    assert card_event.action.card_position.area == ObjectPositionType.HAND
+
+
 if __name__ == '__main__':
     # test_match_pipeline()
     # test_save_load()
@@ -1379,5 +1403,6 @@ if __name__ == '__main__':
     # test_frozen_cannot_use_skill_talent()
     # test_new_match_from_history()
     # test_new_match_from_history_compressed()
-    test_version_validation()
-    test_round_end_all_lose()
+    # test_version_validation()
+    # test_round_end_all_lose()
+    test_use_card_event_serialize()

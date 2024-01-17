@@ -137,9 +137,11 @@ class JueyunGuoba_3_3(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = {}
+        ))
         return ret
 
 
@@ -155,9 +157,11 @@ class AdeptusTemptation_3_3(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = {}
+        ))
         return ret
 
 
@@ -173,9 +177,11 @@ class LotusFlowerCrisp_3_3(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = {}
+        ))
         return ret
 
 
@@ -191,9 +197,11 @@ class NorthernSmokedChicken_3_3(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = {}
+        ))
         return ret
 
 
@@ -303,10 +311,11 @@ class MintyMeatRolls_3_4(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        action_2.object_arguments['version'] = self.version
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = { 'version': self.version }
+        ))
         return ret
 
 
@@ -385,9 +394,11 @@ class SashimiPlatter_3_7(FoodCardBase):
     ) -> List[CreateObjectAction]:
         ret = super().get_actions(target, match)
         assert len(ret) == 1
-        action_2 = ret[0].copy(deep = True)
-        action_2.object_name = self.name
-        ret.append(action_2)
+        ret.append(CreateObjectAction(
+            object_name = self.name,
+            object_position = ret[0].object_position,
+            object_arguments = {}
+        ))
         return ret
 
 

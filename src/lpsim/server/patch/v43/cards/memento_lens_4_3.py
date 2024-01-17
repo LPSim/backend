@@ -1,11 +1,8 @@
-from typing import Dict, List, Literal, Tuple, Type
-
+from typing import Any, Dict, List, Literal, Set, Type
 from pydantic import PrivateAttr
 
 from ....object_base import CreateSystemEventHandlerObject
-
 from ....event_handler import SystemEventHandlerBase
-
 from ....consts import ObjectPositionType
 from ....modifiable_values import CostValue
 from ....match import Match
@@ -16,7 +13,9 @@ from ....card.equipment.weapon.base import WeaponBase
 from ....action import Actions
 from ....event import UseCardEventArguments
 from ....struct import Cost
-from .....utils.class_registry import register_class
+from .....utils.class_registry import (
+    get_class_list_by_base_class, register_class
+)
 from .....utils.desc_registry import DescDictType
 from ....card.support.items import RoundEffectItemBase
 
@@ -27,10 +26,27 @@ class MementoLensEventHandler_4_3(SystemEventHandlerBase):
     """
     name: Literal["Memento Lens"] = "Memento Lens"
     version: Literal["4.3"] = "4.3"
-    _accept_card_types: Tuple[Type] = PrivateAttr(
-        (WeaponBase, ArtifactBase, LocationBase, CompanionBase)
+    _accept_card_types: Type = PrivateAttr(
+        WeaponBase | ArtifactBase | LocationBase | CompanionBase
     )
+    _accept_class_name_set: Set[str] | None = PrivateAttr(None)
     card_used: List[Dict[str, int]] = [{}, {}]
+
+    def _get_candidate_set(self, match: Match) -> Set[str]:
+        if self._accept_class_name_set is not None:
+            return self._accept_class_name_set
+        kwargs: Dict[str, Any] = {}
+        default_version = match.player_tables[
+            self.position.player_idx
+        ].player_deck_information.default_version
+        if default_version is not None:
+            kwargs['version'] = default_version
+        candidate_list = get_class_list_by_base_class(
+            self._accept_card_types, 
+            **kwargs
+        )
+        self._accept_class_name_set = set(candidate_list)
+        return self._accept_class_name_set
 
     def event_handler_USE_CARD(
         self, event: UseCardEventArguments, match: Match
@@ -39,11 +55,11 @@ class MementoLensEventHandler_4_3(SystemEventHandlerBase):
         If self played an accepted card type, record it.
         """
         player_idx = event.action.card_position.player_idx
-        card = event.card
-        if not isinstance(card, self._accept_card_types):
+        card_name = event.card_name
+        if card_name not in self._get_candidate_set(match):
             # not accepted card type, do nothing
             return []
-        self.card_used[player_idx][card.name] = 1
+        self.card_used[player_idx][card_name] = 1
         return []
 
 

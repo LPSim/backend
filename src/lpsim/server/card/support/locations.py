@@ -551,6 +551,7 @@ class GoldenHouse_4_0(LocationBase, UsageWithRoundRestrictionSupportBase):
         if card label match and original cost greater than threshold, 
         reduce cost.
         """
+        assert value.cost.original_value is not None
         if (
             self.position.area == ObjectPositionType.SUPPORT
             and value.position.player_idx == self.position.player_idx
@@ -644,6 +645,7 @@ class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
             and self.has_usage()
         ):
             # area right, player right, and not used this round
+            assert value.cost.original_value is not None
             if (
                 (
                     value.cost.original_value.total_dice_cost

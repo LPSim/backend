@@ -1,3 +1,5 @@
+import json
+from typing import Dict
 from src.lpsim.agents.interaction_agent import (
     InteractionAgent_V1_0, InteractionAgent
 )
@@ -5,8 +7,8 @@ from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_usage, get_pidx_cidx, get_test_id_from_command, set_16_omni, 
-    check_hp, make_respond, get_random_state
+    check_usage, get_pidx_cidx, get_test_id_from_command, remove_ids, 
+    set_16_omni, check_hp, make_respond, get_random_state
 )
 
 
@@ -1178,7 +1180,7 @@ def test_master_zhang():
     assert match.state != MatchState.ERROR
 
 
-def test_katheryne_tian_ellin():
+def get_ellin_match():
     cmd_records = [
         [
             "sw_card 1 3",
@@ -1296,6 +1298,11 @@ def test_katheryne_tian_ellin():
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
+    return agent_0, agent_1, match
+
+
+def test_katheryne_tian_ellin():
+    agent_0, agent_1, match = get_ellin_match()
     match.start()
     match.step()
 
@@ -2398,12 +2405,69 @@ def test_timaeus_fix_2():
     assert match.state != MatchState.ERROR
 
 
+def remove_ellin_information(match_dict: Dict):
+    # remove Ellin information
+    h = match_dict
+    eh = h['event_handlers']
+    if len(eh) < 3:
+        return json.dumps(match_dict)
+    ellin_handler = h['event_handlers'][2]
+    assert ellin_handler['name'] == 'Ellin'
+    ellin_handler['recorded_skill_ids'] = {}
+    return json.dumps(h)
+
+
+def test_ellin_load_and_save():
+    agent_0, agent_1, match = get_ellin_match()
+    assert match.start()[0]
+    match.step()
+    histories = [remove_ellin_information(match.dict())]
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while agent.commands[0].startswith('TEST'):
+            agent.commands = agent.commands[1:]
+        # respond
+        make_respond(agent, match)
+        histories.append(remove_ellin_information(match.dict()))
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    agent_0, agent_1, match = get_ellin_match()
+    assert match.start()[0]
+    match.step()
+    for idx, old_match_json in enumerate(histories):  # pragma: no branch
+        match_copy = match.copy(deep = True)
+        assert remove_ids(match_copy) == remove_ids(
+            Match(**json.loads(match_copy.json())))
+        assert remove_ids(
+            Match(**json.loads(remove_ellin_information(match_copy.dict())))
+        ) == remove_ids(Match(**json.loads(old_match_json)))
+        match = Match(**json.loads(match.json()))
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while agent.commands[0].startswith('TEST'):
+            agent.commands = agent.commands[1:]
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # import logging
     # logging.basicConfig(level = logging.INFO)
     # test_rana()
     # test_timmie()
-    test_liben()
+    # test_liben()
     # test_setaria()
     # test_liusu()
     # test_tubby()
@@ -2416,6 +2480,7 @@ if __name__ == '__main__':
     # test_dunyazard()
     # test_xudong()
     # test_hanachirusato()
-    test_chefmao_dunyarzad()
+    # test_chefmao_dunyarzad()
     # test_yayoi_fix()
-    test_timaeus_fix_2()
+    # test_timaeus_fix_2()
+    test_ellin_load_and_save()
