@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 from src.lpsim.agents.interaction_agent import (
     InteractionAgent_V1_0, InteractionAgent
 )
@@ -2404,12 +2405,12 @@ def test_timaeus_fix_2():
     assert match.state != MatchState.ERROR
 
 
-def remove_ellin_information(json_str):
+def remove_ellin_information(match_dict: Dict):
     # remove Ellin information
-    h = json.loads(json_str)
+    h = match_dict
     eh = h['event_handlers']
     if len(eh) < 3:
-        return json_str
+        return json.dumps(match_dict)
     ellin_handler = h['event_handlers'][2]
     assert ellin_handler['name'] == 'Ellin'
     ellin_handler['recorded_skill_ids'] = {}
@@ -2420,7 +2421,7 @@ def test_ellin_load_and_save():
     agent_0, agent_1, match = get_ellin_match()
     assert match.start()[0]
     match.step()
-    histories = [match.json()]
+    histories = [remove_ellin_information(match.dict())]
     while True:
         if match.need_respond(0):
             agent = agent_0
@@ -2432,19 +2433,18 @@ def test_ellin_load_and_save():
             agent.commands = agent.commands[1:]
         # respond
         make_respond(agent, match)
-        histories.append(match.json())
+        histories.append(remove_ellin_information(match.dict()))
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
-    histories = [remove_ellin_information(x) for x in histories]
     agent_0, agent_1, match = get_ellin_match()
     assert match.start()[0]
     match.step()
-    for idx, old_match_json in enumerate(histories):
+    for idx, old_match_json in enumerate(histories):  # pragma: no branch
         match_copy = match.copy(deep = True)
         assert remove_ids(match_copy) == remove_ids(
             Match(**json.loads(match_copy.json())))
         assert remove_ids(
-            Match(**json.loads(remove_ellin_information(match_copy.json())))
+            Match(**json.loads(remove_ellin_information(match_copy.dict())))
         ) == remove_ids(Match(**json.loads(old_match_json)))
         match = Match(**json.loads(match.json()))
         if match.need_respond(0):

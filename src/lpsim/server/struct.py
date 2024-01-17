@@ -159,6 +159,31 @@ class Cost(BaseModel):
     arcane_legend: bool = False
     original_value: Any | None = None
 
+    def copy(
+        self, 
+        *argv,
+        **kwargs
+    ) -> 'Cost':
+        """
+        Do not support extra args. When perform copy, create new 
+        instance instead of copy.
+        """
+        assert len(argv) == 0 and len(kwargs) == 0, 'Do not support extra args'
+        ori_copy = None
+        if self.original_value is not None:  # pragma: no cover
+            ori_copy = self.original_value.copy()
+        return Cost(
+            label = self.label,
+            elemental_dice_number = self.elemental_dice_number,
+            elemental_dice_color = self.elemental_dice_color,
+            same_dice_number = self.same_dice_number,
+            any_dice_number = self.any_dice_number,
+            omni_dice_number = self.omni_dice_number,
+            charge = self.charge,
+            arcane_legend = self.arcane_legend,
+            original_value = ori_copy,
+        )
+
     @property
     def total_dice_cost(self) -> int:
         """

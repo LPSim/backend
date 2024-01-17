@@ -130,7 +130,7 @@ def test_memento_lens_load_and_save():
     agent_0, agent_1, match = get_memento_lens_match()
     assert match.start()[0]
     match.step()
-    for old_match_json in histories:
+    for old_match_json in histories:  # pragma: no branch
         match_copy = match.copy(deep = True)
         assert remove_ids(match_copy) == remove_ids(
             Match(**json.loads(match_copy.json())))

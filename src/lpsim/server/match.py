@@ -1425,7 +1425,7 @@ class Match(BaseModel):
             return
         for sid, skill in enumerate(front_charactor.skills):
             if skill.is_valid(self):
-                cost = skill.cost.copy(deep = True)
+                cost = skill.cost.copy()
                 if (
                     skill.skill_type == SkillType.NORMAL_ATTACK
                     and table.charge_satisfied
@@ -1464,7 +1464,7 @@ class Match(BaseModel):
         cards = table.hands
         for cid, card in enumerate(cards):
             if card.is_valid(self):
-                cost = card.cost.copy(deep = True)
+                cost = card.cost.copy()
                 cost_value = CostValue(
                     cost = cost,
                     position = card.position,
@@ -2266,7 +2266,7 @@ class Match(BaseModel):
         infos: List[ReceiveDamageEventArguments] = []
         while len(damage_lists) > 0:
             damage = damage_lists.pop(0)
-            damage_original = damage.copy(deep = True)
+            damage_original = damage.copy()
             assert (
                 damage.target_position.area == ObjectPositionType.CHARACTOR
             ), (
