@@ -1,6 +1,6 @@
-from .struct import ObjectPosition
+from .struct import Cost, ObjectPosition
 from ..utils import BaseModel
-from typing import Any, Literal, List
+from typing import Literal, List
 from .consts import DieColor, ElementalReactionType, ElementType, ObjectType
 from .action import (
     ActionTypes, 
@@ -356,7 +356,8 @@ class UseCardEventArguments(EventArgumentsBase):
     """
     type: Literal[ActionTypes.USE_CARD] = ActionTypes.USE_CARD
     action: UseCardAction
-    card: Any
+    card_cost: Cost
+    card_name: str
     use_card_success: bool
 
 

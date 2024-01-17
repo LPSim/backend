@@ -1,9 +1,12 @@
+import json
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
-from tests.utils_for_test import get_random_state, make_respond, set_16_omni
+from tests.utils_for_test import (
+    get_random_state, make_respond, remove_ids, set_16_omni
+)
 
 
-def test_memento_lens():
+def get_memento_lens_match():
     cmd_records = [
         [
             "sw_card",
@@ -83,6 +86,11 @@ def test_memento_lens():
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
+    return agent_0, agent_1, match
+
+
+def test_memento_lens():
+    agent_0, agent_1, match = get_memento_lens_match()
     match.start()
     match.step()
 
@@ -102,5 +110,46 @@ def test_memento_lens():
     assert match.state != MatchState.ERROR
 
 
+def test_memento_lens_load_and_save():
+    agent_0, agent_1, match = get_memento_lens_match()
+    assert match.start()[0]
+    match.step()
+    histories = [match.json()]
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        histories.append(match.json())
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    agent_0, agent_1, match = get_memento_lens_match()
+    assert match.start()[0]
+    match.step()
+    for old_match_json in histories:
+        match_copy = match.copy(deep = True)
+        assert remove_ids(match_copy) == remove_ids(
+            Match(**json.loads(match_copy.json())))
+        assert remove_ids(match_copy) == remove_ids(
+            Match(**json.loads(old_match_json)))
+        match = Match(**json.loads(match.json()))
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
-    test_memento_lens()
+    # test_memento_lens()
+    test_memento_lens_load_and_save()

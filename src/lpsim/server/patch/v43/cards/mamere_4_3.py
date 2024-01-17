@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Type, get_args
+from typing import Any, Dict, List, Literal, Set, Type
 
 from pydantic import PrivateAttr
 
@@ -30,10 +30,14 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     _accept_card_types: Type = PrivateAttr(
         LocationBase | FoodCardBase | ItemBase | CompanionBase
     )
+    _accept_class_list: List[str] | None = PrivateAttr(None)
+    _accept_class_name_set: Set[str] = PrivateAttr(set())
 
     available_handler_in_deck: List[ActionTypes] = [ActionTypes.GAME_START]
 
     def _get_candidate_list(self, match: Match) -> List[str]:
+        if self._accept_class_list is not None:
+            return self._accept_class_list
         kwargs: Dict[str, Any] = { 'exclude': set([self.name]) }
         default_version = match.player_tables[
             self.position.player_idx
@@ -44,6 +48,8 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
             self._accept_card_types, 
             **kwargs
         )
+        self._accept_class_list = candidate_list
+        self._accept_class_name_set = set(candidate_list)
         return candidate_list
 
     def event_handler_GAME_START(
@@ -77,18 +83,14 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         if event.action.card_position.player_idx != self.position.player_idx:
             # not self use card, return
             return []
-        card = event.card
-        if card.name == 'Mamere':
+        card_name = event.card_name
+        if card_name == 'Mamere':
             # using Mamere, return
             return []
-        is_target_type = False
-        for base_type in get_args(self._accept_card_types):
-            if isinstance(card, base_type):
-                is_target_type = True
-                break
-        if is_target_type:
+        # recall _get_candidate_list to create data
+        candidate_list = self._get_candidate_list(match)
+        if card_name in self._accept_class_name_set:
             # using target type, generate new card
-            candidate_list = self._get_candidate_list(match)
             # get candidate list for target type, except self
             random_target = candidate_list[
                 int(match._random() * len(candidate_list))

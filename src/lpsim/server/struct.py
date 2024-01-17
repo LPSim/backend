@@ -157,7 +157,7 @@ class Cost(BaseModel):
     omni_dice_number: int = 0
     charge: int = 0
     arcane_legend: bool = False
-    original_value: Any = None
+    original_value: Any | None = None
 
     @property
     def total_dice_cost(self) -> int:

@@ -1,16 +1,13 @@
+import json
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
     check_hp, check_usage, get_random_state, 
-    get_test_id_from_command, make_respond, set_16_omni
+    get_test_id_from_command, make_respond, remove_ids, set_16_omni
 )
 
 
-def test_mamere_judgment():
-    """
-    Mamare: 3 usage, Judgment: 3 usage
-    Judgment can judge arcane, food, and event card. 
-    """
+def get_mamere_judgment_match():
     cmd_records = [
         [
             "sw_card",
@@ -129,6 +126,15 @@ def test_mamere_judgment():
     match.config.random_first_player = False
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
+    return agent_0, agent_1, match
+
+
+def test_mamere_judgment():
+    """
+    Mamare: 3 usage, Judgment: 3 usage
+    Judgment can judge arcane, food, and event card. 
+    """
+    agent_0, agent_1, match = get_mamere_judgment_match()
     match.start()
     match.step()
 
@@ -558,9 +564,68 @@ def test_mamere_judgment_2():
     assert match.state != MatchState.ERROR
 
 
+def remove_ellin_information(json_str):
+    # remove Ellin information
+    h = json.loads(json_str)
+    eh = h['event_handlers']
+    if len(eh) < 3:
+        return json_str
+    ellin_handler = h['event_handlers'][2]
+    assert ellin_handler['name'] == 'Ellin'
+    ellin_handler['recorded_skill_ids'] = {}
+    return json.dumps(h)
+
+
+def test_mamere_load_and_save():
+    agent_0, agent_1, match = get_mamere_judgment_match()
+    assert match.start()[0]
+    match.step()
+    histories = [match.json()]
+    while True:
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while agent.commands[0].startswith('TEST'):
+            agent.commands = agent.commands[1:]
+        # respond
+        make_respond(agent, match)
+        histories.append(match.json())
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    histories = [remove_ellin_information(x) for x in histories]
+    agent_0, agent_1, match = get_mamere_judgment_match()
+    assert match.start()[0]
+    match.step()
+    for idx, old_match_json in enumerate(histories):
+        match_copy = match.copy(deep = True)
+        assert remove_ids(match_copy) == remove_ids(
+            Match(**json.loads(match_copy.json())))
+        assert remove_ids(
+            Match(**json.loads(remove_ellin_information(match_copy.json())))
+        ) == remove_ids(Match(**json.loads(old_match_json)))
+        match = Match(**json.loads(match.json()))
+        if match.need_respond(0):
+            agent = agent_0
+        elif match.need_respond(1):
+            agent = agent_1
+        else:
+            raise AssertionError('No need respond.')
+        while agent.commands[0].startswith('TEST'):
+            agent.commands = agent.commands[1:]
+        # respond
+        make_respond(agent, match)
+        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
+            break
+    assert match.state != MatchState.ERROR
+
+
 if __name__ == '__main__':
     # test_mamere_judgment()
     # test_judgment_one_round()
     # test_judge_arcane()
     # test_mamere_no_default()
-    test_mamere_judgment_2()
+    # test_mamere_judgment_2()
+    test_mamere_load_and_save()
