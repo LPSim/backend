@@ -63,7 +63,6 @@ class CostValue(ModifiableValueBase):
     target_position: ObjectPosition | None
     cost: Cost
 
-    @profile
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         self.cost = self.cost.copy()

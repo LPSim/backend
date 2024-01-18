@@ -1054,6 +1054,7 @@ class Match(BaseModel):
             player_idx = self.current_player)
         self._stack_event(event)
 
+    @profile
     def _player_action_request(self):
         """
         Will generate requests of available actions
@@ -1215,6 +1216,7 @@ class Match(BaseModel):
                 event_frame.triggered_objects.append(obj.position)
         return event_arg
 
+    @profile
     def _modify_value(self, value: ModifiableValueBase, 
                       mode: Literal['TEST', 'REAL'],
                       ) -> None:
@@ -1352,6 +1354,7 @@ class Match(BaseModel):
             reroll_times = reroll_number
         ))
 
+    @profile
     def _request_switch_charactor(self, player_idx: int):
         """
         Generate switch charactor requests.
@@ -1758,6 +1761,7 @@ class Match(BaseModel):
     Action Functions
     """
 
+    @profile
     def _act(self, action: ActionBase) -> List[EventArguments]:
         """
         Act an action. It will call corresponding action function based on
