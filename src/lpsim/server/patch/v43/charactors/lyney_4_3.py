@@ -285,7 +285,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "End Phase: Deal 1 Pyro DMG.\nUsage(s): 1 (Can stack. Max 2 stacks.)",  # noqa: E501
                 "zh-CN": "结束阶段：造成1点火元素伤害。\n可用次数：1（可叠加，最多叠加到2次）"  # noqa: E501
             }
-        }
+        },
+        "image_path": "cardface/Summon_Liney.png",  # noqa: E501
     },
     "CHARACTOR_STATUS/Prop Surplus": {
         "names": {
