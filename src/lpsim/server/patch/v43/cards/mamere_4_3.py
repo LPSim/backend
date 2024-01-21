@@ -32,6 +32,7 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     )
     _accept_class_list: List[str] | None = PrivateAttr(None)
     _accept_class_name_set: Set[str] = PrivateAttr(set())
+    _accept_version: str | None = PrivateAttr(None)
 
     available_handler_in_deck: List[ActionTypes] = [ActionTypes.GAME_START]
 
@@ -44,6 +45,7 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         ].player_deck_information.default_version
         if default_version is not None:
             kwargs['version'] = default_version
+        self._accept_version = default_version
         candidate_list = get_class_list_by_base_class(
             self._accept_card_types, 
             **kwargs
@@ -103,12 +105,13 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
                 area = ObjectPositionType.HAND,
                 id = -1
             )
+            args = {}
+            if self._accept_version is not None:
+                args['version'] = self._accept_version
             res.append(CreateObjectAction(
                 object_name = random_target,
                 object_position = position,
-                object_arguments = {
-                    'version': self.version
-                }
+                object_arguments = args
             ))
             res += self.check_should_remove()
             return res
