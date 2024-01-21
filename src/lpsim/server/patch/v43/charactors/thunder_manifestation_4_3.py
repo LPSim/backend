@@ -74,7 +74,7 @@ class LightningStrikeProbe_4_3(TeamStatusBase):
             object_position = skill.action.position.set_area(
                 ObjectPositionType.CHARACTOR_STATUS
             ),
-            object_arguments = {}
+            object_arguments = { 'version': self.version }
         ))
         return ret
 
@@ -229,6 +229,7 @@ class ThunderingShackles(ElementalBurstBase):
 
 class LightningProbe(PassiveSkillBase):
     name: Literal["Lightning Probe"] = "Lightning Probe"
+    version: Literal['4.3'] = '4.3'
 
     def event_handler_GAME_START(
         self, event: GameStartEventArguments, match: Match
@@ -244,13 +245,13 @@ class LightningProbe(PassiveSkillBase):
                     area = ObjectPositionType.TEAM_STATUS,
                     id = -1,
                 ),
-                object_arguments = {}
+                object_arguments = { 'version': self.version }
             )
         ]
 
 
 class GrievingEcho_4_3(TalentBase):
-    name: Literal["Grieving Echo"] = "Grieving Echo"
+    name: Literal["Grieving Echo"]
     version: Literal['4.3'] = '4.3'
     charactor_name: Literal["Thunder Manifestation"] = "Thunder Manifestation"
     cost_label: int = (
@@ -419,7 +420,8 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "End Phase: Deals 3 Electro DMG to opposing characters affected by Lightning Rod. (If there are no eligible opposing characters, deals DMG to the active character instead)\nUsage(s): 1",  # noqa: E501
                 "zh-CN": "结束阶段：对附属有雷鸣探知的敌方角色造成造成3点雷元素伤害。（如果敌方不存在符合条件角色，则改为对出战角色造成伤害）\n可用次数：1"  # noqa: E501
             }
-        }
+        },
+        "image_path": "cardface/Summon_Raijin.png",  # noqa: E501
     },
     "SKILL_Thunder Manifestation_PASSIVE/Lightning Probe": {
         "names": {
