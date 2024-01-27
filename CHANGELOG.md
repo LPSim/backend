@@ -20,11 +20,11 @@ of the game, and the last number is the patch version of this project.
 - `HTTPServer` now use long-polling when dealing with get states.
 
 ### Fixed
-- #39 The Boar Princess cannot be triggered when charactor is defeated with 
+- #39 The Boar Princess cannot be triggered when character is defeated with 
   talents.
 - #2 Dunyarzad draw card effect will be trigger when it is covered by the new 
   support.
-- #35 Equipments will always trigger earlier than charactor status.
+- #35 Equipment will always trigger earlier than character status.
 - Some wrong descriptions.
 - With memory compression, reset match to a given index will break the diff
   history.
@@ -58,7 +58,7 @@ Happy New Year 2024! New year comes in coding time!
 
 ### Fixed
 - #14 Build bug in Python 3.11 and Python 3.12.
-- #36 When charactor is defeated or revived, the skill use counters are not
+- #36 When character is defeated or revived, the skill use counters are not
   cleared.
 - #20 When card is generated during match or moved between deck and hands,
   the may have wrong usage status, e.g., "I Haven't Lost Yet!", "Ellin", etc.
@@ -72,7 +72,7 @@ Happy New Year 2024! New year comes in coding time!
   in response and state request (except state request that start with 0). If
   uuid is not matched, server will return error.
 - New data for Version 4.3
-  - Added new charactors and their talents:
+  - Added new characters and their talents:
     - Layla
     - Light's Remit
     - Yelan
@@ -140,10 +140,10 @@ Happy New Year 2024! New year comes in coding time!
   conditions.
 
 ### Fixed
-- Timaeus cannot decrease cost when drawed in the round (i.e. Liben, 
+- Timaeus cannot decrease cost when drew in the round (i.e. Liben, 
   Strategize).
 - Cost of Butter Crab is wrong.
-- Base talents (not triggering skills) cannot use when charactor is stunned
+- Base talents (not triggering skills) cannot use when character is stunned
   (e.g. Frozen).
 - Bug in deck code generation, which will generate invalid codes.
 - Wrong log information for DrawCardAction.
@@ -159,19 +159,19 @@ Happy New Year 2024! New year comes in coding time!
 - typos in `deck_code_data.json`.
 - Yayoi Nantsuki decreases Artifact cost based on Weapon number.
 - Timaeus and Wagner is not treated as Companion.
-- Aquila Favonia will heal charactor when it is not active.
+- Aquila Favonia will heal character when it is not active.
 - Where is the Unseen Razor will decrease opponent weapon cost.
-- Tenacity of the Millelith will generate dice when the charactor is defeated
+- Tenacity of the Millelith will generate dice when the character is defeated
   during the attack.
 
 ### Changed
 - `heal_self` is changed to `attack_self` in `SkillBase`.
-- `CharactorDefeatedAction` will also return `RemoveObjectEventArguments`.
-- `deck_code_data` structure is changed. Charactors will have `charactor:`
+- `CharacterDefeatedAction` will also return `RemoveObjectEventArguments`.
+- `deck_code_data` structure is changed. Characters will have `character:`
   prefix.
 - `HTTPServer` now use GZip.
 - Rhodeia's Elemental Skill will give version hint when generating summons.
-- `is_corresponding_charactor_use_damage_skill` from Damage values
+- `is_corresponding_character_use_damage_skill` from Damage values
   will ignore damages that is caused by elemental reaction.
 - Some redundant assertions are removed.
 - `command_history` in `HTTPServer.log` is changed, now it will record the
@@ -192,7 +192,7 @@ Happy New Year 2024! New year comes in coding time!
 - `AttackAndGenerateStatusSummonBase` is added for summons perform like Dehya's
   Elemental Skill summon, which will generate status at each round, and when it
   is removed, the corresponding status will also be removed.
-- `CreateStatusPassiveSkill` is implemented for charactors that will generate
+- `CreateStatusPassiveSkill` is implemented for characters that will generate
   status when they are created. 
 - Now costs of cards and skills will be recorded in `desc_registry`, and passed
   to frontend by `/patch` in `HTTPServer`.
@@ -205,16 +205,16 @@ Happy New Year 2024! New year comes in coding time!
 - RoundEffectSupports, e.g. Paimon, NRE, is not inherited from its 
   corresponding base class (e.g. CompanionBase, ItemBase).
 - Wrong cost of Joyous Celebration.
-- Charactors that has status created at game start, e.g. Raiden Shogun, will 
+- Characters that has status created at game start, e.g. Raiden Shogun, will 
   not gain the status when revive. Now they will inherit 
   `CreateStatusPassiveSkill` to gain the status and handle revive actions.
-- When charactor is stunned (e.g. Frozen), it can still use skill by equipping
+- When character is stunned (e.g. Frozen), it can still use skill by equipping
   Skill Talent cards.
 - Targtaglia will accidently increase additional damage caused by elemental
   reaction, e.g. Electro-Charged.
-- Wrong charactor order when triggering events. Previously is active charactor
-  then left first; now is active charactor then next first.
-- Can switch to current active charactor from current active charactor in 
+- Wrong character order when triggering events. Previously is active character
+  then left first; now is active character then next first.
+- Can switch to current active character from current active character in 
   `Match`, though no cards or skills can trigger it now.
 - #12 When summon triggers other events that will stack self, e.g. Burning
   Flame, if it is currently in max usage, it still keeps max usage after 
@@ -223,11 +223,11 @@ Happy New Year 2024! New year comes in coding time!
 
 # Changed
 - Move template files to `templates` folder.
-- Define `AllCharactorFoodCard` for foods that will effect all charactors.
+- Define `AllCharacterFoodCard` for foods that will effect all characters.
 - Now `CostLabels` contains `EQUIPMENT` and `EVENT` enum, to represent 
-  equipments (Weapons, Artifacts, most Talent cards) and event cards (Most
+  equipment (Weapons, Artifacts, most Talent cards) and event cards (Most
   normal event cards, Arcane-legend cards, and some talents).
-- New `FactionType` is added for future charactors.
+- New `FactionType` is added for future characters.
 - `ChangeUsageAction` removes `change_type`, it only supports change type of
   `DELTA` now.
 
@@ -240,7 +240,7 @@ Happy New Year 2024! New year comes in coding time!
 - #13 Implement desc registry, which saves the descriptions of classes. When a 
   class is registered in the class registry, a valid description is required.
 - Implement `/patch` endpoint in HTTPServer, which can be used to get 
-  description patchs from server.
+  description patches from server.
 - #3 Support create `Deck` from deck code, or export `Deck` to deck code.
   Also add related APIs in HTTPServer.
 
@@ -248,7 +248,7 @@ Happy New Year 2024! New year comes in coding time!
 - Now `desc` for a class means description hints for the class, e.g. with 
   talent activated, descriptions of some class will change. `desc` is a Literal
   now and default contains empty string. If a class has hints, add more strings
-  into it, and modify `desc` when situation matchs. When `desc` is set, its
+  into it, and modify `desc` when situation matches. When `desc` is set, its
   corresponding descriptions should also be valid. Refer to Sucrose's Large
   Wind Spirit and desc_class for more details.
 - #6 Now HTTPServer will send detailed error about deck in `/deck` when deck is 
@@ -261,7 +261,7 @@ Happy New Year 2024! New year comes in coding time!
 
 ### Changed
 - Balance changes of 4.2
-  - Charactors
+  - Characters
     - Arataki Itto
     - Rhodeia of Loch
     - Shenhe
@@ -296,24 +296,24 @@ Happy New Year 2024! New year comes in coding time!
 ### Fixed
 - Bug of Seed of Skandha, which will cause match error when triggered and 
   target is defeated.
-- Bug of shield from Baizhu, which will revive charactor.
+- Bug of shield from Baizhu, which will revive character.
 - Skills that will add status to target, e.g. elemental burst of Nilou, will
   raise error when target is defeated by the skill.
 - Nilou's talent will raise error when summon disappears after attack.
-- I Haven't Lost Yet cannot use if it's not in hand when charactor is defeated.
+- I Haven't Lost Yet cannot use if it's not in hand when character is defeated.
 
 ## [0.4.2.0] - 2023-11-04
 
 ### Added
-- All charactors and cards in 4.2 are implemented.
-  - Charactors and their talents:
+- All characters and cards in 4.2 are implemented.
+  - Characters and their talents:
     - Nilou
     - Dori
     - Baizhu
     - The Starry Skies Their Flowers Rain
     - Discretionary Supplement
     - All Things Are of the Earth
-  - Equipments
+  - Equipment
     - Ocean-Hued Clam
     - Shadow of the Sand King
   - Supports
@@ -321,7 +321,7 @@ Happy New Year 2024! New year comes in coding time!
   - Event Cards
     - Lyresong
     - In Every House a Stove
-- Implement DeclareRoundEndAttackSummonBase, RoundEndAttackCharactorStatus,
+- Implement DeclareRoundEndAttackSummonBase, RoundEndAttackCharacterStatus,
   and replace parent classes of related objects.
 - Added new interface for HTTPServer, so client can get current running server
   version.
@@ -329,11 +329,11 @@ Happy New Year 2024! New year comes in coding time!
 ### Changed
 - AttackerSummonBase support healing.
 - Remove source_player_idx and target_player_idx from MakeDamageAction, and
-  change change_charactor logic while making damages.
+  change change_character logic while making damages.
 
 ### Fixed
 - Typo of Calx's Arts.
-- When healing self charactor, Itto can get Superlative Superstrenth.
+- When healing self character, Itto can get Superlative Superstrenth.
 
 ## [0.4.1.3] - 2023-10-31
 
@@ -364,7 +364,7 @@ Happy New Year 2024! New year comes in coding time!
 - Histories by action level, now important actions will generate a history,
   and frontend can see what happened during two requests.
 - Re-create mode is added to Match, in this mode, all randomness is removed,
-  which can be used to re-create existing matchs.
+  which can be used to re-create existing matches.
 - Add `Match.last_action` and `Match.action_info` to get information for 
   frontend.
 - Skill prediction support is added. When it is player's turn, regardless of 
@@ -379,13 +379,13 @@ Happy New Year 2024! New year comes in coding time!
   are valid, but they will generate different Ocean Mimics with the same random
   state, and the number of times that random function called is different. 
 - `Match.history_level` is moved into `Match.config`.
-- Location Sangonomiya will heal all charactors in one action.
+- Location Sangonomiya will heal all characters in one action.
 - Move repo from zyr17/GITCG to LPSim/backend.
 
 ### Fixed
 - Icyquill with only one usage will affect multiple times.
 - 1 usage Icyquill with Wanderer will cause wrong damage calculation.
-- I Haven't Lost Yet will activate even if opponent charactor is defeated.
+- I Haven't Lost Yet will activate even if opponent character is defeated.
 - Wrong damage increase with back damage of Eye of Stormy Judgement.
 - Typo in element artifact descriptions.
 - Chef Mao and Dunyarzad's draw-card effect not trigger with zero-cost cards.
@@ -393,15 +393,15 @@ Happy New Year 2024! New year comes in coding time!
 ## [0.4.1.0] - 2023-10-01
 
 ### Added
-- All Charactors and Cards of 4.1 are implemented.
-  - Charactors and their talents:
+- All Characters and Cards of 4.1 are implemented.
+  - Characters and their talents:
     - Dehya
     - Wanderer
     - Yaoyao
     - Stalwart and True
     - Gales of Reverie
     - Beneficient
-  - Equipments
+  - Equipment
     - MoonPiercer
     - Crown of Watatsumi
   - Supports
@@ -433,13 +433,13 @@ Happy New Year 2024! New year comes in coding time!
   damage calculation error with Shimenawa's Reminiscence equipped.
 - Tartaglia do not attach Riptide to the target when using elemental burst
   in ranged mode.
-- Absolute imports of some charactors.
+- Absolute imports of some characters.
 
 ## [0.4.0.0] - 2023-09-30
 
 ### Added
-- All Charactors and Cards until 4.0 are implemented.
-- Some of charactors and cards that has balance change in 4.1 are updated 
+- All Characters and Cards until 4.0 are implemented.
+- Some of characters and cards that has balance change in 4.1 are updated 
   as 4.1 version.
   - Kamisato Ayato
   - Fatui Cryo Cicin Mage

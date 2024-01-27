@@ -49,7 +49,7 @@ def test_signora():
                 check_usage(match.player_tables[pidx].team_status, cmd[3:])
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[cidx].status, 
+                check_usage(match.player_tables[pidx].characters[cidx].status, 
                             cmd[3:])
             elif test_id == 6:
                 pidx = int(cmd[2][1])

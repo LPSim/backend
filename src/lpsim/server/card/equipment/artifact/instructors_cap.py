@@ -50,21 +50,21 @@ class InstructorsCap_3_3(RoundEffectArtifactBase):
             return []
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTOR,
+            character_idx_same = True, 
+            source_area = ObjectPositionType.CHARACTER,
             target_area = ObjectPositionType.SKILL
         ):
             # not self player use skill or not equipped
             return []
         # create die
         self.usage -= 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
         return [
             CreateDiceAction(
                 player_idx = self.position.player_idx,
                 number = 1,
-                color = ELEMENT_TO_DIE_COLOR[charactor.element],
+                color = ELEMENT_TO_DIE_COLOR[character.element],
             )
         ]
 

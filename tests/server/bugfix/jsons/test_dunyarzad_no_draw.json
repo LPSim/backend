@@ -632,8 +632,8 @@
         0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Kaeya@3.3\ncharactor:Nilou@4.2\ncharactor:Tighnari@3.6\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\n",
-        "default_version:4.3\ncharactor:Kaeya@3.3\ncharactor:Nilou@4.2\ncharactor:Tighnari@3.6\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\n"
+        "default_version:4.3\ncharacter:Kaeya@3.3\ncharacter:Nilou@4.2\ncharacter:Tighnari@3.6\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\n",
+        "default_version:4.3\ncharacter:Kaeya@3.3\ncharacter:Nilou@4.2\ncharacter:Tighnari@3.6\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nDunyarzad@4.1\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\nChang the Ninth@3.3\n"
     ],
     "command_history": [
         [
@@ -777,7 +777,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 10,
         "max_dice_number": 16,

@@ -632,8 +632,8 @@
         0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Gorou@4.3\ncharactor:Arataki Itto@4.2\ncharactor:Tighnari@3.6\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\n",
-        "default_version:4.3\ncharactor:Gorou@4.3\ncharactor:Arataki Itto@4.2\ncharactor:Tighnari@3.6\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\n"
+        "default_version:4.3\ncharacter:Gorou@4.3\ncharacter:Arataki Itto@4.2\ncharacter:Tighnari@3.6\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\n",
+        "default_version:4.3\ncharacter:Gorou@4.3\ncharacter:Arataki Itto@4.2\ncharacter:Tighnari@3.6\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\nRushing Hound: Swift as the Wind@4.3\n"
     ],
     "command_history": [
         [
@@ -923,7 +923,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 999,
         "max_dice_number": 16,

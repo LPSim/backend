@@ -11,7 +11,7 @@ from .summon.base import SummonBase
 
 from .status.team_status.base import TeamStatusBase
 
-from .status.charactor_status.base import CharactorStatusBase
+from .status.character_status.base import CharacterStatusBase
 
 from ..utils import BaseModel, get_instance
 from .deck import Deck
@@ -21,12 +21,12 @@ from .action import (
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
-    ChooseCharactorAction,
+    ChooseCharacterAction,
     CreateDiceAction,
     RemoveDiceAction,
     DeclareRoundEndAction,
     ActionEndAction, SkipPlayerActionAction,
-    SwitchCharactorAction,
+    SwitchCharacterAction,
     MakeDamageAction,
     ChargeAction, UseCardAction,
     UseSkillAction,
@@ -36,19 +36,19 @@ from .action import (
     RemoveObjectAction,
     ChangeObjectUsageAction,
     MoveObjectAction,
-    CharactorDefeatedAction,
-    GenerateChooseCharactorRequestAction,
+    CharacterDefeatedAction,
+    GenerateChooseCharacterRequestAction,
     GenerateRerollDiceRequestAction,
-    CharactorReviveAction,
+    CharacterReviveAction,
     ConsumeArcaneLegendAction,
     GenerateSwitchCardRequestAction,
 )
 from .interaction import (
     Requests, Responses, 
     SwitchCardRequest, SwitchCardResponse,
-    ChooseCharactorRequest, ChooseCharactorResponse,
+    ChooseCharacterRequest, ChooseCharacterResponse,
     RerollDiceRequest, RerollDiceResponse,
-    SwitchCharactorRequest, SwitchCharactorResponse,
+    SwitchCharacterRequest, SwitchCharacterResponse,
     ElementalTuningRequest, ElementalTuningResponse,
     DeclareRoundEndRequest, DeclareRoundEndResponse,
     UseSkillRequest, UseSkillResponse,
@@ -60,7 +60,7 @@ from .consts import (
     ObjectPositionType, ObjectType, PlayerActionLabels, SkillType,
 )
 from .event import (
-    CharactorReviveEventArguments,
+    CharacterReviveEventArguments,
     PlayerActionStartEventArguments,
     ConsumeArcaneLegendEventArguments,
     EventArguments,
@@ -70,19 +70,19 @@ from .event import (
     GameStartEventArguments, 
     RestoreCardEventArguments, 
     RemoveCardEventArguments,
-    ChooseCharactorEventArguments,
+    ChooseCharacterEventArguments,
     CreateDiceEventArguments,
     RemoveDiceEventArguments,
     RoundPrepareEventArguments,
     DeclareRoundEndEventArguments,
     ActionEndEventArguments,
-    SwitchCharactorEventArguments,
+    SwitchCharacterEventArguments,
     ChargeEventArguments,
     SkillEndEventArguments,
     ReceiveDamageEventArguments,
     MakeDamageEventArguments,
     AfterMakeDamageEventArguments,
-    CharactorDefeatedEventArguments,
+    CharacterDefeatedEventArguments,
     RoundEndEventArguments,
     CreateObjectEventArguments,
     RemoveObjectEventArguments,
@@ -124,8 +124,8 @@ class MatchState(str, Enum):
         STARTING (str): The match is starting, will generate initial objects, 
             decide who is the first player, draw initial card, etc.
         STARTING_CARD_SWITCH (str): Waiting for players to switch cards.
-        STARTING_CHOOSE_CHARACTOR (str): Waiting for players to choose
-            charactors.
+        STARTING_CHOOSE_CHARACTER (str): Waiting for players to choose
+            characters.
         GAME_START: The game has started, trigger some passive skills.
         ROUND_START (str): A new round is starting.
         ROUND_ROLL_DICE (str): Waiting for players to re-roll dice.
@@ -146,7 +146,7 @@ class MatchState(str, Enum):
 
     STARTING = 'STARTING'
     STARTING_CARD_SWITCH = 'STARTING_CARD_SWITCH'
-    STARTING_CHOOSE_CHARACTOR = 'STARTING_CHOOSE_CHARACTOR'
+    STARTING_CHOOSE_CHARACTER = 'STARTING_CHOOSE_CHARACTER'
 
     GAME_START = 'GAME_START'
 
@@ -182,7 +182,7 @@ class MatchConfig(BaseModel):
     initial_dice_reroll_times: int = 1
     card_number: int | None = 30
     max_same_card_number: int | None = 2
-    charactor_number: int | None = 3
+    character_number: int | None = 3
     max_round_number: int = 15
     max_hand_size: int = 10
     max_dice_number: int = 16
@@ -250,8 +250,8 @@ class MatchConfig(BaseModel):
             or (self.card_number is not None and self.card_number < 0)
             or (self.max_same_card_number is not None
                 and self.max_same_card_number < 0)
-            or (self.charactor_number is not None
-                and self.charactor_number < 0)
+            or (self.character_number is not None
+                and self.character_number < 0)
             or self.max_round_number <= 0
             or self.max_hand_size < 0
             or self.max_dice_number < 0
@@ -344,7 +344,7 @@ class Match(BaseModel):
     # trashbin, these events will be triggered in trashbin. After all event
     # chain cleared, all objects in trashbin will be removed.
     trashbin: List[
-        CharactorStatusBase | TeamStatusBase | CardBase | SummonBase
+        CharacterStatusBase | TeamStatusBase | CardBase | SummonBase
     ] = []
 
     @validator('event_handlers', each_item = True, pre = True)
@@ -358,7 +358,7 @@ class Match(BaseModel):
     @validator('trashbin', each_item = True, pre = True)
     def parse_trashbin(cls, v):
         return get_instance(
-            CharactorStatusBase | TeamStatusBase | CardBase | SummonBase, v
+            CharacterStatusBase | TeamStatusBase | CardBase | SummonBase, v
         )
 
     def __init__(self, *argv, **kwargs):
@@ -479,17 +479,17 @@ class Match(BaseModel):
             if hasattr(obj, 'desc'):
                 desc = obj.desc  # type: ignore
             if type == ObjectType.SKILL:
-                # record skill type and its corresponding charactor and 
-                # charactor's version
-                charactor = self.player_tables[
-                    obj.position.player_idx].charactors[
-                        obj.position.charactor_idx]
+                # record skill type and its corresponding character and 
+                # character's version
+                character = self.player_tables[
+                    obj.position.player_idx].characters[
+                        obj.position.character_idx]
                 skill_type = obj.skill_type  # type: ignore
-                type = f'{type}_{charactor.name}_{skill_type}'
-                version = charactor.version
+                type = f'{type}_{character.name}_{skill_type}'
+                version = character.version
             elif type == ObjectType.TALENT:
-                # record its corresponding charactor
-                type = f'{type}_{obj.charactor_name}'  # type: ignore
+                # record its corresponding character
+                type = f'{type}_{obj.character_name}'  # type: ignore
             if type not in self._debug_appeared_object_names_versions:
                 self._debug_appeared_object_names_versions[type] = {}
             if name not in self._debug_appeared_object_names_versions[type]:
@@ -605,7 +605,7 @@ class Match(BaseModel):
             is_legal, info = player_table.player_deck_information.check_legal(
                 card_number = self.config.card_number,
                 max_same_card_number = self.config.max_same_card_number,
-                charactor_number = self.config.charactor_number,
+                character_number = self.config.character_number,
                 check_restriction = self.config.check_deck_restriction,
             )
             if not is_legal:
@@ -624,20 +624,20 @@ class Match(BaseModel):
 
         # copy and randomize based on deck
         for pnum, player_table in enumerate(self.player_tables):
-            # copy charactors
-            for cnum, charactor in enumerate(
-                    player_table.player_deck_information.charactors):
-                charactor_copy = charactor.copy(deep = True)
-                charactor_copy.position = ObjectPosition(
+            # copy characters
+            for cnum, character in enumerate(
+                    player_table.player_deck_information.characters):
+                character_copy = character.copy(deep = True)
+                character_copy.position = ObjectPosition(
                     player_idx = pnum,
-                    charactor_idx = cnum,
-                    area = ObjectPositionType.CHARACTOR,
-                    id = charactor_copy.id
+                    character_idx = cnum,
+                    area = ObjectPositionType.CHARACTER,
+                    id = character_copy.id
                 )
-                charactor_copy.renew_id()
-                for skill in charactor_copy.skills:
+                character_copy.renew_id()
+                for skill in character_copy.skills:
                     skill.renew_id()
-                player_table.charactors.append(charactor_copy)
+                player_table.characters.append(character_copy)
             # copy cards
             if self.config.recreate_mode:
                 # in recreate mode, do not shuffle cards, only copy to table
@@ -752,12 +752,12 @@ class Match(BaseModel):
                 if self.config.history_level > 0:
                     self._save_history()
             elif self.state == MatchState.STARTING_CARD_SWITCH:
-                self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTOR)
+                self._set_match_state(MatchState.STARTING_CHOOSE_CHARACTER)
                 for player_idx in range(len(self.player_tables)):
-                    self._request_choose_charactor(player_idx)
+                    self._request_choose_character(player_idx)
                 if self.config.history_level > 0:
                     self._save_history()
-            elif self.state == MatchState.STARTING_CHOOSE_CHARACTOR:
+            elif self.state == MatchState.STARTING_CHOOSE_CHARACTER:
                 self._set_match_state(MatchState.GAME_START)
                 self._game_start()
             elif self.state == MatchState.GAME_START:
@@ -839,8 +839,8 @@ class Match(BaseModel):
         # clear prediction after receiving response
         self.skill_predictions.clear()
         # call different respond functions based on the type of response
-        if isinstance(response, SwitchCharactorResponse):
-            self._respond_switch_charactor(response)
+        if isinstance(response, SwitchCharacterResponse):
+            self._respond_switch_character(response)
         elif isinstance(response, ElementalTuningResponse):
             self._respond_elemental_tuning(response)
         elif isinstance(response, DeclareRoundEndResponse):
@@ -851,8 +851,8 @@ class Match(BaseModel):
             self._respond_use_card(response)
         elif isinstance(response, SwitchCardResponse):
             self._respond_switch_card(response)
-        elif isinstance(response, ChooseCharactorResponse):
-            self._respond_choose_charactor(response)
+        elif isinstance(response, ChooseCharacterResponse):
+            self._respond_choose_character(response)
         elif isinstance(response, RerollDiceResponse):
             self._respond_reroll_dice(response)
         else:
@@ -869,10 +869,10 @@ class Match(BaseModel):
         Returns:
             bool: True if game reaches end condition, False otherwise.
         """
-        # all charactors are defeated
+        # all characters are defeated
         for pnum, table in enumerate(self.player_tables):
-            for charactor in table.charactors:
-                if charactor.is_alive:
+            for character in table.characters:
+                if character.is_alive:
                     break
             else:
                 assert len(self.player_tables) == 2
@@ -888,7 +888,7 @@ class Match(BaseModel):
         """
         Do one action in `self.event_frames`. If the last event frame has
         triggered actions, it will do one action and stack new event frame.
-        If triggered actions is empty and has triggerred objects, get 
+        If triggered actions is empty and has triggered objects, get 
         actions and do the first. If have unprocessed event arguments,
         trigger objects. If none of all, pop last event frame.
         Unless there are no actions, this function will exactly do one action.
@@ -1075,7 +1075,7 @@ class Match(BaseModel):
         table = self.player_tables[self.current_player]
         table.charge_satisfied = len(table.dice.colors) % 2 == 0
         # generate requests
-        self._request_switch_charactor(self.current_player)
+        self._request_switch_character(self.current_player)
         self._request_elemental_tuning(self.current_player)
         self._request_declare_round_end(self.current_player)
         self._request_use_skill(self.current_player)
@@ -1099,7 +1099,7 @@ class Match(BaseModel):
         else:
             # not all declare ended, go to next action
             # change to ROUND_PREPARING so will immediately transform to
-            # PLAYER_ACTION_START in next step, and trigger correcponding event
+            # PLAYER_ACTION_START in next step, and trigger corresponding event
             self._set_match_state(MatchState.ROUND_PREPARING)
 
     def _round_ending(self):
@@ -1117,7 +1117,7 @@ class Match(BaseModel):
         self, position: ObjectPosition, action: ActionTypes | None = None
     ) -> ObjectBase | None:
         """
-        Get object by its position. If obect not exist, return None.
+        Get object by its position. If object not exist, return None.
         When action is specified, it will check trashbin and find objects that
         can handle the action.
         """
@@ -1143,9 +1143,9 @@ class Match(BaseModel):
         Get all objects in the match by `self.table.get_object_lists`. 
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
-        2. objects belongs to charactor goes first
-            2.1. active charactor first, otherwise the default order.
-            2.2. for one charactor, order is weapon, artifact, talent, status.
+        2. objects belongs to character goes first
+            2.1. active character first, otherwise the default order.
+            2.2. for one character, order is weapon, artifact, talent, status.
             2.3. for status, order is their index in status list, i.e. 
                 generated time.
         3. for other objects, order is: summon, support, hand, dice, deck.
@@ -1261,7 +1261,7 @@ class Match(BaseModel):
         it will predict the results when a skill is used, regardless of the
         skill availability, except for skills that can never be used by player.
         The predict results are saved in self.skill_predictions, with the 
-        player idx, charactor idx, skill idx, and diff of the match after
+        player idx, character idx, skill idx, and diff of the match after
         using the skill.
         """
         self.skill_predictions = []
@@ -1279,8 +1279,8 @@ class Match(BaseModel):
         # disable history logging and skill prediction for copy
         copy._prediction_mode = True
         table = copy.player_tables[player_idx]
-        charactor = table.charactors[table.active_charactor_idx]
-        skills = charactor.skills
+        character = table.characters[table.active_character_idx]
+        skills = character.skills
         for sidx, skill in enumerate(skills):
             if not skill.is_valid(self):
                 continue
@@ -1289,7 +1289,7 @@ class Match(BaseModel):
             one_copy._respond_use_skill(UseSkillResponse(
                 request = UseSkillRequest(
                     player_idx = player_idx,
-                    charactor_idx = table.active_charactor_idx,
+                    character_idx = table.active_character_idx,
                     skill_idx = sidx,
                     dice_colors = [],
                     cost = Cost(original_value = Cost()),
@@ -1306,7 +1306,7 @@ class Match(BaseModel):
                         d[2][i] = (d[2][i][0], None)
             self.skill_predictions.append({
                 'player_idx': player_idx,
-                'charactor_idx': table.active_charactor_idx,
+                'character_idx': table.active_character_idx,
                 'skill_idx': sidx,
                 'diff': diff
             })
@@ -1325,18 +1325,18 @@ class Match(BaseModel):
             card_names = [card.name for card in table.hands]
         ))
 
-    def _request_choose_charactor(self, player_idx: int):
+    def _request_choose_character(self, player_idx: int):
         """
         Generate switch card requests.
         """
         table = self.player_tables[player_idx]
         available: List[int] = []
-        for cnum, charactor in enumerate(table.charactors):
-            if charactor.is_alive:
+        for cnum, character in enumerate(table.characters):
+            if character.is_alive:
                 available.append(cnum)
-        self.requests.append(ChooseCharactorRequest(
+        self.requests.append(ChooseCharacterRequest(
             player_idx = player_idx,
-            available_charactor_idxs = available
+            available_character_idxs = available
         ))
 
     def _request_reroll_dice(self, player_idx: int, reroll_number: int):
@@ -1352,21 +1352,21 @@ class Match(BaseModel):
             reroll_times = reroll_number
         ))
 
-    def _request_switch_charactor(self, player_idx: int):
+    def _request_switch_character(self, player_idx: int):
         """
-        Generate switch charactor requests.
+        Generate switch character requests.
         """
         table = self.player_tables[player_idx]
-        active_charactor = table.charactors[table.active_charactor_idx]
-        for cidx, charactor in enumerate(table.charactors):
-            if cidx == table.active_charactor_idx or charactor.is_defeated:
+        active_character = table.characters[table.active_character_idx]
+        for cidx, character in enumerate(table.characters):
+            if cidx == table.active_character_idx or character.is_defeated:
                 continue
             dice_cost = Cost(any_dice_number = 1)
-            dice_cost.label = CostLabels.SWITCH_CHARACTOR.value
+            dice_cost.label = CostLabels.SWITCH_CHARACTER.value
             dice_cost_value = CostValue(
                 cost = dice_cost,
-                position = active_charactor.position,
-                target_position = charactor.position
+                position = active_character.position,
+                target_position = character.position
             )
             dice_cost_value = self._modify_cost_value(
                 dice_cost_value, mode = 'TEST')
@@ -1378,10 +1378,10 @@ class Match(BaseModel):
                 strict = False,
             ):
                 continue
-            self.requests.append(SwitchCharactorRequest(
+            self.requests.append(SwitchCharacterRequest(
                 player_idx = player_idx,
-                active_charactor_idx = table.active_charactor_idx,
-                target_charactor_idx = cidx,
+                active_character_idx = table.active_character_idx,
+                target_character_idx = cidx,
                 dice_colors = table.dice.colors.copy(),
                 cost = dice_cost_value.cost,
             ))
@@ -1389,7 +1389,7 @@ class Match(BaseModel):
     def _request_elemental_tuning(self, player_idx: int):
         table = self.player_tables[player_idx]
         target_color = ELEMENT_TO_DIE_COLOR[
-            table.charactors[table.active_charactor_idx].element
+            table.characters[table.active_character_idx].element
         ]
         available_dice_idx = [
             didx for didx, color in enumerate(table.dice.colors)
@@ -1414,16 +1414,16 @@ class Match(BaseModel):
 
     def _request_use_skill(self, player_idx: int):
         """
-        Generate use skill requests. If active charactor is stunned, or
+        Generate use skill requests. If active character is stunned, or
         not satisfy the condition to use skill, it will skip generating
         request.
         """
         table = self.player_tables[player_idx]
-        front_charactor = table.charactors[table.active_charactor_idx]
-        if front_charactor.is_stunned:
+        front_character = table.characters[table.active_character_idx]
+        if front_character.is_stunned:
             # stunned, cannot use skill.
             return
-        for sid, skill in enumerate(front_charactor.skills):
+        for sid, skill in enumerate(front_character.skills):
             if skill.is_valid(self):
                 cost = skill.cost.copy()
                 if (
@@ -1447,13 +1447,13 @@ class Match(BaseModel):
                 dice_colors = table.dice.colors
                 if cost_value.cost.is_valid(
                     dice_colors = dice_colors, 
-                    charge = front_charactor.charge,
+                    charge = front_character.charge,
                     arcane_legend = table.arcane_legend,
                     strict = False
                 ):
                     self.requests.append(UseSkillRequest(
                         player_idx = player_idx,
-                        charactor_idx = table.active_charactor_idx,
+                        character_idx = table.active_character_idx,
                         skill_idx = sid,
                         dice_colors = dice_colors.copy(),
                         cost = cost_value.cost
@@ -1520,9 +1520,9 @@ class Match(BaseModel):
             if req.player_idx != response.player_idx
         ]
 
-    def _respond_choose_charactor(self, response: ChooseCharactorResponse):
+    def _respond_choose_character(self, response: ChooseCharacterResponse):
         event_args = self._act(
-            ChooseCharactorAction.from_response(response)
+            ChooseCharacterAction.from_response(response)
         )
         self._stack_events(event_args)
         # remove related requests
@@ -1568,9 +1568,9 @@ class Match(BaseModel):
                         self.requests.pop(num)
                     break
 
-    def _respond_switch_charactor(self, response: SwitchCharactorResponse):
+    def _respond_switch_character(self, response: SwitchCharacterResponse):
         """
-        Deal with switch charactor response. If it is combat action, add
+        Deal with switch character response. If it is combat action, add
         combat action to action queue. Remove related requests.
         """
         actions: List[ActionBase] = []
@@ -1581,26 +1581,26 @@ class Match(BaseModel):
                 dice_idxs = dice_idxs,
             ))
         table = self.player_tables[response.player_idx]
-        active_charactor = table.charactors[table.active_charactor_idx]
-        target_charactors = table.charactors[
-            response.request.target_charactor_idx]
+        active_character = table.characters[table.active_character_idx]
+        target_characters = table.characters[
+            response.request.target_character_idx]
         cost = response.request.cost.original_value
         assert cost is not None
         cost_value = CostValue(
-            position = active_charactor.position,
+            position = active_character.position,
             cost = cost,
-            target_position = target_charactors.position
+            target_position = target_characters.position
         )
         cost_value = self._modify_cost_value(cost_value, 'REAL')
-        actions.append(SwitchCharactorAction.from_response(response))
+        actions.append(SwitchCharacterAction.from_response(response))
         actions.append(ActionEndAction(
             action_label = PlayerActionLabels.SWITCH.value,
             position = ObjectPosition(
                 player_idx = response.player_idx,
-                charactor_idx = response.request.active_charactor_idx,
-                area = ObjectPositionType.CHARACTOR,
-                id = self.player_tables[response.player_idx].charactors[
-                    response.request.active_charactor_idx].id,
+                character_idx = response.request.active_character_idx,
+                area = ObjectPositionType.CHARACTER,
+                id = self.player_tables[response.player_idx].characters[
+                    response.request.active_character_idx].id,
             ),
             do_combat_action = True
         ))
@@ -1614,7 +1614,7 @@ class Match(BaseModel):
 
     def _respond_elemental_tuning(self, response: ElementalTuningResponse):
         """
-        Deal with elemental tuning response. It is splitted into 3 actions,
+        Deal with elemental tuning response. It is split into 3 actions,
         remove one hand card, remove one die, and add one die.
         """
         die_idx = response.dice_idx
@@ -1628,12 +1628,12 @@ class Match(BaseModel):
             player_idx = response.player_idx,
             dice_idxs = [die_idx]
         ))
-        active_charactor = table.get_active_charactor()
-        assert active_charactor is not None
+        active_character = table.get_active_character()
+        assert active_character is not None
         actions.append(CreateDiceAction(
             player_idx = response.player_idx,
             number = 1,
-            color = ELEMENT_TO_DIE_COLOR[active_charactor.element]
+            color = ELEMENT_TO_DIE_COLOR[active_character.element]
         ))
         actions.append(ActionEndAction(
             action_label = PlayerActionLabels.TUNE.value,
@@ -1654,7 +1654,7 @@ class Match(BaseModel):
 
     def _respond_declare_round_end(self, response: DeclareRoundEndResponse):
         """
-        Deal with declare round end response. It is splitted into 2 actions,
+        Deal with declare round end response. It is split into 2 actions,
         declare round end and combat action.
         """
         actions: List[ActionBase] = []
@@ -1678,8 +1678,8 @@ class Match(BaseModel):
 
     def _respond_use_skill(self, response: UseSkillResponse):
         request = response.request
-        skill = self.player_tables[response.player_idx].charactors[
-            request.charactor_idx].skills[request.skill_idx]
+        skill = self.player_tables[response.player_idx].characters[
+            request.character_idx].skills[request.skill_idx]
         cost = response.request.cost.original_value
         assert cost is not None
         cost_value = CostValue(
@@ -1701,7 +1701,7 @@ class Match(BaseModel):
                 position = skill.position,
                 target_position = self.player_tables[
                     1 - skill.position.player_idx
-                ].get_active_charactor().position,
+                ].get_active_character().position,
                 skill_type = skill.skill_type
             ),
             ActionEndAction(
@@ -1774,8 +1774,8 @@ class Match(BaseModel):
         """
         self.last_action = action
         self.action_info = {}
-        if isinstance(action, ChooseCharactorAction):
-            return list(self._action_choose_charactor(action))
+        if isinstance(action, ChooseCharacterAction):
+            return list(self._action_choose_character(action))
         elif isinstance(action, CreateDiceAction):
             return list(self._action_create_dice(action))
         elif isinstance(action, RemoveDiceAction):
@@ -1786,8 +1786,8 @@ class Match(BaseModel):
             return list(self._action_draw_card(action))
         elif isinstance(action, RemoveCardAction):
             return list(self._action_remove_card(action))
-        elif isinstance(action, SwitchCharactorAction):
-            return list(self._action_switch_charactor(action))
+        elif isinstance(action, SwitchCharacterAction):
+            return list(self._action_switch_character(action))
         elif isinstance(action, DeclareRoundEndAction):
             return list(self._action_declare_round_end(action))
         elif isinstance(action, ActionEndAction):
@@ -1802,8 +1802,8 @@ class Match(BaseModel):
             return list(self._action_use_card(action))
         elif isinstance(action, SkillEndAction):
             return list(self._action_skill_end(action))
-        elif isinstance(action, CharactorDefeatedAction):
-            return list(self._action_charactor_defeated(action))
+        elif isinstance(action, CharacterDefeatedAction):
+            return list(self._action_character_defeated(action))
         elif isinstance(action, CreateObjectAction):
             return list(self._action_create_object(action))
         elif isinstance(action, RemoveObjectAction):
@@ -1814,14 +1814,14 @@ class Match(BaseModel):
             return list(self._action_move_object(action))
         elif isinstance(action, ConsumeArcaneLegendAction):
             return list(self._action_consume_arcane_legend(action))
-        elif isinstance(action, GenerateChooseCharactorRequestAction):
-            return list(self._action_generate_choose_charactor_request(action))
+        elif isinstance(action, GenerateChooseCharacterRequestAction):
+            return list(self._action_generate_choose_character_request(action))
         elif isinstance(action, GenerateRerollDiceRequestAction):
             return list(self._action_generate_reroll_dice_request(action))
         elif isinstance(action, SkipPlayerActionAction):
             return list(self._action_skip_player_action(action))
-        elif isinstance(action, CharactorReviveAction):
-            return list(self._action_charactor_revive(action))
+        elif isinstance(action, CharacterReviveAction):
+            return list(self._action_character_revive(action))
         elif isinstance(action, GenerateSwitchCardRequestAction):
             return list(self._action_generate_switch_card_request(action))
         else:
@@ -2002,28 +2002,28 @@ class Match(BaseModel):
         )
         return [event_arg]
 
-    def _action_choose_charactor(self, action: ChooseCharactorAction) \
-            -> List[ChooseCharactorEventArguments]:
+    def _action_choose_character(self, action: ChooseCharacterAction) \
+            -> List[ChooseCharacterEventArguments]:
         """
-        This action triggers by game start and by active charactor is defeated.
-        Be care of differences between choose_charactor when implementing 
+        This action triggers by game start and by active character is defeated.
+        Be care of differences between choose_character when implementing 
         event triggers.
         """
         player_idx = action.player_idx
-        charactor_idx = action.charactor_idx
+        character_idx = action.character_idx
         table = self.player_tables[player_idx]
         logging.info(
-            f'Choose charactor action, player {player_idx}, '
-            f'charactor {charactor_idx}, '
-            f'name {table.charactors[charactor_idx].name}'
+            f'Choose character action, player {player_idx}, '
+            f'character {character_idx}, '
+            f'name {table.characters[character_idx].name}'
         )
-        original_charactor_idx = table.active_charactor_idx
-        table.active_charactor_idx = charactor_idx
-        # after choose charactor, add plunging mark
+        original_character_idx = table.active_character_idx
+        table.active_character_idx = character_idx
+        # after choose character, add plunging mark
         table.plunge_satisfied = True
-        event_arg = ChooseCharactorEventArguments(
+        event_arg = ChooseCharacterEventArguments(
             action = action,
-            original_charactor_idx = original_charactor_idx
+            original_character_idx = original_character_idx
         )
         return [event_arg]
 
@@ -2189,47 +2189,47 @@ class Match(BaseModel):
             do_combat_action = True
         )]
 
-    def _action_switch_charactor(self, action: SwitchCharactorAction) \
-            -> List[SwitchCharactorEventArguments]:
+    def _action_switch_character(self, action: SwitchCharacterAction) \
+            -> List[SwitchCharacterEventArguments]:
         """
-        This action triggers by player manually declare charactor switch
+        This action triggers by player manually declare character switch
         or by using skills or by overloaded. Be care of differences between
-        choose_charactor when implementing event triggers.
+        choose_character when implementing event triggers.
         """
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
-        current_active_idx = table.active_charactor_idx
-        current_active_name = table.charactors[current_active_idx].name
-        charactor_idx = action.charactor_idx
-        charactor_name = table.charactors[charactor_idx].name
-        if table.charactors[charactor_idx].is_defeated:
+        current_active_idx = table.active_character_idx
+        current_active_name = table.characters[current_active_idx].name
+        character_idx = action.character_idx
+        character_name = table.characters[character_idx].name
+        if table.characters[character_idx].is_defeated:
             self._set_match_state(MatchState.ERROR)  # pragma: no cover
             raise AssertionError(
-                f'Cannot switch to defeated charactor {charactor_name}.'
+                f'Cannot switch to defeated character {character_name}.'
             )
-        if table.active_charactor_idx == charactor_idx:
+        if table.active_character_idx == character_idx:
             self._set_match_state(MatchState.ERROR)  # pragma: no cover
             raise AssertionError(
-                f'Cannot switch to the active charactor {charactor_name}.'
+                f'Cannot switch to the active character {character_name}.'
             )
         logging.info(
             f'player {player_idx} '
-            f'from charactor {current_active_name}:{current_active_idx} '
-            f'switched to charactor {charactor_name}:{charactor_idx}.'
+            f'from character {current_active_name}:{current_active_idx} '
+            f'switched to character {character_name}:{character_idx}.'
         )
-        table.active_charactor_idx = charactor_idx
-        # after charactor switch, add plunging mark
+        table.active_character_idx = character_idx
+        # after character switch, add plunging mark
         table.plunge_satisfied = True
-        return [SwitchCharactorEventArguments(
+        return [SwitchCharacterEventArguments(
             action = action,
-            last_active_charactor_idx = current_active_idx,
+            last_active_character_idx = current_active_idx,
         )]
 
     def _action_make_damage(
         self, action: MakeDamageAction
     ) -> List[
         ReceiveDamageEventArguments | MakeDamageEventArguments 
-        | AfterMakeDamageEventArguments | SwitchCharactorEventArguments
+        | AfterMakeDamageEventArguments | SwitchCharacterEventArguments
         | CreateObjectEventArguments
     ]:
         """
@@ -2237,13 +2237,13 @@ class Match(BaseModel):
         application. It will return two types of events:
         1. MakeDamageEventArguments: All damage information dealt by this 
             action.
-        2. SwitchCharactorEventArguments: If this damage action contains
-            charactor change, i.e. overloaded, Skills of Anemo charactors, etc.
-            A SwitchCharactorEventArguments will be generated.
-            NOTE: only charactor switch of charactor received this damage will
-            trigger this event, charactor switch of attacker (Kazuha, Kenki, 
-            When the Crane Returned) should be another SwtichCharactorAction.
-            TODO is it possible to have charactor switch of attacker in
+        2. SwitchCharacterEventArguments: If this damage action contains
+            character change, i.e. overloaded, Skills of Anemo characters, etc.
+            A SwitchCharacterEventArguments will be generated.
+            NOTE: only character switch of character received this damage will
+            trigger this event, character switch of attacker (Kazuha, Kenki, 
+            When the Crane Returned) should be another SwitchCharacterAction.
+            TODO is it possible to have character switch of attacker in
                 make damage action?
         3. CreateObjectEventArguments: If this damage action contains create
             object, i.e. massive skills that deal damage and create object,
@@ -2253,14 +2253,14 @@ class Match(BaseModel):
         handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
-        switch_charactor: List[int] = action.charactor_change_idx
+        switch_character: List[int] = action.character_change_idx
         create_objects: List[CreateObjectAction] = []
         assert self.event_handlers[0].name == 'System'
         # version used in side effect generation
         version: str = self.event_handlers[0].version
         events: List[
             ReceiveDamageEventArguments | MakeDamageEventArguments 
-            | AfterMakeDamageEventArguments | SwitchCharactorEventArguments 
+            | AfterMakeDamageEventArguments | SwitchCharacterEventArguments 
             | CreateObjectEventArguments
         ] = []
         infos: List[ReceiveDamageEventArguments] = []
@@ -2268,43 +2268,43 @@ class Match(BaseModel):
             damage = damage_lists.pop(0)
             damage_original = damage.copy()
             assert (
-                damage.target_position.area == ObjectPositionType.CHARACTOR
+                damage.target_position.area == ObjectPositionType.CHARACTER
             ), (
-                'Damage target position should be charactor.'
+                'Damage target position should be character.'
             )
             table = self.player_tables[damage.target_position.player_idx]
-            charactor = table.charactors[damage.target_position.charactor_idx]
-            assert damage.target_position.id == charactor.id, (
-                'Damage target position should be charactor, id not match. '
+            character = table.characters[damage.target_position.character_idx]
+            assert damage.target_position.id == character.id, (
+                'Damage target position should be character, id not match. '
             )
-            assert charactor.is_alive, (
-                'Damage target charactor should be alive.'
+            assert character.is_alive, (
+                'Damage target character should be alive.'
             )
             self._modify_value(damage, 'REAL')
             damage_element_type = DAMAGE_TYPE_TO_ELEMENT[
                 damage.damage_elemental_type]
-            target_element_application = charactor.element_application
+            target_element_application = character.element_application
             [elemental_reaction, reacted_elements, applied_elements] = \
                 check_elemental_reaction(
                     damage_element_type, 
                     target_element_application
             )
             if (elemental_reaction is ElementalReactionType.OVERLOADED
-                    and damage.target_position.charactor_idx 
-                    == table.active_charactor_idx):
-                # overloaded to next charactor
+                    and damage.target_position.character_idx 
+                    == table.active_character_idx):
+                # overloaded to next character
                 player_idx = damage.target_position.player_idx
-                assert switch_charactor[player_idx] == -1, (
-                    'When overloaded to switch charactor, which already '
-                    'contain charactor switch rule.'
+                assert switch_character[player_idx] == -1, (
+                    'When overloaded to switch character, which already '
+                    'contain character switch rule.'
                 )
-                nci = table.next_charactor_idx()
+                nci = table.next_character_idx()
                 if nci is not None:
-                    switch_charactor[player_idx] = nci
+                    switch_character[player_idx] = nci
             # apply elemental reaction, update damage and append new damages
             damage, new_damages, new_object = apply_elemental_reaction(
-                table.charactors,
-                table.active_charactor_idx,
+                table.characters,
+                table.active_character_idx,
                 damage, 
                 elemental_reaction, 
                 reacted_elements,
@@ -2320,19 +2320,19 @@ class Match(BaseModel):
             damage = DamageDecreaseValue.from_multiply_value(damage)
             self._modify_value(damage, 'REAL')
             # apply final damage and applied elements
-            hp_before = charactor.hp
-            charactor.hp -= damage.damage
-            if charactor.hp < 0:
-                charactor.hp = 0
-            if charactor.hp > charactor.max_hp:
-                charactor.hp = charactor.max_hp
-            charactor.element_application = applied_elements
+            hp_before = character.hp
+            character.hp -= damage.damage
+            if character.hp < 0:
+                character.hp = 0
+            if character.hp > character.max_hp:
+                character.hp = character.max_hp
+            character.element_application = applied_elements
             infos.append(ReceiveDamageEventArguments(
                 action = action,
                 original_damage = damage_original,
                 final_damage = damage,
                 hp_before = hp_before,
-                hp_after = charactor.hp,
+                hp_after = character.hp,
                 elemental_reaction = elemental_reaction,
                 reacted_elements = reacted_elements,
             ))
@@ -2342,7 +2342,7 @@ class Match(BaseModel):
                 continue
             target = info.final_damage.target_position
             pidx = target.player_idx
-            cidx = target.charactor_idx
+            cidx = target.character_idx
             if pidx not in self.action_info:
                 self.action_info[pidx] = {}
             if cidx not in self.action_info[pidx]:
@@ -2363,14 +2363,14 @@ class Match(BaseModel):
         events += infos
         events.append(AfterMakeDamageEventArguments.
                       from_make_damage_event_arguments(make_damage_event))
-        for table, sc in zip(self.player_tables, switch_charactor):
-            if sc != -1 and sc != table.active_charactor_idx:
-                # charactor switch
-                sw_action = SwitchCharactorAction(
+        for table, sc in zip(self.player_tables, switch_character):
+            if sc != -1 and sc != table.active_character_idx:
+                # character switch
+                sw_action = SwitchCharacterAction(
                     player_idx = table.player_idx,
-                    charactor_idx = sc,
+                    character_idx = sc,
                 )
-                sw_events = self._action_switch_charactor(sw_action)
+                sw_events = self._action_switch_character(sw_action)
                 events += sw_events
         create_objects += action.create_objects
         for co_action in create_objects:
@@ -2382,63 +2382,63 @@ class Match(BaseModel):
             -> List[ChargeEventArguments]:
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[action.charactor_idx]
-        if charactor.is_defeated:
-            # charge defeated charactor
+        character = table.characters[action.character_idx]
+        if character.is_defeated:
+            # charge defeated character
             logging.warning(
-                f'tried to charge a defeated charactor! '
+                f'tried to charge a defeated character! '
                 f'player {player_idx} '
-                f'charactor {charactor.name}:{action.charactor_idx}. '
+                f'character {character.name}:{action.character_idx}. '
                 f'bug or defeated before charging?'
             )
             # ignore this action and return empty event arguments
             return []
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{table.active_charactor_idx} '
+            f'character {character.name}:{table.active_character_idx} '
             f'charged {action.charge}.'
         )
-        old_charge = charactor.charge
-        charactor.charge += action.charge
-        if charactor.charge > charactor.max_charge:
-            charactor.charge = charactor.max_charge
+        old_charge = character.charge
+        character.charge += action.charge
+        if character.charge > character.max_charge:
+            character.charge = character.max_charge
         # charge should not be negative, unless in prediction mode
         if self._prediction_mode:
-            if charactor.charge < 0:
-                charactor.charge = 0
+            if character.charge < 0:
+                character.charge = 0
         else:
-            assert charactor.charge >= 0
+            assert character.charge >= 0
         return [ChargeEventArguments(
             action = action,
             charge_before = old_charge,
-            charge_after = charactor.charge,
+            charge_after = character.charge,
         )]
 
-    def _action_charactor_defeated(
-        self, action: CharactorDefeatedAction
-    ) -> List[CharactorDefeatedEventArguments | RemoveObjectEventArguments]:
+    def _action_character_defeated(
+        self, action: CharacterDefeatedAction
+    ) -> List[CharacterDefeatedEventArguments | RemoveObjectEventArguments]:
         """
-        Charactor defeated action, all equipments and status are removed, 
+        Character defeated action, all equipment and status are removed, 
         and is marked as defeated. Currently not support PVE character
         disappear features. Event arguments returned contains
-        CharactorDefeatedEventArguments and RemoveObjectEventArguments.
+        CharacterDefeatedEventArguments and RemoveObjectEventArguments.
         """
         ret: List[
-            CharactorDefeatedEventArguments | RemoveObjectEventArguments
+            CharacterDefeatedEventArguments | RemoveObjectEventArguments
         ] = []
         player_idx = action.player_idx
-        charactor_idx = action.charactor_idx
+        character_idx = action.character_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[charactor_idx]
-        assert charactor.is_defeated, (
-            'Should marked as defeated charactor.'
+        character = table.characters[character_idx]
+        assert character.is_defeated, (
+            'Should marked as defeated character.'
         )
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{charactor_idx} '
+            f'character {character.name}:{character_idx} '
             f'defeated.'
         )
-        removed_objects = charactor.attachs
+        removed_objects = character.attaches
         for obj in removed_objects:
             ret.append(RemoveObjectEventArguments(
                 action = RemoveObjectAction(
@@ -2448,40 +2448,40 @@ class Match(BaseModel):
                 object_type = obj.type,
             ))
             self.trashbin.append(obj)
-        charactor.attachs = []
-        charactor.element_application = []
-        charactor.is_alive = False
-        charactor.charge = 0
+        character.attaches = []
+        character.element_application = []
+        character.is_alive = False
+        character.charge = 0
         need_switch = False
-        if table.active_charactor_idx == charactor_idx:
-            table.active_charactor_idx = -1  # reset active charactor
+        if table.active_character_idx == character_idx:
+            table.active_character_idx = -1  # reset active character
             need_switch = True
-        ret.append(CharactorDefeatedEventArguments(
+        ret.append(CharacterDefeatedEventArguments(
             action = action,
             need_switch = need_switch,
         ))
         return ret
 
-    def _action_charactor_revive(self, action: CharactorReviveAction) \
-            -> List[CharactorReviveEventArguments]:
+    def _action_character_revive(self, action: CharacterReviveAction) \
+            -> List[CharacterReviveEventArguments]:
         """
-        Charactor revive action. A defeated charactor is revived.
+        Character revive action. A defeated character is revived.
         """
         player_idx = action.player_idx
-        charactor_idx = action.charactor_idx
+        character_idx = action.character_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[charactor_idx]
-        assert charactor.is_defeated, (
-            'Cannot revive a living charactor.'
+        character = table.characters[character_idx]
+        assert character.is_defeated, (
+            'Cannot revive a living character.'
         )
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{charactor_idx} '
+            f'character {character.name}:{character_idx} '
             f'revived with {action.revive_hp} HP.'
         )
-        charactor.is_alive = True
-        charactor.hp = action.revive_hp
-        return [CharactorReviveEventArguments(
+        character.is_alive = True
+        character.hp = action.revive_hp
+        return [CharacterReviveEventArguments(
             action = action,
         )]
 
@@ -2489,34 +2489,34 @@ class Match(BaseModel):
             -> List[CreateObjectEventArguments]:
         """
         Action for creating objects, e.g. status, summons, supports.
-        Note some objects are not created but moved, e.g. equipments and 
+        Note some objects are not created but moved, e.g. equipment and 
         supports, for these objects, do not use this action.
         """
         player_idx = action.object_position.player_idx
         table = self.player_tables[player_idx]
-        # charactor_idx = action.object_position.charactor_id
+        # character_idx = action.object_position.character_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_class = TeamStatusBase
             target_list = renew_target_list = table.team_status
             target_name = 'team status'
         elif action.object_position.area \
-                == ObjectPositionType.CHARACTOR_STATUS:
-            target_class = CharactorStatusBase
-            target_list = table.charactors[
-                action.object_position.charactor_idx].attachs
-            renew_target_list = table.charactors[
-                action.object_position.charactor_idx].status
-            charactor = table.charactors[action.object_position.charactor_idx]
-            if charactor.is_defeated:  # pragma: no cover
+                == ObjectPositionType.CHARACTER_STATUS:
+            target_class = CharacterStatusBase
+            target_list = table.characters[
+                action.object_position.character_idx].attaches
+            renew_target_list = table.characters[
+                action.object_position.character_idx].status
+            character = table.characters[action.object_position.character_idx]
+            if character.is_defeated:  # pragma: no cover
                 logging.warning(
-                    'Trying to create status for defeated charactor '
+                    'Trying to create status for defeated character '
                     f'{action.object_position.player_idx}:'
-                    f'{action.object_position.charactor_idx}:'
-                    f'{charactor.name}. Is it be defeated before creating '
+                    f'{action.object_position.character_idx}:'
+                    f'{character.name}. Is it be defeated before creating '
                     'or a bug?'
                 )
                 return []
-            target_name = 'charactor status'
+            target_name = 'character status'
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_class = SummonBase
             target_list = renew_target_list = table.summons
@@ -2582,22 +2582,22 @@ class Match(BaseModel):
             -> List[RemoveObjectEventArguments]:
         """
         Action for removing objects, e.g. status, summons, supports.
-        It supports removing equipments and supports.
+        It supports removing equipment and supports.
         """
         player_idx = action.object_position.player_idx
         table = self.player_tables[player_idx]
-        # charactor_idx = action.object_position.charactor_id
+        # character_idx = action.object_position.character_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_list = table.team_status
             target_name = 'team status'
         elif action.object_position.area \
-                == ObjectPositionType.CHARACTOR_STATUS:
-            target_list = table.charactors[
-                action.object_position.charactor_idx].attachs
-            target_name = 'charactor status'
-            assert table.charactors[
-                action.object_position.charactor_idx].is_alive, (
-                'Cannot remove status for defeated charactor now.'
+                == ObjectPositionType.CHARACTER_STATUS:
+            target_list = table.characters[
+                action.object_position.character_idx].attaches
+            target_name = 'character status'
+            assert table.characters[
+                action.object_position.character_idx].is_alive, (
+                'Cannot remove status for defeated character now.'
             )
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
@@ -2605,35 +2605,35 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.SUPPORT:
             target_list = table.supports
             target_name = 'support'
-        elif action.object_position.area == ObjectPositionType.CHARACTOR:
+        elif action.object_position.area == ObjectPositionType.CHARACTER:
             # remove artifact, weapon or talent
-            charactor = table.charactors[action.object_position.charactor_idx]
-            assert charactor.is_alive, (
-                'Cannot remove equips for defeated charactor now.'
+            character = table.characters[action.object_position.character_idx]
+            assert character.is_alive, (
+                'Cannot remove equips for defeated character now.'
             )
             removed_equip = None
-            if charactor.weapon is not None and charactor.weapon.id == \
+            if character.weapon is not None and character.weapon.id == \
                     action.object_position.id:
-                removed_equip = charactor.weapon
+                removed_equip = character.weapon
                 target_name = 'weapon'
                 target_type = ObjectType.WEAPON
-            elif charactor.artifact is not None and charactor.artifact.id == \
+            elif character.artifact is not None and character.artifact.id == \
                     action.object_position.id:
-                removed_equip = charactor.artifact
+                removed_equip = character.artifact
                 target_name = 'artifact'
                 target_type = ObjectType.ARTIFACT
-            elif charactor.talent is not None and charactor.talent.id == \
+            elif character.talent is not None and character.talent.id == \
                     action.object_position.id:
-                removed_equip = charactor.talent
+                removed_equip = character.talent
                 target_name = 'talent'
                 target_type = ObjectType.TALENT
             else:
                 raise AssertionError(
                     f'player {player_idx} tried to remove non-exist equipment '
-                    f'from charactor {charactor.name} with id '
+                    f'from character {character.name} with id '
                     f'{action.object_position.id}.'
                 )
-            removed_equip = charactor.remove_equip(target_type)
+            removed_equip = character.remove_equip(target_type)
             self.trashbin.append(removed_equip)  # type: ignore
             return [RemoveObjectEventArguments(
                 action = action,
@@ -2673,15 +2673,15 @@ class Match(BaseModel):
         """
         player_idx = action.object_position.player_idx
         table = self.player_tables[player_idx]
-        # charactor_idx = action.object_position.charactor_id
+        # character_idx = action.object_position.character_id
         if action.object_position.area == ObjectPositionType.TEAM_STATUS:
             target_list = table.team_status
             target_name = 'team status'
         elif action.object_position.area == \
-                ObjectPositionType.CHARACTOR_STATUS:
-            target_list = table.charactors[
-                action.object_position.charactor_idx].status
-            target_name = 'charactor status'
+                ObjectPositionType.CHARACTER_STATUS:
+            target_list = table.characters[
+                action.object_position.character_idx].status
+            target_name = 'character status'
         elif action.object_position.area == ObjectPositionType.SUPPORT:
             target_list = table.supports
             target_name = 'support'
@@ -2724,10 +2724,10 @@ class Match(BaseModel):
     def _action_move_object(self, action: MoveObjectAction) \
             -> List[MoveObjectEventArguments]:
         """
-        Action for moving objects, e.g. equipments, supports.
+        Action for moving objects, e.g. equipment, supports.
         """
         player_idx = action.object_position.player_idx
-        charactor_idx = action.object_position.charactor_idx
+        character_idx = action.object_position.character_idx
         table = self.player_tables[player_idx]
         assert (
             action.object_position.id == action.target_position.id
@@ -2735,7 +2735,7 @@ class Match(BaseModel):
             'Move object action should have same object id in both '
             'object position and target position.'
         )
-        # charactor_idx = action.object_position.charactor_id
+        # character_idx = action.object_position.character_id
         if action.object_position.area == ObjectPositionType.HAND:
             assert table.using_hand is not None
             current_list = [table.using_hand]
@@ -2744,30 +2744,30 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.SUPPORT:
             current_list = table.supports
             current_name = 'support'
-        elif action.object_position.area == ObjectPositionType.CHARACTOR:
-            # move equipments
-            charactor = table.charactors[charactor_idx]
-            weapon = charactor.weapon
-            artifact = charactor.artifact
-            talent = charactor.talent
+        elif action.object_position.area == ObjectPositionType.CHARACTER:
+            # move equipment
+            character = table.characters[character_idx]
+            weapon = character.weapon
+            artifact = character.artifact
+            talent = character.talent
             if weapon is not None and weapon.id == action.object_position.id:
-                current_list = [charactor.remove_equip(ObjectType.WEAPON)]
+                current_list = [character.remove_equip(ObjectType.WEAPON)]
                 current_name = 'weapon'
             elif artifact is not None and artifact.id == \
                     action.object_position.id:
-                current_list = [charactor.remove_equip(ObjectType.ARTIFACT)]
+                current_list = [character.remove_equip(ObjectType.ARTIFACT)]
                 current_name = 'artifact'
             elif talent is not None and \
                     talent.id == action.object_position.id:
                 raise NotImplementedError(
                     'Talent cannot be moved now.'
                 )
-                current_list = [charactor.remove_equip(ObjectType.TALENT)]
+                current_list = [character.remove_equip(ObjectType.TALENT)]
                 current_name = 'talent'
             else:
                 raise AssertionError(
                     f'player {player_idx} tried to move non-exist equipment '
-                    f'from charactor {charactor_idx} with id '
+                    f'from character {character_idx} with id '
                     f'{action.object_position.id}.'
                 )
         else:
@@ -2788,37 +2788,37 @@ class Match(BaseModel):
                             < self.config.max_support_number)
                     target_name = 'support'
                 elif action.target_position.area \
-                        == ObjectPositionType.CHARACTOR:
-                    # quip equipments
+                        == ObjectPositionType.CHARACTER:
+                    # quip equipment
                     assert (action.object_position.player_idx
                             == action.target_position.player_idx)
-                    charactor = table.charactors[
-                        action.target_position.charactor_idx
+                    character = table.characters[
+                        action.target_position.character_idx
                     ]
-                    assert charactor.is_alive, (
-                        'Cannot equip to defeated charactor now.'
+                    assert character.is_alive, (
+                        'Cannot equip to defeated character now.'
                     )
                     current_list.pop(csnum)
                     current_object.position = action.target_position
                     if current_object.type == ObjectType.ARTIFACT:
-                        assert charactor.artifact is None
+                        assert character.artifact is None
                         target_name = 'artifact'
                     elif current_object.type == ObjectType.TALENT:
-                        assert charactor.talent is None
+                        assert character.talent is None
                         target_name = 'talent'
                     elif current_object.type == ObjectType.WEAPON:
-                        assert charactor.weapon is None
+                        assert character.weapon is None
                         target_name = 'weapon'
                     else:
                         raise NotImplementedError(
                             f'Move object action as eqipment with type '
                             f'{current_object.type} is not implemented.'
                         )
-                    charactor.attachs.append(current_object)  # type: ignore
+                    character.attaches.append(current_object)  # type: ignore
                     logging.info(
                         f'player {player_idx} '
                         f'moved {current_name} {current_object.name} '
-                        f'to charactor {action.target_position.charactor_idx}'
+                        f'to character {action.target_position.character_idx}'
                         f':{target_name}.'
                     )
                     return [MoveObjectEventArguments(
@@ -2870,19 +2870,19 @@ class Match(BaseModel):
         )]
 
     """
-    Action funtions that only used to trigger specific event
+    Action functions that only used to trigger specific event
     """
 
     def _action_use_skill(self, action: UseSkillAction) \
             -> List[UseSkillEventArguments]:
         player_idx = action.skill_position.player_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[table.active_charactor_idx]
-        skill = charactor.get_object(action.skill_position)
+        character = table.characters[table.active_character_idx]
+        skill = character.get_object(action.skill_position)
         assert skill is not None and skill.type == ObjectType.SKILL
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{table.active_charactor_idx} '
+            f'character {character.name}:{table.active_character_idx} '
             f'use skill {skill.name}.'  # type: ignore
         )
         return [UseSkillEventArguments(
@@ -2935,12 +2935,12 @@ class Match(BaseModel):
     def _action_skill_end(self, action: SkillEndAction) \
             -> List[SkillEndEventArguments]:
         player_idx = action.position.player_idx
-        charactor_idx = action.position.charactor_idx
+        character_idx = action.position.character_idx
         table = self.player_tables[player_idx]
-        charactor = table.charactors[charactor_idx]
+        character = table.characters[character_idx]
         logging.info(
             f'player {player_idx} '
-            f'charactor {charactor.name}:{charactor_idx} '
+            f'character {character.name}:{character_idx} '
             f'skill ended.'
         )
         return [SkillEndEventArguments(
@@ -2952,10 +2952,10 @@ class Match(BaseModel):
     return empty list.
     """
 
-    def _action_generate_choose_charactor_request(
-        self, action: GenerateChooseCharactorRequestAction
+    def _action_generate_choose_character_request(
+        self, action: GenerateChooseCharacterRequestAction
     ) -> List[EventArgumentsBase]:
-        self._request_choose_charactor(action.player_idx)
+        self._request_choose_character(action.player_idx)
         if self.config.history_level > 0:
             self._save_history()
         return []

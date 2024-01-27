@@ -177,7 +177,7 @@ class HTTPServer():
             response = await call_next(request)
             return response
 
-        '''API hanlders for app'''
+        '''API handlers for app'''
 
         @app.get('/version')
         async def get_version():
@@ -311,7 +311,7 @@ class HTTPServer():
             deck_check_res, deck_check_info = deck.check_legal(
                 match.config.card_number, 
                 match.config.max_same_card_number, 
-                match.config.charactor_number, 
+                match.config.character_number, 
                 match.config.check_deck_restriction
             )
             if not deck_check_res:
@@ -391,7 +391,7 @@ class HTTPServer():
                                     detail = 'Player not found')
             if player_idx != -1:
                 raise HTTPException(status_code = 404, 
-                                    detail = 'player data fetch not suppoted')
+                                    detail = 'player data fetch not supported')
             # state idx check
             if state_idx < -1 or state_idx > len(match._history_diff):
                 raise HTTPException(status_code = 404, 

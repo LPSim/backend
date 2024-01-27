@@ -44,9 +44,9 @@ def test_covenant_of_rock():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Wine-Stained Tricorne*2
         # Timmie*2
         # Rana*2
@@ -121,9 +121,9 @@ def test_rock_dice_different_not_omni():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Wine-Stained Tricorne*2
         # Timmie*2
         # Rana*2
@@ -183,9 +183,9 @@ def test_arcane_card_always_in_hand():
     """
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Wine-Stained Tricorne*2
         # Timmie*2
         # Rana*2
@@ -278,9 +278,9 @@ def test_ancient_courtyard():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Nahida
-        charactor:Klee
+        character:Mona
+        character:Nahida
+        character:Klee
         Ancient Courtyard*10
         Where Is the Unseen Razor?*10
         Gambler's Earrings*10
@@ -289,7 +289,7 @@ def test_ancient_courtyard():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -415,11 +415,11 @@ def test_joyous():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Nahida
-        charactor:Klee
-        charactor:Noelle
-        charactor:Venti
+        character:Mona
+        character:Nahida
+        character:Klee
+        character:Noelle
+        character:Venti
         Joyous Celebration
         Where Is the Unseen Razor?*10
         Gambler's Earrings*10
@@ -428,7 +428,7 @@ def test_joyous():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -472,18 +472,18 @@ def test_joyous():
                 cmd = cmd.split()
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
-                charactor = match.player_tables[pidx].charactors[cidx]
+                character = match.player_tables[pidx].characters[cidx]
                 if cmd[3] == 'none':
-                    assert charactor.element_application == []
+                    assert character.element_application == []
                 else:
-                    assert charactor.element_application == [cmd[3].upper()]
+                    assert character.element_application == [cmd[3].upper()]
             elif test_id == 5:
                 team_status = match.player_tables[0].team_status
                 assert len(team_status) == 1
                 assert team_status[0].name == 'Dendro Core'
             elif test_id == 6:
-                charactors = match.player_tables[1].charactors
-                for cid, c in enumerate(charactors):
+                characters = match.player_tables[1].characters
+                for cid, c in enumerate(characters):
                     if cid == 2:
                         assert c.element_application == []
                     else:
@@ -541,11 +541,11 @@ def test_joyous_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Nahida
-        charactor:Klee
-        charactor:Noelle
-        charactor:Venti
+        character:Mona
+        character:Nahida
+        character:Klee
+        character:Noelle
+        character:Venti
         Joyous Celebration
         Where Is the Unseen Razor?*10
         Gambler's Earrings*10
@@ -554,7 +554,7 @@ def test_joyous_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -578,8 +578,8 @@ def test_joyous_2():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 6:
-                charactors = match.player_tables[1].charactors
-                for cid, c in enumerate(charactors):
+                characters = match.player_tables[1].characters
+                for cid, c in enumerate(characters):
                     if cid == 2:
                         assert c.element_application == []
                     else:
@@ -653,15 +653,15 @@ def test_fresh_wind_of_freedom():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Fresh Wind of Freedom*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -798,9 +798,9 @@ def test_arcaneguoba_hairan_fenglong_lyresong():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Keqing
-        charactor:Nahida
-        charactor:Ganyu
+        character:Keqing
+        character:Nahida
+        character:Ganyu
         Lyresong
         Stormterror's Lair*10
         Ocean-Hued Clam*10
@@ -811,7 +811,7 @@ def test_arcaneguoba_hairan_fenglong_lyresong():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

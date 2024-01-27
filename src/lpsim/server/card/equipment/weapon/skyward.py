@@ -19,11 +19,11 @@ class SkywardBase(RoundEffectWeaponBase):
         self, value: DamageIncreaseValue, match: Any, 
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return value
         super().value_modifier_DAMAGE_INCREASE(value, match, mode)
-        if value.is_corresponding_charactor_use_damage_skill(
+        if value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ) and self.usage > 0:
             # have usage and is normal attack

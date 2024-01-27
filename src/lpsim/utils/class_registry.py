@@ -87,8 +87,8 @@ def register_class_one(cls: Type[Any]):
         )
     for name in names:
         desc_type = obj_type
-        if obj_type == ObjectType.CHARACTOR:
-            # for charactor, also check its skill descs
+        if obj_type == ObjectType.CHARACTER:
+            # for character, also check its skill descs
             instance = cls(name = name, version = version)
             for skill in instance.skills:
                 skill_type = f'SKILL_{name}_{skill.skill_type}'
@@ -101,9 +101,9 @@ def register_class_one(cls: Type[Any]):
                 update_cost(skill_type, skill.name, version, skill.cost)
         if obj_type == ObjectType.TALENT:
             # for talent, its type name should change
-            target_charactor_names = cls_type_hints['charactor_name'].__args__
-            assert len(target_charactor_names) == 1
-            desc_type = f'TALENT_{target_charactor_names[0]}'
+            target_character_names = cls_type_hints['character_name'].__args__
+            assert len(target_character_names) == 1
+            desc_type = f'TALENT_{target_character_names[0]}'
         for desc in descs:
             if desc == '':
                 desc_name = name
@@ -254,7 +254,7 @@ def get_class_list_by_base_class(
 ) -> List[str]:
     """
     Get list of class names by base class and version. If the base class is a 
-    union type, class names that matchs any type in the union will be returned.
+    union type, class names that matches any type in the union will be returned.
 
     Args:
         base_class: The base class to search.

@@ -3,7 +3,7 @@ from src.lpsim.server.deck import Deck
 from src.lpsim.server.interaction import (
     SwitchCardRequest, SwitchCardResponse,
     RerollDiceRequest, RerollDiceResponse,
-    SwitchCharactorRequest, SwitchCharactorResponse,
+    SwitchCharacterRequest, SwitchCharacterResponse,
     UseCardRequest, UseCardResponse,
     UseSkillRequest, UseSkillResponse,
 )
@@ -14,21 +14,21 @@ from src.lpsim.server.struct import Cost, ObjectPosition
 def test_response_is_valid():
     # mini fake match
     match = Match()
-    deck = Deck.from_str('charactor:Nahida')
-    match.player_tables[0].charactors.append(deck.charactors[0])
-    match.player_tables[1].charactors.append(deck.charactors[0])
-    match.player_tables[0].active_charactor_idx = 0
-    match.player_tables[1].active_charactor_idx = 0
-    req = SwitchCharactorRequest(
+    deck = Deck.from_str('character:Nahida')
+    match.player_tables[0].characters.append(deck.characters[0])
+    match.player_tables[1].characters.append(deck.characters[0])
+    match.player_tables[0].active_character_idx = 0
+    match.player_tables[1].active_character_idx = 0
+    req = SwitchCharacterRequest(
         player_idx = 0,
-        active_charactor_idx = 0,
-        target_charactor_idx = 1,
+        active_character_idx = 0,
+        target_character_idx = 1,
         dice_colors = [DieColor.CRYO, DieColor.PYRO],
         cost = Cost(
             any_dice_number = 1,
         )
     )
-    resp = SwitchCharactorResponse(
+    resp = SwitchCharacterResponse(
         request = req,
         dice_idxs = [0],
     )
@@ -119,7 +119,7 @@ def test_response_is_valid():
     assert not resp.is_valid(match)
     req = UseSkillRequest(
         player_idx = 0,
-        charactor_idx = 2,
+        character_idx = 2,
         skill_idx = 1,
         dice_colors = [DieColor.CRYO, DieColor.PYRO, DieColor.PYRO, 
                        DieColor.PYRO],

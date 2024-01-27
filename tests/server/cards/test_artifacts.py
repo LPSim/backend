@@ -58,7 +58,7 @@ def test_small_elemental_artifacts():
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -158,7 +158,7 @@ def test_small_elemental_artifacts():
     assert len(agent_1.commands) == 0
     assert match.round_number == 4
     check_hp(match, [[85, 10, 10], [99, 10, 10]])
-    assert match.player_tables[1].charactors[0].artifact is not None
+    assert match.player_tables[1].characters[0].artifact is not None
 
     assert match.state != MatchState.ERROR
 
@@ -166,7 +166,7 @@ def test_small_elemental_artifacts():
 def test_create_small_element_artifacts():
     deck = Deck.from_str(
         """
-        charactor:Nahida*3
+        character:Nahida*3
         Broken Rime's Echo*4
         Laurel Coronet*4
         Mask of Solitude Basalt*4
@@ -209,9 +209,9 @@ def test_old_version_elemental_artifacts():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Wine-Stained Tricorne*12
         Timmie*2
         Rana*2
@@ -333,10 +333,10 @@ def test_gambler():
     )
     deck = Deck.from_str(
         '''
-        # charactor:Fischl
-        # charactor:Mona
-        # charactor:Nahida
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        # character:Nahida
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Timmie*2
@@ -351,12 +351,12 @@ def test_gambler():
     # deck_dict = deck.dict()
     # deck_dict['cards'] += [old_wine] * 12
     # deck = Deck(**deck_dict)
-    for charactor in deck.charactors:
-        charactor.hp = 1
-        charactor.max_hp = 1
+    for character in deck.characters:
+        character.hp = 1
+        character.max_hp = 1
     match = Match(random_state = get_random_state())
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.random_first_player = False
     match.set_deck([deck, deck])
     set_16_omni(match)
@@ -372,9 +372,9 @@ def test_gambler():
                     assert number[0] == len(match.player_tables[0].dice.colors)
                     assert number[1] == len(match.player_tables[1].dice.colors)
                 elif test_id == 2:
-                    charactor = match.player_tables[0].charactors[7]
-                    assert charactor.artifact is not None
-                    assert charactor.artifact.name == "Gambler's Earrings"
+                    character = match.player_tables[0].characters[7]
+                    assert character.artifact is not None
+                    assert character.artifact.name == "Gambler's Earrings"
                 else:
                     break
             make_respond(agent_0, match)
@@ -441,10 +441,10 @@ def test_old_gambler():
     )
     deck = Deck.from_str(
         '''
-        # charactor:Fischl
-        # charactor:Mona
-        # charactor:Nahida
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        # character:Nahida
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Timmie*2
@@ -459,12 +459,12 @@ def test_old_gambler():
     deck_dict = deck.dict()
     deck_dict['cards'] += [old_gambler] * 30
     deck = Deck(**deck_dict)
-    for charactor in deck.charactors:
-        charactor.hp = 1
-        charactor.max_hp = 1
+    for character in deck.characters:
+        character.hp = 1
+        character.max_hp = 1
     match = Match(random_state = get_random_state())
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.random_first_player = False
     match.set_deck([deck, deck])
     set_16_omni(match)
@@ -558,16 +558,16 @@ def test_millelith():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:Noelle
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:Noelle
         Tenacity of the Millelith*15
         General's Ancient Helm*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -602,18 +602,18 @@ def test_millelith():
                 assert number[0] == len(match.player_tables[0].dice.colors)
                 assert number[1] == len(match.player_tables[1].dice.colors)
             elif test_id == 3:
-                assert len(match.player_tables[0].charactors[0].status) == 0
+                assert len(match.player_tables[0].characters[0].status) == 0
             elif test_id == 4:
-                assert len(match.player_tables[0].charactors[0].status) == 1
+                assert len(match.player_tables[0].characters[0].status) == 1
                 assert match.player_tables[
-                    0].charactors[0].status[0].usage == 2
-                assert len(match.player_tables[1].charactors[1].status) == 1
+                    0].characters[0].status[0].usage == 2
+                assert len(match.player_tables[1].characters[1].status) == 1
                 assert match.player_tables[
-                    1].charactors[1].status[0].usage == 2
+                    1].characters[1].status[0].usage == 2
             elif test_id == 5:
-                assert len(match.player_tables[1].charactors[1].status) == 1
+                assert len(match.player_tables[1].characters[1].status) == 1
                 assert match.player_tables[
-                    1].charactors[1].status[0].usage == 1
+                    1].characters[1].status[0].usage == 1
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -717,15 +717,15 @@ def test_instructor():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:AnemoMobMage
-        charactor:Barbara
-        charactor:Yae Miko
+        character:AnemoMobMage
+        character:Barbara
+        character:Yae Miko
         Instructor's Cap*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -835,15 +835,15 @@ def test_lucky_dog():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Ganyu
-        charactor:Yae Miko
+        character:Rhodeia of Loch
+        character:Ganyu
+        character:Yae Miko
         Lucky Dog's Silver Circlet*20
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -943,9 +943,9 @@ def test_big_elemental_artifacts():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Kamisato Ayaka
-        charactor:Yae Miko
+        character:Xingqiu
+        character:Kamisato Ayaka
+        character:Yae Miko
         Blizzard Strayer*2
         Deepwood Memories*2
         Archaic Petra*2
@@ -971,7 +971,7 @@ def test_big_elemental_artifacts():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1108,21 +1108,21 @@ def test_advanturer_traveling_doctor():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Venti
-        charactor:Xiangling
-        charactor:Xingqiu
+        character:Venti
+        character:Xiangling
+        character:Xingqiu
         Sweet Madame*15
         Adventurer's Bandana*5
         Traveling Doctor's Handkerchief*5
         Calx's Arts*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.max_hp = 30
-        charactor.hp = 30
+    for character in deck.characters:
+        character.max_hp = 30
+        character.hp = 30
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.initial_hand_size = 20
@@ -1240,9 +1240,9 @@ def test_emblem_of_severed_fate():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Venti
-        charactor:Xiangling
-        charactor:Xingqiu@4.0
+        character:Venti
+        character:Xiangling
+        character:Xingqiu@4.0
         Sweet Madame*15
         Ornate Kabuto*5
         Ornate Kabuto@3.7*5
@@ -1252,12 +1252,12 @@ def test_emblem_of_severed_fate():
         Calx's Arts*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.max_hp = 30
-        charactor.hp = 30
+    for character in deck.characters:
+        character.max_hp = 30
+        character.hp = 30
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.initial_hand_size = 20
@@ -1293,7 +1293,7 @@ def test_emblem_of_severed_fate():
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
                 charge = int(cmd[-1])
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].charge == charge
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -1367,15 +1367,15 @@ def test_shadow_of_chiwang():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Xingqiu
-        charactor:Fischl
-        charactor:Mona
+        character:Xingqiu
+        character:Fischl
+        character:Mona
         Shadow of the Sand King*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1456,13 +1456,13 @@ def test_millelith_2():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Keqing@4.2*3
+        character:Keqing@4.2*3
         Tenacity of the Millelith*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

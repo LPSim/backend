@@ -3,7 +3,7 @@ from typing import Dict, Literal
 from .....utils.class_registry import register_class
 
 from .....utils.desc_registry import DescDictType
-from ....charactor.pyro.fatui_pyro_agent_3_3 import FatuiPyroAgent_3_3
+from ....character.pyro.fatui_pyro_agent_3_3 import FatuiPyroAgent_3_3
 
 
 class FatuiPyroAgent_4_3(FatuiPyroAgent_3_3):
@@ -13,7 +13,7 @@ class FatuiPyroAgent_4_3(FatuiPyroAgent_3_3):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Fatui Pyro Agent": {
+    "CHARACTER/Fatui Pyro Agent": {
         "descs": {"4.3": {"zh-CN": "", "en-US": ""}},
     },
     "SKILL_Fatui Pyro Agent_ELEMENTAL_BURST/Blade Ablaze": {

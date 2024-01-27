@@ -632,8 +632,8 @@
         0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Tartaglia@4.1\ncharactor:Wanderer@4.1\ncharactor:Xiao@3.7\ncharactor:Cyno@3.3\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\n",
-        "default_version:4.3\ncharactor:Tartaglia@4.1\ncharactor:Wanderer@4.1\ncharactor:Xiao@3.7\ncharactor:Cyno@3.3\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\n"
+        "default_version:4.3\ncharacter:Tartaglia@4.1\ncharacter:Wanderer@4.1\ncharacter:Xiao@3.7\ncharacter:Cyno@3.3\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\n",
+        "default_version:4.3\ncharacter:Tartaglia@4.1\ncharacter:Wanderer@4.1\ncharacter:Xiao@3.7\ncharacter:Cyno@3.3\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\nTeyvat Fried Egg@4.1\n"
     ],
     "command_history": [
         [
@@ -1484,7 +1484,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 10,
         "max_dice_number": 16,

@@ -22,12 +22,12 @@ class GeneralsAncientHelm_3_5(ArtifactBase):
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        Create Unmovable Mountain for this charactor.
+        Create Unmovable Mountain for this character.
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
-        position = self.position.set_area(ObjectPositionType.CHARACTOR_STATUS)
+        position = self.position.set_area(ObjectPositionType.CHARACTER_STATUS)
         return [CreateObjectAction(
             object_name = 'Unmovable Mountain',
             object_position = position,
@@ -44,11 +44,11 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[CreateObjectAction]:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
         super().event_handler_ROUND_PREPARE(event, match)
-        position = self.position.set_area(ObjectPositionType.CHARACTOR_STATUS)
+        position = self.position.set_area(ObjectPositionType.CHARACTER_STATUS)
         return [CreateObjectAction(
             object_name = 'Unmovable Mountain',
             object_position = position,
@@ -59,33 +59,33 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
         self, event: ReceiveDamageEventArguments, match: Any
     ) -> List[CreateDiceAction]:
         """
-        When this charactor received damage and is active charactor, create
+        When this character received damage and is active character, create
         elemental die.
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
         if self.usage == 0:
             # no usage
             return []
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        if charactor.hp == 0:
-            # charactor is dying
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
+        if character.hp == 0:
+            # character is dying
             return []
         damage = event.final_damage
         if not self.position.check_position_valid(
             damage.target_position, match, player_idx_same = True,
-            charactor_idx_same = True, source_is_active_charactor = True
+            character_idx_same = True, source_is_active_character = True
         ):
-            # damage not attack self, or self not active charactor
+            # damage not attack self, or self not active character
             return []
         # create die
         self.usage -= 1
         return [CreateDiceAction(
             player_idx = self.position.player_idx,
             number = 1,
-            color = ELEMENT_TO_DIE_COLOR[charactor.element]
+            color = ELEMENT_TO_DIE_COLOR[character.element]
         )]
 
 

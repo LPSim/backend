@@ -17,7 +17,7 @@ and distribution based on this project, please comply with this license.
 
 This project is for learning and communication only. The frontend is only used
 for displaying game states and debugging, and you should delete all related 
-files in 24 hours after donwloading. All related codes are open source
+files in 24 hours after downloading. All related codes are open source
 under AGPLv3 license. This project is not related to miHoYo, and all game
 materials are owned by miHoYo. This project and its code repository do not
 contain any image materials owned by miHoYo, or any non-public information
@@ -25,15 +25,15 @@ related to miHoYo products.
 
 ## Progress
 
-All charactors and cards with their balance changes until 4.3 are done.
+All characters and cards with their balance changes until 4.3 are done.
 
-:sparkles: NEW: 4.3 charactors and cards, as well as balance changes are 
+:sparkles: NEW: 4.3 characters and cards, as well as balance changes are 
 implemented. 
 
 ## Feature
 
-- All charactors and cards with latest version are implemented.
-- Support using different version of charactors and cards in a same deck.
+- All characters and cards with latest version are implemented.
+- Support using different version of characters and cards in a same deck.
 - Support serve as a mini server to interact with the match.
 - A frontend is provided to interact with the server.
 - Consistent when load from a state and continue running.
@@ -101,7 +101,7 @@ will be closed automatically. Refer to `lpsim/network/http_room_server.py` and
 To start a match, you should firstly 
 define decks for both players. Supports text-based or json-based deck 
 definition. Usually, `Deck.from_str` is enough to define a deck, which contains
-charactors and cards definition, and can control their versions. The deck 
+characters and cards definition, and can control their versions. The deck 
 string in the following sample code shows the syntax of deck definition,
 all cards are based on 4.1 version, except Wind and Freedom, which is based on
 4.0 version (As it has not changed after 3.7, when specify version 4.0, deck
@@ -115,7 +115,7 @@ Refer to `server/deck.py` for details.
 3. Modify the `Match.config` if specific configurations are necessary.
 4. Once the decks are set, initiate the match using the `Match.start` function. 
    This initializes the match according to the configurations and decks.
-   If error occured (e.g. deck is not valid), it will return False and detailed 
+   If error occurred (e.g. deck is not valid), it will return False and detailed 
    error message.
 5. Progress through the match by employing the `Match.step` function. 
    By default, the step function will continually execute until the match 
@@ -134,9 +134,9 @@ from lpsim import Match, Deck
 from lpsim.agents import RandomAgent
 deck_string = '''
 default_version:4.1
-charactor:Fischl
-charactor:Mona
-charactor:Nahida
+character:Fischl
+character:Mona
+character:Nahida
 Gambler's Earrings*2
 Wine-Stained Tricorne*2
 Vanarana
@@ -176,23 +176,23 @@ while not match.is_game_end():
 print(f'winner is {match.winner}')
 ```
 
-### Customize cards and charactors
+### Customize cards and characters
 
-To customize cards and charactors, you need to understand the actions,
+To customize cards and characters, you need to understand the actions,
 event handlers and value modifiers. All interaction are done by actions, and
 all actions are triggered by events. Value modifiers are for modifying values
 such as dice cost and damage. The easiest way to implement a new object is to
-copy an existing card/charactor/skill/status... and modify it. 
+copy an existing card/character/skill/status... and modify it. 
 
-`templates/charactor.py` is a template for charactors. You can copy it
-and modify it to implement a new charactor. You can define any object that is
-related to the charactor, e.g. skills, talents, summons, status. Then, you 
+`templates/character.py` is a template for characters. You can copy it
+and modify it to implement a new character. You can define any object that is
+related to the character, e.g. skills, talents, summons, status. Then, you 
 should create the description for these objects, which is used in the frontend,
 and class registry will reject objects without description. Finally, register
 all objects as well as their descriptions to class registry with 
 `register_class` function. Note the template uses relative imports, as it is
-used for creating new official charactors. You need to change them to absolute
-imports if you want to create a new charactor outside this project.
+used for creating new official characters. You need to change them to absolute
+imports if you want to create a new character outside this project.
 
 Define a new card is relatively simple, you can refer to `templates/card.py`,
 it defined a new card "Big Strategize" which costs 2 any dice and draws 3 
@@ -211,13 +211,13 @@ Pydantic to save & load states of match, exported data is complete to restore
 from certain state and continue running, and also easy for frontend to render
 the game states.
 
-High compatible with different version of charactors or cards. You can start a
+High compatible with different version of characters or cards. You can start a
 match between version 3.8 Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu 
 Kenki.
 
 Interact by request and response. When request list is not empty, agents need
 to response to one of the request. When multiple players need to response,
-(e.g. switch card and choose charactor at startup),
+(e.g. switch card and choose character at startup),
 their requests will be generated simultaneously.
 
 All modifications to the match table are orchestrated through actions. 
@@ -240,9 +240,9 @@ should be passed without modification.
 ## Contribution
 
 Contributions are welcomed, however, currently there is no detailed guide for
-contribution. To add new charactor related objects (Charactor, Skill, Talent,
-Summon, Status), please refer to `templates/charactor.py` and implemented
-charactors.
+contribution. To add new character related objects (Character, Skill, Talent,
+Summon, Status), please refer to `templates/character.py` and implemented
+characters.
 To add a new card, please refer to existing card implementations in 
 `server/card`.
 

@@ -34,9 +34,9 @@ def test_bestest():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Wine-Stained Tricorne*2
         Timmie*2
         Rana*2
@@ -115,9 +115,9 @@ def test_changing_shifts():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -194,9 +194,9 @@ def test_toss_up():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -300,9 +300,9 @@ def test_i_havent_lost_yet():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
-        # charactor:Fischl
-        # charactor:Mona
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -318,12 +318,12 @@ def test_i_havent_lost_yet():
         I Haven't Lost Yet!*30
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = 2
-        charactor.max_hp = 2
+    for character in deck.characters:
+        character.hp = 2
+        character.max_hp = 2
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -353,7 +353,7 @@ def test_i_havent_lost_yet():
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
                     table = match.player_tables[1]
-                    active = table.get_active_charactor()
+                    active = table.get_active_character()
                     assert active.charge == 1
                     assert len(table.team_status) == 1
                     assert table.team_status[0].name == "I Haven't Lost Yet!"
@@ -361,7 +361,7 @@ def test_i_havent_lost_yet():
                         assert req.name != 'UseCardRequest'
                 elif test_id == 2:
                     table = match.player_tables[1]
-                    active = table.get_active_charactor()
+                    active = table.get_active_character()
                     assert active.charge == 1
                     assert len(table.team_status) == 2
                     assert table.team_status[1].name == "I Haven't Lost Yet!"
@@ -414,9 +414,9 @@ def test_old_i_havent_lost_yet():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
-        # charactor:Fischl
-        # charactor:Mona
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -435,12 +435,12 @@ def test_old_i_havent_lost_yet():
     deck_dict = deck.dict()
     deck_dict['cards'] += [old] * 30
     deck = Deck(**deck_dict)
-    for charactor in deck.charactors:
-        charactor.hp = 2
-        charactor.max_hp = 2
+    for character in deck.characters:
+        character.hp = 2
+        character.max_hp = 2
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.random_first_player = False
     set_16_omni(match)
     match.start()
@@ -454,7 +454,7 @@ def test_old_i_havent_lost_yet():
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
                     table = match.player_tables[1]
-                    active = table.get_active_charactor()
+                    active = table.get_active_character()
                     assert active.charge == 1
                     assert len(table.team_status) == 0
                     use_card_req = 0
@@ -515,9 +515,9 @@ def test_leave_it_to_me():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -620,9 +620,9 @@ def test_claxs_art():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         '''
-        # charactor:Fischl
-        # charactor:Mona
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -642,7 +642,7 @@ def test_claxs_art():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -663,7 +663,7 @@ def test_claxs_art():
                         assert req.name != 'UseCardRequest'
                 elif test_id == 2:
                     charges = [int(x) for x in cmd.strip().split()[2:]]
-                    for c, cc in zip(match.player_tables[1].charactors,
+                    for c, cc in zip(match.player_tables[1].characters,
                                      charges):
                         assert c.charge == cc
                 elif test_id == 3:
@@ -732,15 +732,15 @@ def test_heavy_strike():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:Arataki Itto
-        charactor:Noelle
+        character:PyroMobMage
+        character:Arataki Itto
+        character:Noelle
         Heavy Strike*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -777,7 +777,7 @@ def test_heavy_strike():
                 cnum = int(cmd[2][3])
                 count = int(cmd[3])
                 assert len(
-                    match.player_tables[pnum].charactors[cnum].status
+                    match.player_tables[pnum].characters[cnum].status
                 ) == count
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -827,15 +827,15 @@ def test_heavy_strike_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:ElectroMobMage
-        charactor:CryoMobMage
-        charactor:Noelle
+        character:ElectroMobMage
+        character:CryoMobMage
+        character:Noelle
         Heavy Strike*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -924,15 +924,15 @@ def test_friendship_eternal():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Rhodeia of Loch
-        charactor:Nahida
+        character:Fischl
+        character:Rhodeia of Loch
+        character:Nahida
         Friendship Eternal*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1034,16 +1034,16 @@ def test_unseen_razor():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Barbara
-        charactor:Arataki Itto
-        charactor:Noelle
+        character:Barbara
+        character:Arataki Itto
+        character:Noelle
         Where Is the Unseen Razor?*15
         The Bell*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1083,7 +1083,7 @@ def test_unseen_razor():
                 for s in status:
                     assert s.usage == 2
             elif test_id == 3:
-                assert match.player_tables[0].charactors[2].weapon is None
+                assert match.player_tables[0].characters[2].weapon is None
             elif test_id == 4:
                 assert len(match.player_tables[0].team_status) == 2
             else:
@@ -1144,7 +1144,7 @@ def test_send_off_new_and_old():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch*3
+        character:Rhodeia of Loch*3
         Send Off*15
         Send Off@3.3*15
         '''
@@ -1152,7 +1152,7 @@ def test_send_off_new_and_old():
     # use old version cards
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1250,15 +1250,15 @@ def test_plunge_strike():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Klee
-        charactor:Arataki Itto
-        charactor:Rhodeia of Loch
+        character:Klee
+        character:Arataki Itto
+        character:Rhodeia of Loch
         Plunging Strike*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1295,7 +1295,7 @@ def test_plunge_strike():
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == len(cnum)
                         for t, c in zip(req.targets, cnum):
-                            assert t.charactor_idx == c  # type: ignore
+                            assert t.character_idx == c  # type: ignore
             elif test_id == 3:
                 assert len(match.player_tables[0].dice.colors) == 9
                 assert len(match.player_tables[1].dice.colors) == 12
@@ -1451,9 +1451,9 @@ def test_star_quick_dream_vennessa_exile():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Raiden Shogun
-        charactor:Ganyu@3.3
-        charactor:Keqing
+        character:Raiden Shogun
+        character:Ganyu@3.3
+        character:Keqing
         Quick Knit*6
         Starsigns*6
         The Legend of Vennessa*6
@@ -1465,7 +1465,7 @@ def test_star_quick_dream_vennessa_exile():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1529,7 +1529,7 @@ def test_star_quick_dream_vennessa_exile():
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
                 charge = int(cmd[4])
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].charge == charge
             elif test_id == 7:
                 cmd = cmd.split()
@@ -1628,9 +1628,9 @@ def test_master_weapon_artifact():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Fischl
-        charactor:Collei
-        charactor:Nahida
+        character:Fischl
+        character:Collei
+        character:Nahida
         Master of Weaponry*5
         Blessing of the Divine Relic's Installation*5
         Master of Weaponry@4.0*5
@@ -1642,7 +1642,7 @@ def test_master_weapon_artifact():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1674,16 +1674,16 @@ def test_master_weapon_artifact():
             elif test_id in [2, 3, 4, 5]:
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
-                charactor = match.player_tables[pidx].charactors[cidx]
+                character = match.player_tables[pidx].characters[cidx]
                 if test_id == 2:
-                    assert charactor.weapon is None
+                    assert character.weapon is None
                 elif test_id == 3:
-                    assert charactor.weapon is not None
+                    assert character.weapon is not None
                 elif test_id == 4:
-                    assert charactor.artifact is not None
+                    assert character.artifact is not None
                 else:
                     assert test_id == 5
-                    assert len(charactor.status) == 0
+                    assert len(character.status) == 0
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -1785,9 +1785,9 @@ def test_new_wind_and_freedom_and_crane():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         When the Crane Returned*10
         Leave It to Me!*10
         Wind and Freedom*10
@@ -1795,7 +1795,7 @@ def test_new_wind_and_freedom_and_crane():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1828,7 +1828,7 @@ def test_new_wind_and_freedom_and_crane():
             elif test_id == 2:
                 cmd = cmd.split()
                 pidx = int(cmd[2][1])
-                assert match.player_tables[pidx].active_charactor_idx == int(
+                assert match.player_tables[pidx].active_character_idx == int(
                     cmd[4])
             elif test_id == 3:
                 cmd = cmd.split()
@@ -2013,9 +2013,9 @@ def test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Yaoyao
-        charactor:Barbara
-        charactor:Nahida
+        character:Yaoyao
+        character:Barbara
+        character:Nahida
         Moonpiercer*5
         Crown of Watatsumi*5
         Yayoi Nanatsuki*5
@@ -2025,7 +2025,7 @@ def test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2059,7 +2059,7 @@ def test_moonpiercer_crown_watatsumi_yayoi_gandharva_pankration():
                 pidx, cidx = get_pidx_cidx(cmd)
                 usage = int(cmd[5])
                 counter = int(cmd[6])
-                artifact = match.player_tables[pidx].charactors[cidx].artifact
+                artifact = match.player_tables[pidx].characters[cidx].artifact
                 assert artifact is not None
                 assert artifact.usage == usage
                 assert artifact.counter == counter  # type: ignore
@@ -2146,9 +2146,9 @@ def test_lyresong():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Keqing
-        charactor:Nahida
-        charactor:Ganyu
+        character:Keqing
+        character:Nahida
+        character:Ganyu
         Gambler's Earrings*10
         Lyresong*10
         Rhythm of the Great Dream*10
@@ -2156,7 +2156,7 @@ def test_lyresong():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2249,16 +2249,16 @@ def test_i_havent_lost_yet_in_deck():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Sangonomiya Kokomi
-        charactor:Fischl
-        charactor:Arataki Itto
+        character:Sangonomiya Kokomi
+        character:Fischl
+        character:Arataki Itto
         I Haven't Lost Yet!@3.3*15
         Strategize*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2345,16 +2345,16 @@ def test_unseen_razor_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Barbara
-        charactor:Arataki Itto
-        charactor:Noelle
+        character:Barbara
+        character:Arataki Itto
+        character:Noelle
         Where Is the Unseen Razor?*15
         The Bell*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2432,16 +2432,16 @@ def test_i_havent_lost_yet_after_fix():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         I Haven't Lost Yet!*10
         Liben*1
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

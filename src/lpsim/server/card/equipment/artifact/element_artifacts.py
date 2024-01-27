@@ -56,7 +56,7 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
         mode: Literal['TEST', 'REAL'],
     ) -> CostValue:
         """
-        When charactor equipped with this artifact and used skill, decrease
+        When character equipped with this artifact and used skill, decrease
         the elemental cost by 1. If element not match, decrease any dice cost
         by 1.
         """
@@ -65,7 +65,7 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
             if not self.position.check_position_valid(
                 value.position, match,
                 player_idx_same = True, 
-                source_area = ObjectPositionType.CHARACTOR,
+                source_area = ObjectPositionType.CHARACTER,
             ):
                 # not from self position or not equipped
                 return value
@@ -78,23 +78,23 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
             ) == 0:  # no label match
                 return value
             position = value.position
-            assert self.position.charactor_idx != -1
+            assert self.position.character_idx != -1
             if position.area == ObjectPositionType.SKILL:
-                # cost from charactor
-                if position.charactor_idx != self.position.charactor_idx:
-                    # not same charactor
+                # cost from character
+                if position.character_idx != self.position.character_idx:
+                    # not same character
                     return value
             else:
                 assert position.area == ObjectPositionType.HAND
                 # cost from hand card, is a talent card
-                equipped_charactor = match.player_tables[
+                equipped_character = match.player_tables[
                     self.position.player_idx
-                ].charactors[self.position.charactor_idx]
+                ].characters[self.position.character_idx]
                 for card in match.player_tables[
                         self.position.player_idx].hands:
                     if card.id == value.position.id:
-                        if card.charactor_name != equipped_charactor.name:
-                            # talent card not for this charactor
+                        if card.character_name != equipped_character.name:
+                            # talent card not for this character
                             return value
             # can decrease cost
             if value.cost.decrease_cost(ELEMENT_TO_DIE_COLOR[self.element]):
@@ -149,8 +149,8 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
         """
         If self equipped with this artifact, fix two dice colors to self
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
-            # not in charactor area, do nothing
+        if self.position.area != ObjectPositionType.CHARACTER:
+            # not in character area, do nothing
             return value
         if value.position.player_idx != self.position.player_idx:
             # not self player

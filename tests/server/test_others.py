@@ -23,52 +23,52 @@ from src.lpsim.server.match import Match, MatchConfig
 def test_object_position_validation():
     p1 = ObjectPosition(
         player_idx = 0,
-        charactor_idx = 1,
-        area = ObjectPositionType.CHARACTOR_STATUS,
+        character_idx = 1,
+        area = ObjectPositionType.CHARACTER_STATUS,
         id = 345,
     )
     p2 = ObjectPosition(
         player_idx = 1,
-        charactor_idx = 0,
-        area = ObjectPositionType.CHARACTOR,
+        character_idx = 0,
+        area = ObjectPositionType.CHARACTER,
         id = 123
     )
     match = Match()
-    match.player_tables[0].active_charactor_idx = 1
-    match.player_tables[1].active_charactor_idx = 0
+    match.player_tables[0].active_character_idx = 1
+    match.player_tables[1].active_character_idx = 0
     assert p1.check_position_valid(p2, match)
     assert not p1.check_position_valid(p2, match, player_idx_same = True)
-    assert not p1.check_position_valid(p2, match, charactor_idx_same = True)
+    assert not p1.check_position_valid(p2, match, character_idx_same = True)
     assert not p1.check_position_valid(p2, match, player_idx_same = True, 
-                                       charactor_idx_same = True)
+                                       character_idx_same = True)
     assert not p1.check_position_valid(p2, match, area_same = True)
     assert not p1.check_position_valid(p2, match, id_same = True)
     assert p1.check_position_valid(p2, match, area_same = False)
     assert p1.check_position_valid(p2, match, id_same = False)
     assert p1.check_position_valid(
-        p2, match, source_area = ObjectPositionType.CHARACTOR_STATUS)
+        p2, match, source_area = ObjectPositionType.CHARACTER_STATUS)
     assert p1.check_position_valid(
-        p2, match, target_area = ObjectPositionType.CHARACTOR)
+        p2, match, target_area = ObjectPositionType.CHARACTER)
     assert p1.check_position_valid(
-        p2, match, source_is_active_charactor = True)
+        p2, match, source_is_active_character = True)
     assert p1.check_position_valid(
-        p2, match, target_is_active_charactor = True)
+        p2, match, target_is_active_character = True)
     assert not p1.check_position_valid(
-        p2, match, source_area = ObjectPositionType.CHARACTOR)
+        p2, match, source_area = ObjectPositionType.CHARACTER)
     assert not p1.check_position_valid(
-        p2, match, target_area = ObjectPositionType.CHARACTOR_STATUS)
+        p2, match, target_area = ObjectPositionType.CHARACTER_STATUS)
     assert not p1.check_position_valid(
-        p2, match, source_is_active_charactor = False)
+        p2, match, source_is_active_character = False)
     assert not p1.check_position_valid(
-        p2, match, target_is_active_charactor = False)
+        p2, match, target_is_active_character = False)
     assert p1.check_position_valid(
         p2, match, player_idx_same = False)
     assert p1.check_position_valid(
-        p2, match, player_idx_same = False, charactor_idx_same = False)
+        p2, match, player_idx_same = False, character_idx_same = False)
     assert not p1.check_position_valid(
-        p2, match, player_idx_same = True, charactor_idx_same = False)
+        p2, match, player_idx_same = True, character_idx_same = False)
     assert not p1.check_position_valid(
-        p2, match, player_idx_same = False, charactor_idx_same = True)
+        p2, match, player_idx_same = False, character_idx_same = True)
 
 
 def test_objectbase_wrong_handler_name():
@@ -128,7 +128,7 @@ def test_match_config_and_match_errors():
     assert not config.check_config()
     config = MatchConfig(max_same_card_number = -1)
     assert not config.check_config()
-    config = MatchConfig(charactor_number = -1)
+    config = MatchConfig(character_number = -1)
     assert not config.check_config()
     config = MatchConfig(max_round_number = 0)
     assert not config.check_config()
@@ -154,7 +154,7 @@ def test_match_config_and_match_errors():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:GeoMob*3
+        character:GeoMob*3
         Strategize*100
         '''
     )
@@ -165,7 +165,7 @@ def test_match_config_and_match_errors():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:GeoMob*3
+        character:GeoMob*3
         Strategize*30
         '''
     )
@@ -283,13 +283,13 @@ def test_remove_non_exist_equip():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:GeoMob*3
+        character:GeoMob*3
         Strategize*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     assert match.start()[0]
@@ -298,8 +298,8 @@ def test_remove_non_exist_equip():
             MoveObjectAction(
                 object_position = ObjectPosition(
                     player_idx = 0,
-                    charactor_idx = 0,
-                    area = ObjectPositionType.CHARACTOR,
+                    character_idx = 0,
+                    area = ObjectPositionType.CHARACTER,
                     id = 0,
                 ),
                 target_position = ObjectPosition(
@@ -326,11 +326,11 @@ def test_immutable_position():
 def test_get_non_exist_object():
     match = Match()
     deck_str = """
-    charactor:Nahida
+    character:Nahida
     Strategize*30
     """
     deck = Deck.from_str(deck_str)
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.max_same_card_number = 999
     match.set_deck([deck, deck])
     assert match.start()[0]
@@ -498,12 +498,12 @@ def test_vanilla_element_infusion_team_status():
 def test_blacklist_draw_card():
     match = Match()
     deck_str = """
-    charactor:Nahida
+    character:Nahida
     Strategize*29
     Fresh Wind of Freedom
     """
     deck = Deck.from_str(deck_str)
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.max_same_card_number = 999
     match.set_deck([deck, deck])
     assert match.start()[0]

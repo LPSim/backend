@@ -16,8 +16,8 @@ def test_v43equips_boar_fall():
     )
     # modify hp
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)
@@ -58,7 +58,7 @@ def test_v43equips_boar_fall():
                 check_usage(match.player_tables[pidx].team_status, cmd[3:])
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[cidx].status, 
+                check_usage(match.player_tables[pidx].characters[cidx].status, 
                             cmd[3:])
             elif test_id == 6:
                 pidx = int(cmd[2][1])
@@ -131,15 +131,15 @@ def test_boar_princess():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Shenhe
-        charactor:Chongyun
-        charactor:Nahida
+        character:Shenhe
+        character:Chongyun
+        character:Nahida
         The Boar Princess*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -218,15 +218,15 @@ def test_glow_defeated_no_draw():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Shenhe
-        charactor:Chongyun
-        charactor:Nahida
+        character:Shenhe
+        character:Chongyun
+        character:Nahida
         Vourukasha's Glow*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

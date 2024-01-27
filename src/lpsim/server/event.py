@@ -9,16 +9,16 @@ from .action import (
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
-    ChooseCharactorAction,
+    ChooseCharacterAction,
     CreateDiceAction,
     RemoveDiceAction,
     DeclareRoundEndAction,
     ActionEndAction,
     SkillEndAction,
-    SwitchCharactorAction,
+    SwitchCharacterAction,
     MakeDamageAction,
     ChargeAction,
-    CharactorDefeatedAction,
+    CharacterDefeatedAction,
     CreateObjectAction,
     RemoveObjectAction,
     ChangeObjectUsageAction,
@@ -26,7 +26,7 @@ from .action import (
     ConsumeArcaneLegendAction,
     UseCardAction,
     UseSkillAction,
-    CharactorReviveAction
+    CharacterReviveAction
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -69,14 +69,14 @@ class RemoveCardEventArguments(EventArgumentsBase):
     card_name: str
 
 
-class ChooseCharactorEventArguments(EventArgumentsBase):
+class ChooseCharacterEventArguments(EventArgumentsBase):
     """
-    Event arguments for choose charactor event.
+    Event arguments for choose character event.
     """
     type: Literal[
-        ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
-    action: ChooseCharactorAction
-    original_charactor_idx: int
+        ActionTypes.CHOOSE_CHARACTER] = ActionTypes.CHOOSE_CHARACTER
+    action: ChooseCharacterAction
+    original_character_idx: int
 
 
 # 5
@@ -164,19 +164,19 @@ class ActionEndEventArguments(EventArgumentsBase):
     do_combat_action: bool
 
 
-class SwitchCharactorEventArguments(EventArgumentsBase):
+class SwitchCharacterEventArguments(EventArgumentsBase):
     """
-    Event arguments for switch charactor event.
+    Event arguments for switch character event.
     """
-    type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
-    action: SwitchCharactorAction
-    last_active_charactor_idx: int
+    type: Literal[ActionTypes.SWITCH_CHARACTER] = ActionTypes.SWITCH_CHARACTER
+    action: SwitchCharacterAction
+    last_active_character_idx: int
 
 
 class ReceiveDamageEventArguments(EventArgumentsBase):
     """
     Event arguments for receive damage event. Some objects may trigger events
-    before charactor defeated settlement start when received special 
+    before character defeated settlement start when received special 
     damages, e.g. Seed of Skandha, Tenacity of the Millelith, Cryo Cicins.
     """
     type: Literal[ActionTypes.RECEIVE_DAMAGE] = ActionTypes.RECEIVE_DAMAGE
@@ -192,7 +192,7 @@ class ReceiveDamageEventArguments(EventArgumentsBase):
 class MakeDamageEventArguments(EventArgumentsBase):
     """
     Event arguments for make damage event. Some objects may trigger events
-    before charactor defeated settlement start, e.g. reburn.
+    before character defeated settlement start, e.g. reburn.
     """
 
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
@@ -250,13 +250,13 @@ class SkillEndEventArguments(EventArgumentsBase):
     action: SkillEndAction
 
 
-class CharactorDefeatedEventArguments(EventArgumentsBase):
+class CharacterDefeatedEventArguments(EventArgumentsBase):
     """
-    Event arguments for charactor defeated event.
+    Event arguments for character defeated event.
     """
-    type: Literal[ActionTypes.CHARACTOR_DEFEATED] = \
-        ActionTypes.CHARACTOR_DEFEATED
-    action: CharactorDefeatedAction
+    type: Literal[ActionTypes.CHARACTER_DEFEATED] = \
+        ActionTypes.CHARACTER_DEFEATED
+    action: CharacterDefeatedAction
     need_switch: bool
 
 
@@ -341,13 +341,13 @@ class PlayerActionStartEventArguments(EventArgumentsBase):
     player_idx: int
 
 
-class CharactorReviveEventArguments(EventArgumentsBase):
+class CharacterReviveEventArguments(EventArgumentsBase):
     """
-    Event arguments for charactor revive event.
+    Event arguments for character revive event.
     """
-    type: Literal[ActionTypes.CHARACTOR_REVIVE] = \
-        ActionTypes.CHARACTOR_REVIVE
-    action: CharactorReviveAction
+    type: Literal[ActionTypes.CHARACTER_REVIVE] = \
+        ActionTypes.CHARACTER_REVIVE
+    action: CharacterReviveAction
 
 
 class UseCardEventArguments(EventArgumentsBase):
@@ -366,7 +366,7 @@ EventArguments = (
     | DrawCardEventArguments
     | RestoreCardEventArguments
     | RemoveCardEventArguments
-    | ChooseCharactorEventArguments
+    | ChooseCharacterEventArguments
     # 5
     | CreateDiceEventArguments
     | RemoveDiceEventArguments
@@ -375,7 +375,7 @@ EventArguments = (
     | DeclareRoundEndEventArguments
     # 10
     | ActionEndEventArguments
-    | SwitchCharactorEventArguments
+    | SwitchCharacterEventArguments
     | ReceiveDamageEventArguments
     | MakeDamageEventArguments
     | AfterMakeDamageEventArguments
@@ -383,7 +383,7 @@ EventArguments = (
     | ChargeEventArguments
     | UseSkillEventArguments
     | SkillEndEventArguments
-    | CharactorDefeatedEventArguments
+    | CharacterDefeatedEventArguments
     | CreateObjectEventArguments
     # 20
     | RemoveObjectEventArguments
@@ -393,7 +393,7 @@ EventArguments = (
     | RoundEndEventArguments
     # 25
     | PlayerActionStartEventArguments
-    | CharactorReviveEventArguments
+    | CharacterReviveEventArguments
     | UseCardEventArguments
 )
 

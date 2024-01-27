@@ -77,9 +77,9 @@ def test_4_1_diona_xingqiu_NRE_egg():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Diona
-        charactor:Xingqiu
-        charactor:Nahida
+        character:Diona
+        character:Xingqiu
+        character:Nahida
         Shaken, Not Purred*5
         Shaken, Not Purred@3.3*5
         NRE*5
@@ -90,7 +90,7 @@ def test_4_1_diona_xingqiu_NRE_egg():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

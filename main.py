@@ -23,9 +23,9 @@ if __name__ == '__main__':
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
-        charactor:Yaoyao
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
+        character:Yaoyao
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5

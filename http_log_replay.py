@@ -15,8 +15,8 @@ if __name__ == '__main__':
     log_str = open(log_path).read()
     agents, match = read_log(log_str, use_16_omni = None)
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     match.config.history_level = 10
     try:
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             check_deck_restriction = False,
             card_number = None,
             max_same_card_number = None,
-            charactor_number = None,
+            character_number = None,
             max_round_number = 999,
             random_first_player = False,
             history_level = 10,

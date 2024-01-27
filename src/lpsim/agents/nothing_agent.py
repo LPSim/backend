@@ -3,7 +3,7 @@ from ..server.match import Match
 from ..server.interaction import (
     Responses,
     SwitchCardResponse,
-    ChooseCharactorResponse,
+    ChooseCharacterResponse,
     RerollDiceResponse,
     DeclareRoundEndResponse
 )
@@ -20,10 +20,10 @@ class NothingAgent(AgentBase):
                     return SwitchCardResponse(
                         request = req, card_idxs = []
                     )
-                elif req.name == 'ChooseCharactorRequest':
-                    return ChooseCharactorResponse(
+                elif req.name == 'ChooseCharacterRequest':
+                    return ChooseCharacterResponse(
                         request = req, 
-                        charactor_idx = req.available_charactor_idxs[0]
+                        character_idx = req.available_character_idxs[0]
                     )
                 elif req.name == 'RerollDiceRequest':
                     return RerollDiceResponse(

@@ -14,7 +14,7 @@ from tests.utils_for_test import (
 def test_...():
     # use frontend and FastAPI server to perform commands, and test commands 
     # that start with TEST. NO NOT put TEST at the end of command list!
-    # If a command is succesfully performed, frontend will print history 
+    # If a command is successfully performed, frontend will print history 
     # commands in console. Note that frontend cannot distinguish if a new
     # match begins, so you need to refresh the page before recording a new
     # match, otherwise the history commands will be mixed.
@@ -59,14 +59,14 @@ def test_...():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*3
+        character:Nahida*3
         Rana*30
         ...
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

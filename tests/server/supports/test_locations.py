@@ -66,15 +66,15 @@ def test_liyue_harbor():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:Noelle
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:Noelle
         Liyue Harbor Wharf*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -182,15 +182,15 @@ def test_tenshukaku():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:Noelle
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:Noelle
         Tenshukaku*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -319,9 +319,9 @@ def test_sumeru_city():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:Noelle
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:Noelle
         Sumeru City*15
         I Got Your Back*10
         # Archaic Petra
@@ -330,7 +330,7 @@ def test_sumeru_city():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -460,9 +460,9 @@ def test_vanarana():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -630,16 +630,16 @@ def test_library():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Electro Hypostasis
-        charactor:Klee
-        charactor:Keqing
+        character:Electro Hypostasis
+        character:Klee
+        character:Keqing
         Knights of Favonius Library*15
         Toss-Up*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -755,10 +755,10 @@ def test_cathedral_inn_sangonomiya():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Xiangling
-        charactor:Fischl
-        charactor:Ganyu
+        character:Mona
+        character:Xiangling
+        character:Fischl
+        character:Ganyu
         Favonius Cathedral*10
         Wangshu Inn*10
         Sangonomiya Shrine*10
@@ -766,7 +766,7 @@ def test_cathedral_inn_sangonomiya():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -877,9 +877,9 @@ def test_golden_house():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Xiangling
-        charactor:Ganyu
+        character:Mona
+        character:Xiangling
+        character:Ganyu
         Golden House*15
         King's Squire*15
         Raven Bow*15
@@ -887,7 +887,7 @@ def test_golden_house():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1053,9 +1053,9 @@ def test_jade_dawn_narukami_chinju():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Diona
-        charactor:Mona
-        charactor:Sucrose
+        character:Diona
+        character:Mona
+        character:Sucrose
         Jade Chamber*10
         Jade Chamber@3.3*10
         Dawn Winery*10
@@ -1065,7 +1065,7 @@ def test_jade_dawn_narukami_chinju():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1167,16 +1167,16 @@ def test_fenglong():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Keqing
-        charactor:Nahida
-        charactor:Ganyu
+        character:Keqing
+        character:Nahida
+        character:Ganyu
         Stormterror's Lair*15
         Thundering Penance*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

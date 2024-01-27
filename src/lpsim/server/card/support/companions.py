@@ -25,12 +25,12 @@ from ...action import (
 )
 from ...event import (
     ActionEndEventArguments, ChangeObjectUsageEventArguments, 
-    ChooseCharactorEventArguments, MoveObjectEventArguments, 
+    ChooseCharacterEventArguments, MoveObjectEventArguments, 
     PlayerActionStartEventArguments, 
     ReceiveDamageEventArguments,
     RemoveObjectEventArguments, RoundEndEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharactorEventArguments, UseCardEventArguments
+    SwitchCharacterEventArguments, UseCardEventArguments
 )
 
 
@@ -92,15 +92,15 @@ class Katheryne_3_6(RoundEffectCompanionBase):
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
         ):
-            # not self switch charactor, do nothing
+            # not self switch character, do nothing
             return value
         if value.action_label & PlayerActionLabels.SWITCH.value == 0:
-            # not switch charactor, do nothing
+            # not switch character, do nothing
             return value
         if not value.do_combat_action:
             # already quick action, do nothing
             return value
-        # self switch charactor, change to quick action
+        # self switch character, change to quick action
         value.do_combat_action = False
         assert mode == 'REAL'
         self.usage -= 1
@@ -202,7 +202,7 @@ class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
                 event.action.card_position.player_idx 
                 != self.position.player_idx
             ):
-                # not our charactor use card, do nothing
+                # not our character use card, do nothing
                 return []
             if event.card_cost.label & CostLabels.FOOD.value == 0:
                 # not food card, do nothing
@@ -554,17 +554,17 @@ class IronTongueTian_3_3(CompanionBase):
             # not in support area, do nothing
             return []
         table = match.player_tables[self.position.player_idx]
-        charactors = [table.get_active_charactor()]
-        for c in match.player_tables[self.position.player_idx].charactors:
-            if c.position.id != charactors[0].position.id:
-                charactors.append(c)
-        for c in charactors:
+        characters = [table.get_active_character()]
+        for c in match.player_tables[self.position.player_idx].characters:
+            if c.position.id != characters[0].position.id:
+                characters.append(c)
+        for c in characters:
             if c.is_alive and c.charge < c.max_charge:
                 assert self.usage > 0
                 self.usage -= 1
                 return [ChargeAction(
                     player_idx = c.position.player_idx,
-                    charactor_idx = c.position.charactor_idx,
+                    character_idx = c.position.character_idx,
                     charge = 1,
                 )] + self.check_should_remove()
         return []
@@ -578,39 +578,39 @@ class LiuSu_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     max_usage_one_round: int = 1
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
-    def charge(self, charactor: Any) -> List[ChargeAction 
+    def charge(self, character: Any) -> List[ChargeAction 
                                              | RemoveObjectAction]:
         """
-        If this charactor is our charactor and has no energy, charge it.
+        If this character is our character and has no energy, charge it.
         """
         if (
             self.position.area == ObjectPositionType.SUPPORT
-            and charactor.position.player_idx == self.position.player_idx
-            and charactor.charge == 0 
+            and character.position.player_idx == self.position.player_idx
+            and character.charge == 0 
             and self.has_usage()
         ):
-            # in support, and our charactor, and no energy
+            # in support, and our character, and no energy
             self.use()
             return [ChargeAction(
-                player_idx = charactor.position.player_idx,
-                charactor_idx = charactor.position.charactor_idx,
+                player_idx = character.position.player_idx,
+                character_idx = character.position.character_idx,
                 charge = 1,
             )] + self.check_should_remove()
         return []
 
-    def event_handler_SWITCH_CHARACTOR(
-        self, event: SwitchCharactorEventArguments, match: Any
+    def event_handler_SWITCH_CHARACTER(
+        self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[ChargeAction | RemoveObjectAction]:
-        charactor = match.player_tables[event.action.player_idx].charactors[
-            event.action.charactor_idx]
-        return self.charge(charactor)
+        character = match.player_tables[event.action.player_idx].characters[
+            event.action.character_idx]
+        return self.charge(character)
 
-    def event_handler_CHOOSE_CHARACTOR(
-        self, event: ChooseCharactorEventArguments, match: Any
+    def event_handler_CHOOSE_CHARACTER(
+        self, event: ChooseCharacterEventArguments, match: Any
     ) -> List[ChargeAction | RemoveObjectAction]:
-        charactor = match.player_tables[event.action.player_idx].charactors[
-            event.action.charactor_idx]
-        return self.charge(charactor)
+        character = match.player_tables[event.action.player_idx].characters[
+            event.action.character_idx]
+        return self.charge(character)
 
 
 class Hanachirusato_3_7(CompanionBase):
@@ -763,7 +763,7 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
                 # self move, do nothing
                 return ret
             if position.player_idx != self.position.player_idx:
-                # not our charactor use card, do nothing
+                # not our character use card, do nothing
                 return ret
             obj = match.get_object(position)
             if obj.cost.label & CostLabels.COMPANION.value == 0:
@@ -791,8 +791,8 @@ class Rana_3_7(RoundEffectCompanionBase):
     ) -> List[CreateDiceAction]:
         """
         if it is in support are, and self player used a elemental skill,
-        and have usage, and have next charactor, generate a die with color 
-        of next charactor.
+        and have usage, and have next character, generate a die with color 
+        of next character.
         """
         if (
             self.position.area == ObjectPositionType.SUPPORT
@@ -801,10 +801,10 @@ class Rana_3_7(RoundEffectCompanionBase):
             and self.usage > 0
         ):
             table = match.player_tables[self.position.player_idx]
-            next_idx = table.next_charactor_idx()
+            next_idx = table.next_character_idx()
             if next_idx is not None:
                 self.usage -= 1
-                ele_type: ElementType = table.charactors[next_idx].element
+                ele_type: ElementType = table.characters[next_idx].element
                 die_color = ELEMENT_TO_DIE_COLOR[ele_type]
                 return [CreateDiceAction(
                     player_idx = self.position.player_idx,
@@ -842,13 +842,13 @@ class MasterZhang_3_8(RoundEffectCompanionBase):
         # decrease
         decrease_number = 1
         table = match.player_tables[self.position.player_idx]
-        for charactor in table.charactors:
+        for character in table.characters:
             if (
-                charactor.weapon is not None 
+                character.weapon is not None 
                 and self.card_cost_label & CostLabels.WEAPON.value > 0
-                or charactor.artifact is not None 
+                or character.artifact is not None 
                 and self.card_cost_label & CostLabels.ARTIFACT.value > 0
-                or charactor.talent is not None 
+                or character.talent is not None 
                 and self.card_cost_label & CostLabels.TALENT.value > 0
             ):
                 decrease_number += 1

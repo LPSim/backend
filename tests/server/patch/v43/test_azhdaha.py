@@ -17,8 +17,8 @@ def test_azhdaha():
     )
     # modify hp
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     # add omnipotent guide
     # set_16_omni(match)
@@ -59,12 +59,12 @@ def test_azhdaha():
                         del colors[c]
             elif test_id == 3:
                 pidx, cidx = get_pidx_cidx(cmd)
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             elif test_id == 4:
                 pidx, cidx = get_pidx_cidx(cmd)
                 desc = cmd[-1]
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].desc.lower() == desc
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -119,14 +119,14 @@ def test_azhdaha_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Azhdaha*3
-        charactor:Kaeya
-        charactor:Klee
+        character:Azhdaha*3
+        character:Kaeya
+        character:Klee
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -155,7 +155,7 @@ def test_azhdaha_2():
                 desc = cmd[-1]
                 if desc == 'empty':
                     desc = ''
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].desc.lower() == desc
             else:
                 raise AssertionError(f'Unknown test id {test_id}')

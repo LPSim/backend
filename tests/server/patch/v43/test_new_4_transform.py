@@ -6,7 +6,7 @@ from tests.utils_for_test import (
 )
 
 
-def test_new_4_tranform():
+def test_new_4_transform():
     match, agent_0, agent_1 = read_from_log_json(
         os.path.join(os.path.dirname(__file__), 
                      'jsons', 
@@ -36,7 +36,7 @@ def test_new_4_tranform():
                 break
             elif test_id == 10:
                 pidx, cidx = get_pidx_cidx(cmd)
-                desc = match.player_tables[pidx].charactors[cidx].desc
+                desc = match.player_tables[pidx].characters[cidx].desc
                 cmd_desc = ' '.join(cmd[3:])[1:-1]
                 assert desc == cmd_desc
             else:
@@ -51,4 +51,4 @@ def test_new_4_tranform():
 
 
 if __name__ == '__main__':
-    test_new_4_tranform()
+    test_new_4_transform()

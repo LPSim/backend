@@ -13,11 +13,11 @@ from ...consts import (
 
 from ...action import (
     Actions, ChangeObjectUsageAction, CreateDiceAction, DrawCardAction, 
-    MakeDamageAction, RemoveObjectAction, SwitchCharactorAction
+    MakeDamageAction, RemoveObjectAction, SwitchCharacterAction
 )
 
 from ...event import (
-    CharactorDefeatedEventArguments, ActionEndEventArguments, 
+    CharacterDefeatedEventArguments, ActionEndEventArguments, 
     DeclareRoundEndEventArguments, 
     MakeDamageEventArguments, MoveObjectEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments
@@ -46,10 +46,10 @@ class ChangingShifts_3_3(UsageTeamStatus):
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
         ):
-            # not self switch charactor, do nothing
+            # not self switch character, do nothing
             return value
-        if not (value.cost.label & CostLabels.SWITCH_CHARACTOR.value):
-            # not switch charactor, do nothing
+        if not (value.cost.label & CostLabels.SWITCH_CHARACTER.value):
+            # not switch character, do nothing
             return value
         # decrease 1 any cost
         if value.cost.decrease_cost(None):
@@ -58,11 +58,11 @@ class ChangingShifts_3_3(UsageTeamStatus):
                 self.usage -= 1
         return value
 
-    def event_handler_SWITCH_CHARACTOR(
+    def event_handler_SWITCH_CHARACTER(
         self, event: ActionEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
-        When switch charactor end, check whether to remove.
+        When switch character end, check whether to remove.
         """
         return self.check_should_remove()
 
@@ -83,11 +83,11 @@ class FreshWindOfFreedom_4_1(RoundTeamStatus):
     activated: bool = False
     icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
+    def event_handler_CHARACTER_DEFEATED(
+        self, event: CharacterDefeatedEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When an enemy charactor is defeated, mark activated.
+        When an enemy character is defeated, mark activated.
         """
         if (self.position.player_idx != event.action.player_idx):
             # enemy defeated, mark activated.
@@ -99,7 +99,7 @@ class FreshWindOfFreedom_4_1(RoundTeamStatus):
         mode: Literal['TEST', 'REAL']
     ) -> CombatActionValue:
         """
-        When enemy charactor defeated, 
+        When enemy character defeated, 
         """
         assert mode == 'REAL'
         if not self.activated:
@@ -141,15 +141,15 @@ class LeaveItToMe_3_3(UsageTeamStatus):
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True,
         ):
-            # not self switch charactor, do nothing
+            # not self switch character, do nothing
             return value
         if value.action_label & PlayerActionLabels.SWITCH.value == 0:
-            # not switch charactor, do nothing
+            # not switch character, do nothing
             return value
         if not value.do_combat_action:
             # already quick action, do nothing
             return value
-        # self switch charactor, change to quick action
+        # self switch character, change to quick action
         value.do_combat_action = False
         assert mode == 'REAL'
         self.usage -= 1
@@ -168,13 +168,13 @@ class EnduringRock_3_3(RoundTeamStatus):
     """
     Made Geo damage is determined by the following:
     in value_modifier_DAMAGE_INCREASE, check whether it is caused by our 
-    charactor and is Geo damage. If so, mark did_geo_attack.
+    character and is Geo damage. If so, mark did_geo_attack.
     in event_handler_SKILL_END, check whether did_geo_attack is True. If so,
     trigger the following check. And regardless of the result, reset
     did_geo_attack to False.
 
     As DAMAGE_INCREASE with skill as source must have SKILL_END in the 
-    following, it will not mix other Geo damage or other charactor's skills.
+    following, it will not mix other Geo damage or other character's skills.
 
     TODO: with Sparks 'n' Splash
     """
@@ -191,15 +191,15 @@ class EnduringRock_3_3(RoundTeamStatus):
         self, value: DamageIncreaseValue, match: Any,
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not our charactor use skill, do nothing
+            # not our character use skill, do nothing
             return value
         if value.damage_elemental_type != ElementType.GEO:
             # not Geo damage, do nothing
             return value
-        # our charactor use Geo damage skill, mark did_geo_attack
+        # our character use Geo damage skill, mark did_geo_attack
         self.did_geo_attack = True
         return value
 
@@ -207,7 +207,7 @@ class EnduringRock_3_3(RoundTeamStatus):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction | RemoveObjectAction]:
         """
-        if self charactor use skill, and did geo attack, check whether have
+        if self character use skill, and did geo attack, check whether have
         shield team status. If so, add 3 usage. Regardless of the result, reset
         did_geo_attack to False.
         """
@@ -219,7 +219,7 @@ class EnduringRock_3_3(RoundTeamStatus):
         if (
             self.position.player_idx != event.action.position.player_idx
         ):  # pragma: no cover
-            # not self charactor use skill, do nothing
+            # not self character use skill, do nothing
             return []
         team_status = match.player_tables[self.position.player_idx].team_status
         for status in team_status:
@@ -248,7 +248,7 @@ class WhereIstheUnseenRazor_4_0(RoundTeamStatus):
         decrease weapons cost by 2
         """
         if value.position.player_idx != self.position.player_idx:
-            # not self charactor, do nothing
+            # not self character, do nothing
             return value
         if value.cost.label & self.decrease_target == 0:
             # not weapon, do nothing
@@ -365,7 +365,7 @@ class AncientCourtyard_3_8(RoundTeamStatus):
         decrease weapons or artifact cost by 2
         """
         if value.position.player_idx != self.position.player_idx:
-            # not self charactor, do nothing
+            # not self character, do nothing
             return value
         if value.cost.label & (CostLabels.WEAPON.value 
                                | CostLabels.ARTIFACT.value) == 0:
@@ -430,7 +430,7 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         """
-        When attached charactor use skill, then damage itself.
+        When attached character use skill, then damage itself.
         """
         if self.activated_this_round:
             # already activated, do nothing
@@ -439,10 +439,10 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
             event.action.position, match, player_idx_same = True, 
             target_area = ObjectPositionType.SKILL,
         ):
-            # not charactor use skill, not modify
+            # not character use skill, not modify
             return []
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
         if self.usage > 0:  # pragma: no branch
             self.usage -= 1
             self.activated_this_round = True
@@ -450,7 +450,7 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
                 damage_value_list = [DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,
-                    target_position = active_charactor.position,
+                    target_position = active_character.position,
                     damage = 1,
                     damage_elemental_type = self.element,
                     cost = Cost()
@@ -474,7 +474,7 @@ class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
         decrease weapons or artifact cost by 1
         """
         if value.position.player_idx != self.position.player_idx:
-            # not self charactor, do nothing
+            # not self character, do nothing
             return value
         if value.cost.label & (CostLabels.WEAPON.value 
                                | CostLabels.ARTIFACT.value) == 0:
@@ -507,32 +507,32 @@ class WhenTheCraneReturned_3_3(UsageTeamStatus):
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
-    ) -> List[SwitchCharactorAction]:
+    ) -> List[SwitchCharacterAction]:
         """
-        when our charactor used skill, switch to next charactor
+        when our character used skill, switch to next character
         """
         if self.position.player_idx != event.action.position.player_idx:
-            # not our charactor, do nothing
+            # not our character, do nothing
             return []
         if self.usage <= 0:  # pragma: no cover
             return []
         next_idx = match.player_tables[
-            self.position.player_idx].next_charactor_idx()
+            self.position.player_idx].next_character_idx()
         if next_idx is None:
-            # no next charactor, do nothing
+            # no next character, do nothing
             return []
         if self.decrease_usage_when_trigger:
             self.usage -= 1
-        return [SwitchCharactorAction(
+        return [SwitchCharacterAction(
             player_idx = self.position.player_idx,
-            charactor_idx = next_idx,
+            character_idx = next_idx,
         )]
 
-    def event_handler_SWITCH_CHARACTOR(
+    def event_handler_SWITCH_CHARACTER(
         self, event: ActionEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
-        When switch charactor end, check whether to remove.
+        When switch character end, check whether to remove.
         """
         return self.check_should_remove()
 
@@ -560,7 +560,7 @@ class Pankration_4_1(TeamStatusBase):
         self, event: DeclareRoundEndEventArguments, match: Any
     ) -> List[DrawCardAction | RemoveObjectAction]:
         """
-        When anyone declears round end, another draw 2 cards and remove self
+        When anyone declares round end, another draw 2 cards and remove self
         """
         return [
             DrawCardAction(

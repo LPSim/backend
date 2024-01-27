@@ -51,15 +51,15 @@ def test_layla_yelan():
                 check_usage(match.player_tables[pidx].team_status, cmd[3:])
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[cidx].status, 
+                check_usage(match.player_tables[pidx].characters[cidx].status, 
                             cmd[3:])
             elif test_id == 6:
                 pidx = int(cmd[2][1])
                 assert len(match.player_tables[pidx].hands) == int(cmd[3])
             elif test_id == 8:
                 pidx, cidx = get_pidx_cidx(cmd)
-                charactor = match.player_tables[pidx].charactors[cidx]
-                ele_app = charactor.element_application
+                character = match.player_tables[pidx].characters[cidx]
+                ele_app = character.element_application
                 assert len(ele_app) == 0
                 assert len(cmd[4:]) == 0
             else:

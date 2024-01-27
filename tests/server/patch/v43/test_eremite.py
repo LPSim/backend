@@ -41,7 +41,7 @@ def test_eremite():
             elif test_id == 8:
                 charges = []
                 for table in match.player_tables:
-                    for c in table.charactors:
+                    for c in table.characters:
                         charges.append(c.charge)
                 assert charges == [int(x) for x in cmd[2:]]
             else:

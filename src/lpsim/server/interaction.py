@@ -18,9 +18,9 @@ class SwitchCardRequest(RequestBase):
     maximum_switch_number: int = 999
 
 
-class ChooseCharactorRequest(RequestBase):
-    name: Literal['ChooseCharactorRequest'] = 'ChooseCharactorRequest'
-    available_charactor_idxs: List[int]
+class ChooseCharacterRequest(RequestBase):
+    name: Literal['ChooseCharacterRequest'] = 'ChooseCharacterRequest'
+    available_character_idxs: List[int]
 
 
 class RerollDiceRequest(RequestBase):
@@ -38,13 +38,13 @@ class RerollDiceRequest(RequestBase):
     reroll_times: int
 
 
-class SwitchCharactorRequest(RequestBase):
+class SwitchCharacterRequest(RequestBase):
     """
-    Request for switch charactor. It can be combat or quick request.
+    Request for switch character. It can be combat or quick request.
     """
-    name: Literal['SwitchCharactorRequest'] = 'SwitchCharactorRequest'
-    active_charactor_idx: int
-    target_charactor_idx: int
+    name: Literal['SwitchCharacterRequest'] = 'SwitchCharacterRequest'
+    active_character_idx: int
+    target_character_idx: int
     dice_colors: List[DieColor]
     cost: Cost
 
@@ -71,7 +71,7 @@ class UseSkillRequest(RequestBase):
     Request for use skill.
     """
     name: Literal['UseSkillRequest'] = 'UseSkillRequest'
-    charactor_idx: int
+    character_idx: int
     skill_idx: int
     dice_colors: List[DieColor]
     cost: Cost
@@ -131,13 +131,13 @@ class SwitchCardResponse(ResponseBase):
         return [self.request.card_names[i] for i in self.card_idxs]
 
 
-class ChooseCharactorResponse(ResponseBase):
-    name: Literal['ChooseCharactorResponse'] = 'ChooseCharactorResponse'
-    request: ChooseCharactorRequest
-    charactor_idx: int
+class ChooseCharacterResponse(ResponseBase):
+    name: Literal['ChooseCharacterResponse'] = 'ChooseCharacterResponse'
+    request: ChooseCharacterRequest
+    character_idx: int
 
     def is_valid(self, match: Any) -> bool:
-        return self.charactor_idx in self.request.available_charactor_idxs
+        return self.character_idx in self.request.available_character_idxs
 
 
 class RerollDiceResponse(ResponseBase):
@@ -154,9 +154,9 @@ class RerollDiceResponse(ResponseBase):
             self.reroll_dice_idxs, minn = 0, maxn = len(self.request.colors))
 
 
-class SwitchCharactorResponse(ResponseBase):
-    name: Literal['SwitchCharactorResponse'] = 'SwitchCharactorResponse'
-    request: SwitchCharactorRequest
+class SwitchCharacterResponse(ResponseBase):
+    name: Literal['SwitchCharacterResponse'] = 'SwitchCharacterResponse'
+    request: SwitchCharacterRequest
     dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
@@ -245,13 +245,13 @@ class UseCardResponse(ResponseBase):
 
 
 Requests = (
-    SwitchCardRequest | ChooseCharactorRequest | RerollDiceRequest
-    | SwitchCharactorRequest | ElementalTuningRequest
+    SwitchCardRequest | ChooseCharacterRequest | RerollDiceRequest
+    | SwitchCharacterRequest | ElementalTuningRequest
     | DeclareRoundEndRequest | UseSkillRequest | UseCardRequest
 )
 
 Responses = (
-    SwitchCardResponse | ChooseCharactorResponse | RerollDiceResponse
-    | SwitchCharactorResponse | ElementalTuningResponse
+    SwitchCardResponse | ChooseCharacterResponse | RerollDiceResponse
+    | SwitchCharacterResponse | ElementalTuningResponse
     | DeclareRoundEndResponse | UseSkillResponse | UseCardResponse
 )

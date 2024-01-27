@@ -58,13 +58,13 @@ def test_seelie():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Noelle*3
+        character:Noelle*3
         Treasure-Seeking Seelie*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -173,9 +173,9 @@ def test_NRE():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Electro Hypostasis
-        charactor:Klee
-        charactor:Keqing
+        character:Electro Hypostasis
+        character:Klee
+        character:Keqing
         NRE*15
         Sweet Madame*2
         Mushroom Pizza*2
@@ -184,7 +184,7 @@ def test_NRE():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -299,16 +299,16 @@ def test_parametric():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Xiangling
-        charactor:Ganyu
-        charactor:Barbara
+        character:Mona
+        character:Xiangling
+        character:Ganyu
+        character:Barbara
         Parametric Transformer*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -429,9 +429,9 @@ def test_red_feather_fan():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Diona
-        charactor:Noelle
-        charactor:Sucrose
+        character:Diona
+        character:Noelle
+        character:Sucrose
         Red Feather Fan*10
         Changing Shifts*10
         Leave It to Me!*10
@@ -439,7 +439,7 @@ def test_red_feather_fan():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -475,7 +475,7 @@ def test_red_feather_fan():
                     match.player_tables[pidx].dice.colors) == int(cmd[-1])
             elif test_id == 3:
                 for req in match.requests:
-                    if req.name == 'SwitchCharactorRequest':
+                    if req.name == 'SwitchCharacterRequest':
                         assert req.cost.total_dice_cost == 1
             else:
                 raise AssertionError(f'Unknown test id {test_id}')

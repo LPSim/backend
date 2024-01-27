@@ -102,9 +102,9 @@ def test_recreate_mode():
     deck1 = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Raiden Shogun
-        charactor:Chongyun
-        charactor:Shenhe
+        character:Raiden Shogun
+        character:Chongyun
+        character:Shenhe
         Timmie
         Liu Su
         Send Off
@@ -118,9 +118,9 @@ def test_recreate_mode():
     deck2 = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Nahida
-        charactor:Rhodeia of Loch
-        charactor:Fischl
+        character:Nahida
+        character:Rhodeia of Loch
+        character:Fischl
         Vanarana
         Timmie
         Liben
@@ -147,7 +147,7 @@ def test_recreate_mode():
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -254,16 +254,16 @@ def test_recreate_mode_v43_rhodeia():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Rhodeia of Loch
-        charactor:Fischl
-        charactor:Chongyun
+        character:Rhodeia of Loch
+        character:Fischl
+        character:Chongyun
         Ocean-Hued Clam*10
         Stone and Contracts*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

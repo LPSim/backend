@@ -49,7 +49,7 @@ def test_rana():
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -106,7 +106,7 @@ def test_rana():
     assert match.state != MatchState.ERROR
 
     """
-    second: next one is other people; cannot generate when only one charactor;
+    second: next one is other people; cannot generate when only one character;
     TODO: if overcharged self, will generate next of next?
     """
     agent_0 = InteractionAgent_V1_0(
@@ -145,7 +145,7 @@ def test_rana():
     match = Match(version = '0.0.1', random_state = get_random_state())
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'PyroMobMage',
                 'element': 'PYRO',
@@ -269,9 +269,9 @@ def test_timmie():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Wine-Stained Tricorne*2
         Timmie*2
         Rana*2
@@ -418,15 +418,15 @@ def test_liben():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:Noelle
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:Noelle
         Liben*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -530,16 +530,16 @@ def test_setaria():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Setaria*15
         Strategize*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -634,15 +634,15 @@ def test_liusu():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Electro Hypostasis
-        charactor:Klee
-        charactor:Keqing
+        character:Electro Hypostasis
+        character:Klee
+        character:Keqing
         Liu Su*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -746,9 +746,9 @@ def test_tubby():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Electro Hypostasis
-        charactor:Klee
-        charactor:Keqing
+        character:Electro Hypostasis
+        character:Klee
+        character:Keqing
         Knights of Favonius Library*10
         Tubby*10
         Tenshukaku*10
@@ -757,7 +757,7 @@ def test_tubby():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -871,19 +871,19 @@ def test_chang_nine():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:AnemoMobMage
-        charactor:Yae Miko
-        charactor:Mona
-        charactor:Ganyu
-        charactor:Klee
+        character:Xingqiu
+        character:AnemoMobMage
+        character:Yae Miko
+        character:Mona
+        character:Ganyu
+        character:Klee
         Chang the Ninth*15
         Sweet Madame*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1002,12 +1002,12 @@ def test_paimon_kujirai():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:AnemoMobMage
-        charactor:Yae Miko
-        charactor:Mona
-        charactor:Ganyu
-        charactor:Klee
+        character:Xingqiu
+        character:AnemoMobMage
+        character:Yae Miko
+        character:Mona
+        character:Ganyu
+        character:Klee
         Chang the Ninth*15
         Kid Kujirai*15
         Paimon*15
@@ -1015,7 +1015,7 @@ def test_paimon_kujirai():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1121,9 +1121,9 @@ def test_master_zhang():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Ganyu
-        charactor:Fischl
+        character:Xingqiu
+        character:Ganyu
+        character:Fischl
         Master Zhang*15
         Where Is the Unseen Razor?*15
         King's Squire*15
@@ -1131,7 +1131,7 @@ def test_master_zhang():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1280,9 +1280,9 @@ def get_ellin_match():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Ellin*10
         Iron Tongue Tian*10
         Katheryne*5
@@ -1291,7 +1291,7 @@ def get_ellin_match():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1339,7 +1339,7 @@ def test_katheryne_tian_ellin():
                 assert found
             elif test_id == 4:
                 pidx, cidx = get_pidx_cidx(cmd)
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].charge == int(cmd[4])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -1426,9 +1426,9 @@ def test_wagner_timaeus():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Timaeus*10
         Wagner*10
         Gambler's Earrings*10
@@ -1439,7 +1439,7 @@ def test_wagner_timaeus():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1578,9 +1578,9 @@ def test_chef_mao():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Chef Mao*10
         Chef Mao@3.3*10
         Sweet Madame*10
@@ -1588,7 +1588,7 @@ def test_chef_mao():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1736,9 +1736,9 @@ def test_dunyazard():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Dunyarzad*10
         Dunyarzad@3.7*10
         Paimon*10
@@ -1747,7 +1747,7 @@ def test_dunyazard():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1851,9 +1851,9 @@ def test_xudong():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Rhodeia of Loch
-        charactor:Mona
-        charactor:Kaeya
+        character:Rhodeia of Loch
+        character:Mona
+        character:Kaeya
         Xudong*10
         Adeptus' Temptation*10
         Sweet Madame*10
@@ -1865,7 +1865,7 @@ def test_xudong():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1974,9 +1974,9 @@ def test_hanachirusato():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Rhodeia of Loch
-        charactor:Mona
-        charactor:Noelle
+        character:Rhodeia of Loch
+        character:Mona
+        character:Noelle
         Hanachirusato*10
         Guardian's Oath*10
         Tenacity of the Millelith*10
@@ -1986,7 +1986,7 @@ def test_hanachirusato():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2101,9 +2101,9 @@ def test_chefmao_dunyarzad():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Dunyarzad*10
         Chef Mao*10
         Timmie*10
@@ -2112,7 +2112,7 @@ def test_chefmao_dunyarzad():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2195,16 +2195,16 @@ def test_yayoi_fix():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Yoimiya@3.8
-        charactor:Keqing@3.3
-        charactor:Dehya@4.1
+        character:Yoimiya@3.8
+        character:Keqing@3.3
+        character:Dehya@4.1
         Yayoi Nanatsuki*10
         Tenacity of the Millelith*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2268,9 +2268,9 @@ def test_timaeus_fix():
     deck = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Strategize*10
         Timaeus*10
         Gambler's Earrings*10
@@ -2278,7 +2278,7 @@ def test_timaeus_fix():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -2361,9 +2361,9 @@ def test_timaeus_fix_2():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Noelle
+        character:Baizhu
+        character:Nilou
+        character:Noelle
         Wagner*10
         Golden House*10
         The Bell*10
@@ -2371,7 +2371,7 @@ def test_timaeus_fix_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

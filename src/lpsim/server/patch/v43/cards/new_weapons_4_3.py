@@ -1,9 +1,9 @@
 from typing import Dict, List, Literal
 
-from ....status.charactor_status.base import UsageCharactorStatus
+from ....status.character_status.base import UsageCharacterStatus
 
 from .....utils.class_registry import register_class
-from ....charactor.charactor_base import SkillBase
+from ....character.character_base import SkillBase
 from ....modifiable_values import CostValue, DamageIncreaseValue
 from ....action import (
     Actions, CreateDiceAction, CreateObjectAction, RemoveObjectAction
@@ -32,7 +32,7 @@ class LostPrayerToTheSacredWinds_4_3(WeaponBase):
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Match
     ) -> List[Actions]:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
         self.damage_increase = min(self.damage_increase + 1, self.max_damage)
@@ -58,10 +58,10 @@ class TulaytullahsRemembrance_4_3(RoundEffectWeaponBase):
             return value
         if not self.position.check_position_valid(
             value.position, match, player_idx_same = True, 
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
-            # not this charactor use skill, or not equipped, not modify
+            # not this character use skill, or not equipped, not modify
             return value
         skill: SkillBase = match.get_object(value.position)  # type: ignore
         assert skill is not None
@@ -79,7 +79,7 @@ class TulaytullahsRemembrance_4_3(RoundEffectWeaponBase):
         return value
 
 
-class BeaconOfTheReedSeaStatus_4_3(UsageCharactorStatus):
+class BeaconOfTheReedSeaStatus_4_3(UsageCharacterStatus):
     # TODO: in official implementation, two status are separated.
     name: Literal["Beacon of the Reed Sea"] = "Beacon of the Reed Sea"
     version: Literal["4.3"] = "4.3"
@@ -93,12 +93,12 @@ class BeaconOfTheReedSeaStatus_4_3(UsageCharactorStatus):
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
         """
-        When equipped charactor is using skill, increase the damage.
+        When equipped character is using skill, increase the damage.
         """
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not current charactor using skill
+            # not current character using skill
             return value
         # modify damage
         assert mode == 'REAL'
@@ -146,8 +146,8 @@ class BeaconOfTheReedSea_4_3(RoundEffectWeaponBase):
             return []
         if not self.position.check_position_valid(
             event.final_damage.target_position, match, player_idx_same = True,
-            charactor_idx_same = True, area_same = True,
-            source_area = ObjectPositionType.CHARACTOR,
+            character_idx_same = True, area_same = True,
+            source_area = ObjectPositionType.CHARACTER,
         ):
             # not equipped, or not self receive damage
             return []
@@ -159,7 +159,7 @@ class BeaconOfTheReedSea_4_3(RoundEffectWeaponBase):
         return [CreateObjectAction(
             object_name = self.name,
             object_position = self.position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS
+                ObjectPositionType.CHARACTER_STATUS
             ),
             object_arguments = {}
         )]
@@ -172,8 +172,8 @@ class BeaconOfTheReedSea_4_3(RoundEffectWeaponBase):
             return []
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not self, or not equipped
             return []
@@ -187,7 +187,7 @@ class BeaconOfTheReedSea_4_3(RoundEffectWeaponBase):
         return [CreateObjectAction(
             object_name = self.name,
             object_position = self.position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS
+                ObjectPositionType.CHARACTER_STATUS
             ),
             object_arguments = {}
         )]
@@ -216,8 +216,8 @@ class PrimordialJadeWingedSpear_4_3(WeaponBase):
     ) -> List[CreateObjectAction]:
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not self, or not equipped
             return []
@@ -241,8 +241,8 @@ class LightOfFoliarIncision_4_3(RoundEffectWeaponBase):
             return []
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not self, or not equipped
             return []
@@ -289,7 +289,7 @@ desc: Dict[str, DescDictType] = {
         "image_path": "cardface/Modify_Weapon_Tulaidu.png",  # noqa: E501
         "id": 311107
     },
-    "CHARACTOR_STATUS/Beacon of the Reed Sea": {
+    "CHARACTER_STATUS/Beacon of the Reed Sea": {
         "names": {
             "en-US": "Beacon of the Reed Sea",
             "zh-CN": "苇海信标"

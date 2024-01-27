@@ -22,7 +22,7 @@ def make_respond(agent: AgentBase, match: Match, assertion: bool = True):
     """
     Make response once, and step the match until new request or
     game end, regardless of the target of requests.
-    If not requesting this agent and nees assetion, raise AssertionError.
+    If not requesting this agent and needs assetion, raise AssertionError.
     Otherwise, do nothing.
     """
     resp = agent.generate_response(match)
@@ -38,7 +38,7 @@ def check_hp(match: Match, hp: List[List[int]]):
     """
     input hps for each player and check
     """
-    hps = [[x.hp for x in t.charactors] for t in match.player_tables]
+    hps = [[x.hp for x in t.characters] for t in match.player_tables]
     assert hps == hp
 
 

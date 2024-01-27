@@ -22,15 +22,15 @@ class ExilesCirclet_3_3(RoundEffectArtifactBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[ChargeAction]:
         """
-        If self use elemental burst, charge standby charactors.
+        If self use elemental burst, charge standby characters.
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTOR,
+            character_idx_same = True, 
+            source_area = ObjectPositionType.CHARACTER,
             target_area = ObjectPositionType.SKILL,
         ):
-            # not equipped, or not this charactor use skill
+            # not equipped, or not this character use skill
             return []
         if self.usage <= 0:
             # no usage left
@@ -41,17 +41,17 @@ class ExilesCirclet_3_3(RoundEffectArtifactBase):
         # charge
         self.usage -= 1
         ret: List[ChargeAction] = []
-        for cid, charactor in enumerate(match.player_tables[
-                self.position.player_idx].charactors):
+        for cid, character in enumerate(match.player_tables[
+                self.position.player_idx].characters):
             if (
-                cid == self.position.charactor_idx
-                or charactor.is_defeated
+                cid == self.position.character_idx
+                or character.is_defeated
             ):
-                # skip self and defeated charactors
+                # skip self and defeated characters
                 continue
             ret.append(ChargeAction(
                 player_idx = self.position.player_idx,
-                charactor_idx = cid,
+                character_idx = cid,
                 charge = 1,
             ))
         return ret

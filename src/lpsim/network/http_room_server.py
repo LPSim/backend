@@ -84,7 +84,7 @@ class OneRoomWorker(Process):
 class HTTPRoomServer():
     """
     HTTP room server that host multiple rooms, each room is a HTTP server.
-    Room will occupy a port, room server will deal with reqeusts from client,
+    Room will occupy a port, room server will deal with requests from client,
     to reset/start a new room etc, and tell client the room name and
     link of the server.
     It only starts rooms with same rules now. When running on Linux, it will
