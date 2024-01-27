@@ -133,8 +133,8 @@
         0.0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Yoimiya@3.8\ncharactor:Keqing@3.3\ncharactor:Dehya@4.1\ncharactor:Shenhe@4.2\ncharactor:Barbara@3.3\nMagic Guide@3.3\nMagic Guide@3.3\nSacrificial Fragments@3.3\nSacrificial Fragments@3.3\nTenacity of the Millelith@3.7\nCapricious Visage@4.0\nShimenawa's Reminiscence@4.0\nShadow of the Sand King@4.2\nGilded Dreams@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\n",
-        "default_version:4.3\ncharactor:Yoimiya@3.8\ncharactor:Keqing@3.3\ncharactor:Dehya@4.1\ncharactor:Shenhe@4.2\ncharactor:Barbara@3.3\nSkyward Atlas@3.3\nA Thousand Floating Dreams@3.7\nFruit of Fulfillment@3.8\nGilded Dreams@4.3\nGilded Dreams@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\n"
+        "default_version:4.3\ncharacter:Yoimiya@3.8\ncharacter:Keqing@3.3\ncharacter:Dehya@4.1\ncharacter:Shenhe@4.2\ncharacter:Barbara@3.3\nMagic Guide@3.3\nMagic Guide@3.3\nSacrificial Fragments@3.3\nSacrificial Fragments@3.3\nTenacity of the Millelith@3.7\nCapricious Visage@4.0\nShimenawa's Reminiscence@4.0\nShadow of the Sand King@4.2\nGilded Dreams@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\n",
+        "default_version:4.3\ncharacter:Yoimiya@3.8\ncharacter:Keqing@3.3\ncharacter:Dehya@4.1\ncharacter:Shenhe@4.2\ncharacter:Barbara@3.3\nSkyward Atlas@3.3\nA Thousand Floating Dreams@3.7\nFruit of Fulfillment@3.8\nGilded Dreams@4.3\nGilded Dreams@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nTimaeus@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\nWagner@4.3\n"
     ],
     "command_history": [
         [
@@ -237,7 +237,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 999,
         "max_dice_number": 16,

@@ -33,7 +33,7 @@ def get_new_match(
         auto_step: If True, auto step the match once.
     Returns:
         The generated match and its initial random state. 
-        If generate failed or error occured, raise error.
+        If generate failed or error occurred, raise error.
     """
     if seed:
         match: Match = Match(random_state = seed)

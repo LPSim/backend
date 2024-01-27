@@ -77,9 +77,9 @@ def test_vermillion_shimenawa():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Qiqi
-        charactor:Yae Miko
+        character:Xingqiu
+        character:Qiqi
+        character:Yae Miko
         Capricious Visage*5
         Shimenawa's Reminiscence*5
         Thundering Poise*5
@@ -92,7 +92,7 @@ def test_vermillion_shimenawa():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -134,7 +134,7 @@ def test_vermillion_shimenawa():
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
                 usage = [int(x) for x in cmd[4:]]
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 assert len(usage) == len(status)
                 for u, s in zip(usage, status):
                     assert u == s.usage
@@ -207,9 +207,9 @@ def test_vermillion_shimenawa_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Kamisato Ayaka
-        charactor:Yae Miko
+        character:Xingqiu
+        character:Kamisato Ayaka
+        character:Yae Miko
         Capricious Visage*5
         Shimenawa's Reminiscence*5
         Thundering Poise*5
@@ -219,7 +219,7 @@ def test_vermillion_shimenawa_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

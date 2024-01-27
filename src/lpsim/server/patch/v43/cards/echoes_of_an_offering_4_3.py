@@ -2,7 +2,7 @@ from typing import Dict, List, Literal
 
 from .....utils.class_registry import register_class
 from ....consts import ELEMENT_TO_DIE_COLOR, ObjectPositionType, SkillType
-from ....charactor.charactor_base import SkillBase
+from ....character.character_base import SkillBase
 from ....action import Actions, CreateDiceAction, DrawCardAction
 from ....match import Match
 from ....event import RoundPrepareEventArguments, SkillEndEventArguments
@@ -25,8 +25,8 @@ class FlowingRings_4_3(RoundEffectArtifactBase):
             return []
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not self, or not equipped
             return []
@@ -75,8 +75,8 @@ class EchoesOfAnOffering_4_3(FlowingRings_4_3):
             return ret
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not self, or not equipped
             return ret
@@ -84,12 +84,12 @@ class EchoesOfAnOffering_4_3(FlowingRings_4_3):
         if len(table.dice.colors) > len(table.hands):
             # dice more than hand
             return ret
-        charactor = table.charactors[self.position.charactor_idx]
+        character = table.characters[self.position.character_idx]
         # create die
         self.generate_die_usage -= 1
         ret.append(CreateDiceAction(
             player_idx = self.position.player_idx,
-            color = ELEMENT_TO_DIE_COLOR[charactor.element],
+            color = ELEMENT_TO_DIE_COLOR[character.element],
             number = 1
         ))
         return ret

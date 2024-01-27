@@ -30,7 +30,7 @@ class CrownOfWatatsumi_4_1(ArtifactBase):
         self, value: DamageIncreaseValue, match: Any, 
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
             # not self use damage skill
@@ -47,7 +47,7 @@ class CrownOfWatatsumi_4_1(ArtifactBase):
         """
         If our player receives heal, add counter.
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
         for damage in event.damages:
@@ -77,15 +77,15 @@ class OceanHuedClam_4_2(CrownOfWatatsumi_4_1):
 
     def equip(self, match: Any) -> List[Actions]:
         super().equip(match)
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
         # heal self
         return [
             MakeDamageAction(
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        target_position = charactor.position,
+                        target_position = character.position,
                         damage_type = DamageType.HEAL,
                         damage = -3,
                         damage_elemental_type = DamageElementalType.HEAL,

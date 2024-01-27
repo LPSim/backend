@@ -13,7 +13,7 @@ def test_draw_card():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*3
+        character:Nahida*3
         Strategize*30
         '''
     )
@@ -49,7 +49,7 @@ def test_draw_card():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*3
+        character:Nahida*3
         Strategize*15
         Rana*15
         '''

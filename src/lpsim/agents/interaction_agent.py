@@ -7,11 +7,11 @@ from ..server.match import Match
 from ..server.interaction import (
     Requests, Responses,
     SwitchCardRequest, SwitchCardResponse,
-    ChooseCharactorRequest, ChooseCharactorResponse,
+    ChooseCharacterRequest, ChooseCharacterResponse,
     RerollDiceRequest, RerollDiceResponse,
     DeclareRoundEndRequest, DeclareRoundEndResponse,
     ElementalTuningRequest, ElementalTuningResponse,
-    SwitchCharactorRequest, SwitchCharactorResponse,
+    SwitchCharacterRequest, SwitchCharacterResponse,
     UseSkillRequest, UseSkillResponse,
     UseCardRequest, UseCardResponse,
 )
@@ -29,7 +29,7 @@ class InteractionAgent_V1_0(AgentBase):
     Command format and sample:
         sw_card: used to switch cards, with variable length of card indices.
             sample: sw_card 0 1 2
-        choose: used to choose charactor, with one charactor idx.
+        choose: used to choose character, with one character idx.
             sample: choose 0
         reroll: used to reroll dice, with variable length of dice indices.
             sample: reroll 0 1 2
@@ -37,7 +37,7 @@ class InteractionAgent_V1_0(AgentBase):
             sample: end
         tune: used to elemental tuning, with one dice color and one card idx.
             sample: tune pyro 0
-        sw_char: used to switch charactor, with one charactor idx and variable
+        sw_char: used to switch character, with one character idx and variable
                 length of cost colors.
             sample: sw_char 0 pyro
         skill: used to use skill, with one skill idx and variable length of
@@ -69,11 +69,11 @@ class InteractionAgent_V1_0(AgentBase):
     version: Literal['1.0']
     _cmd_to_name = {
         'sw_card': 'SwitchCardRequest',
-        'choose': 'ChooseCharactorRequest',
+        'choose': 'ChooseCharacterRequest',
         'reroll': 'RerollDiceRequest',
         'end': 'DeclareRoundEndRequest',
         'tune': 'ElementalTuningRequest',
-        'sw_char': 'SwitchCharactorRequest',
+        'sw_char': 'SwitchCharacterRequest',
         'skill': 'UseSkillRequest',
         'card': 'UseCardRequest',
     }
@@ -172,16 +172,16 @@ class InteractionAgent_V1_0(AgentBase):
                 return self.generate_response(match)
             if req_name == 'SwitchCardRequest':
                 return self.resp_switch_card(args, reqs)  # type: ignore
-            if req_name == 'ChooseCharactorRequest':
-                return self.resp_choose_charactor(args, reqs)  # type: ignore
+            if req_name == 'ChooseCharacterRequest':
+                return self.resp_choose_character(args, reqs)  # type: ignore
             if req_name == 'RerollDiceRequest':
                 return self.resp_reroll_dice(args, reqs)  # type: ignore
             if req_name == 'DeclareRoundEndRequest':
                 return self.resp_declare_round_end(args, reqs)  # type: ignore
             if req_name == 'ElementalTuningRequest':
                 return self.resp_elemental_tuning(args, reqs)  # type: ignore
-            if req_name == 'SwitchCharactorRequest':
-                return self.resp_switch_charactor(args, reqs)  # type: ignore
+            if req_name == 'SwitchCharacterRequest':
+                return self.resp_switch_character(args, reqs)  # type: ignore
             if req_name == 'UseSkillRequest':
                 return self.resp_use_skill(args, reqs)  # type: ignore
             if req_name == 'UseCardRequest':
@@ -203,15 +203,15 @@ class InteractionAgent_V1_0(AgentBase):
             request = reqs[0], card_idxs = [int(x) for x in args]
         )
 
-    def resp_choose_charactor(
+    def resp_choose_character(
             self, args: List[str], 
-            reqs: List[ChooseCharactorRequest]) -> ChooseCharactorResponse:
+            reqs: List[ChooseCharacterRequest]) -> ChooseCharacterResponse:
         """
-        args: one charactor idx.
+        args: one character idx.
         """
         assert len(reqs) == 1
-        return ChooseCharactorResponse(
-            request = reqs[0], charactor_idx = int(args[0])
+        return ChooseCharacterResponse(
+            request = reqs[0], character_idx = int(args[0])
         )
 
     def resp_reroll_dice(
@@ -239,21 +239,21 @@ class InteractionAgent_V1_0(AgentBase):
             card_idx = int(args[1])
         )
 
-    def resp_switch_charactor(
+    def resp_switch_character(
             self, args: List[str], 
-            reqs: List[SwitchCharactorRequest]) -> SwitchCharactorResponse:
+            reqs: List[SwitchCharacterRequest]) -> SwitchCharacterResponse:
         """
-        args: one charactor idx and variable length of cost colors.
+        args: one character idx and variable length of cost colors.
         """
         cidx = int(args[0])
-        selected_req: SwitchCharactorRequest | None = None
+        selected_req: SwitchCharacterRequest | None = None
         for req in reqs:
-            if req.target_charactor_idx == cidx:
+            if req.target_character_idx == cidx:
                 selected_req = req
                 break
         assert selected_req is not None
         dice_idxs = self._colors_to_idx(args[1:], reqs[0].dice_colors)
-        return SwitchCharactorResponse(
+        return SwitchCharacterResponse(
             request = selected_req,
             dice_idxs = dice_idxs
         )
@@ -303,14 +303,14 @@ class InteractionAgent_V1_0(AgentBase):
 
 class InteractionAgent_V2_0(InteractionAgent_V1_0):
     """
-    Thie version changes the command format of tune, card and skill to make 
+    This version changes the command format of tune, card and skill to make 
     easier use. And can use idx of dice to instead die color.
     All idx are start with 0.
 
     For tune, it will need to input the card idx first, then the dice color. 
     For skill, the skill idx is not the index of the skill in the available
         requests, but the index of the skill in the skills of the active 
-        charactor.
+        character.
     For card, the card idx is not the index of the card in the available 
         requests, but the index of the card in the hand. 
 
@@ -319,7 +319,7 @@ class InteractionAgent_V2_0(InteractionAgent_V1_0):
             sample: tune 0 pyro | tune 0 6
         skill: used to use skill, with one skill idx and variable length of
                 cost colors. skill idx is the index of the skill of the active
-                charactor.
+                character.
             sample: skill 0 omni hydro geo | skill 2 0 2 3
         card: used to use card, with one card idx, one target idx and variable
                 length of cost colors. card idx is the index of the card in 
@@ -331,14 +331,14 @@ class InteractionAgent_V2_0(InteractionAgent_V1_0):
     Unchanged commands (but can use idx of dice):
         sw_card: used to switch cards, with variable length of card indices.
             sample: sw_card 0 1 2
-        choose: used to choose charactor, with one charactor idx.
+        choose: used to choose character, with one character idx.
             sample: choose 0
         reroll: used to reroll dice, with variable length of dice indices or 
             dice colors.
             sample: reroll 0 1 2 | reroll pyro geo
         end: used to declare round end, with no args.
             sample: end
-        sw_char: used to switch charactor, with one charactor idx and variable
+        sw_char: used to switch character, with one character idx and variable
                 length of cost colors.
             sample: sw_char 0 pyro | sw_char 1 6
 

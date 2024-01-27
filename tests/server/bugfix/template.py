@@ -18,8 +18,8 @@ def template():
     match.config.history_level = 0
     # modify hp
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)
@@ -41,17 +41,17 @@ def template():
             # 2,  # summon
             # 3,  # support
             # 4,  # team status
-            5,  # charactor status
+            5,  # character status
             # 6,  # hands
             # 7,  # dice
             # 8,  # charge
             # 9,  # summon element
-            # 10,  # charactor desc
+            # 10,  # character desc
         ]
         # 1 for hp
         hp_str = 'TEST 1'
         for i in range(2):
-            for c in match.player_tables[i].charactors:
+            for c in match.player_tables[i].characters:
                 hp_str += ' ' + str(c.hp)
         if 1 in enable:
             nc.append(hp_str)
@@ -74,13 +74,13 @@ def template():
                 team_str += f' {s.usage}'
             if 4 in enable:
                 nc.append(team_str)
-            for cnum, c in enumerate(table.charactors):
-                # 5 for charactor status
-                charactor_str = f'TEST 5 p{tnum}c{cnum}'
+            for cnum, c in enumerate(table.characters):
+                # 5 for character status
+                character_str = f'TEST 5 p{tnum}c{cnum}'
                 for s in c.status:
-                    charactor_str += f' {s.usage}'
+                    character_str += f' {s.usage}'
                 if 5 in enable:
-                    nc.append(charactor_str)
+                    nc.append(character_str)
                 cdesc_str = f'TEST 10 p{tnum}c{cnum} |{c.desc}|'
                 if c.is_alive and 10 in enable:
                     nc.append(cdesc_str)
@@ -100,10 +100,10 @@ def template():
                 summon_element_str += ' ' + summon.damage_elemental_type.value
             if 9 in enable:
                 nc.append(summon_element_str)
-        # 8 for charactor charge
+        # 8 for character charge
         charge_str = 'TEST 8'
         for i in range(2):
-            for c in match.player_tables[i].charactors:
+            for c in match.player_tables[i].characters:
                 charge_str += ' ' + str(c.charge)
         if 8 in enable:
             nc.append(charge_str)
@@ -131,7 +131,7 @@ def template():
                 check_usage(match.player_tables[pidx].team_status, cmd[3:])
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[cidx].status, 
+                check_usage(match.player_tables[pidx].characters[cidx].status, 
                             cmd[3:])
             elif test_id == 6:
                 pidx = int(cmd[2][1])
@@ -149,7 +149,7 @@ def template():
             elif test_id == 8:
                 charges = []
                 for table in match.player_tables:
-                    for c in table.charactors:
+                    for c in table.characters:
                         charges.append(c.charge)
                 assert charges == [int(x) for x in cmd[2:]]
             elif test_id == 9:
@@ -159,7 +159,7 @@ def template():
                     assert s.damage_elemental_type.value == cmd[3 + i]
             elif test_id == 10:
                 pidx, cidx = get_pidx_cidx(cmd)
-                desc = match.player_tables[pidx].charactors[cidx].desc
+                desc = match.player_tables[pidx].characters[cidx].desc
                 cmd_desc = ' '.join(cmd[3:])[1:-1]
                 assert desc == cmd_desc
             else:

@@ -68,9 +68,9 @@ def test_adeptus_temptation():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -91,7 +91,7 @@ def test_adeptus_temptation():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -124,17 +124,17 @@ def test_adeptus_temptation():
             elif test_id == 3:
                 check_hp(match, [[10, 10, 10], [8, 8, 0]])
                 table = match.player_tables[0]
-                assert len(table.charactors[0].status) == 1
-                assert table.charactors[0].status[0].name == 'Satiated'
+                assert len(table.characters[0].status) == 1
+                assert table.characters[0].status[0].name == 'Satiated'
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
-                        assert req.targets[0].charactor_idx == 1
-                        assert req.targets[1].charactor_idx == 2
+                        assert req.targets[0].character_idx == 1
+                        assert req.targets[1].character_idx == 2
             elif test_id == 4:
-                assert len(match.player_tables[0].charactors[0].status) == 0
+                assert len(match.player_tables[0].characters[0].status) == 0
                 cards = 0
                 for req in match.requests:
                     if req.name == 'UseCardRequest':
@@ -214,9 +214,9 @@ def test_lotus_flower_crisp():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -238,7 +238,7 @@ def test_lotus_flower_crisp():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -270,8 +270,8 @@ def test_lotus_flower_crisp():
                 check_hp(match, hps)
             elif test_id == 3:
                 table = match.player_tables[0]
-                assert len(table.charactors[0].status) == 1
-                assert table.charactors[0].status[0].name == 'Satiated'
+                assert len(table.characters[0].status) == 1
+                assert table.characters[0].status[0].name == 'Satiated'
             elif test_id == 4:
                 cards = 0
                 for req in match.requests:
@@ -279,20 +279,20 @@ def test_lotus_flower_crisp():
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
-                        assert req.targets[0].charactor_idx == 0
-                        assert req.targets[1].charactor_idx == 2
+                        assert req.targets[0].character_idx == 0
+                        assert req.targets[1].character_idx == 2
                         cards += 1
                 assert cards > 0
             elif test_id == 5:
                 table = match.player_tables[0]
-                assert len(table.charactors[0].status) == 2
+                assert len(table.characters[0].status) == 2
             elif test_id == 6:
                 for req in match.requests:
                     assert req.name != 'UseCardRequest'
             elif test_id == 7:
                 table = match.player_tables[1]
-                for charactor in table.charactors:
-                    assert len(charactor.status) == 0
+                for character in table.characters:
+                    assert len(character.status) == 0
             else:
                 break
         # respond
@@ -355,9 +355,9 @@ def test_lotus_flower_crisp_and_reflection():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -379,7 +379,7 @@ def test_lotus_flower_crisp_and_reflection():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -411,8 +411,8 @@ def test_lotus_flower_crisp_and_reflection():
                 check_hp(match, hps)
             elif test_id == 3:
                 table = match.player_tables[0]
-                assert len(table.charactors[0].status) == 1
-                assert table.charactors[0].status[0].name == 'Satiated'
+                assert len(table.characters[0].status) == 1
+                assert table.characters[0].status[0].name == 'Satiated'
             elif test_id == 4:
                 cards = 0
                 for req in match.requests:
@@ -420,13 +420,13 @@ def test_lotus_flower_crisp_and_reflection():
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
-                        assert req.targets[0].charactor_idx == 0
-                        assert req.targets[1].charactor_idx == 2
+                        assert req.targets[0].character_idx == 0
+                        assert req.targets[1].character_idx == 2
                         cards += 1
                 assert cards > 0
             elif test_id == 5:
                 table = match.player_tables[0]
-                assert len(table.charactors[0].status) == 2
+                assert len(table.characters[0].status) == 2
             elif test_id == 6:
                 # "TEST 6 5 7 10 8 9 7 and reflection remain usage",
                 check_hp(match, [[5, 7, 10], [8, 9, 7]])
@@ -480,9 +480,9 @@ def test_mond_hash():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -505,7 +505,7 @@ def test_mond_hash():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -600,9 +600,9 @@ def test_tandoori():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -627,7 +627,7 @@ def test_tandoori():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
@@ -660,27 +660,27 @@ def test_tandoori():
                         count += 1
                 assert count == 5
             elif test_id == 3:
-                charactors = match.player_tables[0].charactors
-                assert len(charactors[0].status) == 2
-                assert len(charactors[1].status) == 2
-                assert len(charactors[2].status) == 1
+                characters = match.player_tables[0].characters
+                assert len(characters[0].status) == 2
+                assert len(characters[1].status) == 2
+                assert len(characters[2].status) == 1
                 for req in match.requests:
                     assert req.name != 'UseCardRequest'
             elif test_id == 4:
-                charactors = match.player_tables[0].charactors
-                assert len(charactors[0].status) == 2
-                assert len(charactors[1].status) == 2
-                assert len(charactors[2].status) == 1
+                characters = match.player_tables[0].characters
+                assert len(characters[0].status) == 2
+                assert len(characters[1].status) == 2
+                assert len(characters[2].status) == 1
             elif test_id == 5:
                 hps = [int(x) for x in cmd.strip().split()[2:]]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 6:
-                charactors = match.player_tables[0].charactors
-                assert len(charactors[0].status) == 0
-                assert len(charactors[1].status) == 1
-                assert charactors[1].status[0].name == "Seed of Skandha"
-                assert len(charactors[2].status) == 0
+                characters = match.player_tables[0].characters
+                assert len(characters[0].status) == 0
+                assert len(characters[1].status) == 1
+                assert characters[1].status[0].name == "Seed of Skandha"
+                assert len(characters[2].status) == 0
             else:
                 break
         # respond
@@ -737,15 +737,15 @@ def test_pizza():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:ElectroMobMage
-        charactor:CryoMobMage
-        charactor:Noelle
+        character:ElectroMobMage
+        character:CryoMobMage
+        character:Noelle
         Mushroom Pizza*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -780,7 +780,7 @@ def test_pizza():
                     assert req.name != 'UseCardRequest'
             elif test_id == 3:
                 cmd = cmd.split()
-                status = match.player_tables[1].charactors[0].status
+                status = match.player_tables[1].characters[0].status
                 usages = [int(x) for x in cmd[4:]]
                 assert len(usages) == len(status)
                 for s, u in zip(status, usages):
@@ -857,16 +857,16 @@ def test_full_and_tandoori():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Rhodeia of Loch
-        charactor:Nahida
+        character:Fischl
+        character:Rhodeia of Loch
+        character:Nahida
         Mushroom Pizza*15
         Tandoori Roast Chicken*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -956,15 +956,15 @@ def test_north_chicken():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Arataki Itto
-        charactor:Mona
-        charactor:Nahida
+        character:Arataki Itto
+        character:Mona
+        character:Nahida
         Northern Smoked Chicken*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1004,7 +1004,7 @@ def test_north_chicken():
                         if req.skill_idx == sidx:
                             assert req.cost.total_dice_cost == c
             elif test_id == 3:
-                assert len(match.player_tables[0].charactors[0].status) == 1
+                assert len(match.player_tables[0].characters[0].status) == 1
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -1061,16 +1061,16 @@ def test_north_chicken_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Arataki Itto
-        charactor:Mona
-        charactor:Nahida
+        character:Arataki Itto
+        character:Mona
+        character:Nahida
         Northern Smoked Chicken*15
         Laurel Coronet*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1094,7 +1094,7 @@ def test_north_chicken_2():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
-                assert len(match.player_tables[0].charactors[0].status) == 3
+                assert len(match.player_tables[0].characters[0].status) == 3
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -1203,9 +1203,9 @@ def test_guoba_meatroll_egg_sashimi_crab():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Ganyu
-        charactor:Fischl
-        charactor:Keqing
+        character:Ganyu
+        character:Fischl
+        character:Keqing
         Jueyun Guoba*5
         Minty Meat Rolls*5
         Minty Meat Rolls@3.3*5
@@ -1216,7 +1216,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1251,7 +1251,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
                 usage = [int(x) for x in cmd[4:]]
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 assert len(status) == len(usage)
                 for s, u in zip(status, usage):
                     assert s.usage == u
@@ -1324,16 +1324,16 @@ def test_meatroll():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Arataki Itto
-        charactor:Mona
-        charactor:Nahida
+        character:Arataki Itto
+        character:Mona
+        character:Nahida
         Minty Meat Rolls*15
         Laurel Coronet*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1357,7 +1357,7 @@ def test_meatroll():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
-                assert len(match.player_tables[0].charactors[0].status) == 3
+                assert len(match.player_tables[0].characters[0].status) == 3
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -1429,9 +1429,9 @@ def test_guoba_egg():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Ganyu
-        charactor:Fischl
-        charactor:Keqing
+        character:Ganyu
+        character:Fischl
+        character:Keqing
         Jueyun Guoba*5
         Minty Meat Rolls*5
         Minty Meat Rolls@3.3*5
@@ -1442,7 +1442,7 @@ def test_guoba_egg():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

@@ -368,7 +368,7 @@
     "descs": {
       "4.2": {
         "zh-CN": "入场时：治疗所附属角色3点。我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个）角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。（角色最多装备1件「圣遗物」）",
-        "en-US": "When played: Heal this charactor by 3 HP. For every 3 HP of healing your characters receive, this card accumulates 1 Sea-Dyed Foam (maximum of 2). When this character deals DMG: Consume all Sea-Dyed Foam. DMG is increased by 1 for each Sea-Dyed Foam consumed. (Characters can equip at most 1 Artifact)"
+        "en-US": "When played: Heal this character by 3 HP. For every 3 HP of healing your characters receive, this card accumulates 1 Sea-Dyed Foam (maximum of 2). When this character deals DMG: Consume all Sea-Dyed Foam. DMG is increased by 1 for each Sea-Dyed Foam consumed. (Characters can equip at most 1 Artifact)"
       }
     },
     "id": 312016
@@ -1352,7 +1352,7 @@
     },
     "image_path": "cardface/Event_Event_Fengyuziyou.png"
   },
-  "CHARACTOR/Abyss Lector: Fathomless Flames": {
+  "CHARACTER/Abyss Lector: Fathomless Flames": {
     "names": {
       "zh-CN": "深渊咏者·渊火",
       "en-US": "Abyss Lector: Fathomless Flames"
@@ -1366,7 +1366,7 @@
     "id": 2302,
     "image_path": "cardface/Char_Monster_DeaconFire.png"
   },
-  "CHARACTOR/Albedo": {
+  "CHARACTER/Albedo": {
     "names": {
       "zh-CN": "阿贝多",
       "en-US": "Albedo"
@@ -1380,7 +1380,7 @@
     "id": 1604,
     "image_path": "cardface/Char_Avatar_Albedo.png"
   },
-  "CHARACTOR/Amber": {
+  "CHARACTER/Amber": {
     "names": {
       "zh-CN": "安柏",
       "en-US": "Amber"
@@ -1394,7 +1394,7 @@
     "id": 1304,
     "image_path": "cardface/Char_Avatar_Ambor.png"
   },
-  "CHARACTOR/AnemoMob": {
+  "CHARACTER/AnemoMob": {
     "names": {
       "zh-CN": "风元素路人",
       "en-US": "AnemoMob"
@@ -1408,7 +1408,7 @@
     "id": 9501,
     "image_path": "cardface/custom/Anemo Mob.png"
   },
-  "CHARACTOR/AnemoMobMage": {
+  "CHARACTER/AnemoMobMage": {
     "names": {
       "zh-CN": "风元素法师",
       "en-US": "AnemoMobMage"
@@ -1422,7 +1422,7 @@
     "id": 9502,
     "image_path": "cardface/custom/Anemo Mob Mage.png"
   },
-  "CHARACTOR/Arataki Itto": {
+  "CHARACTER/Arataki Itto": {
     "names": {
       "zh-CN": "荒泷一斗",
       "en-US": "Arataki Itto"
@@ -1440,7 +1440,7 @@
     "id": 1605,
     "image_path": "cardface/Char_Avatar_Itto.png"
   },
-  "CHARACTOR/Baizhu": {
+  "CHARACTER/Baizhu": {
     "names": {
       "zh-CN": "白术",
       "en-US": "Baizhu"
@@ -1453,7 +1453,7 @@
     },
     "id": 1705
   },
-  "CHARACTOR/Barbara": {
+  "CHARACTER/Barbara": {
     "names": {
       "zh-CN": "芭芭拉",
       "en-US": "Barbara"
@@ -1467,7 +1467,7 @@
     "id": 1201,
     "image_path": "cardface/Char_Avatar_Barbara.png"
   },
-  "CHARACTOR/Beidou": {
+  "CHARACTER/Beidou": {
     "names": {
       "zh-CN": "北斗",
       "en-US": "Beidou"
@@ -1485,7 +1485,7 @@
     "id": 1405,
     "image_path": "cardface/Char_Avatar_Beidou.png"
   },
-  "CHARACTOR/Bennett": {
+  "CHARACTER/Bennett": {
     "names": {
       "zh-CN": "班尼特",
       "en-US": "Bennett"
@@ -1499,7 +1499,7 @@
     "id": 1303,
     "image_path": "cardface/Char_Avatar_Bennett.png"
   },
-  "CHARACTOR/Candace": {
+  "CHARACTER/Candace": {
     "names": {
       "zh-CN": "坎蒂丝",
       "en-US": "Candace"
@@ -1513,7 +1513,7 @@
     "id": 1207,
     "image_path": "cardface/Char_Avatar_Candace.png"
   },
-  "CHARACTOR/Chongyun": {
+  "CHARACTER/Chongyun": {
     "names": {
       "zh-CN": "重云",
       "en-US": "Chongyun"
@@ -1527,7 +1527,7 @@
     "id": 1104,
     "image_path": "cardface/Char_Avatar_Chongyun.png"
   },
-  "CHARACTOR/Collei": {
+  "CHARACTER/Collei": {
     "names": {
       "zh-CN": "柯莱",
       "en-US": "Collei"
@@ -1541,7 +1541,7 @@
     "id": 1701,
     "image_path": "cardface/Char_Avatar_Collei.png"
   },
-  "CHARACTOR/CryoMob": {
+  "CHARACTER/CryoMob": {
     "names": {
       "zh-CN": "冰元素路人",
       "en-US": "CryoMob"
@@ -1555,7 +1555,7 @@
     "id": 9101,
     "image_path": "cardface/custom/Cryo Mob.png"
   },
-  "CHARACTOR/CryoMobMage": {
+  "CHARACTER/CryoMobMage": {
     "names": {
       "zh-CN": "冰元素法师",
       "en-US": "CryoMobMage"
@@ -1569,7 +1569,7 @@
     "id": 9102,
     "image_path": "cardface/custom/Cryo Mob Mage.png"
   },
-  "CHARACTOR/Cyno": {
+  "CHARACTER/Cyno": {
     "names": {
       "zh-CN": "赛诺",
       "en-US": "Cyno"
@@ -1583,7 +1583,7 @@
     "id": 1404,
     "image_path": "cardface/Char_Avatar_Cyno.png"
   },
-  "CHARACTOR/Dehya": {
+  "CHARACTER/Dehya": {
     "names": {
       "zh-CN": "迪希雅",
       "en-US": "Dehya"
@@ -1597,7 +1597,7 @@
     "id": 1309,
     "image_path": "cardface/Char_Avatar_Dehya.png"
   },
-  "CHARACTOR/DendroMob": {
+  "CHARACTER/DendroMob": {
     "names": {
       "zh-CN": "草元素路人",
       "en-US": "DendroMob"
@@ -1611,7 +1611,7 @@
     "id": 9701,
     "image_path": "cardface/custom/Dendro Mob.png"
   },
-  "CHARACTOR/DendroMobMage": {
+  "CHARACTER/DendroMobMage": {
     "names": {
       "zh-CN": "草元素法师",
       "en-US": "DendroMobMage"
@@ -1625,7 +1625,7 @@
     "id": 9702,
     "image_path": "cardface/custom/Dendro Mob Mage.png"
   },
-  "CHARACTOR/Diluc": {
+  "CHARACTER/Diluc": {
     "names": {
       "zh-CN": "迪卢克",
       "en-US": "Diluc"
@@ -1639,7 +1639,7 @@
     "id": 1301,
     "image_path": "cardface/Char_Avatar_Diluc.png"
   },
-  "CHARACTOR/Diona": {
+  "CHARACTER/Diona": {
     "names": {
       "zh-CN": "迪奥娜",
       "en-US": "Diona"
@@ -1653,7 +1653,7 @@
     "id": 1102,
     "image_path": "cardface/Char_Avatar_Diona.png"
   },
-  "CHARACTOR/Dori": {
+  "CHARACTER/Dori": {
     "names": {
       "zh-CN": "多莉",
       "en-US": "Dori"
@@ -1666,7 +1666,7 @@
     },
     "id": 1410
   },
-  "CHARACTOR/Electro Hypostasis": {
+  "CHARACTER/Electro Hypostasis": {
     "names": {
       "zh-CN": "无相之雷",
       "en-US": "Electro Hypostasis"
@@ -1680,7 +1680,7 @@
     "id": 2401,
     "image_path": "cardface/Char_Monster_Effigyelectric.png"
   },
-  "CHARACTOR/ElectroMob": {
+  "CHARACTER/ElectroMob": {
     "names": {
       "zh-CN": "雷元素路人",
       "en-US": "ElectroMob"
@@ -1694,7 +1694,7 @@
     "id": 9401,
     "image_path": "cardface/custom/Electro Mob.png"
   },
-  "CHARACTOR/ElectroMobMage": {
+  "CHARACTER/ElectroMobMage": {
     "names": {
       "zh-CN": "雷元素法师",
       "en-US": "ElectroMobMage"
@@ -1708,7 +1708,7 @@
     "id": 9402,
     "image_path": "cardface/custom/Electro Mob Mage.png"
   },
-  "CHARACTOR/Eula": {
+  "CHARACTER/Eula": {
     "names": {
       "zh-CN": "优菈",
       "en-US": "Eula"
@@ -1726,7 +1726,7 @@
     "id": 1106,
     "image_path": "cardface/Char_Avatar_Eula.png"
   },
-  "CHARACTOR/Fatui Cryo Cicin Mage": {
+  "CHARACTER/Fatui Cryo Cicin Mage": {
     "names": {
       "zh-CN": "愚人众·冰萤术士",
       "en-US": "Fatui Cryo Cicin Mage"
@@ -1744,7 +1744,7 @@
     "id": 2101,
     "image_path": "cardface/Char_Monster_FatuusMageice.png"
   },
-  "CHARACTOR/Fatui Pyro Agent": {
+  "CHARACTER/Fatui Pyro Agent": {
     "names": {
       "zh-CN": "愚人众·火之债务处理人",
       "en-US": "Fatui Pyro Agent"
@@ -1758,7 +1758,7 @@
     "id": 2301,
     "image_path": "cardface/Char_Monster_Fatuus.png"
   },
-  "CHARACTOR/Fischl": {
+  "CHARACTER/Fischl": {
     "names": {
       "zh-CN": "菲谢尔",
       "en-US": "Fischl"
@@ -1772,7 +1772,7 @@
     "id": 1401,
     "image_path": "cardface/Char_Avatar_Fischl.png"
   },
-  "CHARACTOR/Ganyu": {
+  "CHARACTER/Ganyu": {
     "names": {
       "zh-CN": "甘雨",
       "en-US": "Ganyu"
@@ -1790,7 +1790,7 @@
     "id": 1101,
     "image_path": "cardface/Char_Avatar_Ganyu.png"
   },
-  "CHARACTOR/GeoMob": {
+  "CHARACTER/GeoMob": {
     "names": {
       "zh-CN": "岩元素路人",
       "en-US": "GeoMob"
@@ -1804,7 +1804,7 @@
     "id": 9601,
     "image_path": "cardface/custom/Geo Mob.png"
   },
-  "CHARACTOR/GeoMobMage": {
+  "CHARACTER/GeoMobMage": {
     "names": {
       "zh-CN": "岩元素法师",
       "en-US": "GeoMobMage"
@@ -1818,7 +1818,7 @@
     "id": 9602,
     "image_path": "cardface/custom/Geo Mob Mage.png"
   },
-  "CHARACTOR/Hu Tao": {
+  "CHARACTER/Hu Tao": {
     "names": {
       "zh-CN": "胡桃",
       "en-US": "Hu Tao"
@@ -1832,7 +1832,7 @@
     "id": 1307,
     "image_path": "cardface/Char_Avatar_Hutao.png"
   },
-  "CHARACTOR/HydroMob": {
+  "CHARACTER/HydroMob": {
     "names": {
       "zh-CN": "水元素路人",
       "en-US": "HydroMob"
@@ -1846,7 +1846,7 @@
     "id": 9201,
     "image_path": "cardface/custom/Hydro Mob.png"
   },
-  "CHARACTOR/HydroMobMage": {
+  "CHARACTER/HydroMobMage": {
     "names": {
       "zh-CN": "水元素法师",
       "en-US": "HydroMobMage"
@@ -1860,7 +1860,7 @@
     "id": 9202,
     "image_path": "cardface/custom/Hydro Mob Mage.png"
   },
-  "CHARACTOR/Jadeplume Terrorshroom": {
+  "CHARACTER/Jadeplume Terrorshroom": {
     "names": {
       "zh-CN": "翠翎恐蕈",
       "en-US": "Jadeplume Terrorshroom"
@@ -1874,7 +1874,7 @@
     "id": 2701,
     "image_path": "cardface/Char_Monster_Fungusgrass.png"
   },
-  "CHARACTOR/Jean": {
+  "CHARACTER/Jean": {
     "names": {
       "zh-CN": "琴",
       "en-US": "Jean"
@@ -1892,7 +1892,7 @@
     "id": 1502,
     "image_path": "cardface/Char_Avatar_Qin.png"
   },
-  "CHARACTOR/Kaedehara Kazuha": {
+  "CHARACTER/Kaedehara Kazuha": {
     "names": {
       "zh-CN": "枫原万叶",
       "en-US": "Kaedehara Kazuha"
@@ -1906,7 +1906,7 @@
     "id": 1505,
     "image_path": "cardface/Char_Avatar_Kazuha.png"
   },
-  "CHARACTOR/Kaeya": {
+  "CHARACTER/Kaeya": {
     "names": {
       "zh-CN": "凯亚",
       "en-US": "Kaeya"
@@ -1920,7 +1920,7 @@
     "id": 1103,
     "image_path": "cardface/Char_Avatar_Kaeya.png"
   },
-  "CHARACTOR/Kamisato Ayaka": {
+  "CHARACTER/Kamisato Ayaka": {
     "names": {
       "zh-CN": "神里绫华",
       "en-US": "Kamisato Ayaka"
@@ -1934,7 +1934,7 @@
     "id": 1105,
     "image_path": "cardface/Char_Avatar_Ayaka.png"
   },
-  "CHARACTOR/Kamisato Ayato": {
+  "CHARACTER/Kamisato Ayato": {
     "names": {
       "zh-CN": "神里绫人",
       "en-US": "Kamisato Ayato"
@@ -1952,7 +1952,7 @@
     "id": 1206,
     "image_path": "cardface/Char_Avatar_Ayato.png"
   },
-  "CHARACTOR/Keqing": {
+  "CHARACTER/Keqing": {
     "names": {
       "zh-CN": "刻晴",
       "en-US": "Keqing"
@@ -1966,7 +1966,7 @@
     "id": 1403,
     "image_path": "cardface/Char_Avatar_Keqing.png"
   },
-  "CHARACTOR/Klee": {
+  "CHARACTER/Klee": {
     "names": {
       "zh-CN": "可莉",
       "en-US": "Klee"
@@ -1980,7 +1980,7 @@
     "id": 1306,
     "image_path": "cardface/Char_Avatar_Klee.png"
   },
-  "CHARACTOR/Kujou Sara": {
+  "CHARACTER/Kujou Sara": {
     "names": {
       "zh-CN": "九条裟罗",
       "en-US": "Kujou Sara"
@@ -1994,7 +1994,7 @@
     "id": 1406,
     "image_path": "cardface/Char_Avatar_Sara.png"
   },
-  "CHARACTOR/Lisa": {
+  "CHARACTER/Lisa": {
     "names": {
       "zh-CN": "丽莎",
       "en-US": "Lisa"
@@ -2008,7 +2008,7 @@
     "id": 1409,
     "image_path": "cardface/Char_Avatar_Lisa.png"
   },
-  "CHARACTOR/Maguu Kenki": {
+  "CHARACTER/Maguu Kenki": {
     "names": {
       "zh-CN": "魔偶剑鬼",
       "en-US": "Maguu Kenki"
@@ -2026,7 +2026,7 @@
     "id": 2501,
     "image_path": "cardface/Char_Monster_Ningyo.png"
   },
-  "CHARACTOR/Mirror Maiden": {
+  "CHARACTER/Mirror Maiden": {
     "names": {
       "zh-CN": "愚人众·藏镜仕女",
       "en-US": "Mirror Maiden"
@@ -2044,7 +2044,7 @@
     "id": 2202,
     "image_path": "cardface/Char_Monster_Maidenwater.png"
   },
-  "CHARACTOR/Mona": {
+  "CHARACTER/Mona": {
     "names": {
       "zh-CN": "莫娜",
       "en-US": "Mona"
@@ -2058,7 +2058,7 @@
     "id": 1203,
     "image_path": "cardface/Char_Avatar_Mona.png"
   },
-  "CHARACTOR/Nahida": {
+  "CHARACTER/Nahida": {
     "names": {
       "zh-CN": "纳西妲",
       "en-US": "Nahida"
@@ -2072,7 +2072,7 @@
     "id": 1703,
     "image_path": "cardface/Char_Avatar_Nahida.png"
   },
-  "CHARACTOR/Nilou": {
+  "CHARACTER/Nilou": {
     "names": {
       "zh-CN": "妮露",
       "en-US": "Nilou"
@@ -2085,7 +2085,7 @@
     },
     "id": 1208
   },
-  "CHARACTOR/Ningguang": {
+  "CHARACTER/Ningguang": {
     "names": {
       "zh-CN": "凝光",
       "en-US": "Ningguang"
@@ -2099,7 +2099,7 @@
     "id": 1601,
     "image_path": "cardface/Char_Avatar_Ningguang.png"
   },
-  "CHARACTOR/Noelle": {
+  "CHARACTER/Noelle": {
     "names": {
       "zh-CN": "诺艾尔",
       "en-US": "Noelle"
@@ -2113,7 +2113,7 @@
     "id": 1602,
     "image_path": "cardface/Char_Avatar_Noel.png"
   },
-  "CHARACTOR/PhysicalMob": {
+  "CHARACTER/PhysicalMob": {
     "names": {
       "zh-CN": "物理路人",
       "en-US": "PhysicalMob"
@@ -2127,7 +2127,7 @@
     "id": 9801,
     "image_path": "cardface/custom/Physical Mob.png"
   },
-  "CHARACTOR/PyroMob": {
+  "CHARACTER/PyroMob": {
     "names": {
       "zh-CN": "火元素路人",
       "en-US": "PyroMob"
@@ -2141,7 +2141,7 @@
     "id": 9301,
     "image_path": "cardface/custom/Pyro Mob.png"
   },
-  "CHARACTOR/PyroMobMage": {
+  "CHARACTER/PyroMobMage": {
     "names": {
       "zh-CN": "火元素法师",
       "en-US": "PyroMobMage"
@@ -2155,7 +2155,7 @@
     "id": 9302,
     "image_path": "cardface/custom/Pyro Mob Mage.png"
   },
-  "CHARACTOR/Qiqi": {
+  "CHARACTER/Qiqi": {
     "names": {
       "zh-CN": "七七",
       "en-US": "Qiqi"
@@ -2169,7 +2169,7 @@
     "id": 1108,
     "image_path": "cardface/Char_Avatar_Qiqi.png"
   },
-  "CHARACTOR/Raiden Shogun": {
+  "CHARACTER/Raiden Shogun": {
     "names": {
       "zh-CN": "雷电将军",
       "en-US": "Raiden Shogun"
@@ -2183,7 +2183,7 @@
     "id": 1407,
     "image_path": "cardface/Char_Avatar_Shougun.png"
   },
-  "CHARACTOR/Razor": {
+  "CHARACTER/Razor": {
     "names": {
       "zh-CN": "雷泽",
       "en-US": "Razor"
@@ -2201,7 +2201,7 @@
     "id": 1402,
     "image_path": "cardface/Char_Avatar_Razor.png"
   },
-  "CHARACTOR/Rhodeia of Loch": {
+  "CHARACTER/Rhodeia of Loch": {
     "names": {
       "zh-CN": "纯水精灵·洛蒂娅",
       "en-US": "Rhodeia of Loch"
@@ -2219,7 +2219,7 @@
     "id": 2201,
     "image_path": "cardface/Char_Monster_Oceanid.png"
   },
-  "CHARACTOR/Sangonomiya Kokomi": {
+  "CHARACTER/Sangonomiya Kokomi": {
     "names": {
       "zh-CN": "珊瑚宫心海",
       "en-US": "Sangonomiya Kokomi"
@@ -2237,7 +2237,7 @@
     "id": 1205,
     "image_path": "cardface/Char_Avatar_Kokomi.png"
   },
-  "CHARACTOR/Shenhe": {
+  "CHARACTER/Shenhe": {
     "names": {
       "zh-CN": "申鹤",
       "en-US": "Shenhe"
@@ -2255,7 +2255,7 @@
     "id": 1107,
     "image_path": "cardface/Char_Avatar_Shenhe.png"
   },
-  "CHARACTOR/Stonehide Lawachurl": {
+  "CHARACTER/Stonehide Lawachurl": {
     "names": {
       "zh-CN": "丘丘岩盔王",
       "en-US": "Stonehide Lawachurl"
@@ -2269,7 +2269,7 @@
     "id": 2601,
     "image_path": "cardface/Char_Monster_Bruterock.png"
   },
-  "CHARACTOR/Sucrose": {
+  "CHARACTER/Sucrose": {
     "names": {
       "zh-CN": "砂糖",
       "en-US": "Sucrose"
@@ -2283,7 +2283,7 @@
     "id": 1501,
     "image_path": "cardface/Char_Avatar_Sucrose.png"
   },
-  "CHARACTOR/Tartaglia": {
+  "CHARACTER/Tartaglia": {
     "names": {
       "zh-CN": "达达利亚",
       "en-US": "Tartaglia"
@@ -2301,7 +2301,7 @@
     "id": 1204,
     "image_path": "cardface/Char_Avatar_Tartaglia.png"
   },
-  "CHARACTOR/Tighnari": {
+  "CHARACTER/Tighnari": {
     "names": {
       "zh-CN": "提纳里",
       "en-US": "Tighnari"
@@ -2315,7 +2315,7 @@
     "id": 1702,
     "image_path": "cardface/Char_Avatar_Tighnari.png"
   },
-  "CHARACTOR/Venti": {
+  "CHARACTER/Venti": {
     "names": {
       "zh-CN": "温迪",
       "en-US": "Venti"
@@ -2329,7 +2329,7 @@
     "id": 1503,
     "image_path": "cardface/Char_Avatar_Venti.png"
   },
-  "CHARACTOR/Wanderer": {
+  "CHARACTER/Wanderer": {
     "names": {
       "zh-CN": "流浪者",
       "en-US": "Wanderer"
@@ -2343,7 +2343,7 @@
     "id": 1506,
     "image_path": "cardface/Char_Avatar_Wanderer.png"
   },
-  "CHARACTOR/Xiangling": {
+  "CHARACTER/Xiangling": {
     "names": {
       "zh-CN": "香菱",
       "en-US": "Xiangling"
@@ -2361,7 +2361,7 @@
     "id": 1302,
     "image_path": "cardface/Char_Avatar_Xiangling.png"
   },
-  "CHARACTOR/Xiao": {
+  "CHARACTER/Xiao": {
     "names": {
       "zh-CN": "魈",
       "en-US": "Xiao"
@@ -2375,7 +2375,7 @@
     "id": 1504,
     "image_path": "cardface/Char_Avatar_Xiao.png"
   },
-  "CHARACTOR/Xingqiu": {
+  "CHARACTER/Xingqiu": {
     "names": {
       "zh-CN": "行秋",
       "en-US": "Xingqiu"
@@ -2401,7 +2401,7 @@
     "id": 1202,
     "image_path": "cardface/Char_Avatar_Xingqiu.png"
   },
-  "CHARACTOR/Yae Miko": {
+  "CHARACTER/Yae Miko": {
     "names": {
       "zh-CN": "八重神子",
       "en-US": "Yae Miko"
@@ -2415,7 +2415,7 @@
     "id": 1408,
     "image_path": "cardface/Char_Avatar_Yae.png"
   },
-  "CHARACTOR/Yanfei": {
+  "CHARACTER/Yanfei": {
     "names": {
       "zh-CN": "烟绯",
       "en-US": "Yanfei"
@@ -2433,7 +2433,7 @@
     "id": 1308,
     "image_path": "cardface/Char_Avatar_Feiyan.png"
   },
-  "CHARACTOR/Yaoyao": {
+  "CHARACTER/Yaoyao": {
     "names": {
       "zh-CN": "瑶瑶",
       "en-US": "Yaoyao"
@@ -2447,7 +2447,7 @@
     "id": 1704,
     "image_path": "cardface/Char_Avatar_Yaoyao.png"
   },
-  "CHARACTOR/Yoimiya": {
+  "CHARACTER/Yoimiya": {
     "names": {
       "zh-CN": "宵宫",
       "en-US": "Yoimiya"
@@ -2469,7 +2469,7 @@
     "id": 1305,
     "image_path": "cardface/Char_Avatar_Yoimiya.png"
   },
-  "CHARACTOR/Zhongli": {
+  "CHARACTER/Zhongli": {
     "names": {
       "zh-CN": "钟离",
       "en-US": "Zhongli"
@@ -2483,7 +2483,7 @@
     "id": 1603,
     "image_path": "cardface/Char_Avatar_Zhongli.png"
   },
-  "CHARACTOR_STATUS/Adeptus' Temptation": {
+  "CHARACTER_STATUS/Adeptus' Temptation": {
     "names": {
       "zh-CN": "仙跳墙",
       "en-US": "Adeptus' Temptation"
@@ -2497,7 +2497,7 @@
     "id": 333002,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Aegis of Abyssal Flame": {
+  "CHARACTER_STATUS/Aegis of Abyssal Flame": {
     "names": {
       "zh-CN": "渊火加护",
       "en-US": "Aegis of Abyssal Flame"
@@ -2510,7 +2510,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Blood Blossom": {
+  "CHARACTER_STATUS/Blood Blossom": {
     "names": {
       "zh-CN": "血梅香",
       "en-US": "Blood Blossom"
@@ -2523,7 +2523,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Brilliance": {
+  "CHARACTER_STATUS/Brilliance": {
     "names": {
       "zh-CN": "灼灼",
       "en-US": "Brilliance"
@@ -2536,7 +2536,7 @@
     },
     "image_path": "status/Feiyan_E.png"
   },
-  "CHARACTOR_STATUS/Butter Crab": {
+  "CHARACTER_STATUS/Butter Crab": {
     "names": {
       "zh-CN": "黄油蟹蟹",
       "en-US": "Butter Crab"
@@ -2550,7 +2550,7 @@
     "id": 333012,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Ceremonial Garment": {
+  "CHARACTER_STATUS/Ceremonial Garment": {
     "names": {
       "zh-CN": "仪来羽衣",
       "en-US": "Ceremonial Garment"
@@ -2563,7 +2563,7 @@
     },
     "image_path": "status/Kokomi_E.png"
   },
-  "CHARACTOR_STATUS/Chakra Desiderata": {
+  "CHARACTER_STATUS/Chakra Desiderata": {
     "names": {
       "zh-CN": "诸愿百眼之轮",
       "en-US": "Chakra Desiderata"
@@ -2576,7 +2576,7 @@
     },
     "image_path": "status/Shougun_E.png"
   },
-  "CHARACTOR_STATUS/Conductive": {
+  "CHARACTER_STATUS/Conductive": {
     "names": {
       "zh-CN": "引雷",
       "en-US": "Conductive"
@@ -2589,7 +2589,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Crowfeather Cover": {
+  "CHARACTER_STATUS/Crowfeather Cover": {
     "names": {
       "zh-CN": "鸣煌护持",
       "en-US": "Crowfeather Cover"
@@ -2602,7 +2602,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Cryo Elemental Infusion": {
+  "CHARACTER_STATUS/Cryo Elemental Infusion": {
     "names": {
       "zh-CN": "冰元素附魔",
       "en-US": "Cryo Elemental Infusion"
@@ -2610,12 +2610,12 @@
     "descs": {
       "3.3": {
         "zh-CN": "所附属角色造成的物理伤害变为冰元素伤害。\n（持续到回合结束）",
-        "en-US": "When the charactor to which it is attached to deals Physical Damage, it will be turned into CRYO DMG. "
+        "en-US": "When the character to which it is attached to deals Physical Damage, it will be turned into CRYO DMG. "
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Electro Crystal Core": {
+  "CHARACTER_STATUS/Electro Crystal Core": {
     "names": {
       "zh-CN": "雷晶核心",
       "en-US": "Electro Crystal Core"
@@ -2628,7 +2628,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Electro Elemental Infusion": {
+  "CHARACTER_STATUS/Electro Elemental Infusion": {
     "names": {
       "zh-CN": "雷元素附魔",
       "en-US": "Electro Elemental Infusion"
@@ -2636,12 +2636,12 @@
     "descs": {
       "3.3": {
         "zh-CN": "所附属角色造成的物理伤害变为雷元素伤害。\n持续回合：2",
-        "en-US": "When the charactor to which it is attached to deals Physical Damage, it will be turned into ELECTRO DMG. "
+        "en-US": "When the character to which it is attached to deals Physical Damage, it will be turned into ELECTRO DMG. "
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Elemental Resonance: Fervent Flames": {
+  "CHARACTER_STATUS/Elemental Resonance: Fervent Flames": {
     "names": {
       "zh-CN": "元素共鸣：热诚之火",
       "en-US": "Elemental Resonance: Fervent Flames"
@@ -2655,7 +2655,7 @@
     "id": 331302,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Elemental Resonance: Shattering Ice": {
+  "CHARACTER_STATUS/Elemental Resonance: Shattering Ice": {
     "names": {
       "zh-CN": "元素共鸣：粉碎之冰",
       "en-US": "Elemental Resonance: Shattering Ice"
@@ -2669,7 +2669,7 @@
     "id": 331102,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Explosive Spark": {
+  "CHARACTER_STATUS/Explosive Spark": {
     "names": {
       "zh-CN": "爆裂火花",
       "en-US": "Explosive Spark"
@@ -2682,7 +2682,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Fiery Rebirth": {
+  "CHARACTER_STATUS/Fiery Rebirth": {
     "names": {
       "zh-CN": "火之新生",
       "en-US": "Fiery Rebirth"
@@ -2695,7 +2695,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Frozen": {
+  "CHARACTER_STATUS/Frozen": {
     "names": {
       "zh-CN": "冻结",
       "en-US": "Frozen"
@@ -2703,12 +2703,12 @@
     "descs": {
       "3.3": {
         "zh-CN": "无法使用技能。（持续到回合结束）\n所附属角色受到物理伤害或火属性伤害时：移除此效果，并使该角色受到的伤害+2。",
-        "en-US": "Charactor cannot use skills. (Lasts until the end of this Round) When this charactor receives Pyro DMG or Physical DMG, removes this effect and increases DMG taken by 2."
+        "en-US": "Character cannot use skills. (Lasts until the end of this Round) When this character receives Pyro DMG or Physical DMG, removes this effect and increases DMG taken by 2."
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Grimheart": {
+  "CHARACTER_STATUS/Grimheart": {
     "names": {
       "zh-CN": "冷酷之心",
       "en-US": "Grimheart"
@@ -2725,7 +2725,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Heavy Strike": {
+  "CHARACTER_STATUS/Heavy Strike": {
     "names": {
       "zh-CN": "重攻击",
       "en-US": "Heavy Strike"
@@ -2739,7 +2739,7 @@
     "id": 332018,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Heron Shield": {
+  "CHARACTER_STATUS/Heron Shield": {
     "names": {
       "zh-CN": "苍鹭护盾",
       "en-US": "Heron Shield"
@@ -2752,7 +2752,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Incineration Drive": {
+  "CHARACTER_STATUS/Incineration Drive": {
     "names": {
       "zh-CN": "焚落踢",
       "en-US": "Incineration Drive"
@@ -2765,7 +2765,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Jueyun Guoba": {
+  "CHARACTER_STATUS/Jueyun Guoba": {
     "names": {
       "zh-CN": "绝云锅巴",
       "en-US": "Jueyun Guoba"
@@ -2779,7 +2779,7 @@
     "id": 333001,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/King's Squire": {
+  "CHARACTER_STATUS/King's Squire": {
     "names": {
       "zh-CN": "王下近侍",
       "en-US": "King's Squire"
@@ -2792,7 +2792,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Lingering Aeon": {
+  "CHARACTER_STATUS/Lingering Aeon": {
     "names": {
       "zh-CN": "永世流沔",
       "en-US": "Lingering Aeon"
@@ -2804,7 +2804,7 @@
       }
     }
   },
-  "CHARACTOR_STATUS/Lithic Spear": {
+  "CHARACTER_STATUS/Lithic Spear": {
     "names": {
       "zh-CN": "千岩长枪",
       "en-US": "Lithic Spear"
@@ -2812,12 +2812,12 @@
     "descs": {
       "3.3": {
         "zh-CN": "角色造成的伤害+1入场时：队伍中每有一名「璃月」角色，此牌就为附属的角色提供1点护盾。（最多3点）（「长柄武器」角色才能装备。角色最多装备1件「武器」）",
-        "en-US": "Grants 3 Shield point to defend your active charactor. "
+        "en-US": "Grants 3 Shield point to defend your active character. "
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Lotus Flower Crisp": {
+  "CHARACTER_STATUS/Lotus Flower Crisp": {
     "names": {
       "zh-CN": "莲花酥",
       "en-US": "Lotus Flower Crisp"
@@ -2831,7 +2831,7 @@
     "id": 333003,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Melee Stance": {
+  "CHARACTER_STATUS/Melee Stance": {
     "names": {
       "zh-CN": "近战状态",
       "en-US": "Melee Stance"
@@ -2848,7 +2848,7 @@
     },
     "image_path": "status/Tartaglia_S_01.png"
   },
-  "CHARACTOR_STATUS/Midare Ranzan": {
+  "CHARACTER_STATUS/Midare Ranzan": {
     "names": {
       "zh-CN": "乱岚拨止",
       "en-US": "Midare Ranzan"
@@ -2861,7 +2861,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Midare Ranzan: Cryo": {
+  "CHARACTER_STATUS/Midare Ranzan: Cryo": {
     "names": {
       "zh-CN": "乱岚拨止·冰",
       "en-US": "Midare Ranzan: Cryo"
@@ -2874,7 +2874,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Midare Ranzan: Electro": {
+  "CHARACTER_STATUS/Midare Ranzan: Electro": {
     "names": {
       "zh-CN": "乱岚拨止·雷",
       "en-US": "Midare Ranzan: Electro"
@@ -2887,7 +2887,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Midare Ranzan: Hydro": {
+  "CHARACTER_STATUS/Midare Ranzan: Hydro": {
     "names": {
       "zh-CN": "乱岚拨止·水",
       "en-US": "Midare Ranzan: Hydro"
@@ -2900,7 +2900,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Midare Ranzan: New": {
+  "CHARACTER_STATUS/Midare Ranzan: New": {
     "names": {
       "zh-CN": "乱岚拨止·新",
       "en-US": "Midare Ranzan: New"
@@ -2913,7 +2913,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Midare Ranzan: Pyro": {
+  "CHARACTER_STATUS/Midare Ranzan: Pyro": {
     "names": {
       "zh-CN": "乱岚拨止·火",
       "en-US": "Midare Ranzan: Pyro"
@@ -2926,7 +2926,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Minty Meat Rolls": {
+  "CHARACTER_STATUS/Minty Meat Rolls": {
     "names": {
       "zh-CN": "兽肉薄荷卷",
       "en-US": "Minty Meat Rolls"
@@ -2944,7 +2944,7 @@
     "id": 333008,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Moonpiercer": {
+  "CHARACTER_STATUS/Moonpiercer": {
     "names": {
       "zh-CN": "贯月矢",
       "en-US": "Moonpiercer"
@@ -2957,7 +2957,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Mushroom Pizza": {
+  "CHARACTER_STATUS/Mushroom Pizza": {
     "names": {
       "zh-CN": "烤蘑菇披萨",
       "en-US": "Mushroom Pizza"
@@ -2965,13 +2965,13 @@
     "descs": {
       "3.3": {
         "zh-CN": "治疗目标角色1点，两回合内结束阶段再治疗此角色1点。（每回合每个角色最多食用1次「料理」）",
-        "en-US": "End Phase: Heal this charactor for 1 HP. Usage(s): 2"
+        "en-US": "End Phase: Heal this character for 1 HP. Usage(s): 2"
       }
     },
     "id": 333007,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Niwabi Enshou": {
+  "CHARACTER_STATUS/Niwabi Enshou": {
     "names": {
       "zh-CN": "庭火焰硝",
       "en-US": "Niwabi Enshou"
@@ -2984,7 +2984,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Northern Smoked Chicken": {
+  "CHARACTER_STATUS/Northern Smoked Chicken": {
     "names": {
       "zh-CN": "北地烟熏鸡",
       "en-US": "Northern Smoked Chicken"
@@ -2998,7 +2998,7 @@
     "id": 333004,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Pactsworn Pathclearer": {
+  "CHARACTER_STATUS/Pactsworn Pathclearer": {
     "names": {
       "zh-CN": "启途誓使",
       "en-US": "Pactsworn Pathclearer"
@@ -3011,7 +3011,7 @@
     },
     "image_path": "status/Cyno_E.png"
   },
-  "CHARACTOR_STATUS/Paramita Papilio": {
+  "CHARACTER_STATUS/Paramita Papilio": {
     "names": {
       "zh-CN": "彼岸蝶舞",
       "en-US": "Paramita Papilio"
@@ -3024,7 +3024,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Petrification": {
+  "CHARACTER_STATUS/Petrification": {
     "names": {
       "zh-CN": "石化",
       "en-US": "Petrification"
@@ -3037,7 +3037,7 @@
     },
     "image_path": "status/Zhongli_E.png"
   },
-  "CHARACTOR_STATUS/Pyro Elemental Infusion": {
+  "CHARACTER_STATUS/Pyro Elemental Infusion": {
     "names": {
       "zh-CN": "火元素附魔",
       "en-US": "Pyro Elemental Infusion"
@@ -3045,12 +3045,12 @@
     "descs": {
       "3.3": {
         "zh-CN": "所附属角色造成的物理伤害，变为火元素伤害。\n持续回合：2",
-        "en-US": "When the charactor to which it is attached to deals Physical Damage, it will be turned into PYRO DMG. "
+        "en-US": "When the character to which it is attached to deals Physical Damage, it will be turned into PYRO DMG. "
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Radical Vitality": {
+  "CHARACTER_STATUS/Radical Vitality": {
     "names": {
       "zh-CN": "活化激能",
       "en-US": "Radical Vitality"
@@ -3063,7 +3063,7 @@
     },
     "image_path": "status/FungusRaptor_S.png"
   },
-  "CHARACTOR_STATUS/Raging Oni King": {
+  "CHARACTER_STATUS/Raging Oni King": {
     "names": {
       "zh-CN": "怒目鬼王",
       "en-US": "Raging Oni King"
@@ -3080,7 +3080,7 @@
     },
     "image_path": "status/Itto_E.png"
   },
-  "CHARACTOR_STATUS/Ranged Stance": {
+  "CHARACTER_STATUS/Ranged Stance": {
     "names": {
       "zh-CN": "远程状态",
       "en-US": "Ranged Stance"
@@ -3097,7 +3097,7 @@
     },
     "image_path": "status/Tartaglia_S_02.png"
   },
-  "CHARACTOR_STATUS/Refraction": {
+  "CHARACTER_STATUS/Refraction": {
     "names": {
       "zh-CN": "水光破镜",
       "en-US": "Refraction"
@@ -3110,7 +3110,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Riptide": {
+  "CHARACTER_STATUS/Riptide": {
     "names": {
       "zh-CN": "断流",
       "en-US": "Riptide"
@@ -3127,7 +3127,7 @@
     },
     "image_path": "status/Tartaglia_S_03.png"
   },
-  "CHARACTOR_STATUS/Rock-Paper-Scissors Combo: Paper": {
+  "CHARACTER_STATUS/Rock-Paper-Scissors Combo: Paper": {
     "names": {
       "zh-CN": "猜拳三连击·布",
       "en-US": "Rock-Paper-Scissors Combo: Paper"
@@ -3140,7 +3140,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Rock-Paper-Scissors Combo: Scissors": {
+  "CHARACTER_STATUS/Rock-Paper-Scissors Combo: Scissors": {
     "names": {
       "zh-CN": "猜拳三连击·剪刀",
       "en-US": "Rock-Paper-Scissors Combo: Scissors"
@@ -3153,7 +3153,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Sashimi Platter": {
+  "CHARACTER_STATUS/Sashimi Platter": {
     "names": {
       "zh-CN": "刺身拼盘",
       "en-US": "Sashimi Platter"
@@ -3167,7 +3167,7 @@
     "id": 333010,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Satiated": {
+  "CHARACTER_STATUS/Satiated": {
     "names": {
       "zh-CN": "饱腹",
       "en-US": "Satiated"
@@ -3180,7 +3180,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Scarlet Seal": {
+  "CHARACTER_STATUS/Scarlet Seal": {
     "names": {
       "zh-CN": "丹火印",
       "en-US": "Scarlet Seal"
@@ -3197,7 +3197,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Seed of Skandha": {
+  "CHARACTER_STATUS/Seed of Skandha": {
     "names": {
       "zh-CN": "蕴种印",
       "en-US": "Seed of Skandha"
@@ -3210,7 +3210,7 @@
     },
     "image_path": "status/Nahida_S.png"
   },
-  "CHARACTOR_STATUS/Stealth": {
+  "CHARACTER_STATUS/Stealth": {
     "names": {
       "zh-CN": "潜行",
       "en-US": "Stealth"
@@ -3223,7 +3223,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Stonehide": {
+  "CHARACTER_STATUS/Stonehide": {
     "names": {
       "zh-CN": "坚岩之力",
       "en-US": "Stonehide"
@@ -3236,7 +3236,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Superlative Superstrength": {
+  "CHARACTER_STATUS/Superlative Superstrength": {
     "names": {
       "zh-CN": "乱神之怪力",
       "en-US": "Superlative Superstrength"
@@ -3249,7 +3249,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Sweeping Time": {
+  "CHARACTER_STATUS/Sweeping Time": {
     "names": {
       "zh-CN": "大扫除",
       "en-US": "Sweeping Time"
@@ -3262,7 +3262,7 @@
     },
     "image_path": "status/Noel_E.png"
   },
-  "CHARACTOR_STATUS/Takimeguri Kanka": {
+  "CHARACTER_STATUS/Takimeguri Kanka": {
     "names": {
       "zh-CN": "泷廻鉴花",
       "en-US": "Takimeguri Kanka"
@@ -3275,7 +3275,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Tandoori Roast Chicken": {
+  "CHARACTER_STATUS/Tandoori Roast Chicken": {
     "names": {
       "zh-CN": "唐杜尔烤鸡",
       "en-US": "Tandoori Roast Chicken"
@@ -3289,7 +3289,7 @@
     "id": 333011,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/The Shrine's Sacred Shade": {
+  "CHARACTER_STATUS/The Shrine's Sacred Shade": {
     "names": {
       "zh-CN": "神篱之御荫",
       "en-US": "The Shrine's Sacred Shade"
@@ -3297,12 +3297,12 @@
     "descs": {
       "3.7": {
         "zh-CN": "本回合中，我方角色下一次「元素战技」少花费2个元素骰。",
-        "en-US": "During this round, the next Yakan Evocation: Sesshou Sakura used by the charactor to which this is attached will cost 2 less Elemental Dice."
+        "en-US": "During this round, the next Yakan Evocation: Sesshou Sakura used by the character to which this is attached will cost 2 less Elemental Dice."
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/The Wolf Within": {
+  "CHARACTER_STATUS/The Wolf Within": {
     "names": {
       "zh-CN": "雷狼",
       "en-US": "The Wolf Within"
@@ -3315,7 +3315,7 @@
     },
     "image_path": "status/Razor_E.png"
   },
-  "CHARACTOR_STATUS/Tidecaller: Surf Embrace": {
+  "CHARACTER_STATUS/Tidecaller: Surf Embrace": {
     "names": {
       "zh-CN": "捉浪·涛拥之守",
       "en-US": "Tidecaller: Surf Embrace"
@@ -3328,7 +3328,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Unmovable Mountain": {
+  "CHARACTER_STATUS/Unmovable Mountain": {
     "names": {
       "zh-CN": "重嶂不移",
       "en-US": "Unmovable Mountain"
@@ -3336,12 +3336,12 @@
     "descs": {
       "3.5": {
         "zh-CN": "提供2点护盾，保护所附属的角色。",
-        "en-US": "Provides 2 Shield to protect the equipped charactor."
+        "en-US": "Provides 2 Shield to protect the equipped character."
       }
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Vermillion Hereafter": {
+  "CHARACTER_STATUS/Vermillion Hereafter": {
     "names": {
       "zh-CN": "辰砂往生录",
       "en-US": "Vermillion Hereafter"
@@ -3355,7 +3355,7 @@
     "id": 312012,
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Vijnana Suffusion": {
+  "CHARACTER_STATUS/Vijnana Suffusion": {
     "names": {
       "zh-CN": "通塞识",
       "en-US": "Vijnana Suffusion"
@@ -3368,7 +3368,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Windfavored": {
+  "CHARACTER_STATUS/Windfavored": {
     "names": {
       "zh-CN": "优风倾姿",
       "en-US": "Windfavored"
@@ -3381,7 +3381,7 @@
     },
     "image_path": ""
   },
-  "CHARACTOR_STATUS/Yaksha's Mask": {
+  "CHARACTER_STATUS/Yaksha's Mask": {
     "names": {
       "zh-CN": "夜叉傩面",
       "en-US": "Yaksha's Mask"
@@ -3414,11 +3414,11 @@
     "descs": {
       "3.7": {
         "zh-CN": "断流事件处理",
-        "en-US": "Riptide system handler is used to handle Riptide when charactor defeated. Before make damage, it will record who has Riptide, and ifcharactor defeated event happens, if defeated charactor has Riptide, the next active charactor will get Riptide. Note if during the defeated with Riptide. After choosing active charactor, the virtual will attach real Riptide for active charactor, and all virtual Riptide will be removed."
+        "en-US": "Riptide system handler is used to handle Riptide when character defeated. Before make damage, it will record who has Riptide, and ifcharacter defeated event happens, if defeated character has Riptide, the next active character will get Riptide. Note if during the defeated with Riptide. After choosing active character, the virtual will attach real Riptide for active character, and all virtual Riptide will be removed."
       },
       "4.1": {
         "zh-CN": "断流事件处理",
-        "en-US": "Riptide system handler is used to handle Riptide when charactor defeated. Before make damage, it will record who has Riptide, and ifcharactor defeated event happens, if defeated charactor has Riptide, the next active charactor will get Riptide. Note if during the defeated with Riptide. After choosing active charactor, the virtual will attach real Riptide for active charactor, and all virtual Riptide will be removed."
+        "en-US": "Riptide system handler is used to handle Riptide when character defeated. Before make damage, it will record who has Riptide, and ifcharacter defeated event happens, if defeated character has Riptide, the next active character will get Riptide. Note if during the defeated with Riptide. After choosing active character, the virtual will attach real Riptide for active character, and all virtual Riptide will be removed."
       }
     }
   },
@@ -6104,7 +6104,7 @@
       },
       "4.1": {
         "zh-CN": "切换为近战状态，然后造成2点水元素伤害，并使目标角色附属断流。",
-        "en-US": "Switches to Melee Stance and deals 2 Hydro DMG, and attach Riptide to the target charactor."
+        "en-US": "Switches to Melee Stance and deals 2 Hydro DMG, and attach Riptide to the target character."
       }
     }
   },
@@ -7220,7 +7220,7 @@
     "descs": {
       "3.6": {
         "zh-CN": "我方角色受到伤害时：抵消1点伤害。\n可用次数：1，耗尽时不弃置此牌。\n此召唤物在场期间可触发一次：我方出战角色受到伤害后，为荒泷一斗附属乱神之怪力。\n\n结束阶段：弃置此牌，造成1点岩元素伤害。",
-        "en-US": "When your active character takes DMG: Decrease DMG taken by 1. When the Usage is depleted, this card will not be discarded. Can be triggered once while this summon is present: When your character recieves DMG, Arataki Itto gains Superlative Superstrength. End Phase: Discard this card, deal 1 Geo DMG. Usage(s): 1"
+        "en-US": "When your active character takes DMG: Decrease DMG taken by 1. When the Usage is depleted, this card will not be discarded. Can be triggered once while this summon is present: When your character receives DMG, Arataki Itto gains Superlative Superstrength. End Phase: Discard this card, deal 1 Geo DMG. Usage(s): 1"
       }
     },
     "image_path": "cardface/Summon_Itto.png"
@@ -8649,7 +8649,7 @@
       },
       "4.2": {
         "zh-CN": "战斗行动：我方出战角色为行秋时，装备此牌。行秋装备此牌后，立刻使用一次画雨笼山。装备有此牌的行秋生成的雨帘剑，初始可用次数+1，并会在我方出战角色受到至少为2的伤害时抵消伤害。（牌组中包含行秋，才能加入牌组）",
-        "en-US": "Combat Action: When your active character is Xingqiu, equip this card. After Xingqiu equips this card, immediately use Fatal Rainscreen once. When your Xingqiu, who has this card equipped, creates a Rain Sword, its starting Usage(s)+1, and can block DMG of at least 2 for your active charactor. (You must have Xingqiu in your deck to add this card to your deck.)"
+        "en-US": "Combat Action: When your active character is Xingqiu, equip this card. After Xingqiu equips this card, immediately use Fatal Rainscreen once. When your Xingqiu, who has this card equipped, creates a Rain Sword, its starting Usage(s)+1, and can block DMG of at least 2 for your active character. (You must have Xingqiu in your deck to add this card to your deck.)"
       }
     },
     "id": 212021,
@@ -8794,11 +8794,11 @@
     "descs": {
       "3.3": {
         "zh-CN": "我方对敌方出战角色造成雷元素伤害或草元素伤害时，伤害值+1。\n可用次数：2",
-        "en-US": "When you deal Electro DMG or Pyro DMG to an opposing active charactor, DMG dealt +1."
+        "en-US": "When you deal Electro DMG or Pyro DMG to an opposing active character, DMG dealt +1."
       },
       "3.4": {
         "zh-CN": "我方对敌方出战角色造成雷元素伤害或草元素伤害时，伤害值+1。\n可用次数：2",
-        "en-US": "When you deal Electro DMG or Pyro DMG to an opposing active charactor, DMG dealt +1."
+        "en-US": "When you deal Electro DMG or Pyro DMG to an opposing active character, DMG dealt +1."
       }
     },
     "image_path": "status/Reaction_117.png"
@@ -8838,7 +8838,7 @@
     "descs": {
       "3.3": {
         "zh-CN": "为我方出战角色提供1点护盾。（可叠加到2点）",
-        "en-US": "Grants 1 Shield point to your active charactor. (Can stack. Max 2 Points.)"
+        "en-US": "Grants 1 Shield point to your active character. (Can stack. Max 2 Points.)"
       }
     },
     "image_path": ""
@@ -8851,7 +8851,7 @@
     "descs": {
       "3.3": {
         "zh-CN": "我方对敌方出战角色造成火元素伤害或雷元素伤害时，伤害值+2。\n可用次数：1",
-        "en-US": "When you deal Pyro DMG or Electro DMG to an opposing active charactor, DMG dealt +2."
+        "en-US": "When you deal Pyro DMG or Electro DMG to an opposing active character, DMG dealt +2."
       }
     },
     "image_path": "status/Reaction_116.png"
@@ -9302,7 +9302,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "为我方出战角色提供1点护盾。（可叠加）",
-        "en-US": "Grants 1 Shield point to defend your active charactor. (Can stack. Max 2 Points.)"
+        "en-US": "Grants 1 Shield point to defend your active character. (Can stack. Max 2 Points.)"
       }
     },
     "image_path": ""
@@ -9315,7 +9315,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "本回合不能再使用复活「料理」事件牌。",
-        "en-US": "You cannot revive any charactor with food this round."
+        "en-US": "You cannot revive any character with food this round."
       }
     },
     "image_path": ""
@@ -9479,7 +9479,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "本回合中，我方角色下一次普通攻击少花费1无色元素。",
-        "en-US": "During this round, your charactor's next Normal Attack costs 1 less Unaligned Element."
+        "en-US": "During this round, your character's next Normal Attack costs 1 less Unaligned Element."
       }
     },
     "image_path": ""

@@ -13,8 +13,8 @@ def test_seed_dispensary():
     )
     # modify hp
     for i in range(2):
-        charactors = match.player_tables[i].player_deck_information.charactors
-        for c in charactors:
+        characters = match.player_tables[i].player_deck_information.characters
+        for c in characters:
             c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)

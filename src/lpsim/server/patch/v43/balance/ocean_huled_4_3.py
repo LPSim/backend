@@ -27,15 +27,15 @@ class OceanHuedClam_4_3(OceanHuedClam_4_2):
 
     def equip(self, match: Match) -> List[Actions]:
         super().equip(match)
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
         # heal self
         return [
             MakeDamageAction(
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
-                        target_position = charactor.position,
+                        target_position = character.position,
                         damage_type = DamageType.HEAL,
                         damage = -self._heal,
                         damage_elemental_type = DamageElementalType.HEAL,
@@ -52,7 +52,7 @@ desc: Dict[str, DescDictType] = {
         "descs": {
             "4.3": {
                 "zh-CN": "入场时：治疗所附属角色2点。我方角色每受到3点治疗，此牌就累积1个「海染泡沫」。（最多累积2个）角色造成伤害时：消耗所有「海染泡沫」，每消耗1个都使造成的伤害+1。（角色最多装备1件「圣遗物」）",  # noqa: E501
-                "en-US": "When played: Heal this charactor by 2 HP. For every 3 HP of healing your characters receive, this card accumulates 1 Sea-Dyed Foam (maximum of 2). When this character deals DMG: Consume all Sea-Dyed Foam. DMG is increased by 1 for each Sea-Dyed Foam consumed. (Characters can equip at most 1 Artifact)"  # noqa: E501
+                "en-US": "When played: Heal this character by 2 HP. For every 3 HP of healing your characters receive, this card accumulates 1 Sea-Dyed Foam (maximum of 2). When this character deals DMG: Consume all Sea-Dyed Foam. DMG is increased by 1 for each Sea-Dyed Foam consumed. (Characters can equip at most 1 Artifact)"  # noqa: E501
             }
         },
     },

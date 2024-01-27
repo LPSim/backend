@@ -118,7 +118,7 @@ class SupportBase(CardBase):
             and event.action.target_position.area 
             == ObjectPositionType.SUPPORT
         ):
-            # this artifact equipped from hand to charactor
+            # this artifact equipped from hand to character
             return self.play(match)
         return []
 

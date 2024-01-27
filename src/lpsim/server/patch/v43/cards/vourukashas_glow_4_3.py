@@ -25,16 +25,16 @@ class HeartOfKhvarenasBrilliance_4_3(RoundEffectArtifactBase):
             return []
         if not self.position.check_position_valid(
             event.final_damage.target_position, match, player_idx_same = True,
-            charactor_idx_same = True, area_same = True,
-            source_area = ObjectPositionType.CHARACTOR,
-            source_is_active_charactor = True,
+            character_idx_same = True, area_same = True,
+            source_area = ObjectPositionType.CHARACTER,
+            source_is_active_character = True,
         ):
             # not equipped, or not self receive damage
             return []
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        if charactor.hp == 0:
-            # charactor is dying
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
+        if character.hp == 0:
+            # character is dying
             return []
         if event.final_damage.damage_type != DamageType.DAMAGE:
             # not damage
@@ -56,16 +56,16 @@ class VourukashasGlow_4_3(HeartOfKhvarenasBrilliance_4_3):
     def event_handler_ROUND_END(
         self, desc: RoundEndEventArguments, match: Match
     ) -> List[MakeDamageAction]:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
         return [MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = -1,
                     damage_type = DamageType.HEAL,
                     damage_elemental_type = DamageElementalType.HEAL,

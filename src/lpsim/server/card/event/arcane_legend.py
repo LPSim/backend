@@ -94,9 +94,9 @@ class AncientCourtyard_3_8(ArcaneLegendBase):
         """
         You must have a character who has already equipped a Weapon or Artifact
         """
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
-            if charactor.weapon is not None or charactor.artifact is not None:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
+            if character.weapon is not None or character.artifact is not None:
                 return True
         return False
 
@@ -169,16 +169,16 @@ class JoyousCelebration_4_2(ArcaneLegendBase):
         same_dice_number = 1,
         arcane_legend = True
     )
-    apply_no_element_charactor: bool = False
+    apply_no_element_character: bool = False
 
     def is_valid(self, match: Any) -> bool:
         """
         Your active character must be one of the following elemental types to
         play this card: Cryo/Hydro/Pyro/Electro/Dendro
         """
-        charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        return charactor.element in [
+        character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        return character.element in [
             ElementType.CRYO, ElementType.HYDRO, ElementType.PYRO,
             ElementType.ELECTRO, ElementType.DENDRO
         ]
@@ -201,17 +201,17 @@ class JoyousCelebration_4_2(ArcaneLegendBase):
         damage_action = MakeDamageAction(
             damage_value_list = [],
         )
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        element = active_charactor.element
-        for c in match.player_tables[self.position.player_idx].charactors:
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        element = active_character.element
+        for c in match.player_tables[self.position.player_idx].characters:
             if c.is_defeated:
                 continue
             if (
-                (not self.apply_no_element_charactor) 
+                (not self.apply_no_element_character) 
                 and len(c.element_application) == 0
             ):
-                # not apply to no element charactor
+                # not apply to no element character
                 continue
             damage_action.damage_value_list.append(
                 DamageValue(
@@ -230,7 +230,7 @@ class JoyousCelebration_4_2(ArcaneLegendBase):
 
 class JoyousCelebration_4_0(JoyousCelebration_4_2):
     version: Literal['4.0'] = '4.0'
-    apply_no_element_charactor: bool = True
+    apply_no_element_character: bool = True
 
 
 class FreshWindOfFreedom_4_1(ArcaneLegendBase):

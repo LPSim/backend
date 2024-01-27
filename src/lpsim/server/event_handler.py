@@ -11,7 +11,7 @@ from .struct import ObjectPosition
 from .consts import ObjectPositionType, DieColor, ObjectType
 from .event import (
     AfterMakeDamageEventArguments,
-    CharactorDefeatedEventArguments,
+    CharacterDefeatedEventArguments,
     RoundEndEventArguments,
     DrawCardEventArguments,
     RoundPrepareEventArguments,
@@ -19,8 +19,8 @@ from .event import (
 )
 from .action import (
     Actions,
-    CharactorDefeatedAction,
-    GenerateChooseCharactorRequestAction,
+    CharacterDefeatedAction,
+    GenerateChooseCharacterRequestAction,
     DrawCardAction,
     RemoveCardAction
 )
@@ -86,23 +86,23 @@ class SystemEventHandler_3_3(SystemEventHandlerBase):
         """
         actions: List[Actions] = []
         for pnum, table in enumerate(match.player_tables):
-            for cnum, charactor in enumerate(table.charactors):
-                if charactor.hp == 0 and charactor.is_alive:
-                    charactor.is_alive = False  # mark as defeated first
-                    actions.append(CharactorDefeatedAction(
+            for cnum, character in enumerate(table.characters):
+                if character.hp == 0 and character.is_alive:
+                    character.is_alive = False  # mark as defeated first
+                    actions.append(CharacterDefeatedAction(
                         player_idx = pnum,
-                        charactor_idx = cnum,
+                        character_idx = cnum,
                     ))
         return actions
 
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
+    def event_handler_CHARACTER_DEFEATED(
+        self, event: CharacterDefeatedEventArguments, match: Any
     ) -> List[Actions]:
         """
-        After charactor defeated, check whether need to switch charactor.
+        After character defeated, check whether need to switch character.
         """
         if event.need_switch:
-            return [GenerateChooseCharactorRequestAction(
+            return [GenerateChooseCharacterRequestAction(
                 player_idx = event.action.player_idx,
             )]
         return []
@@ -197,8 +197,8 @@ class IHaventLostYetEventHandler_3_3(SystemEventHandlerBase):
         self.defeated = [False, False]
         return []
 
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
+    def event_handler_CHARACTER_DEFEATED(
+        self, event: CharacterDefeatedEventArguments, match: Any
     ) -> List[Actions]:
         self.defeated[event.action.player_idx] = True
         return []

@@ -89,24 +89,24 @@ def test_maguu_kenki_10_10_10():
     deck1 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Venti
-        charactor:Xingqiu
-        charactor:Noelle
+        character:Venti
+        character:Xingqiu
+        character:Noelle
         Mondstadt Hash Brown*30
         '''
     )
     deck2 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida
-        charactor:Maguu Kenki
-        charactor:Yoimiya
+        character:Nahida
+        character:Maguu Kenki
+        character:Yoimiya
         A Thousand Floating Dreams*30
         '''
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -231,26 +231,26 @@ def test_maguu_kenki_10_10_10_2():
     deck1 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Venti
-        charactor:Xingqiu
-        charactor:Noelle
+        character:Venti
+        character:Xingqiu
+        character:Noelle
         Mondstadt Hash Brown*30
         '''
     )
-    for c in deck1.charactors:
+    for c in deck1.characters:
         c.hp = c.max_hp = 20
     deck2 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida
-        charactor:Maguu Kenki
-        charactor:Yoimiya
+        character:Nahida
+        character:Maguu Kenki
+        character:Yoimiya
         A Thousand Floating Dreams*30
         '''
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

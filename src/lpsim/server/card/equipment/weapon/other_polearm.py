@@ -11,7 +11,7 @@ from ....event import (
 )
 
 from ....modifiable_values import DamageIncreaseValue
-from ....status.charactor_status.base import ShieldCharactorStatus
+from ....status.character_status.base import ShieldCharacterStatus
 from ....status.team_status.base import ShieldTeamStatus
 
 from ....consts import FactionType, ObjectPositionType, SkillType, WeaponType
@@ -34,13 +34,13 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
         """
         If self has shield, +1 damage.
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return value
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not current charactor using skill
+            # not current character using skill
             return value
         # modify damage
         assert mode == 'REAL'
@@ -52,12 +52,12 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
             if issubclass(type(status), ShieldTeamStatus):
                 have_shield = True
         if not have_shield:
-            # no shield team status, check charactor status
-            charactor = match.player_tables[
-                self.position.player_idx].charactors[
-                    self.position.charactor_idx]
-            for status in charactor.status:
-                if issubclass(type(status), ShieldCharactorStatus):
+            # no shield team status, check character status
+            character = match.player_tables[
+                self.position.player_idx].characters[
+                    self.position.character_idx]
+            for status in character.status:
+                if issubclass(type(status), ShieldCharacterStatus):
                     have_shield = True
         if have_shield:
             value.damage += 1
@@ -67,7 +67,7 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction]:
         """
-        if self charactor use elemental skill, check whether have
+        if self character use elemental skill, check whether have
         shield team status. If so, add 1 usage. 
         """
         if event.action.skill_type != SkillType.ELEMENTAL_SKILL:
@@ -78,10 +78,10 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
             return []
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER
         ):
-            # not self charactor use skill or not equipped
+            # not self character use skill or not equipped
             return []
         team_status = match.player_tables[self.position.player_idx].team_status
         for status in team_status:
@@ -106,7 +106,7 @@ class LithicSpear_3_7(WeaponBase):
         if count > 0:
             return [CreateObjectAction(
                 object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
+                    ObjectPositionType.CHARACTER_STATUS),
                 object_name = self.name,
                 object_arguments = {
                     'usage': count,
@@ -120,7 +120,7 @@ class LithicSpear_3_7(WeaponBase):
         Generate shield
         """
         count = 0
-        for c in match.player_tables[self.position.player_idx].charactors:
+        for c in match.player_tables[self.position.player_idx].characters:
             if FactionType.LIYUE in c.faction:
                 count += 1
         return self.generate_shield(count)
@@ -134,7 +134,7 @@ class LithicSpear_3_3(LithicSpear_3_7):
         Generate shield
         """
         count = 0
-        for c in match.player_tables[self.position.player_idx].charactors:
+        for c in match.player_tables[self.position.player_idx].characters:
             if c.is_alive and FactionType.LIYUE in c.faction:
                 count += 1
         return self.generate_shield(count)
@@ -148,16 +148,16 @@ class EngulfingLightning_3_7(RoundEffectWeaponBase):
     max_usage_per_round: int = 1
 
     def _charge_one(self, match: Any) -> List[ChargeAction]:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
-        charactor = match.player_tables[
-            self.position.player_idx].charactors[self.position.charactor_idx]
-        if charactor.charge == 0 and self.usage > 0:
+        character = match.player_tables[
+            self.position.player_idx].characters[self.position.character_idx]
+        if character.charge == 0 and self.usage > 0:
             self.usage -= 1
             return [ChargeAction(
                 player_idx = self.position.player_idx,
-                charactor_idx = self.position.charactor_idx,
+                character_idx = self.position.character_idx,
                 charge = 1,
             )]
         return []

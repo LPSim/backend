@@ -44,13 +44,13 @@ def test_lynette_single():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Lynette
+        character:Lynette
         A Cold Blade Like a Shadow*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -74,8 +74,8 @@ def test_lynette_single():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
-                assert match.player_tables[0].charactors[0].hp == 4
-                assert match.player_tables[1].charactors[0].hp == 4
+                assert match.player_tables[0].characters[0].hp == 4
+                assert match.player_tables[1].characters[0].hp == 4
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
         # respond
@@ -145,9 +145,9 @@ def test_gorou_alhaitham_layla():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Layla
-        charactor:Gorou
-        charactor:Alhaitham
+        character:Layla
+        character:Gorou
+        character:Alhaitham
         Rushing Hound: Swift as the Wind*10
         Sweet Madame*10
         Changing Shifts*10
@@ -155,7 +155,7 @@ def test_gorou_alhaitham_layla():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -251,15 +251,15 @@ def test_dvalin_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Gorou
-        charactor:Dvalin
-        charactor:Alhaitham
+        character:Gorou
+        character:Dvalin
+        character:Alhaitham
         Rending Vortex*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -369,15 +369,15 @@ def test_eremite_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Eremite Scorching Loremaster
-        charactor:Chongyun
-        charactor:Klee
+        character:Eremite Scorching Loremaster
+        character:Chongyun
+        character:Klee
         Scorpocalypse*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -407,7 +407,7 @@ def test_eremite_2():
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
-                assert match.player_tables[0].charactors[0].charge == 0
+                assert match.player_tables[0].characters[0].charge == 0
             elif test_id == 3:
                 assert match.player_tables[1].summons[0].damage == 1
             else:
@@ -460,14 +460,14 @@ def test_signora_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Signora
-        charactor:Chongyun
-        charactor:Klee
+        character:Signora
+        character:Chongyun
+        character:Klee
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -492,7 +492,7 @@ def test_signora_2():
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 2:
-                status = match.player_tables[1].charactors[0].status
+                status = match.player_tables[1].characters[0].status
                 check_usage(status, cmd[4:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -546,15 +546,15 @@ def test_thunder_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Thunder Manifestation
-        charactor:Raiden Shogun
-        charactor:Lyney
+        character:Thunder Manifestation
+        character:Raiden Shogun
+        character:Lyney
         Grieving Echo*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -636,16 +636,16 @@ def test_jade_razor():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Shenhe
-        charactor:Raiden Shogun
-        charactor:Lyney
+        character:Shenhe
+        character:Raiden Shogun
+        character:Lyney
         Primordial Jade Winged-Spear*10
         Where Is the Unseen Razor?*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

@@ -35,9 +35,9 @@ class OperaEpiclese_4_3(LocationBase, UsageWithRoundRestrictionSupportBase):
             return []
         equip_costs = [0] * len(match.player_tables)
         for player_idx, player_table in enumerate(match.player_tables):
-            for charactor in player_table.charactors:
+            for character in player_table.characters:
                 equips = [
-                    charactor.weapon, charactor.artifact, charactor.talent
+                    character.weapon, character.artifact, character.talent
                 ]
                 for equip in equips:
                     if equip is not None:
@@ -48,14 +48,14 @@ class OperaEpiclese_4_3(LocationBase, UsageWithRoundRestrictionSupportBase):
         ):
             # not less than opponent, return
             return []
-        # create one element die of active charactor
+        # create one element die of active character
         self.use()
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
         return [CreateDiceAction(
             player_idx = self.position.player_idx,
             number = 1,
-            color = ELEMENT_TO_DIE_COLOR[active_charactor.element]
+            color = ELEMENT_TO_DIE_COLOR[active_character.element]
         )] + self.check_should_remove()
 
 

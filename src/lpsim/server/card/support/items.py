@@ -12,7 +12,7 @@ from ...action import (
 from ...event import (
     PlayerActionStartEventArguments, ReceiveDamageEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharactorEventArguments, UseCardEventArguments
+    SwitchCharacterEventArguments, UseCardEventArguments
 )
 
 from ...struct import Cost
@@ -131,7 +131,7 @@ class NRE_4_1(RoundEffectItemBase):
                 event.action.card_position.player_idx 
                 != self.position.player_idx
             ):
-                # not our charactor use card, do nothing
+                # not our character use card, do nothing
                 return []
             if event.card_cost.label & CostLabels.FOOD.value == 0:
                 # not food card, do nothing
@@ -171,14 +171,14 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
         self.is_cost_decreased = False
         return super().event_handler_ROUND_PREPARE(event, match)
 
-    def event_handler_SWITCH_CHARACTOR(
-        self, event: SwitchCharactorEventArguments, match: Any
+    def event_handler_SWITCH_CHARACTER(
+        self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[Actions]:
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
         if self.position.player_idx != event.action.player_idx:
-            # not our charactor switch, do nothing
+            # not our character switch, do nothing
             return []
         # activate
         self.switch_count += 1
@@ -188,7 +188,7 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
     ) -> CostValue:
         """
-        if activated, and our switch charactor, try to decrease cost.
+        if activated, and our switch character, try to decrease cost.
         if success, mark is_cost_decreased.
         """
         if (
@@ -196,10 +196,10 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
             or self.position.area != ObjectPositionType.SUPPORT
             or self.position.player_idx != value.position.player_idx
             or self.usage <= 0
-            or value.cost.label & CostLabels.SWITCH_CHARACTOR.value == 0
+            or value.cost.label & CostLabels.SWITCH_CHARACTER.value == 0
         ):
-            # not activated, or not equipped, or not our charactor, 
-            # or no usage, or not switch charactor, do nothing
+            # not activated, or not equipped, or not our character, 
+            # or no usage, or not switch character, do nothing
             return value
         # decrease cost
         if value.cost.decrease_cost(None):
@@ -212,7 +212,7 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
         mode: Literal['TEST', 'REAL']
     ) -> CombatActionValue:
         """
-        If activated, and our switch charactor, try to act as fast action.
+        If activated, and our switch character, try to act as fast action.
         Then if change to fast or decrease cost, consume usage.
         """
         if (
@@ -222,8 +222,8 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
             or self.usage <= 0
             or value.action_label & PlayerActionLabels.SWITCH.value == 0
         ):
-            # not activated, or not equipped, or not our charactor, 
-            # or no usage, or not switch charactor, do nothing
+            # not activated, or not equipped, or not our character, 
+            # or no usage, or not switch character, do nothing
             return value
         # change to fast action
         changed = False
@@ -249,7 +249,7 @@ class TreasureSeekingSeelie_3_7(ItemBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[RemoveObjectAction | DrawCardAction]:
         """
-        If our charactor use any skill, increase usage, and if usage
+        If our character use any skill, increase usage, and if usage
         reaches max_usage, draw 3 cards and remove self.
         """
         if not self.position.check_position_valid(
@@ -257,7 +257,7 @@ class TreasureSeekingSeelie_3_7(ItemBase):
             source_area = ObjectPositionType.SUPPORT,
             target_area = ObjectPositionType.SKILL
         ):
-            # not on support area, or not our charactor use skill
+            # not on support area, or not our character use skill
             return []
         # add usage
         self.usage += 1

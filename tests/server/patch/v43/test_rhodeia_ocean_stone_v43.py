@@ -66,16 +66,16 @@ def test_rhodeia_ocean_stone_v43():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Rhodeia of Loch
-        charactor:Fischl
-        charactor:Chongyun
+        character:Rhodeia of Loch
+        character:Fischl
+        character:Chongyun
         Ocean-Hued Clam*10
         Stone and Contracts*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

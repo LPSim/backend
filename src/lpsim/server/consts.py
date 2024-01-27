@@ -153,7 +153,7 @@ class ObjectType(str, Enum):
     Enum representing the type of an object.
     """
     EMPTY = 'EMPTY'
-    CHARACTOR = 'CHARACTOR'
+    CHARACTER = 'CHARACTER'
     DICE = 'DICE'
     CARD = 'CARD'
     SUMMON = 'SUMMON'
@@ -162,7 +162,7 @@ class ObjectType(str, Enum):
     WEAPON = 'WEAPON'
     ARTIFACT = 'ARTIFACT'
     TALENT = 'TALENT'
-    CHARACTOR_STATUS = 'CHARACTOR_STATUS'
+    CHARACTER_STATUS = 'CHARACTER_STATUS'
     TEAM_STATUS = 'TEAM_STATUS'
     ARCANE = 'ARCANE'
     SYSTEM = 'SYSTEM'
@@ -183,8 +183,8 @@ class ObjectPositionType(str, Enum):
     SUMMON = 'SUMMON'
     SUPPORT = 'SUPPORT'
     DICE = 'DICE'
-    CHARACTOR = 'CHARACTOR'
-    CHARACTOR_STATUS = 'CHARACTOR_STATUS'
+    CHARACTER = 'CHARACTER'
+    CHARACTER_STATUS = 'CHARACTER_STATUS'
     SKILL = 'SKILL'
     TEAM_STATUS = 'TEAM_STATUS'
     SYSTEM = 'SYSTEM'
@@ -199,7 +199,7 @@ class ObjectPositionType(str, Enum):
 
 class FactionType(str, Enum):
     """
-    Factions of charactors.
+    Factions of characters.
     """
 
     MONDSTADT = 'MONDSTADT'
@@ -288,7 +288,7 @@ class ElementalReactionType(str, Enum):
 
 
 class CostLabels(int, Enum):
-    SWITCH_CHARACTOR = 0x1
+    SWITCH_CHARACTER = 0x1
     CARD = 0x2
     COMPANION = 0x4
     LOCATION = 0x8
@@ -375,7 +375,7 @@ class IconType(str, Enum):
     # e.g. Electro Hypostasis
     REVIVE = 'REVIVE'
 
-    # food card used for charactor, or egg used for team.
+    # food card used for character, or egg used for team.
     FOOD = 'FOOD'
 
     # e.g. most of summons

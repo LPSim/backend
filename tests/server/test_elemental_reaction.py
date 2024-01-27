@@ -65,7 +65,7 @@ def test_crystallize():
     match = Match()
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'GeoMobMage',
                 'element': 'GEO',
@@ -158,7 +158,7 @@ def test_frozen():
     match = Match()
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'HydroMobMage',
                 'element': 'HYDRO',
@@ -192,12 +192,12 @@ def test_frozen():
             if len(agent_0.commands) == 2:
                 # p0c2 should be frozen, and cannot use skill
                 check_name('Frozen', 
-                           match.player_tables[0].charactors[2].status)
+                           match.player_tables[0].characters[2].status)
                 check_name('UseSkillRequest', match.requests, exist = False)
             elif len(agent_0.commands) == 1:
                 # now not frozen and can use skill
                 check_name('Frozen', 
-                           match.player_tables[0].charactors[2].status,
+                           match.player_tables[0].characters[2].status,
                            exist = False)
                 check_name('UseSkillRequest', match.requests, exist = True)
             make_respond(agent_0, match)
@@ -205,12 +205,12 @@ def test_frozen():
             if len(agent_1.commands) == 5:
                 # p1c2 should be frozen, and cannot use skill
                 check_name('Frozen', 
-                           match.player_tables[1].charactors[2].status)
+                           match.player_tables[1].characters[2].status)
                 check_name('UseSkillRequest', match.requests, exist = False)
             elif len(agent_1.commands) == 4:
                 # now not frozen and can use skill
                 check_name('Frozen', 
-                           match.player_tables[1].charactors[2].status,
+                           match.player_tables[1].characters[2].status,
                            exist = False)
                 check_name('UseSkillRequest', match.requests, exist = True)
             make_respond(agent_1, match)
@@ -276,7 +276,7 @@ def test_frozen_and_pyro():
     match = Match()
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'HydroMobMage',
                 'element': 'HYDRO',
@@ -321,7 +321,7 @@ def test_frozen_and_pyro():
     assert len(agent_1.commands) == 0
     assert match.round_number == 4
     check_hp(match, [[10, 10, 99], [10, 10, 82]])
-    assert match.player_tables[1].charactors[2].element_application == ['PYRO']
+    assert match.player_tables[1].characters[2].element_application == ['PYRO']
 
     assert match.state != MatchState.ERROR
 
@@ -377,7 +377,7 @@ def test_burning_flame():
     match = Match()
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -487,7 +487,7 @@ def test_dendro_core_catalyzing_field():
     match = Match()
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -569,13 +569,13 @@ def test_catalyzing_field_old():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*2
-        charactor:Fischl
+        character:Nahida*2
+        character:Fischl
         Mondstadt Hash Brown*30
         '''
     )
-    deck.charactors[0].hp = 99
-    deck.charactors[0].max_hp = 99
+    deck.characters[0].hp = 99
+    deck.characters[0].max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.check_deck_restriction = False
@@ -623,9 +623,9 @@ def test_swirl():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:HydroMobMage
-        charactor:AnemoMobMage
+        character:PyroMobMage
+        character:HydroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -682,9 +682,9 @@ def test_swirl_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:ElectroMobMage
-        charactor:HydroMobMage
-        charactor:AnemoMobMage
+        character:ElectroMobMage
+        character:HydroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -747,9 +747,9 @@ def test_swirl_3():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:CryoMobMage
-        charactor:HydroMobMage
-        charactor:AnemoMobMage
+        character:CryoMobMage
+        character:HydroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -761,7 +761,7 @@ def test_swirl_3():
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()[0]
-    match.player_tables[1].charactors[0].skills[1].damage_type = \
+    match.player_tables[1].characters[0].skills[1].damage_type = \
         DamageElementalType.PYRO
     match.step()
 
@@ -771,15 +771,15 @@ def test_swirl_3():
         elif match.need_respond(1):
             if len(agent_1.commands) == 1:
                 table = match.player_tables[0]
-                charactors = table.charactors
-                assert charactors[0].element_application == ['PYRO']
-                assert charactors[1].element_application == []
-                assert charactors[2].element_application == []
-                assert len(charactors[0].status) == 0
-                assert len(charactors[1].status) == 1
-                assert len(charactors[2].status) == 1
-                assert charactors[1].status[0].name == 'Frozen'
-                assert charactors[2].status[0].name == 'Frozen'
+                characters = table.characters
+                assert characters[0].element_application == ['PYRO']
+                assert characters[1].element_application == []
+                assert characters[2].element_application == []
+                assert len(characters[0].status) == 0
+                assert len(characters[1].status) == 1
+                assert len(characters[2].status) == 1
+                assert characters[1].status[0].name == 'Frozen'
+                assert characters[2].status[0].name == 'Frozen'
             make_respond(agent_1, match)
         else:
             raise AssertionError('No need respond.')
@@ -790,11 +790,11 @@ def test_swirl_3():
     assert match.round_number == 2
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[2, 4, 4], [10, 10, 10]])
-    assert match.player_tables[0].charactors[0].element_application == []
-    assert match.player_tables[0].charactors[1].element_application == ['PYRO']
-    assert match.player_tables[0].charactors[2].element_application == ['PYRO']
-    assert len(match.player_tables[0].charactors[1].status) == 0
-    assert len(match.player_tables[0].charactors[2].status) == 0
+    assert match.player_tables[0].characters[0].element_application == []
+    assert match.player_tables[0].characters[1].element_application == ['PYRO']
+    assert match.player_tables[0].characters[2].element_application == ['PYRO']
+    assert len(match.player_tables[0].characters[1].status) == 0
+    assert len(match.player_tables[0].characters[2].status) == 0
 
     assert match.state != MatchState.ERROR
 
@@ -824,9 +824,9 @@ def test_swirl_4():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:CryoMobMage
-        charactor:HydroMobMage
-        charactor:AnemoMobMage
+        character:CryoMobMage
+        character:HydroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -854,9 +854,9 @@ def test_swirl_4():
     assert match.round_number == 2
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[0, 8, 9], [10, 10, 10]])
-    assert match.player_tables[0].charactors[0].element_application == []
-    assert match.player_tables[0].charactors[1].element_application == []
-    assert match.player_tables[0].charactors[2].element_application == ['CRYO']
+    assert match.player_tables[0].characters[0].element_application == []
+    assert match.player_tables[0].characters[1].element_application == []
+    assert match.player_tables[0].characters[2].element_application == ['CRYO']
 
     assert match.state != MatchState.ERROR
 
@@ -913,9 +913,9 @@ def test_swirl_with_catalyzing_field():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:ElectroMobMage
-        charactor:DendroMobMage
-        charactor:AnemoMobMage
+        character:ElectroMobMage
+        character:DendroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -936,11 +936,11 @@ def test_swirl_with_catalyzing_field():
             while True:
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
-                    for charactor, app in zip(
-                        match.player_tables[0].charactors,
+                    for character, app in zip(
+                        match.player_tables[0].characters,
                         [['DENDRO'], [], []]
                     ):
-                        assert charactor.element_application == app
+                        assert character.element_application == app
                 else:
                     break
             make_respond(agent_1, match)
@@ -954,9 +954,9 @@ def test_swirl_with_catalyzing_field():
     assert match.round_number == 2
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[6, 4, 7], [10, 10, 10]])
-    assert match.player_tables[0].charactors[0].element_application == []
-    assert match.player_tables[0].charactors[1].element_application == []
-    assert match.player_tables[0].charactors[2].element_application == []
+    assert match.player_tables[0].characters[0].element_application == []
+    assert match.player_tables[0].characters[1].element_application == []
+    assert match.player_tables[0].characters[2].element_application == []
     assert len(match.player_tables[1].team_status) == 1
     assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
     assert match.player_tables[1].team_status[0].usage == 2
@@ -1012,10 +1012,10 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:HydroMobMage
-        charactor:ElectroMobMage
-        charactor:DendroMobMage
-        charactor:AnemoMobMage
+        character:HydroMobMage
+        character:ElectroMobMage
+        character:DendroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -1023,7 +1023,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 4
+    match.config.character_number = 4
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
@@ -1038,13 +1038,13 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
                     check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 10]])
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         0].element_application == ['ELECTRO']
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         1].element_application == []
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         2].element_application == ['ELECTRO']
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         3].element_application == ['ELECTRO']
                     assert len(match.player_tables[1].team_status) == 2
                     assert match.player_tables[1].team_status[
@@ -1066,12 +1066,12 @@ def test_swirl_with_catalyzing_field_and_dendro_core():
     assert match.round_number == 4
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 9]])
-    assert match.player_tables[0].charactors[0].element_application == [
+    assert match.player_tables[0].characters[0].element_application == [
         'ELECTRO']
-    assert match.player_tables[0].charactors[1].element_application == []
-    assert match.player_tables[0].charactors[2].element_application == [
+    assert match.player_tables[0].characters[1].element_application == []
+    assert match.player_tables[0].characters[2].element_application == [
         'ELECTRO']
-    assert match.player_tables[0].charactors[3].element_application == [
+    assert match.player_tables[0].characters[3].element_application == [
         'ELECTRO']
     assert len(match.player_tables[1].team_status) == 2
     assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
@@ -1131,10 +1131,10 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:HydroMobMage
-        charactor:ElectroMobMage
-        charactor:DendroMobMage
-        charactor:AnemoMobMage
+        character:HydroMobMage
+        character:ElectroMobMage
+        character:DendroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -1142,7 +1142,7 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 4
+    match.config.character_number = 4
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
@@ -1157,13 +1157,13 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
                     check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 10]])
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         0].element_application == ['ELECTRO']
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         1].element_application == []
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         2].element_application == ['ELECTRO']
-                    assert match.player_tables[0].charactors[
+                    assert match.player_tables[0].characters[
                         3].element_application == ['ELECTRO']
                     assert len(match.player_tables[1].team_status) == 2
                     assert match.player_tables[1].team_status[
@@ -1185,12 +1185,12 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
     assert match.round_number == 4
     assert len(match.player_tables[0].team_status) == 0
     check_hp(match, [[2, 8, 9, 9], [10, 10, 10, 9]])
-    assert match.player_tables[0].charactors[0].element_application == [
+    assert match.player_tables[0].characters[0].element_application == [
         'ELECTRO']
-    assert match.player_tables[0].charactors[1].element_application == []
-    assert match.player_tables[0].charactors[2].element_application == [
+    assert match.player_tables[0].characters[1].element_application == []
+    assert match.player_tables[0].characters[2].element_application == [
         'ELECTRO']
-    assert match.player_tables[0].charactors[3].element_application == [
+    assert match.player_tables[0].characters[3].element_application == [
         'ELECTRO']
     assert len(match.player_tables[1].team_status) == 2
     assert match.player_tables[1].team_status[0].name == 'Catalyzing Field'
@@ -1203,8 +1203,8 @@ def test_swirl_with_catalyzing_field_and_dendro_core_old_version():
 
 def test_overloaded():
     """
-    test overloaded a loop, and single charactor overloaded, and overloaded 
-    kill not need to choose charactor.
+    test overloaded a loop, and single character overloaded, and overloaded 
+    kill not need to choose character.
     """
     agent_0 = InteractionAgent(
         player_idx = 0,
@@ -1264,9 +1264,9 @@ def test_overloaded():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:AnemoMobMage
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -1278,8 +1278,8 @@ def test_overloaded():
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()[0]
-    match.player_tables[0].charactors[0].hp = 90
-    match.player_tables[0].charactors[0].max_hp = 90
+    match.player_tables[0].characters[0].hp = 90
+    match.player_tables[0].characters[0].max_hp = 90
     match.step()
 
     while True:
@@ -1289,11 +1289,11 @@ def test_overloaded():
             while True:
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
-                    assert match.player_tables[0].active_charactor_idx == 0
+                    assert match.player_tables[0].active_character_idx == 0
                 if test_id == 2:
-                    assert match.player_tables[0].active_charactor_idx == 1
+                    assert match.player_tables[0].active_character_idx == 1
                 if test_id == 3:
-                    assert match.player_tables[0].active_charactor_idx == 2
+                    assert match.player_tables[0].active_character_idx == 2
                 else:
                     break
             make_respond(agent_1, match)
@@ -1333,9 +1333,9 @@ def test_background_overloaded():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:ElectroMobMage
-        charactor:AnemoMobMage
+        character:PyroMobMage
+        character:ElectroMobMage
+        character:AnemoMobMage
         Prophecy of Submersion*10
         Stellar Predator*10
         Wine-Stained Tricorne*10
@@ -1347,8 +1347,8 @@ def test_background_overloaded():
     match.config.random_first_player = False
     set_16_omni(match)
     assert match.start()[0]
-    match.player_tables[0].charactors[0].hp = 90
-    match.player_tables[0].charactors[0].max_hp = 90
+    match.player_tables[0].characters[0].hp = 90
+    match.player_tables[0].characters[0].max_hp = 90
     match.step()
 
     while True:
@@ -1364,7 +1364,7 @@ def test_background_overloaded():
     assert len(agent_1.commands) == 0
     assert match.round_number == 2
     assert len(match.player_tables[0].team_status) == 0
-    assert match.player_tables[0].active_charactor_idx == 0
+    assert match.player_tables[0].active_character_idx == 0
     check_hp(match, [[86, 6, 6], [10, 10, 10]])
 
     assert match.state != MatchState.ERROR

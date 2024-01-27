@@ -59,9 +59,9 @@ def test_joy_4_2_and_cost_change_cards():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Nahida
-        charactor:Xiangling
-        charactor:Mona
+        character:Nahida
+        character:Xiangling
+        character:Mona
         Joyous Celebration
         Mirror Cage
         Mirror Cage@4.1
@@ -79,7 +79,7 @@ def test_joy_4_2_and_cost_change_cards():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -105,7 +105,7 @@ def test_joy_4_2_and_cost_change_cards():
                 break
             elif test_id == 1:
                 pidx, cidx = get_pidx_cidx(cmd)
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].element_application == []
             elif test_id == 2:
                 pidx = int(cmd[2][1])
@@ -193,9 +193,9 @@ def test_chongyun_yoimiya_beidou():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Chongyun
-        charactor:Yoimiya
-        charactor:Beidou
+        character:Chongyun
+        character:Yoimiya
+        character:Beidou
         Steady Breathing*2
         Steady Breathing@4.1*2
         Lightning Storm*2
@@ -206,7 +206,7 @@ def test_chongyun_yoimiya_beidou():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -240,7 +240,7 @@ def test_chongyun_yoimiya_beidou():
                 check_usage(match.player_tables[pidx].team_status, cmd[4:])
             elif test_id == 3:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[
+                check_usage(match.player_tables[pidx].characters[
                     cidx].status, cmd[4:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -319,9 +319,9 @@ def test_razor_sara_cyno():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Razor
-        charactor:Kujou Sara
-        charactor:Cyno
+        character:Razor
+        character:Kujou Sara
+        character:Cyno
         Awakening
         Awakening@4.1
         Sin of Pride
@@ -332,7 +332,7 @@ def test_razor_sara_cyno():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -363,7 +363,7 @@ def test_razor_sara_cyno():
                 check_hp(match, hps)
             elif test_id == 2:
                 pidx, cidx = get_pidx_cidx(cmd)
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].charge == int(cmd[4])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')
@@ -462,10 +462,10 @@ def test_jean_kokomi_amber():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Sangonomiya Kokomi
-        charactor:Amber
-        charactor:Jean
-        charactor:Jean@3.3
+        character:Sangonomiya Kokomi
+        character:Amber
+        character:Jean
+        character:Jean@3.3
         Tamakushi Casket
         Tamakushi Casket@4.1
         Bunny Triggered
@@ -474,7 +474,7 @@ def test_jean_kokomi_amber():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -573,15 +573,15 @@ def test_yanfei_4_2():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Yanfei
-        charactor:Yanfei@4.1
+        character:Yanfei
+        character:Yanfei@4.1
         Right of Final Interpretation*5
         Right of Final Interpretation@4.1*5
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -607,7 +607,7 @@ def test_yanfei_4_2():
                 break
             elif test_id == 1:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[
+                check_usage(match.player_tables[pidx].characters[
                     cidx].status, cmd[4:])
             elif test_id == 2:
                 pidx = int(cmd[2][1])
@@ -731,24 +731,24 @@ def test_rhodeia_shenhe_itto():
     deck1 = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Shenhe
-        charactor:Rhodeia of Loch
-        charactor:Arataki Itto
+        character:Shenhe
+        character:Rhodeia of Loch
+        character:Arataki Itto
         Mondstadt Hash Brown*30
         '''
     )
     deck2 = Deck.from_str(
         '''
         default_version:4.1
-        charactor:Shenhe
-        charactor:Rhodeia of Loch
-        charactor:Arataki Itto
+        character:Shenhe
+        character:Rhodeia of Loch
+        character:Arataki Itto
         Mondstadt Hash Brown*30
         '''
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -838,15 +838,15 @@ def test_kokomi_2():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Sangonomiya Kokomi
-        charactor:Fischl
-        charactor:Arataki Itto
+        character:Sangonomiya Kokomi
+        character:Fischl
+        character:Arataki Itto
         Tamakushi Casket*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

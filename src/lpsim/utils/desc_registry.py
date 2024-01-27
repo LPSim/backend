@@ -84,7 +84,7 @@ def update_desc(desc_dict: Dict[str, DescDictType]) -> None:
     """
     for key in desc_dict.keys():
         if (
-            key[:16] == 'CHARACTOR_STATUS'
+            key[:16] == 'CHARACTER_STATUS'
             or key[:5] == 'SKILL'
             or key[:6] == 'SUMMON'
             or key[:11] == 'TEAM_STATUS'

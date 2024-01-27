@@ -66,9 +66,9 @@ def get_memento_lens_match():
     # deck information
     deck = Deck.from_str(
         '''
-        charactor:Ningguang@3.3
-        charactor:Kaeya@3.3
-        charactor:Chongyun@3.3
+        character:Ningguang@3.3
+        character:Kaeya@3.3
+        character:Chongyun@3.3
         Sacrificial Fragments@3.3*5
         Instructor's Cap@3.3*5
         Chinju Forest@3.7*5
@@ -79,7 +79,7 @@ def get_memento_lens_match():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

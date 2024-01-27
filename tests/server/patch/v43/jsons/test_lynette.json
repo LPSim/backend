@@ -632,8 +632,8 @@
         0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Kaeya@3.3\ncharactor:Tartaglia@4.1\ncharactor:Noelle@3.3\ncharactor:Lynette@4.3\ncharactor:Lynette@4.3\ncharactor:Lynette@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\n",
-        "default_version:4.3\ncharactor:Lynette@4.3\ncharactor:Lynette@4.3\ncharactor:Lynette@4.3\ncharactor:Nahida@3.7\ncharactor:Fischl@3.3\ncharactor:Klee@3.4\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\n"
+        "default_version:4.3\ncharacter:Kaeya@3.3\ncharacter:Tartaglia@4.1\ncharacter:Noelle@3.3\ncharacter:Lynette@4.3\ncharacter:Lynette@4.3\ncharacter:Lynette@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\n",
+        "default_version:4.3\ncharacter:Lynette@4.3\ncharacter:Lynette@4.3\ncharacter:Lynette@4.3\ncharacter:Nahida@3.7\ncharacter:Fischl@3.3\ncharacter:Klee@3.4\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\nA Cold Blade Like a Shadow@4.3\n"
     ],
     "command_history": [
         [
@@ -1187,7 +1187,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 999,
         "max_dice_number": 16,

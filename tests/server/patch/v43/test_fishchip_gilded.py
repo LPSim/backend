@@ -74,25 +74,25 @@ def test_fishchip_gilded():
     # deck information
     deck_str_1 = '''
         default_version:4.3
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Fish and Chips*10
         Sweet Madame*10
         Gilded Dreams*10
     '''
     deck_str_2 = '''
         default_version:4.3
-        charactor:Barbara
-        charactor:Mona
-        charactor:Nahida
+        character:Barbara
+        character:Mona
+        character:Nahida
         Fish and Chips*10
         Sweet Madame*10
         Gilded Dreams*10
     '''
     match.set_deck([Deck.from_str(deck_str_1), Deck.from_str(deck_str_2)])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

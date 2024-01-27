@@ -21,18 +21,18 @@ class GildedDreams_4_3(ShadowOfTheSandKing_4_2):
         elemental dice in your team, create one omni dice.
         """
         super().equip(match)
-        charactors = match.player_tables[self.position.player_idx].charactors
-        equip_charactor = charactors[self.position.charactor_idx]
+        characters = match.player_tables[self.position.player_idx].characters
+        equip_character = characters[self.position.character_idx]
         ret: List[CreateDiceAction] = [
             CreateDiceAction(
                 player_idx = self.position.player_idx,
                 number = 1,
-                color = ELEMENT_TO_DIE_COLOR[equip_charactor.element]
+                color = ELEMENT_TO_DIE_COLOR[equip_character.element]
             )
         ]
         elements = set()
-        for charactor in charactors:
-            elements.add(charactor.element)
+        for character in characters:
+            elements.add(character.element)
         if len(elements) >= 3:
             ret.append(
                 CreateDiceAction(

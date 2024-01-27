@@ -14,9 +14,9 @@ from ...consts import (
 )
 from ...action import MakeDamageAction, RemoveObjectAction, Actions
 from ...event import (
-    ChooseCharactorEventArguments, MakeDamageEventArguments, 
+    ChooseCharacterEventArguments, MakeDamageEventArguments, 
     RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharactorEventArguments
+    SwitchCharacterEventArguments
 )
 
 
@@ -43,7 +43,7 @@ class UsageTeamStatus(TeamStatusBase):
     By default, it listens to MAKE_DAMAGE event to check if run out of usage,
     as most usage-based status will decrease usage when damage made.
     Not using AFTER_MAKE_DAMAGE because we should remove the status before
-    side effects of elemental reaction, which is triggered on RECEVIE_DAMAGE.
+    side effects of elemental reaction, which is triggered on RECEIVE_DAMAGE.
 
     If it is not a damage related status, check_should_remove should be
     called manually.
@@ -129,10 +129,10 @@ class DefendTeamStatus(UsageTeamStatus):
         """
         Decrease damage with its rule, and decrease 1 usage.
         """
-        if not value.is_corresponding_charactor_receive_damage(
+        if not value.is_corresponding_character_receive_damage(
             self.position, match,
         ):
-            # not this charactor receive damage, not modify
+            # not this character receive damage, not modify
             return value
         if self.usage <= 0:
             # no usage, not modify
@@ -179,7 +179,7 @@ class ExtraAttackTeamStatus(TeamStatusBase):
         """
         if skill used by self player, and is trigger skill type or trigger
         skill type is none, then make damage to opponent player's active 
-        charactor.
+        character.
         If self.decrease_usage is True, when make damage success, 
         decrease usage by 1.
         """
@@ -194,7 +194,7 @@ class ExtraAttackTeamStatus(TeamStatusBase):
             # not trigger skill type
             return []
         target = match.player_tables[
-            1 - self.position.player_idx].get_active_charactor()
+            1 - self.position.player_idx].get_active_character()
         if self.decrease_usage:
             self.usage -= 1
         return [MakeDamageAction(
@@ -214,7 +214,7 @@ class ExtraAttackTeamStatus(TeamStatusBase):
 class ElementalInfusionTeamStatus(TeamStatusBase):
     """
     Base class of doing elemental infusion. It will infuse all physical damage
-    to corresponding elemental damage for active charactor. If there extra
+    to corresponding elemental damage for active character. If there extra
     conditions, filter the condition and call value modifier in subclasses.
     """
 
@@ -263,10 +263,10 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
         NOTE: this function will not change the usage.
         """
         assert mode == 'REAL'
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not corresponding charactor use skill, do nothing
+            # not corresponding character use skill, do nothing
             return value
         if self.usage <= 0:  # pragma: no cover
             # no usage, do nothing
@@ -285,13 +285,13 @@ class SwitchActionTeamStatus(UsageTeamStatus):
 
     def _action(self, match: Any) -> List[Actions]:
         """
-        action to perform when switch charactor
+        action to perform when switch character
         """
         raise NotImplementedError()
 
     def _check(self, match: Any, event_player_idx: int) -> List[Actions]:
         if event_player_idx != self.position.player_idx:
-            # not self switch charactor
+            # not self switch character
             return []
         if self.usage <= 0:  # pragma: no cover
             # no usage
@@ -299,18 +299,18 @@ class SwitchActionTeamStatus(UsageTeamStatus):
         self.usage -= 1
         return self._action(match)
 
-    def event_handler_SWITCH_CHARACTOR(
-        self, event: SwitchCharactorEventArguments, match: Any
+    def event_handler_SWITCH_CHARACTER(
+        self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[Actions]:
         """
-        If self switch charactor, perform attack
+        If self switch character, perform attack
         """
         return self._check(match, event.action.player_idx)
 
-    def event_handler_CHOOSE_CHARACTOR(
-        self, event: ChooseCharactorEventArguments, match: Any
+    def event_handler_CHOOSE_CHARACTER(
+        self, event: ChooseCharacterEventArguments, match: Any
     ) -> List[Actions]:
         """
-        If self choose charactor (when ally defeated), perform attack
+        If self choose character (when ally defeated), perform attack
         """
         return self._check(match, event.action.player_idx)

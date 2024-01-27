@@ -26,7 +26,7 @@ class FallsAndFortuneStatus_4_3(RoundTeamStatus):
         """
         if talent activated, increase switch cost
         """
-        if value.cost.label & CostLabels.SWITCH_CHARACTOR.value != 0:
+        if value.cost.label & CostLabels.SWITCH_CHARACTER.value != 0:
             # increase switch cost regardless of player
             value.cost.any_dice_number += 1
         return value

@@ -27,9 +27,9 @@ class WolfsGravestone_3_3(WeaponBase):
         self, value: DamageIncreaseValue, match: Any, 
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        assert value.target_position.area == ObjectPositionType.CHARACTOR
-        charactor = match.get_object(value.target_position)
-        if charactor.hp <= 6:
+        assert value.target_position.area == ObjectPositionType.CHARACTER
+        character = match.get_object(value.target_position)
+        if character.hp <= 6:
             self.damage_increase = 3
         super().value_modifier_DAMAGE_INCREASE(value, match, mode)
         self.damage_increase = 1
@@ -49,14 +49,14 @@ class TheBell_3_7(RoundEffectWeaponBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        If self charactor use any skill, and have usage, create Rebellious
+        If self character use any skill, and have usage, create Rebellious
         Shield.
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL
+            character_idx_same = True, target_area = ObjectPositionType.SKILL
         ):
-            # not self charactor use skill
+            # not self character use skill
             return []
         if self.usage == 0:
             # no usage

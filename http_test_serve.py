@@ -11,16 +11,16 @@ logging.basicConfig(level = logging.INFO)
 if __name__ == '__main__':
     deck_str_1 = '''
         default_version:4.2
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Tighnari
+        character:Baizhu
+        character:Nilou
+        character:Tighnari
         All Things Are of the Earth*15
         Lotus Flower Crisp*15
     '''
     deck_str_2 = '''
-    charactor:Nahida@3.7
-    charactor:Rhodeia of Loch@3.3
-    charactor:Fischl@3.3
+    character:Nahida@3.7
+    character:Rhodeia of Loch@3.3
+    character:Fischl@3.3
     Gambler's Earrings@3.8
     Paimon@3.3
     Chef Mao@4.1
@@ -44,7 +44,7 @@ if __name__ == '__main__':
             check_deck_restriction = False,
             card_number = None,
             max_same_card_number = None,
-            charactor_number = None,
+            character_number = None,
             max_round_number = 999,
             random_first_player = False,
             # max_hand_size = 999,
@@ -62,9 +62,9 @@ if __name__ == '__main__':
 
     # # modify hp
     # for deck in server.decks:
-    #     for charactor in deck.charactors:
-    #         charactor.hp = 40
-    #         charactor.max_hp = 40
+    #     for character in deck.characters:
+    #         character.hp = 40
+    #         character.max_hp = 40
 
     # fix random seed
     match = Match(random_state = get_random_state())

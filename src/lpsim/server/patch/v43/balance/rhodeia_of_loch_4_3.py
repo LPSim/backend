@@ -4,14 +4,14 @@ from .....utils.desc_registry import DescDictType
 
 from .....utils.class_registry import register_class
 
-from ....charactor.charactor_base import ElementalNormalAttackBase
+from ....character.character_base import ElementalNormalAttackBase
 
 from ....summon.base import DefendSummonBase
 
 from ....consts import ELEMENT_TO_DAMAGE_TYPE, DamageElementalType
 
 from ....match import Match
-from ....charactor.hydro.rhodeia_4_2 import (
+from ....character.hydro.rhodeia_4_2 import (
     RhodeiaOfLoch_4_2, RhodeiaElementSkill as RES_4_2, TideAndTorrent
 )
 
@@ -106,7 +106,7 @@ class RhodeiaOfLoch_4_3(RhodeiaOfLoch_4_2):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Rhodeia of Loch": {
+    "CHARACTER/Rhodeia of Loch": {
         "descs": {
             "4.3": {
                 "zh-CN": "",

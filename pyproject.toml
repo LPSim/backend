@@ -34,3 +34,9 @@ dependencies = [
 write_to = "src/lpsim/_version.py"
 version_scheme = "post-release"
 local_scheme = "no-local-version"
+
+[tool.typos]
+files.extend-exclude = ["/src/lpsim/utils/deck_code_data.json"]
+
+[tool.typos.default.extend-words]
+Invokation = "Invokation"

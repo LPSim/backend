@@ -5,7 +5,7 @@ from src.lpsim.server.card.support.companions import CompanionBase
 from src.lpsim.server.card.event.foods import FoodCardBase
 from src.lpsim.server.card.support.base import SupportBase
 from src.lpsim.server.summon.base import SummonBase
-from src.lpsim.server.charactor.charactor_base import CharactorBase
+from src.lpsim.server.character.character_base import CharacterBase
 from src.lpsim.utils.desc_registry import (
     DescDictType, desc_exist, get_desc_patch, update_cost, update_desc
 )
@@ -58,10 +58,10 @@ def test_class_registry():
     register_class(Sleep_1_0)
     with pytest.raises(AssertionError):
         # wrong base class, get error
-        get_instance(CharactorBase, { 'name': 'Sleep', 'version': '1.0' })
+        get_instance(CharacterBase, { 'name': 'Sleep', 'version': '1.0' })
     with pytest.raises(AssertionError):
         # wrong base classes, get error
-        get_instance(CharactorBase | SummonBase, 
+        get_instance(CharacterBase | SummonBase, 
                      { 'name': 'Sleep', 'version': '1.0' })
     # contain right class, get instance
     ins = get_instance(EventCardBase, { 'name': 'Sleep', 'version': '1.0' })
@@ -242,7 +242,7 @@ def test_register_cost():
 
 
 def test_wrong_id():
-    wrong_prefix = ['CHARACTOR_STATUS', 'SKILL', 'SUMMON', 'TEAM_STATUS']
+    wrong_prefix = ['CHARACTER_STATUS', 'SKILL', 'SUMMON', 'TEAM_STATUS']
     for wp in wrong_prefix:
         wrong_id_desc: Dict[str, DescDictType] = {
             f'{wp}/DD': {
