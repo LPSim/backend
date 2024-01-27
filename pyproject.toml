@@ -40,3 +40,6 @@ files.extend-exclude = ["/src/lpsim/utils/deck_code_data.json"]
 
 [tool.typos.default.extend-words]
 Invokation = "Invokation"
+
+[tool.ruff]
+exclude = ["templates"]
