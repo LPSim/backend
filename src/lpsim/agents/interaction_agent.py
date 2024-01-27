@@ -303,7 +303,7 @@ class InteractionAgent_V1_0(AgentBase):
 
 class InteractionAgent_V2_0(InteractionAgent_V1_0):
     """
-    Thie version changes the command format of tune, card and skill to make 
+    This version changes the command format of tune, card and skill to make 
     easier use. And can use idx of dice to instead die color.
     All idx are start with 0.
 

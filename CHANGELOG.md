@@ -140,7 +140,7 @@ Happy New Year 2024! New year comes in coding time!
   conditions.
 
 ### Fixed
-- Timaeus cannot decrease cost when drawed in the round (i.e. Liben, 
+- Timaeus cannot decrease cost when drew in the round (i.e. Liben, 
   Strategize).
 - Cost of Butter Crab is wrong.
 - Base talents (not triggering skills) cannot use when character is stunned
@@ -240,7 +240,7 @@ Happy New Year 2024! New year comes in coding time!
 - #13 Implement desc registry, which saves the descriptions of classes. When a 
   class is registered in the class registry, a valid description is required.
 - Implement `/patch` endpoint in HTTPServer, which can be used to get 
-  description patchs from server.
+  description patches from server.
 - #3 Support create `Deck` from deck code, or export `Deck` to deck code.
   Also add related APIs in HTTPServer.
 

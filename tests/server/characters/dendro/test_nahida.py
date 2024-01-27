@@ -166,7 +166,7 @@ def test_fischl_mona_nahida_no_talent():
     assert len(agent_1.commands) == 0
     assert match.round_number == 3
     check_hp(match, [[0, 0, 1], [10, 10, 10]])
-    # maks small tests on getting id
+    # makes small tests on getting id
     assert match.player_tables[0].previous_character_idx() is None
     assert match.player_tables[0].next_character_idx() is None
     assert match.player_tables[1].previous_character_idx() == 1
