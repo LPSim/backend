@@ -7873,7 +7873,7 @@
     "descs": {
       "3.3": {
         "zh-CN": "每回合自动触发1次：此牌累积1只「鸽子」。如果此牌已累积3只「鸽子」，则弃置此牌：抓1张牌，生成一点万能元素。",
-        "en-US": "Triggers automatically once per Round: This card gains 1 Pigeon. When this card gains 3 Pigeons, discard this card, then draw 1 card and create Genius Invocation TCG Omni Dice Omni Element x1."
+        "en-US": "Triggers automatically once per Round: This card gains 1 Pigeon. When this card gains 3 Pigeons, discard this card, then draw 1 card and create Genius Invokation TCG Omni Dice Omni Element x1."
       }
     },
     "id": 322007,
@@ -7887,7 +7887,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "我方角色使用技能后：此牌累积1个「寻宝线索」。当此牌已累积3个「寻宝线索」时，弃置此牌：抓3张牌。",
-        "en-US": "Triggers automatically once per Round: This card gains 1 Pigeon. When this card gains 3 Pigeons, discard this card, then draw 1 card and create Genius Invocation TCG Omni Dice Omni Element x1."
+        "en-US": "Triggers automatically once per Round: This card gains 1 Pigeon. When this card gains 3 Pigeons, discard this card, then draw 1 card and create Genius Invokation TCG Omni Dice Omni Element x1."
       }
     },
     "id": 323004,
@@ -8809,7 +8809,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "战斗行动：我方出战角色为魈时，装备此牌。魈装备此牌后，立刻使用一次靖妖傩舞。装备有此牌的魈附属夜叉傩面期间，使用风轮两立时少花费1个风元素。（每附属1次夜叉傩面，可触发2次）（牌组中包含魈，才能加入牌组）",
-        "en-US": "Combat Action: When your active character is Xiao, equip this card. After Xiao equips this card, immediately use Bane of All Evil once. While your Xiao has Yaksha's Mask attached, your use of Lemniscatic Wind Cycling will cost 1 less Genius Invocation TCG Anemo Cost Anemo Die. (Every attachment of Yaksha's Mask allows the effect to be triggered twice) (You must have Xiao in your deck to add this card to your deck.)"
+        "en-US": "Combat Action: When your active character is Xiao, equip this card. After Xiao equips this card, immediately use Bane of All Evil once. While your Xiao has Yaksha's Mask attached, your use of Lemniscatic Wind Cycling will cost 1 less Genius Invokation TCG Anemo Cost Anemo Die. (Every attachment of Yaksha's Mask allows the effect to be triggered twice) (You must have Xiao in your deck to add this card to your deck.)"
       }
     },
     "id": 215041,

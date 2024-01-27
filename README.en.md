@@ -1,11 +1,11 @@
-# Lochfolk Prinzessin Simulator (LPSim): A Genius Invocation TCG Simulator
+# Lochfolk Prinzessin Simulator (LPSim): A Genius Invokation TCG Simulator
 
 ---
 
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 
-Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invocation 
+Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
 TCG, written with Python 3.10 using Pydantic and FastAPI. This project has
 another [frontend repository](https://github.com/LPSim/frontend) which contains 
 a frontend page to interact with this backend.
