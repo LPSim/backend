@@ -4,9 +4,11 @@ TODO when added to match, create corresponding support system event handlers
 from typing import Any, Dict, List, Literal, Type
 from pydantic import PrivateAttr
 
-from ....action import CreateObjectAction, RemoveObjectAction
-from .....utils.class_registry import register_class
-from ....event import MoveObjectEventArguments
+from ....action import (
+    ActionTypes, Actions, CreateObjectAction, RemoveObjectAction
+)
+from .....utils.class_registry import get_instance, register_class
+from ....event import GameStartEventArguments, MoveObjectEventArguments
 from ....modifiable_values import CostValue
 from ....status.team_status.base import (
     RoundTeamStatus, UsageTeamStatus
@@ -65,6 +67,8 @@ class SunyataFlower_4_4(EventCardBase):
     _accept_class_list: List[str] | None = PrivateAttr(None)
     _accept_version: str | None = PrivateAttr(None)
 
+    available_handler_in_deck: List[ActionTypes] = [ActionTypes.GAME_START]
+
     def _get_candidate_list(self, match: Match) -> List[str]:
         if self._accept_class_list is not None:
             return self._accept_class_list
@@ -81,6 +85,28 @@ class SunyataFlower_4_4(EventCardBase):
         )
         self._accept_class_list = candidate_list
         return candidate_list
+
+    def event_handler_GAME_START(
+        self, event: GameStartEventArguments, match: Match
+    ) -> List[Actions]:
+        """
+        check all cards that able to generate. If they contains GAME_START
+        event and available in deck, call them.
+        """
+        candidate_list = self._get_candidate_list(match)
+        args = {}
+        if self._accept_version is not None:
+            args['version'] = self._accept_version
+        candidate_instance = [
+            get_instance(self._accept_card_types, {
+                'name': name, **args
+            }) for name in candidate_list
+        ]
+        res: List[Actions] = []
+        for i in candidate_instance:
+            if ActionTypes.GAME_START in i.available_handler_in_deck:
+                res += i.event_handler_GAME_START(event, match)
+        return res
 
     def is_valid(self, match: Match) -> bool:
         return len(self.get_targets(match)) > 0
