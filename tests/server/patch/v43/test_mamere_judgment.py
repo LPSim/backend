@@ -106,9 +106,9 @@ def get_mamere_judgment_match():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Tighnari
+        character:Baizhu
+        character:Nilou
+        character:Tighnari
         Mamere*10
         Strategize*3
         Sweet Madame*3
@@ -119,7 +119,7 @@ def get_mamere_judgment_match():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.max_hand_size = 999
@@ -220,9 +220,9 @@ def test_judgment_one_round():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Tighnari
+        character:Baizhu
+        character:Nilou
+        character:Tighnari
         Mamere*10
         Strategize*3
         Sweet Madame*3
@@ -233,7 +233,7 @@ def test_judgment_one_round():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.max_hand_size = 999
@@ -315,9 +315,9 @@ def test_judge_arcane():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Tighnari
+        character:Baizhu
+        character:Nilou
+        character:Tighnari
         Mamere*10
         Strategize*3
         Sweet Madame*3
@@ -328,7 +328,7 @@ def test_judge_arcane():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.max_hand_size = 999
@@ -407,9 +407,9 @@ def test_mamere_no_default():
     # deck information
     deck = Deck.from_str(
         '''
-        charactor:Baizhu
-        charactor:Nilou
-        charactor:Tighnari
+        character:Baizhu
+        character:Nilou
+        character:Tighnari
         Mamere*10
         Strategize*3
         Sweet Madame*3
@@ -420,7 +420,7 @@ def test_mamere_no_default():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.max_hand_size = 999
@@ -510,9 +510,9 @@ def test_mamere_judgment_2():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Kaedehara Kazuha
-        charactor:Klee
-        charactor:Kaeya
+        character:Kaedehara Kazuha
+        character:Klee
+        character:Kaeya
         Passing of Judgment
         Mamere*10
         Sweet Madame*10
@@ -520,7 +520,7 @@ def test_mamere_judgment_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.max_hand_size = 999

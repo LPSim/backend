@@ -12,8 +12,8 @@ def test_lyney():
     )
     # modify hp
     for i in range(2):
-        charactors = match.player_tables[i].player_deck_information.charactors
-        for c in charactors:
+        characters = match.player_tables[i].player_deck_information.characters
+        for c in characters:
             c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)
@@ -42,7 +42,7 @@ def test_lyney():
                 check_hp(match, hps)
             elif test_id == 2:
                 pidx, cidx = get_pidx_cidx(cmd)
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             elif test_id == 3:
                 pidx = int(cmd[2][1])

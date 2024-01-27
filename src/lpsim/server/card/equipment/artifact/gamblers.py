@@ -8,7 +8,7 @@ from ....consts import DieColor, ObjectPositionType
 
 from ....struct import Cost, ObjectPosition
 
-from ....event import CharactorDefeatedEventArguments
+from ....event import CharacterDefeatedEventArguments
 from ....action import CreateDiceAction, Actions
 
 
@@ -25,8 +25,8 @@ class GamblersEarrings_3_8(ArtifactBase):
         self.usage = 3
         return []
 
-    def event_handler_CHARACTOR_DEFEATED(
-        self, event: CharactorDefeatedEventArguments, match: Any
+    def event_handler_CHARACTER_DEFEATED(
+        self, event: CharacterDefeatedEventArguments, match: Any
     ) -> List[CreateDiceAction]:
         """
         When an opposing character is defeated, check if the character this 
@@ -42,10 +42,10 @@ class GamblersEarrings_3_8(ArtifactBase):
         if not self.position.check_position_valid(
             target_position, match, 
             player_idx_same = False,
-            source_area = ObjectPositionType.CHARACTOR,
-            source_is_active_charactor = True,
+            source_area = ObjectPositionType.CHARACTER,
+            source_is_active_character = True,
         ):
-            # our charactor defeated, or self not active, or self not equipped
+            # our character defeated, or self not active, or self not equipped
             return []
         if self.usage <= 0:
             # no usage left

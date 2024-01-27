@@ -36,7 +36,7 @@ def test_new_4_tranform():
                 break
             elif test_id == 10:
                 pidx, cidx = get_pidx_cidx(cmd)
-                desc = match.player_tables[pidx].charactors[cidx].desc
+                desc = match.player_tables[pidx].characters[cidx].desc
                 cmd_desc = ' '.join(cmd[3:])[1:-1]
                 assert desc == cmd_desc
             else:

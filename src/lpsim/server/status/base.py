@@ -16,7 +16,7 @@ class StatusBase(ObjectBase):
     show_usage: bool = True
     usage: int
     max_usage: int
-    type: Literal[ObjectType.CHARACTOR_STATUS, ObjectType.TEAM_STATUS]
+    type: Literal[ObjectType.CHARACTER_STATUS, ObjectType.TEAM_STATUS]
     renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'ADD'
 
     icon_type: IconType

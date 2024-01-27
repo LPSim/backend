@@ -90,9 +90,9 @@ from lpsim import Match, Deck
 from lpsim.agents import RandomAgent
 deck_string = '''
 default_version:4.1
-charactor:Fischl
-charactor:Mona
-charactor:Nahida
+character:Fischl
+character:Mona
+character:Nahida
 Gambler's Earrings*2
 Wine-Stained Tricorne*2
 Vanarana
@@ -136,7 +136,7 @@ print(f'winner is {match.winner}')
 
 自定义角色和卡牌前，你需要了解actions, event handlers和value modifiers。所有与对局的交互（一个实例需要修改对局中其他实例的状态）都是通过actions完成的，所有的actions都是由events触发的。value modifiers用来修改值，例如骰子消耗和伤害数值/类型。最简单的实现一个新的对象的方法是参考并复制一个已有的卡牌/角色/技能/状态...并修改它。你可以在细节中找到更多信息。
 
-`templates/charactor.py`是一个角色的模板。你可以复制它并修改它来实现一个新的角色。你可以定义任何与角色相关的对象，例如技能、天赋、召唤、状态。然后，你需要为这些对象创建描述，描述将会在前端中使用，class registry会拒绝没有描述的对象。最后，使用`register_class`函数将所有对象以及它们的描述注册到class registry中，就可以在对局中使用它们了。
+`templates/character.py`是一个角色的模板。你可以复制它并修改它来实现一个新的角色。你可以定义任何与角色相关的对象，例如技能、天赋、召唤、状态。然后，你需要为这些对象创建描述，描述将会在前端中使用，class registry会拒绝没有描述的对象。最后，使用`register_class`函数将所有对象以及它们的描述注册到class registry中，就可以在对局中使用它们了。
 
 定义一个新的卡牌相对简单，你可以参考`templates/card.py`，它定义了一个新的卡牌“大心海”，它消耗2个任意骰子并抽3张牌。作为自定义卡牌的示例，在这个文件里使用了absolute import，因此可以在项目外直接使用。
 
@@ -165,7 +165,7 @@ a.run()
 
 ## 贡献
 
-欢迎合作开发项目代码，但是目前没有详细的贡献指南。如果你想添加新的角色相关的对象（角色、技能、天赋、召唤、状态），请参考`server/charactor/template.py`和已经实现的角色。如果你想添加新的卡牌，请参考`server/card`中已经实现的卡牌。
+欢迎合作开发项目代码，但是目前没有详细的贡献指南。如果你想添加新的角色相关的对象（角色、技能、天赋、召唤、状态），请参考`server/character/template.py`和已经实现的角色。如果你想添加新的卡牌，请参考`server/card`中已经实现的卡牌。
 
 你可以通过QQ群945778865联系作者，咨询开发和使用上的问题，进群问题的答案是模拟器的中文名。
 

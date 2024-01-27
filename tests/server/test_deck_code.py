@@ -7,9 +7,9 @@ def test_deck_code():
     deck_str = '''
     # nahida mona fischl, with 4.0 wind and freedom
     default_version:4.1
-    charactor:Fischl@3.3
-    charactor:Mona
-    charactor:Nahida
+    character:Fischl@3.3
+    character:Mona
+    character:Nahida
     Gambler's Earrings*2
     Wine-Stained Tricorne*2
     Vanarana
@@ -29,11 +29,11 @@ def test_deck_code():
     Mondstadt Hash Brown*2
     Tandoori Roast Chicken
     '''
-    deck_str_over_1 = deck_str + 'charactor:Beidou'
+    deck_str_over_1 = deck_str + 'character:Beidou'
     deck_str_over_2 = deck_str + 'Strategize'
-    deck_str_miss_1 = deck_str.replace('charactor:Mona', '')
+    deck_str_miss_1 = deck_str.replace('character:Mona', '')
     deck_str_miss_2 = deck_str.replace('Tanodoori Roast Chicken', '')
-    deck_str_over_3 = deck_str.replace('charactor:Mona', 'charactor:Mona*2')
+    deck_str_over_3 = deck_str.replace('character:Mona', 'character:Mona*2')
     # check deck str to deck code
     deck_code = deck_str_to_deck_code(deck_str)
     with pytest.raises(ValueError):
@@ -59,9 +59,9 @@ def test_deck_code():
         """
         deck1 = Deck.from_str(str1)
         deck2 = Deck.from_str(str2)
-        ch_names1 = sorted([x.name for x in deck1.charactors])
+        ch_names1 = sorted([x.name for x in deck1.characters])
         ca_names1 = sorted([x.name for x in deck1.cards])
-        ch_names2 = sorted([x.name for x in deck2.charactors])
+        ch_names2 = sorted([x.name for x in deck2.characters])
         ca_names2 = sorted([x.name for x in deck2.cards])
         return ch_names1 == ch_names2 and ca_names1 == ca_names2
 
@@ -89,9 +89,9 @@ def test_deck_code():
 
 def test_deck_doce_shuffle():
     deck_str = '''
-        charactor:Yelan
-        charactor:Chongyun
-        charactor:Kamisato Ayaka
+        character:Yelan
+        character:Chongyun
+        character:Kamisato Ayaka
         Sacrificial Bow
         King's Squire
         Light of Foliar Incision

@@ -28,7 +28,7 @@ class MillennialMovementFarewellSong_3_7(RoundTeamStatus):
         self, value: DamageIncreaseValue, match: Any,
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        if value.is_corresponding_charactor_use_damage_skill(
+        if value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
             assert mode == 'REAL'

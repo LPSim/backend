@@ -2,10 +2,10 @@ from enum import Enum
 from ..utils import BaseModel
 from typing import Literal, List
 from .interaction import (
-    ChooseCharactorResponse,
+    ChooseCharacterResponse,
     RerollDiceResponse,
     DeclareRoundEndResponse,
-    SwitchCharactorResponse,
+    SwitchCharacterResponse,
 )
 from .consts import DieColor, ObjectType, SkillType
 from .modifiable_values import DamageValue
@@ -17,18 +17,18 @@ class ActionTypes(str, Enum):
     DRAW_CARD = 'DRAW_CARD'
     RESTORE_CARD = 'RESTORE_CARD'
     REMOVE_CARD = 'REMOVE_CARD'
-    CHOOSE_CHARACTOR = 'CHOOSE_CHARACTOR'
+    CHOOSE_CHARACTER = 'CHOOSE_CHARACTER'
     CREATE_DICE = 'CREATE_DICE'
     REMOVE_DICE = 'REMOVE_DICE'
     DECLARE_ROUND_END = 'DECLARE_ROUND_END'
     ACTION_END = 'ACTION_END'
-    SWITCH_CHARACTOR = 'SWITCH_CHARACTOR'
+    SWITCH_CHARACTER = 'SWITCH_CHARACTER'
     CHARGE = 'CHARGE'
     USE_SKILL = 'USE_SKILL'
     USE_CARD = 'USE_CARD'
     SKILL_END = 'SKILL_END'
-    CHARACTOR_DEFEATED = 'CHARACTOR_DEFEATED'
-    CHARACTOR_REVIVE = 'CHARACTOR_REVIVE'
+    CHARACTER_DEFEATED = 'CHARACTER_DEFEATED'
+    CHARACTER_REVIVE = 'CHARACTER_REVIVE'
     CREATE_OBJECT = 'CREATE_OBJECT'
     REMOVE_OBJECT = 'REMOVE_OBJECT'
     OBJECT_REMOVED = 'OBJECT_REMOVED'
@@ -48,7 +48,7 @@ class ActionTypes(str, Enum):
     AFTER_MAKE_DAMAGE = 'AFTER_MAKE_DAMAGE'
 
     # generate request actions
-    GENERATE_CHOOSE_CHARACTOR = 'GENERATE_CHOOSE_CHARACTOR'
+    GENERATE_CHOOSE_CHARACTER = 'GENERATE_CHOOSE_CHARACTER'
     GENERATE_REROLL_DICE = 'GENERATE_REROLL_DICE'
     GENERATE_SWITCH_CARD = 'GENERATE_SWITCH_CARD'
 
@@ -107,23 +107,23 @@ class RemoveCardAction(ActionBase):
     remove_type: Literal['USED', 'BURNED']
 
 
-class ChooseCharactorAction(ActionBase):
+class ChooseCharacterAction(ActionBase):
     """
-    Action for choosing charactors.
+    Action for choosing characters.
     """
-    type: Literal[ActionTypes.CHOOSE_CHARACTOR] = ActionTypes.CHOOSE_CHARACTOR
+    type: Literal[ActionTypes.CHOOSE_CHARACTER] = ActionTypes.CHOOSE_CHARACTER
     record_level: int = 10
     player_idx: int
-    charactor_idx: int
+    character_idx: int
 
     @classmethod
-    def from_response(cls, response: ChooseCharactorResponse):
+    def from_response(cls, response: ChooseCharacterResponse):
         """
-        Generate ChooseCharactorAction from ChooseCharactorResponse.
+        Generate ChooseCharacterAction from ChooseCharacterResponse.
         """
         return cls(
             player_idx = response.player_idx,
-            charactor_idx = response.charactor_idx,
+            character_idx = response.character_idx,
         )
 
 
@@ -198,7 +198,7 @@ class ActionEndAction(ActionBase):
     """
     Action end, and if is a combat action, change current player.
     the position means the action source, i.e. the skill,
-    or the charactor who switch out.
+    or the character who switch out.
     """
     type: Literal[ActionTypes.ACTION_END] = ActionTypes.ACTION_END
     action_label: int  # Refer to PlayerActionLabels
@@ -206,23 +206,23 @@ class ActionEndAction(ActionBase):
     position: ObjectPosition
 
 
-class SwitchCharactorAction(ActionBase):
+class SwitchCharacterAction(ActionBase):
     """
-    Action for switching charactor.
+    Action for switching character.
     """
-    type: Literal[ActionTypes.SWITCH_CHARACTOR] = ActionTypes.SWITCH_CHARACTOR
+    type: Literal[ActionTypes.SWITCH_CHARACTER] = ActionTypes.SWITCH_CHARACTER
     record_level: int = 10
     player_idx: int
-    charactor_idx: int
+    character_idx: int
 
     @classmethod
-    def from_response(cls, response: SwitchCharactorResponse):
+    def from_response(cls, response: SwitchCharacterResponse):
         """
-        Generate SwitchCharactorAction from SwitchCharactorResponse.
+        Generate SwitchCharacterAction from SwitchCharacterResponse.
         """
         return cls(
             player_idx = response.player_idx,
-            charactor_idx = response.request.target_charactor_idx
+            character_idx = response.request.target_character_idx
         )
 
 
@@ -235,7 +235,7 @@ class ChargeAction(ActionBase):
     """
     type: Literal[ActionTypes.CHARGE] = ActionTypes.CHARGE
     player_idx: int
-    charactor_idx: int
+    character_idx: int
     charge: int
 
 
@@ -264,18 +264,18 @@ class SkillEndAction(ActionBase):
     """
     type: Literal[ActionTypes.SKILL_END] = ActionTypes.SKILL_END
     position: ObjectPosition
-    target_position: ObjectPosition  # always poopnent initial active charactor now  # noqa: E501
+    target_position: ObjectPosition  # always poopnent initial active character now  # noqa: E501
     skill_type: SkillType
 
 
-class CharactorDefeatedAction(ActionBase):
+class CharacterDefeatedAction(ActionBase):
     """
-    Action for charactor defeated.
+    Action for character defeated.
     """
-    type: Literal[ActionTypes.CHARACTOR_DEFEATED] = \
-        ActionTypes.CHARACTOR_DEFEATED
+    type: Literal[ActionTypes.CHARACTER_DEFEATED] = \
+        ActionTypes.CHARACTER_DEFEATED
     player_idx: int
-    charactor_idx: int
+    character_idx: int
 
 
 # 15
@@ -335,20 +335,20 @@ class MoveObjectAction(ActionBase):
 class MakeDamageAction(ActionBase):
     """
     Action for making damage. Heal treats as negative damage. Elemental 
-    applies to the charactor (e.g. Kokomi) treats as zero damage.
+    applies to the character (e.g. Kokomi) treats as zero damage.
 
-    It can also contain charactor change and object creation (caused by 
+    It can also contain character change and object creation (caused by 
     elemental reaction or skill effects). They will be executed right after
     making damage, and gives corresponding events. 
 
     Args:
         damage_value_list (List[DamageValue]): The damage values to make.
-        do_charactor_change (bool): Whether to change charactor after making
+        do_character_change (bool): Whether to change character after making
             damage.
-        charactor_change_idx (List[int]): The charactor indices of the 
-            charactor who will be changed to for each player. If it is -1,
-            this damage will not explicitly change the charactor. It should 
-            not be a defeated charactor.
+        character_change_idx (List[int]): The character indices of the 
+            character who will be changed to for each player. If it is -1,
+            this damage will not explicitly change the character. It should 
+            not be a defeated character.
         create_objects (List[CreateObjectAction]): The objects to create after
             making damage.
     """
@@ -357,8 +357,8 @@ class MakeDamageAction(ActionBase):
     damage_value_list: List[DamageValue]
     create_objects: List[CreateObjectAction] = []
 
-    # charactor change
-    charactor_change_idx: List[int] = [-1, -1]
+    # character change
+    character_change_idx: List[int] = [-1, -1]
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
@@ -379,12 +379,12 @@ class ConsumeArcaneLegendAction(ActionBase):
     player_idx: int
 
 
-class GenerateChooseCharactorRequestAction(ActionBase):
+class GenerateChooseCharacterRequestAction(ActionBase):
     """
-    Action for generating choose charactor action.
+    Action for generating choose character action.
     """
-    type: Literal[ActionTypes.GENERATE_CHOOSE_CHARACTOR] = \
-        ActionTypes.GENERATE_CHOOSE_CHARACTOR
+    type: Literal[ActionTypes.GENERATE_CHOOSE_CHARACTER] = \
+        ActionTypes.GENERATE_CHOOSE_CHARACTER
     player_idx: int
 
 
@@ -406,14 +406,14 @@ class SkipPlayerActionAction(ActionBase):
         ActionTypes.SKIP_PLAYER_ACTION
 
 
-class CharactorReviveAction(ActionBase):
+class CharacterReviveAction(ActionBase):
     """
-    Action for charactor revive.
+    Action for character revive.
     """
-    type: Literal[ActionTypes.CHARACTOR_REVIVE] = ActionTypes.CHARACTOR_REVIVE
+    type: Literal[ActionTypes.CHARACTER_REVIVE] = ActionTypes.CHARACTER_REVIVE
     record_level: int = 10
     player_idx: int
-    charactor_idx: int
+    character_idx: int
     revive_hp: int
 
 
@@ -434,19 +434,19 @@ Actions = (
     | DrawCardAction 
     | RestoreCardAction 
     | RemoveCardAction
-    | ChooseCharactorAction
+    | ChooseCharacterAction
     # 5
     | CreateDiceAction
     | RemoveDiceAction
     | DeclareRoundEndAction
     | ActionEndAction
-    | SwitchCharactorAction
+    | SwitchCharacterAction
     # 10
     | ChargeAction
     | UseSkillAction
     | UseCardAction
     | SkillEndAction
-    | CharactorDefeatedAction
+    | CharacterDefeatedAction
     # 15
     | CreateObjectAction
     | RemoveObjectAction
@@ -455,9 +455,9 @@ Actions = (
     | MakeDamageAction
     # 20
     | ConsumeArcaneLegendAction
-    | GenerateChooseCharactorRequestAction
+    | GenerateChooseCharacterRequestAction
     | GenerateRerollDiceRequestAction
     | SkipPlayerActionAction
-    | CharactorReviveAction
+    | CharacterReviveAction
 
 )

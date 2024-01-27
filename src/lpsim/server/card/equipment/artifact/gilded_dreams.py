@@ -31,21 +31,21 @@ class ShadowOfTheSandKing_4_2(RoundEffectArtifactBase):
         self, event: ReceiveDamageEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When opponent charactor take elemental reaction, draw a card.
+        When opponent character take elemental reaction, draw a card.
         """
         if (
-            self.position.area != ObjectPositionType.CHARACTOR
+            self.position.area != ObjectPositionType.CHARACTER
             or self.position.player_idx 
             == event.final_damage.target_position.player_idx
             or event.final_damage.element_reaction
             == ElementalReactionType.NONE
             or event.final_damage.damage_type != DamageType.DAMAGE
             or self.usage <= 0
-            or self.position.charactor_idx != match.player_tables[
-                self.position.player_idx].active_charactor_idx
+            or self.position.character_idx != match.player_tables[
+                self.position.player_idx].active_character_idx
         ):
-            # not equipped, not opponent charactor, or not elemental reaction, 
-            # or not damage, or no usage, or self not active charactor
+            # not equipped, not opponent character, or not elemental reaction, 
+            # or not damage, or no usage, or self not active character
             return []
         # draw card
         self.usage -= 1

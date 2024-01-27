@@ -40,7 +40,7 @@ class KingsSquire_4_0(WeaponBase):
         """
         return [CreateObjectAction(
             object_position = self.position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_name = self.name,
             object_arguments = {}
         )]

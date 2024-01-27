@@ -58,9 +58,9 @@ def test_wind_and_freedom():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        # charactor:Fischl
-        # charactor:Mona
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -73,12 +73,12 @@ def test_wind_and_freedom():
         Wind and Freedom*30
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = 2
-        charactor.max_hp = 2
+    for character in deck.characters:
+        character.hp = 2
+        character.max_hp = 2
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
@@ -154,9 +154,9 @@ def test_wind_and_freedom_one_round():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        # charactor:Fischl
-        # charactor:Mona
-        charactor:Nahida*10
+        # character:Fischl
+        # character:Mona
+        character:Nahida*10
         # Gambler's Earrings*2
         # Wine-Stained Tricorne*2
         # Vanarana
@@ -169,12 +169,12 @@ def test_wind_and_freedom_one_round():
         Wind and Freedom*30
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = 2
-        charactor.max_hp = 2
+    for character in deck.characters:
+        character.hp = 2
+        character.max_hp = 2
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
-    match.config.charactor_number = 10
+    match.config.character_number = 10
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     set_16_omni(match)
@@ -270,9 +270,9 @@ def test_stone_thunder_nature():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Ganyu
-        charactor:Fischl
-        charactor:Keqing
+        character:Ganyu
+        character:Fischl
+        character:Keqing
         Stone and Contracts*7
         Thunder and Eternity*7
         Thunder and Eternity@3.7*7
@@ -281,7 +281,7 @@ def test_stone_thunder_nature():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -415,9 +415,9 @@ def test_fatui_monster():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Nahida
-        charactor:Klee
+        character:Mona
+        character:Nahida
+        character:Klee
         Fatui Conspiracy*10
         Abyssal Summons*10
         Guardian's Oath*10
@@ -425,7 +425,7 @@ def test_fatui_monster():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -466,7 +466,7 @@ def test_fatui_monster():
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
                 usages = [int(x) for x in cmd[4:]]
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 assert len(status) == len(usages)
                 for s, u in zip(status, usages):
                     assert s.usage == u

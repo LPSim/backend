@@ -94,7 +94,7 @@ class CombatActionValue(ModifiableValueBase):
 
 class DamageElementEnhanceValue(ModifiableValueBase):
     """
-    It describes a detailed damage, i.e. charactor X will receive the damage.
+    It describes a detailed damage, i.e. character X will receive the damage.
     It contains all information that a damage is needed, except element
     reaction, as it is not decided yet.
 
@@ -137,7 +137,7 @@ class DamageElementEnhanceValue(ModifiableValueBase):
             damage_from_element_reaction = self.damage_from_element_reaction,
         )
 
-    def is_corresponding_charactor_use_damage_skill(
+    def is_corresponding_character_use_damage_skill(
         self,
         object_position: ObjectPosition,
         match: Any,
@@ -145,13 +145,13 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         ignore_elemental_reaction: bool = True
     ) -> bool:
         """
-        Most objects modifying damage when current charactor
+        Most objects modifying damage when current character
         makes damages by using skills. This function checks if the object
-        with given object_position is the corresponding charactor using skill.
+        with given object_position is the corresponding character using skill.
 
-        If object position is on certain charactor, i.e. equipments or 
-        charactor status, the charactor should match damage source. Otherwise,
-        the active charactor should be the damage source.
+        If object position is on certain character, i.e. equipments or 
+        character status, the character should match damage source. Otherwise,
+        the active character should be the damage source.
 
         Args:
             object_position: The position of the object to check.
@@ -170,17 +170,17 @@ class DamageElementEnhanceValue(ModifiableValueBase):
             # not same player
             return False
         if (
-            object_position.area == ObjectPositionType.CHARACTOR
-            or object_position.area == ObjectPositionType.CHARACTOR_STATUS
+            object_position.area == ObjectPositionType.CHARACTER
+            or object_position.area == ObjectPositionType.CHARACTER_STATUS
         ):
-            # object on charactor, get idx
-            charactor_idx = object_position.charactor_idx
+            # object on character, get idx
+            character_idx = object_position.character_idx
         else:
-            # not on charactor, get active charactor idx
-            charactor_idx = match.player_tables[
-                object_position.player_idx].active_charactor_idx
-        if self.position.charactor_idx != charactor_idx:
-            # not same charactor
+            # not on character, get active character idx
+            character_idx = match.player_tables[
+                object_position.player_idx].active_character_idx
+        if self.position.character_idx != character_idx:
+            # not same character
             return False
         if ignore_elemental_reaction and self.damage_from_element_reaction:
             # elemental reaction damage
@@ -192,20 +192,20 @@ class DamageElementEnhanceValue(ModifiableValueBase):
                 return False
         return True
 
-    def is_corresponding_charactor_receive_damage(
+    def is_corresponding_character_receive_damage(
         self,
         object_position: ObjectPosition,
         match: Any,
         ignore_piercing: bool = True
     ) -> bool:
         """
-        Most objects modifing damage only when current charactor
+        Most objects modifing damage only when current character
         receives damages. This function checks if the object with given
-        object_position is the corresponding charactor receiving damage.
+        object_position is the corresponding character receiving damage.
 
-        If object position is on certain charactor, i.e. equipments or 
-        charactor status, the charactor should match damage target. Otherwise,
-        the active charactor should be the damage target.
+        If object position is on certain character, i.e. equipments or 
+        character status, the character should match damage target. Otherwise,
+        the active character should be the damage target.
 
         Args:
             object_position: The position of the object to check.
@@ -222,25 +222,25 @@ class DamageElementEnhanceValue(ModifiableValueBase):
             # piercing damage
             return False
         if (
-            self.target_position.area != ObjectPositionType.CHARACTOR
+            self.target_position.area != ObjectPositionType.CHARACTER
         ):  # pragma: no cover
-            # not on charactor
+            # not on character
             return False
         if self.target_position.player_idx != object_position.player_idx:
             # not same player
             return False
         if (
-            object_position.area == ObjectPositionType.CHARACTOR
-            or object_position.area == ObjectPositionType.CHARACTOR_STATUS
+            object_position.area == ObjectPositionType.CHARACTER
+            or object_position.area == ObjectPositionType.CHARACTER_STATUS
         ):
-            # object on charactor, get idx
-            charactor_idx = object_position.charactor_idx
+            # object on character, get idx
+            character_idx = object_position.character_idx
         else:
-            # not on charactor, get active charactor idx
-            charactor_idx = match.player_tables[
-                object_position.player_idx].active_charactor_idx
-        if self.target_position.charactor_idx != charactor_idx:
-            # not same charactor
+            # not on character, get active character idx
+            character_idx = match.player_tables[
+                object_position.player_idx].active_character_idx
+        if self.target_position.character_idx != character_idx:
+            # not same character
             return False
         return True
 

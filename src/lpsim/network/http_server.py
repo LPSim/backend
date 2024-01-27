@@ -311,7 +311,7 @@ class HTTPServer():
             deck_check_res, deck_check_info = deck.check_legal(
                 match.config.card_number, 
                 match.config.max_same_card_number, 
-                match.config.charactor_number, 
+                match.config.character_number, 
                 match.config.check_deck_restriction
             )
             if not deck_check_res:

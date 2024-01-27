@@ -133,8 +133,8 @@
         0.0
     ],
     "start_deck": [
-        "default_version:4.3\ncharactor:Yoimiya@3.8\ncharactor:Keqing@3.3\ncharactor:Dehya@4.1\ncharactor:Shenhe@4.2\ncharactor:Barbara@3.3\nLost Prayer to the Sacred Winds@4.3\nLost Prayer to the Sacred Winds@4.3\nTulaytullah's Remembrance@4.3\nTulaytullah's Remembrance@4.3\nBeacon of the Reed Sea@4.3\nBeacon of the Reed Sea@4.3\nPrimordial Jade Winged-Spear@4.3\nPrimordial Jade Winged-Spear@4.3\nLight of Foliar Incision@4.3\nLight of Foliar Incision@4.3\nFlowing Rings@4.3\nFlowing Rings@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nHeart of Khvarena's Brilliance@4.3\nHeart of Khvarena's Brilliance@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nThe Boar Princess@4.3\nThe Boar Princess@4.3\nFalls and Fortune@4.3\nFalls and Fortune@4.3\n",
-        "default_version:4.3\ncharactor:Yoimiya@3.8\ncharactor:Keqing@3.3\ncharactor:Dehya@4.1\ncharactor:Shenhe@4.2\ncharactor:Barbara@3.3\nLost Prayer to the Sacred Winds@4.3\nLost Prayer to the Sacred Winds@4.3\nTulaytullah's Remembrance@4.3\nTulaytullah's Remembrance@4.3\nBeacon of the Reed Sea@4.3\nBeacon of the Reed Sea@4.3\nPrimordial Jade Winged-Spear@4.3\nPrimordial Jade Winged-Spear@4.3\nLight of Foliar Incision@4.3\nLight of Foliar Incision@4.3\nFlowing Rings@4.3\nFlowing Rings@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nHeart of Khvarena's Brilliance@4.3\nHeart of Khvarena's Brilliance@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nThe Boar Princess@4.3\nThe Boar Princess@4.3\nFalls and Fortune@4.3\nFalls and Fortune@4.3\n"
+        "default_version:4.3\ncharacter:Yoimiya@3.8\ncharacter:Keqing@3.3\ncharacter:Dehya@4.1\ncharacter:Shenhe@4.2\ncharacter:Barbara@3.3\nLost Prayer to the Sacred Winds@4.3\nLost Prayer to the Sacred Winds@4.3\nTulaytullah's Remembrance@4.3\nTulaytullah's Remembrance@4.3\nBeacon of the Reed Sea@4.3\nBeacon of the Reed Sea@4.3\nPrimordial Jade Winged-Spear@4.3\nPrimordial Jade Winged-Spear@4.3\nLight of Foliar Incision@4.3\nLight of Foliar Incision@4.3\nFlowing Rings@4.3\nFlowing Rings@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nHeart of Khvarena's Brilliance@4.3\nHeart of Khvarena's Brilliance@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nThe Boar Princess@4.3\nThe Boar Princess@4.3\nFalls and Fortune@4.3\nFalls and Fortune@4.3\n",
+        "default_version:4.3\ncharacter:Yoimiya@3.8\ncharacter:Keqing@3.3\ncharacter:Dehya@4.1\ncharacter:Shenhe@4.2\ncharacter:Barbara@3.3\nLost Prayer to the Sacred Winds@4.3\nLost Prayer to the Sacred Winds@4.3\nTulaytullah's Remembrance@4.3\nTulaytullah's Remembrance@4.3\nBeacon of the Reed Sea@4.3\nBeacon of the Reed Sea@4.3\nPrimordial Jade Winged-Spear@4.3\nPrimordial Jade Winged-Spear@4.3\nLight of Foliar Incision@4.3\nLight of Foliar Incision@4.3\nFlowing Rings@4.3\nFlowing Rings@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nHeart of Khvarena's Brilliance@4.3\nHeart of Khvarena's Brilliance@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nThe Boar Princess@4.3\nThe Boar Princess@4.3\nFalls and Fortune@4.3\nFalls and Fortune@4.3\n"
     ],
     "command_history": [
         [
@@ -2726,7 +2726,7 @@
         "initial_dice_reroll_times": 1,
         "card_number": null,
         "max_same_card_number": null,
-        "charactor_number": null,
+        "character_number": null,
         "max_round_number": 999,
         "max_hand_size": 999,
         "max_dice_number": 16,

@@ -27,8 +27,8 @@ class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
         match: Any, mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
         """
-        First +1 DMG if self charactor use skill. Then if this damage is
-        our charactor use skill, and trigger element reaction, +1 DMG.
+        First +1 DMG if self character use skill. Then if this damage is
+        our character use skill, and trigger element reaction, +1 DMG.
         """
         # first +1 DMG
         super().value_modifier_DAMAGE_INCREASE(value, match, mode)
@@ -37,7 +37,7 @@ class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
         if self.usage == 0:
             # no usage left
             return value
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return value
         if value.element_reaction == ElementalReactionType.NONE:

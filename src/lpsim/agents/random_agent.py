@@ -5,11 +5,11 @@ from ..server.match import Match
 from ..server.interaction import (
     Responses,
     SwitchCardRequest, SwitchCardResponse,
-    ChooseCharactorRequest, ChooseCharactorResponse,
+    ChooseCharacterRequest, ChooseCharacterResponse,
     RerollDiceRequest, RerollDiceResponse,
     DeclareRoundEndResponse,
     ElementalTuningRequest, ElementalTuningResponse,
-    SwitchCharactorRequest, SwitchCharactorResponse,
+    SwitchCharacterRequest, SwitchCharacterResponse,
     UseSkillRequest, UseSkillResponse,
     UseCardRequest, UseCardResponse,
 )
@@ -53,8 +53,8 @@ class RandomAgent(AgentBase):
 
         if req.name == 'SwitchCardRequest':
             return self.resp_switch_card(req)
-        elif req.name == 'ChooseCharactorRequest':
-            return self.resp_choose_charactor(req)
+        elif req.name == 'ChooseCharacterRequest':
+            return self.resp_choose_character(req)
         elif req.name == 'RerollDiceRequest':
             return self.resp_reroll_dice(req)
         elif req.name == 'DeclareRoundEndRequest':
@@ -63,8 +63,8 @@ class RandomAgent(AgentBase):
             )
         elif req.name == 'ElementalTuningRequest':
             return self.resp_elemental_tuning(req)
-        elif req.name == 'SwitchCharactorRequest':
-            return self.resp_switch_charactor(req)
+        elif req.name == 'SwitchCharacterRequest':
+            return self.resp_switch_character(req)
         elif req.name == 'UseSkillRequest':
             return self.resp_use_skill(req)
         elif req.name == 'UseCardRequest':
@@ -84,15 +84,15 @@ class RandomAgent(AgentBase):
             request = req, card_idxs = card_idxs
         )
 
-    def resp_choose_charactor(
-            self, req: ChooseCharactorRequest) -> ChooseCharactorResponse:
+    def resp_choose_character(
+            self, req: ChooseCharacterRequest) -> ChooseCharacterResponse:
         """
-        Randomly choose a charactor.
+        Randomly choose a character.
         """
-        return ChooseCharactorResponse(
+        return ChooseCharacterResponse(
             request = req, 
-            charactor_idx = req.available_charactor_idxs[
-                int(self.random() * len(req.available_charactor_idxs))
+            character_idx = req.available_character_idxs[
+                int(self.random() * len(req.available_character_idxs))
             ]
         )
 
@@ -123,16 +123,16 @@ class RandomAgent(AgentBase):
             ]
         )
 
-    def resp_switch_charactor(
-            self, req: SwitchCharactorRequest) -> SwitchCharactorResponse:
+    def resp_switch_character(
+            self, req: SwitchCharacterRequest) -> SwitchCharacterResponse:
         """
-        Randomly choose a charactor.
+        Randomly choose a character.
         """
         assert req.cost.any_dice_number <= 1
         idxs = []
         if req.cost.any_dice_number == 1:
             idxs = [int(self.random() * len(req.dice_colors))]
-        return SwitchCharactorResponse(
+        return SwitchCharacterResponse(
             request = req, 
             dice_idxs = idxs,
         )

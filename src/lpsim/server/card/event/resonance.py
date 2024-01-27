@@ -7,7 +7,7 @@ from ...modifiable_values import DamageValue
 from ...action import (
     ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
     CreateObjectAction, DrawCardAction, GenerateSwitchCardRequestAction, 
-    MakeDamageAction, RemoveDiceAction, SwitchCharactorAction
+    MakeDamageAction, RemoveDiceAction, SwitchCharacterAction
 )
 from ...consts import (
     ELEMENT_TO_DIE_COLOR, DamageElementalType, DamageType, DieColor, 
@@ -23,7 +23,7 @@ class ElementalResonanceCardBase(EventCardBase):
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
-        For element resonance cards, should contain at least 2 charactors of
+        For element resonance cards, should contain at least 2 characters of
         the corresponding element.
         """
         return DeckRestriction(
@@ -91,7 +91,7 @@ class ShatteringIce_3_3(ElementalResonanceCardBase):
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # avtive character
         return [match.player_tables[
-            self.position.player_idx].get_active_charactor().position]
+            self.position.player_idx].get_active_character().position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -103,7 +103,7 @@ class ShatteringIce_3_3(ElementalResonanceCardBase):
         return [CreateObjectAction(
             object_name = self.name,
             object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_arguments = {}
         )]
 
@@ -119,11 +119,11 @@ class SoothingWater_3_3(ElementalResonanceCardBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        At least one charactor is taken damage.
+        At least one character is taken damage.
         """
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
-            if charactor.is_alive and charactor.damage_taken > 0:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
+            if character.is_alive and character.damage_taken > 0:
                 return True
         return False
 
@@ -137,31 +137,31 @@ class SoothingWater_3_3(ElementalResonanceCardBase):
         """
         heal active 2, others 1.
         """
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
         damage_action = MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
-                    target_position = active_charactor.position,
+                    target_position = active_character.position,
                     damage = -2,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = self.cost.copy()
                 )
             ],
         )
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
             if (
-                charactor.is_alive
-                and charactor.position != active_charactor.position
+                character.is_alive
+                and character.position != active_character.position
             ):
                 damage_action.damage_value_list.append(
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.HEAL,
-                        target_position = charactor.position,
+                        target_position = character.position,
                         damage = -1,
                         damage_elemental_type = DamageElementalType.HEAL,
                         cost = self.cost.copy()
@@ -182,7 +182,7 @@ class FerventFlames_3_3(ElementalResonanceCardBase):
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # avtive character
         return [match.player_tables[
-            self.position.player_idx].get_active_charactor().position]
+            self.position.player_idx].get_active_character().position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -194,7 +194,7 @@ class FerventFlames_3_3(ElementalResonanceCardBase):
         return [CreateObjectAction(
             object_name = self.name,
             object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_arguments = {}
         )]
 
@@ -210,11 +210,11 @@ class HighVoltage_3_3(ElementalResonanceCardBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        At least one charactor without maximum Energy.
+        At least one character without maximum Energy.
         """
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
-            if charactor.is_alive and charactor.charge < charactor.max_charge:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
+            if character.is_alive and character.charge < character.max_charge:
                 return True
         return False
 
@@ -226,30 +226,30 @@ class HighVoltage_3_3(ElementalResonanceCardBase):
         self, target: ObjectPosition | None, match: Any
     ) -> List[ChargeAction]:
         """
-        active charactor first to gain energy.
+        active character first to gain energy.
         """
         assert target is None
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        if active_charactor.charge < active_charactor.max_charge:
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        if active_character.charge < active_character.max_charge:
             return [ChargeAction(
                 player_idx = self.position.player_idx,
-                charactor_idx = active_charactor.position.charactor_idx,
+                character_idx = active_character.position.character_idx,
                 charge = 1,
             )]
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
             if (
-                charactor.is_alive
-                and charactor.charge < charactor.max_charge
+                character.is_alive
+                and character.charge < character.max_charge
             ):
                 return [ChargeAction(
                     player_idx = self.position.player_idx,
-                    charactor_idx = charactor.position.charactor_idx,
+                    character_idx = character.position.character_idx,
                     charge = 1,
                 )]
         else:
-            raise AssertionError('No charactor can be charged.')
+            raise AssertionError('No character can be charged.')
 
 
 class ImpetuousWinds_3_3(ElementalResonanceCardBase):
@@ -262,27 +262,27 @@ class ImpetuousWinds_3_3(ElementalResonanceCardBase):
     element: ElementType = ElementType.ANEMO
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # all alive charactors except active charactor
+        # all alive characters except active character
         active_idx = match.player_tables[
-            self.position.player_idx].active_charactor_idx
+            self.position.player_idx].active_character_idx
         return [
-            charactor.position for (cid, charactor) in enumerate(
-                match.player_tables[self.position.player_idx].charactors
+            character.position for (cid, character) in enumerate(
+                match.player_tables[self.position.player_idx].characters
             )
-            if charactor.is_alive and cid != active_idx
+            if character.is_alive and cid != active_idx
         ]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[CreateDiceAction | SwitchCharactorAction]:
+    ) -> List[CreateDiceAction | SwitchCharacterAction]:
         """
         Create one omni element dice
         """
         assert target is not None
         return [
-            SwitchCharactorAction(
+            SwitchCharacterAction(
                 player_idx = target.player_idx,
-                charactor_idx = target.charactor_idx,
+                character_idx = target.character_idx,
             ),
             CreateDiceAction(
                 player_idx = self.position.player_idx,
@@ -376,7 +376,7 @@ class NationResonanceCardBase(EventCardBase):
 
     def get_deck_restriction(self) -> DeckRestriction:
         """
-        For nation resonance cards, should contain at least 2 charactors of
+        For nation resonance cards, should contain at least 2 characters of
         the corresponding faction.
         """
         return DeckRestriction(
@@ -492,9 +492,9 @@ class ThunderAndEternity_3_7(ThunderAndEternity_4_0):
         """
         Convert all your Elemental Dice to the Type of the active character.
         """
-        charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        return ELEMENT_TO_DIE_COLOR[charactor.element]
+        character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        return ELEMENT_TO_DIE_COLOR[character.element]
 
 
 class NatureAndWisdom_3_7(NationResonanceCardBase):

@@ -84,11 +84,11 @@ def test_vanilla_weapons():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Arataki Itto
-        charactor:Barbara
-        charactor:Noelle
-        charactor:PhysicalMob
-        charactor:Fischl
+        character:Arataki Itto
+        character:Barbara
+        character:Noelle
+        character:PhysicalMob
+        character:Fischl
         Magic Guide*2
         Raven Bow*2
         Traveler's Handy Sword*2
@@ -96,11 +96,11 @@ def test_vanilla_weapons():
         White Tassel*2
         '''
     )
-    deck.charactors[2].hp = 90
-    deck.charactors[2].max_hp = 90
+    deck.characters[2].hp = 90
+    deck.characters[2].max_hp = 90
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -138,21 +138,21 @@ def test_vanilla_weapons():
                         targets = req.targets
                         for target in targets:
                             assert isinstance(target, ObjectPosition)
-                            assert target.charactor_idx != 3  # 3 is mob
+                            assert target.character_idx != 3  # 3 is mob
                         if card.name == 'Magic Guide':
                             assert len(targets) == 1
                             assert isinstance(targets[0], ObjectPosition)
-                            assert targets[0].charactor_idx == 1
+                            assert targets[0].character_idx == 1
                         elif card.name == 'White Iron Greatsword':
                             assert len(targets) == 2
                             assert isinstance(targets[0], ObjectPosition)
                             assert isinstance(targets[1], ObjectPosition)
-                            assert targets[0].charactor_idx == 0
-                            assert targets[1].charactor_idx == 2
+                            assert targets[0].character_idx == 0
+                            assert targets[1].character_idx == 2
                         elif card.name == 'Raven Bow':
                             assert len(targets) == 1
                             assert isinstance(targets[0], ObjectPosition)
-                            assert targets[0].charactor_idx == 4
+                            assert targets[0].character_idx == 4
                         else:
                             raise AssertionError('Other weapon cannot use')
             else:
@@ -220,15 +220,15 @@ def test_the_bell():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Arataki Itto
-        charactor:Barbara
-        charactor:Noelle
+        character:Arataki Itto
+        character:Barbara
+        character:Noelle
         The Bell*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -328,24 +328,24 @@ def test_a_thousand():
     deck1 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Venti
-        charactor:Xingqiu
-        charactor:Noelle
+        character:Venti
+        character:Xingqiu
+        character:Noelle
         Mondstadt Hash Brown*30
         '''
     )
     deck2 = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida
-        charactor:Maguu Kenki
-        charactor:Yoimiya
+        character:Nahida
+        character:Maguu Kenki
+        character:Yoimiya
         A Thousand Floating Dreams*30
         '''
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -464,16 +464,16 @@ def test_vortex_vanquisher():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Candace*2
-        charactor:Diluc
-        charactor:Ningguang
+        character:Candace*2
+        character:Diluc
+        character:Ningguang
         Sweet Madame*15
         Vortex Vanquisher*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -564,16 +564,16 @@ def test_vortex_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Candace*2
-        charactor:Chongyun
-        charactor:Hu Tao
+        character:Candace*2
+        character:Chongyun
+        character:Hu Tao
         Sweet Madame*15
         Vortex Vanquisher*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -698,11 +698,11 @@ def test_lithic_spear():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Candace
-        charactor:Hu Tao
-        charactor:Chongyun
-        charactor:Shenhe
+        character:Xingqiu
+        character:Candace
+        character:Hu Tao
+        character:Chongyun
+        character:Shenhe
         Lithic Spear*10
         Lithic Spear@3.3*10
         Where Is the Unseen Razor?*10
@@ -710,7 +710,7 @@ def test_lithic_spear():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -745,7 +745,7 @@ def test_lithic_spear():
                 pidx = int(cmd[2][1])
                 cidx = int(cmd[2][3])
                 usages = [int(x) for x in cmd[4:]]
-                status = match.player_tables[pidx].charactors[cidx].status
+                status = match.player_tables[pidx].characters[cidx].status
                 assert len(usages) == len(status)
                 for u, s in zip(usages, status):
                     assert u == s.usage
@@ -805,9 +805,9 @@ def test_kings_squire():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Nahida
-        charactor:Collei
+        character:Fischl
+        character:Nahida
+        character:Collei
         Where Is the Unseen Razor?*10
         King's Squire*10
         Floral Sidewinder*10
@@ -815,7 +815,7 @@ def test_kings_squire():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -900,9 +900,9 @@ def test_kings_squire_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Kamisato Ayaka
-        charactor:Collei
+        character:Fischl
+        character:Kamisato Ayaka
+        character:Collei
         Where Is the Unseen Razor?*10
         King's Squire*10
         Floral Sidewinder*10
@@ -911,7 +911,7 @@ def test_kings_squire_2():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1008,16 +1008,16 @@ def test_amos():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Fischl
-        charactor:Ganyu
-        charactor:Collei
+        character:Fischl
+        character:Ganyu
+        character:Collei
         Where Is the Unseen Razor?*10
         Amos' Bow*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1104,16 +1104,16 @@ def test_fruit_of_fullfillment():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Klee
+        character:Nahida
+        character:Mona
+        character:Klee
         Where Is the Unseen Razor?*10
         Fruit of Fulfillment*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1208,9 +1208,9 @@ def test_sacrificial():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Chongyun
-        charactor:Fischl
-        charactor:Yae Miko
+        character:Chongyun
+        character:Fischl
+        character:Yae Miko
         Where Is the Unseen Razor?*10
         Sacrificial Greatsword*10
         Sacrificial Sword*10
@@ -1220,7 +1220,7 @@ def test_sacrificial():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1309,16 +1309,16 @@ def test_wolf_gravestone():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Chongyun
-        charactor:Fischl
-        charactor:Yae Miko
+        character:Chongyun
+        character:Fischl
+        character:Yae Miko
         Where Is the Unseen Razor?*10
         Wolf's Gravestone*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1427,15 +1427,15 @@ def test_aquila_favonia():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Qiqi
-        charactor:Yae Miko
+        character:Xingqiu
+        character:Qiqi
+        character:Yae Miko
         Aquila Favonia*20
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1517,9 +1517,9 @@ def test_skyward():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Xingqiu
-        charactor:Kamisato Ayaka
-        charactor:Yae Miko
+        character:Xingqiu
+        character:Kamisato Ayaka
+        character:Yae Miko
         Skyward Atlas*3
         Skyward Blade*3
         Skyward Harp*3
@@ -1529,7 +1529,7 @@ def test_skyward():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1646,9 +1646,9 @@ def test_favonius_lighting_elegy():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Venti
-        charactor:Xiangling
-        charactor:Xingqiu
+        character:Venti
+        character:Xiangling
+        character:Xingqiu
         Sweet Madame*15
         Elegy for the End*5
         Engulfing Lightning*5
@@ -1656,12 +1656,12 @@ def test_favonius_lighting_elegy():
         Calx's Arts*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.max_hp = 30
-        charactor.hp = 30
+    for character in deck.characters:
+        character.max_hp = 30
+        character.hp = 30
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     match.config.initial_hand_size = 20
@@ -1697,7 +1697,7 @@ def test_favonius_lighting_elegy():
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
                 charge = int(cmd[-1])
-                assert match.player_tables[pidx].charactors[
+                assert match.player_tables[pidx].characters[
                     cidx].charge == charge
             elif test_id == 3:
                 cmd = cmd.split()

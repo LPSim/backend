@@ -112,7 +112,7 @@ class JadeChamber_4_0(LocationBase):
             # not self player
             return value
         active = match.player_tables[
-            self.position.player_idx].get_active_charactor()
+            self.position.player_idx].get_active_character()
         element = active.element
         value.dice_colors += [ELEMENT_TO_DIE_COLOR[element]] * 2
         return value
@@ -141,7 +141,7 @@ class DawnWinery_3_3(RoundEffectLocationBase):
         if self.usage <= 0:
             # no usage
             return value
-        if value.cost.label & CostLabels.SWITCH_CHARACTOR.value == 0:
+        if value.cost.label & CostLabels.SWITCH_CHARACTER.value == 0:
             # not switch character
             return value
         # decrease cost
@@ -162,25 +162,25 @@ class WangshuInn_3_3(LocationBase):
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction | RemoveObjectAction]:
         """
-        If back charactor not full hp, heal 2 hp, and check if should remove.
+        If back character not full hp, heal 2 hp, and check if should remove.
         """
         if self.position.area != 'SUPPORT':
             # not in support area, do nothing
             return []
         table = match.player_tables[self.position.player_idx]
-        charactors = table.charactors
-        active = table.active_charactor_idx
-        charactor = None
-        for cnum, c in enumerate(charactors):
+        characters = table.characters
+        active = table.active_character_idx
+        character = None
+        for cnum, c in enumerate(characters):
             if cnum == active or c.is_defeated:
                 # active or defeated, do nothing
                 continue
-            if charactor is None or c.damage_taken > charactor.damage_taken:
-                charactor = c
-        if charactor is None:
-            # no charactor on standby, do nothing
+            if character is None or c.damage_taken > character.damage_taken:
+                character = c
+        if character is None:
+            # no character on standby, do nothing
             return []
-        if charactor.damage_taken <= 0:
+        if character.damage_taken <= 0:
             # full hp, do nothing
             return []
         self.usage -= 1
@@ -189,7 +189,7 @@ class WangshuInn_3_3(LocationBase):
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = -2,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = self.cost.copy()
@@ -209,14 +209,14 @@ class FavoniusCathedral_3_3(LocationBase):
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction | RemoveObjectAction]:
         """
-        If active charactor not full hp, heal 2 hp, and check if should remove.
+        If active character not full hp, heal 2 hp, and check if should remove.
         """
         if self.position.area != 'SUPPORT':
             # not in support area, do nothing
             return []
-        charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        if charactor.damage_taken <= 0:
+        character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        if character.damage_taken <= 0:
             # full hp, do nothing
             return []
         self.usage -= 1
@@ -225,7 +225,7 @@ class FavoniusCathedral_3_3(LocationBase):
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = -2,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = self.cost.copy()
@@ -315,31 +315,31 @@ class SangonomiyaShrine_3_7(LocationBase):
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction | RemoveObjectAction]:
         """
-        If active charactor not full hp, heal 2 hp, and check if should remove.
+        If active character not full hp, heal 2 hp, and check if should remove.
         """
         if self.position.area != 'SUPPORT':
             # not in support area, do nothing
             return []
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         damage_action = MakeDamageAction(
             damage_value_list = [],
         )
-        for charactor in charactors:
-            if charactor.is_defeated or charactor.damage_taken <= 0:
+        for character in characters:
+            if character.is_defeated or character.damage_taken <= 0:
                 # full hp or defeated, do nothing
                 continue
             damage_action.damage_value_list.append(
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = -1,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = self.cost.copy()
                 )
             )
         if len(damage_action.damage_value_list) == 0:
-            # no charactor to heal, do nothing
+            # no character to heal, do nothing
             return []
         self.usage -= 1
         return [damage_action] + self.check_should_remove()
@@ -362,7 +362,7 @@ class SumeruCity_3_7(RoundEffectLocationBase):
         self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
     ) -> CostValue:
         """
-        When self charactor use skills or equip talents, and have usage,
+        When self character use skills or equip talents, and have usage,
         and have less or equal elemental dice than cards in hand, reduce cost.
         """
         if self.position.area != 'SUPPORT':
@@ -511,7 +511,7 @@ class ChinjuForest_3_7(LocationBase):
     ) -> List[CreateDiceAction | RemoveObjectAction]:
         """
         When in round prepare, if have usage, create one die that match
-        active charactor element.
+        active character element.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
@@ -523,7 +523,7 @@ class ChinjuForest_3_7(LocationBase):
             # self go first, do nothing
             return []
         table = match.player_tables[self.position.player_idx]
-        active = table.get_active_charactor()
+        active = table.get_active_character()
         element = active.element
         self.usage -= 1
         return [CreateDiceAction(

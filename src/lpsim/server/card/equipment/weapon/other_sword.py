@@ -31,14 +31,14 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = False,
-            source_area = ObjectPositionType.CHARACTOR,
+            source_area = ObjectPositionType.CHARACTER,
             target_area = ObjectPositionType.SKILL
         ):
             # not equipped or not opponent use skill
             return []
         if (
-            self.position.charactor_idx != match.player_tables[
-                self.position.player_idx].active_charactor_idx
+            self.position.character_idx != match.player_tables[
+                self.position.player_idx].active_character_idx
         ):
             # not active
             return []
@@ -46,14 +46,14 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
             # no usage
             return []
         self.usage -= 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
         return [MakeDamageAction(
             damage_value_list = [
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.HEAL,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = -1,
                     damage_elemental_type = DamageElementalType.HEAL,
                     cost = self.cost.copy()

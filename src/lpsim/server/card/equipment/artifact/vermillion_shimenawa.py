@@ -3,7 +3,7 @@ from typing import Any, List, Literal
 from .....utils.class_registry import register_class
 
 from ....event import (
-    ChooseCharactorEventArguments, SwitchCharactorEventArguments
+    ChooseCharacterEventArguments, SwitchCharacterEventArguments
 )
 
 from ....action import CreateObjectAction
@@ -29,7 +29,7 @@ class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
             if not self.position.check_position_valid(
                 value.position, match,
                 player_idx_same = True, 
-                source_area = ObjectPositionType.CHARACTOR,
+                source_area = ObjectPositionType.CHARACTER,
             ):
                 # not from self position or not equipped
                 return value
@@ -39,23 +39,23 @@ class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
                 # no label match
                 return value
             position = value.position
-            assert self.position.charactor_idx != -1
+            assert self.position.character_idx != -1
             if position.area == ObjectPositionType.SKILL:
-                # cost from charactor
-                if position.charactor_idx != self.position.charactor_idx:
-                    # not same charactor
+                # cost from character
+                if position.character_idx != self.position.character_idx:
+                    # not same character
                     return value
             else:
                 assert position.area == ObjectPositionType.HAND
                 # cost from hand card, is a talent card
-                equipped_charactor = match.player_tables[
+                equipped_character = match.player_tables[
                     self.position.player_idx
-                ].charactors[self.position.charactor_idx]
+                ].characters[self.position.character_idx]
                 for card in match.player_tables[
                         self.position.player_idx].hands:
                     if card.id == value.position.id:
-                        if card.charactor_name != equipped_charactor.name:
-                            # talent card not for this charactor
+                        if card.character_name != equipped_character.name:
+                            # talent card not for this character
                             return value
             # can decrease cost
             if (  # pragma: no branch
@@ -79,42 +79,42 @@ class VermillionHereafter_4_0(ThunderingPoise_4_0):
     cost: Cost = Cost(any_dice_number = 3)
 
     def _attach_status(
-        self, player_idx: int, charactor_idx: int
+        self, player_idx: int, character_idx: int
     ) -> List[CreateObjectAction]:
         """
         attach status
         """
         if (
             player_idx == self.position.player_idx
-            and charactor_idx == self.position.charactor_idx
-            and self.position.area == ObjectPositionType.CHARACTOR
+            and character_idx == self.position.character_idx
+            and self.position.area == ObjectPositionType.CHARACTER
         ):
-            # equipped and switch to this charactor
+            # equipped and switch to this character
             return [CreateObjectAction(
                 object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
+                    ObjectPositionType.CHARACTER_STATUS),
                 object_name = self.name,
                 object_arguments = {}
             )]
         return []
 
-    def event_handler_SWITCH_CHARACTOR(
-        self, event: SwitchCharactorEventArguments, match: Any
+    def event_handler_SWITCH_CHARACTER(
+        self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        If switch to this charactor, attach status.
+        If switch to this character, attach status.
         """
         return self._attach_status(event.action.player_idx, 
-                                   event.action.charactor_idx)
+                                   event.action.character_idx)
 
-    def event_handler_CHOOSE_CHARACTOR(
-        self, event: ChooseCharactorEventArguments, match: Any
+    def event_handler_CHOOSE_CHARACTER(
+        self, event: ChooseCharacterEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        If choose this charactor, attach status.
+        If choose this character, attach status.
         """
         return self._attach_status(event.action.player_idx, 
-                                   event.action.charactor_idx)
+                                   event.action.character_idx)
 
 
 class CapriciousVisage_4_0(SkillCostDecreaseArtifact):
@@ -133,22 +133,22 @@ class ShimenawasReminiscence_4_0(CapriciousVisage_4_0):
         mode: Literal['TEST', 'REAL'],
     ) -> DamageIncreaseValue:
         """
-        if this charactor has at least 2 energy and use normal attack or
+        if this character has at least 2 energy and use normal attack or
         elemental skill, +1 damage.
         """
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not current charactor using skill
+            # not current character using skill
             return value
         skill = match.get_object(value.position)
         if skill.skill_type not in [SkillType.NORMAL_ATTACK, 
                                     SkillType.ELEMENTAL_SKILL]:
             # skill type not match
             return value
-        charactor = match.player_tables[
-            self.position.player_idx].charactors[self.position.charactor_idx]
-        if charactor.charge < 2:
+        character = match.player_tables[
+            self.position.player_idx].characters[self.position.character_idx]
+        if character.charge < 2:
             # not enough energy
             return value
         # increase damage

@@ -24,21 +24,21 @@ class TheBoarPrincessStatus_4_3(RoundTeamStatus):
         self, event: RemoveObjectEventArguments, match: Match
     ) -> List[CreateDiceAction | RemoveObjectAction]:
         """
-        When self equipment removed from charactor, create one omni die
+        When self equipment removed from character, create one omni die
         """
         position = event.action.object_position
         if position.player_idx != self.position.player_idx:
             # not self
             return []
-        if position.area != ObjectPositionType.CHARACTOR:
-            # not remove charactor objects, i.e. equipments
+        if position.area != ObjectPositionType.CHARACTER:
+            # not remove character objects, i.e. equipments
             return []
         if event.object_type == ObjectType.TALENT:
-            # is talent, it should be removed because of charactor defeated.
-            charactor = match.player_tables[position.player_idx].charactors[
-                position.charactor_idx]
-            if charactor.is_alive:
-                # charactor is still alive, it should be because of
+            # is talent, it should be removed because of character defeated.
+            character = match.player_tables[position.player_idx].characters[
+                position.character_idx]
+            if character.is_alive:
+                # character is still alive, it should be because of
                 # talent overwritten.
                 return []
         assert self.usage > 0

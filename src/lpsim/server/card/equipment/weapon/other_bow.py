@@ -60,8 +60,8 @@ class ElegyForTheEnd_3_7(WeaponBase):
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,
-            charactor_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTOR
+            character_idx_same = True, 
+            source_area = ObjectPositionType.CHARACTER
         ):
             # not equipped or not self use skill
             return []

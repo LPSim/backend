@@ -61,15 +61,15 @@ def test_four_leaf():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Shenhe
-        charactor:Chongyun
-        charactor:Nahida
+        character:Shenhe
+        character:Chongyun
+        character:Nahida
         Flickering Four-Leaf Sigil*10
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -95,9 +95,9 @@ def test_four_leaf():
                 break
             elif test_id == 1:
                 assert int(
-                    cmd[-2]) == match.player_tables[0].active_charactor_idx
+                    cmd[-2]) == match.player_tables[0].active_character_idx
                 assert int(
-                    cmd[-1]) == match.player_tables[1].active_charactor_idx
+                    cmd[-1]) == match.player_tables[1].active_character_idx
             elif test_id == 2:
                 for req in match.requests:
                     if req.name == 'UseCardRequest':

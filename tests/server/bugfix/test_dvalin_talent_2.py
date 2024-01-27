@@ -13,8 +13,8 @@ def test_dvalin_talent_2():
     match.config.history_level = 0
     # modify hp
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)
@@ -45,7 +45,7 @@ def test_dvalin_talent_2():
                 check_hp(match, hps)
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].charactors[cidx].status, 
+                check_usage(match.player_tables[pidx].characters[cidx].status, 
                             cmd[3:])
             else:
                 raise AssertionError(f'Unknown test id {test_id}')

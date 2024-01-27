@@ -24,10 +24,10 @@ class OrnateKabuto_4_0(ArtifactBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[ChargeAction]:
         if not (
-            self.position.area == ObjectPositionType.CHARACTOR
+            self.position.area == ObjectPositionType.CHARACTER
             and event.action.position.player_idx == self.position.player_idx 
-            and event.action.position.charactor_idx 
-            != self.position.charactor_idx
+            and event.action.position.character_idx 
+            != self.position.character_idx
             and event.action.skill_type == SkillType.ELEMENTAL_BURST
         ):
             # not equipped or not our other use burst
@@ -35,7 +35,7 @@ class OrnateKabuto_4_0(ArtifactBase):
         # charge self by 1
         return [ChargeAction(
             player_idx = self.position.player_idx,
-            charactor_idx = self.position.charactor_idx,
+            character_idx = self.position.character_idx,
             charge = 1
         )]
 
@@ -55,10 +55,10 @@ class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
         self, value: DamageIncreaseValue, match: Any,
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return value
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.ELEMENTAL_BURST
         ):
             # not self use elemental burst

@@ -8,8 +8,8 @@ class ObjectPosition(BaseModel):
     """
     Position of an object in the game table, which will be set at initializing
     or updated when its position changes. Current change event: card go from
-    deck to hand, from hand to deck, from hand to charactor, from charactor to
-    hand, from charactor to charactor, from hand to support, from support to 
+    deck to hand, from hand to deck, from hand to character, from character to
+    hand, from character to character, from hand to support, from support to 
     support.
 
     Note the index of the object is not included (n-th summon from player 1's
@@ -23,14 +23,14 @@ class ObjectPosition(BaseModel):
 
     Args:
         player_idx (int): The player index of the object.
-        charactor_idx (int): The charactor index of the object. If it is not
-            on charactor, set to -1.
+        character_idx (int): The character index of the object. If it is not
+            on character, set to -1.
         area (ObjectPositionType): The area of the object.
         id (int): The id of the object. If it is not on table, set to -1.
             If it represents SYSTEM, set to 0.
     """
     player_idx: int
-    charactor_idx: int = -1
+    character_idx: int = -1
     area: ObjectPositionType
     id: int
 
@@ -44,14 +44,14 @@ class ObjectPosition(BaseModel):
             return
         # check player_idx is propoerly set
         assert self.player_idx >= 0, 'player_idx should be non-negative.'
-        # check charactor_idx is properly set
+        # check character_idx is properly set
         if self.area in [
-            ObjectPositionType.CHARACTOR_STATUS,
+            ObjectPositionType.CHARACTER_STATUS,
             ObjectPositionType.SKILL,
-            ObjectPositionType.CHARACTOR,
+            ObjectPositionType.CHARACTER,
         ]:
-            assert self.charactor_idx >= 0, \
-                'charactor_idx should be non-negative.'
+            assert self.character_idx >= 0, \
+                'character_idx should be non-negative.'
 
     def __setattr__(self, name: str, value: Any) -> None:
         """
@@ -71,7 +71,7 @@ class ObjectPosition(BaseModel):
         """
         return ObjectPosition(
             player_idx = self.player_idx,
-            charactor_idx = self.charactor_idx,
+            character_idx = self.character_idx,
             area = self.area,
             id = id,
         )
@@ -82,7 +82,7 @@ class ObjectPosition(BaseModel):
         """
         return ObjectPosition(
             player_idx = self.player_idx,
-            charactor_idx = self.charactor_idx,
+            character_idx = self.character_idx,
             area = area,
             id = self.id,
         )
@@ -96,13 +96,13 @@ class ObjectPosition(BaseModel):
     def check_position_valid(
         self, target_position: 'ObjectPosition', match: Any,
         player_idx_same: bool | None = None,
-        charactor_idx_same: bool | None = None,
+        character_idx_same: bool | None = None,
         area_same: bool | None = None,
         id_same: bool | None = None,
         source_area: ObjectPositionType | None = None,
         target_area: ObjectPositionType | None = None,
-        source_is_active_charactor: bool | None = None,
-        target_is_active_charactor: bool | None = None,
+        source_is_active_character: bool | None = None,
+        target_is_active_character: bool | None = None,
     ) -> bool:
         """
         Based on this position, target position and constraints, give whether
@@ -112,9 +112,9 @@ class ObjectPosition(BaseModel):
             if player_idx_same != (
                     self.player_idx == target_position.player_idx):
                 return False
-        if charactor_idx_same is not None:
-            if charactor_idx_same != (
-                self.charactor_idx == target_position.charactor_idx
+        if character_idx_same is not None:
+            if character_idx_same != (
+                self.character_idx == target_position.character_idx
             ):
                 return False
         if area_same is not None:
@@ -129,14 +129,14 @@ class ObjectPosition(BaseModel):
         if target_area is not None:
             if target_position.area != target_area:
                 return False
-        if source_is_active_charactor is not None:
-            cidx = match.player_tables[self.player_idx].active_charactor_idx
-            return source_is_active_charactor == (self.charactor_idx == cidx)
-        if target_is_active_charactor is not None:
+        if source_is_active_character is not None:
+            cidx = match.player_tables[self.player_idx].active_character_idx
+            return source_is_active_character == (self.character_idx == cidx)
+        if target_is_active_character is not None:
             cidx = match.player_tables[
-                target_position.player_idx].active_charactor_idx
-            return target_is_active_charactor == (
-                target_position.charactor_idx == cidx)
+                target_position.player_idx].active_character_idx
+            return target_is_active_character == (
+                target_position.character_idx == cidx)
         return True
 
 
@@ -301,6 +301,6 @@ class DeckRestriction(BaseModel):
     """
     Deck restriction to add one card into deck
     """
-    type: Literal['NONE', 'CHARACTOR', 'FACTION', 'ELEMENT']
+    type: Literal['NONE', 'CHARACTER', 'FACTION', 'ELEMENT']
     name: str
     number: int

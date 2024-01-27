@@ -5,7 +5,7 @@ from tests.utils_for_test import remove_ids
 def test_deck_string():
     deck_dict_1 = Deck(**{
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -28,8 +28,8 @@ def test_deck_string():
     })
     deck_str_1 = Deck.from_str('''
         default_version:4.0
-        charactor:DendroMobMage*2
-        charactor:ElectroMobMage
+        character:DendroMobMage*2
+        character:ElectroMobMage
         Strategize*30
 
     ''')
@@ -38,7 +38,7 @@ def test_deck_string():
     assert deck_str_1 == deck_dict_1
     deck_dict_2 = Deck(**{
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -70,9 +70,9 @@ def test_deck_string():
     deck_str_2 = Deck.from_str('''
         default_version:4.0
 
-        # charactors
-        charactor:DendroMobMage*2
-        charactor:ElectroMobMage
+        # characters
+        character:DendroMobMage*2
+        character:ElectroMobMage
 
         # cards
         Wine-Stained Tricorne*10
@@ -84,7 +84,7 @@ def test_deck_string():
     assert deck_str_2 == deck_dict_2
     deck_dict_3 = Deck(**{
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'Fischl',
             },
@@ -106,9 +106,9 @@ def test_deck_string():
     })
     deck_str_3 = Deck.from_str('''
         default_version:4.0
-        charactor:Fischl
-        charactor:DendroMobMage
-        charactor:PyroMobMage
+        character:Fischl
+        character:DendroMobMage
+        character:PyroMobMage
         Stellar Predator*30
     ''')
     deck_dict_3 = remove_ids(deck_dict_3)
@@ -119,56 +119,56 @@ def test_deck_string():
 def test_deck_assertions():
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:DendroMobMage*2
-        charactor:ElectroMobMage
+        character:DendroMobMage*2
+        character:ElectroMobMage
         Strategize*30
     ''')
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False
     )[0]
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 30,
-        charactor_number = 3,
+        character_number = 3,
         check_restriction = False
     )[0]
     assert not deck.check_legal(
         card_number = 29, 
         max_same_card_number = 30,
-        charactor_number = 3,
+        character_number = 3,
         check_restriction = False
     )[0]
     assert not deck.check_legal(
         card_number = 31, 
         max_same_card_number = 30,
-        charactor_number = 3,
+        character_number = 3,
         check_restriction = False
     )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 29,
-        charactor_number = 3,
+        character_number = 3,
         check_restriction = False
     )[0]
     assert deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 3,
+        character_number = 3,
         check_restriction = False
     )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 2,
+        character_number = 2,
         check_restriction = False
     )[0]
     assert not deck.check_legal(
         card_number = 30, 
         max_same_card_number = 31,
-        charactor_number = 4,
+        character_number = 4,
         check_restriction = False
     )[0]
 
@@ -176,86 +176,86 @@ def test_deck_assertions():
 def test_deck_restriction():
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Collei
-        charactor:Barbara
+        character:Nahida
+        character:Collei
+        character:Barbara
         Wind and Freedom*30
     ''')
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         Wind and Freedom*30
         Sweet Madame*30
     ''')
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         Elemental Resonance: Woven Waters*30
     ''')
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         Elemental Resonance: Woven Weeds*30
     ''')
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         The Seed of Stored Knowledge*5
         Prophecy of Submersion*5
         Glorious Season*5
@@ -263,20 +263,20 @@ def test_deck_restriction():
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         The Seed of Stored Knowledge*5
         Prophecy of Submersion*5
         Grand Expectation*5
@@ -284,13 +284,13 @@ def test_deck_restriction():
     assert deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = False,
     )[0]
     assert not deck.check_legal(
         card_number = None, 
         max_same_card_number = None,
-        charactor_number = None,
+        character_number = None,
         check_restriction = True,
     )[0]
 
@@ -298,9 +298,9 @@ def test_deck_restriction():
 def test_deck_to_str_to_deck():
     deck = Deck.from_str('''
         default_version:4.0
-        charactor:Nahida
-        charactor:Mona
-        charactor:Barbara
+        character:Nahida
+        character:Mona
+        character:Barbara
         The Seed of Stored Knowledge*5
         Prophecy of Submersion*5
         Grand Expectation*5

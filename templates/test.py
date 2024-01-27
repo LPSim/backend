@@ -59,14 +59,14 @@ def test_...():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*3
+        character:Nahida*3
         Rana*30
         ...
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

@@ -38,7 +38,7 @@ def check_hp(match: Match, hp: List[List[int]]):
     """
     input hps for each player and check
     """
-    hps = [[x.hp for x in t.charactors] for t in match.player_tables]
+    hps = [[x.hp for x in t.characters] for t in match.player_tables]
     assert hps == hp
 
 

@@ -84,7 +84,7 @@ def test_opera_weeping():
     deck = Deck.from_str(
         '''
         default_version:4.3
-        charactor:Eula@3.8*6
+        character:Eula@3.8*6
         Wellspring of War-Lust@3.5*3
         Sacrificial Greatsword@3.3*5
         Weeping Willow of the Lake@4.3*5
@@ -93,7 +93,7 @@ def test_opera_weeping():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

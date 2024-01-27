@@ -12,10 +12,10 @@ deck_code_data = json.load(open(__file__.replace('deck_code.py',
                                                  'deck_code_data.json')))
 name_map = deck_code_data['name_map'][:]
 forbid_list = deck_code_data['forbid_list'][:]
-charactors_idx = []
+characters_idx = []
 for i in range(len(name_map)):
-    if name_map[i].startswith('charactor:'):
-        charactors_idx.append(i)
+    if name_map[i].startswith('character:'):
+        characters_idx.append(i)
         name_map[i] = name_map[i][10:]
 
 
@@ -92,8 +92,8 @@ def deck_code_to_deck_str(deck_code: str, version: str | None = None) -> str:
         results.append(f'default_version:{version}')
     for x in decode:
         if x > 0 and x <= len(name_map):
-            if x - 1 in charactors_idx:
-                results.append(f'charactor:{name_map[x - 1]}')
+            if x - 1 in characters_idx:
+                results.append(f'character:{name_map[x - 1]}')
             else:
                 results.append(name_map[x - 1])
     return '\n'.join(results)
@@ -140,25 +140,25 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
                      if not x.startswith('default_version:')]
     # remove version mark
     deck_str_list = [x.split('@')[0] for x in deck_str_list]
-    charactor_str_l = [x[10:] for x in deck_str_list 
-                       if x.startswith('charactor:')]
-    card_str_l = [x for x in deck_str_list if not x.startswith('charactor:')]
-    charactor_str: List[str] = []
+    character_str_l = [x[10:] for x in deck_str_list 
+                       if x.startswith('character:')]
+    card_str_l = [x for x in deck_str_list if not x.startswith('character:')]
+    character_str: List[str] = []
     card_str: List[str] = []
-    for i in charactor_str_l:
+    for i in character_str_l:
         number = 1
         if '*' in i:
             i, number_str = i.split('*')
             number = int(number_str)
-        charactor_str += [i] * number
+        character_str += [i] * number
     for i in card_str_l:
         number = 1
         if '*' in i:
             i, number_str = i.split('*')
             number = int(number_str)
         card_str += [i] * number
-    if len(charactor_str) > 3 or len(card_str) > 30:
-        raise ValueError('too many charactors or cards')
+    if len(character_str) > 3 or len(card_str) > 30:
+        raise ValueError('too many characters or cards')
     rand_checksum = list(range(256))
     random.shuffle(rand_checksum)
     for i in range(max_retry_time):
@@ -170,7 +170,7 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
             checksum = rand_checksum[i]
         # fill empty with ''
         name_list = (
-            charactor_str + [''] * (3 - len(charactor_str))
+            character_str + [''] * (3 - len(character_str))
             + card_str + [''] * (30 - len(card_str))
         )
         deck_code = _deck_str_to_deck_code_one(name_list, checksum)

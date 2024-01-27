@@ -57,7 +57,7 @@ def test_woven_element():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida*3
+        character:Nahida*3
         Elemental Resonance: Woven Flames*4
         Elemental Resonance: Woven Ice*4
         Elemental Resonance: Woven Stone*4
@@ -69,7 +69,7 @@ def test_woven_element():
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -209,16 +209,16 @@ def test_enduring_rock():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:PyroMobMage
-        charactor:Arataki Itto
-        charactor:Noelle
+        character:PyroMobMage
+        character:Arataki Itto
+        character:Noelle
         Elemental Resonance: Enduring Rock*15
         The Bell*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -426,9 +426,9 @@ def test_other_all_element_resonance():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Collei
-        charactor:Fischl
-        charactor:Xiangling
+        character:Collei
+        character:Fischl
+        character:Xiangling
         Elemental Resonance: Shattering Ice*5
         Elemental Resonance: Soothing Water*5
         Elemental Resonance: Fervent Flames*5
@@ -437,12 +437,12 @@ def test_other_all_element_resonance():
         Elemental Resonance: Sprawling Greenery*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = 30
-        charactor.max_hp = 30
+    for character in deck.characters:
+        character.hp = 30
+        character.max_hp = 30
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -486,13 +486,13 @@ def test_other_all_element_resonance():
                         if req.card_idx == card_idx:
                             for target in req.targets:
                                 assert isinstance(target, ObjectPosition)
-                                assert target.charactor_idx != target_idx
+                                assert target.character_idx != target_idx
             elif test_id == 4:
                 cmd = cmd.split()
                 pid = int(cmd[2][1])
                 cid = int(cmd[2][3])
                 usage = [int(x) for x in cmd[4:]]
-                status = match.player_tables[pid].charactors[cid].status
+                status = match.player_tables[pid].characters[cid].status
                 assert len(status) == len(usage)
             elif test_id == 5:
                 cmd = cmd.split()
@@ -508,7 +508,7 @@ def test_other_all_element_resonance():
                 cid = int(cmd[2][3])
                 charge = int(cmd[4])
                 assert charge == match.player_tables[
-                    pid].charactors[cid].charge
+                    pid].characters[cid].charge
             elif test_id == 7:
                 cmd = cmd.split()
                 pid = int(cmd[2][1])
@@ -579,9 +579,9 @@ def test_other_all_element_resonance_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Diluc
-        charactor:AnemoMobMage
-        charactor:Xingqiu
+        character:Diluc
+        character:AnemoMobMage
+        character:Xingqiu
         Elemental Resonance: Shattering Ice*5
         Elemental Resonance: Soothing Water*5
         Elemental Resonance: Fervent Flames*5
@@ -590,12 +590,12 @@ def test_other_all_element_resonance_2():
         Elemental Resonance: Sprawling Greenery*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = 30
-        charactor.max_hp = 30
+    for character in deck.characters:
+        character.hp = 30
+        character.max_hp = 30
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.

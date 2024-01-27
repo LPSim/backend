@@ -1,5 +1,5 @@
 """
-With class registry, after version 4.3, new cards and charactors do not need to
+With class registry, after version 4.3, new cards and characters do not need to
 be defined in corresponding folders, and they will be defined in the patch.
 """
 

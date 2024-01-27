@@ -17,7 +17,7 @@ from ...action import (
     ActionTypes, ChangeObjectUsageAction, ChargeAction, 
     CreateDiceAction, CreateObjectAction, DrawCardAction, 
     GenerateRerollDiceRequestAction, MoveObjectAction, RemoveObjectAction, 
-    SkillEndAction, SwitchCharactorAction, UseSkillAction
+    SkillEndAction, SwitchCharacterAction, UseSkillAction
 )
 from ...struct import Cost, MultipleObjectPosition, ObjectPosition
 
@@ -54,12 +54,12 @@ class ChangingShifts_3_3(EventCardBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        When only one charactor is alive, cannot use this card.
+        When only one character is alive, cannot use this card.
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         counter = 0
-        for charactor in charactors:
-            if charactor.is_alive:
+        for character in characters:
+            if character.is_alive:
                 counter += 1
         return counter > 1
 
@@ -166,8 +166,8 @@ class IHaventLostYet_4_0(CreateSystemEventHandlerObject, EventCardBase):
             ),
             ChargeAction(
                 player_idx = self.position.player_idx,
-                charactor_idx = match.player_tables[
-                    self.position.player_idx].active_charactor_idx,
+                character_idx = match.player_tables[
+                    self.position.player_idx].active_character_idx,
                 charge = 1
             ),
             CreateObjectAction(
@@ -204,12 +204,12 @@ class LeaveItToMe_3_3(EventCardBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        When only one charactor is alive, cannot use this card.
+        When only one character is alive, cannot use this card.
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         counter = 0
-        for charactor in charactors:
-            if charactor.is_alive:
+        for character in characters:
+            if character.is_alive:
                 counter += 1
         return counter > 1
 
@@ -242,12 +242,12 @@ class WhenTheCraneReturned_3_3(EventCardBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        When only one charactor is alive, cannot use this card.
+        When only one character is alive, cannot use this card.
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         counter = 0
-        for charactor in charactors:
-            if charactor.is_alive:
+        for character in characters:
+            if character.is_alive:
                 counter += 1
         return counter > 1
 
@@ -282,14 +282,14 @@ class Starsigns_3_3(EventCardBase):
         """
         can use if charge not full
         """
-        active_charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        return active_charactor.charge < active_charactor.max_charge
+        active_character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        return active_character.charge < active_character.max_charge
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # active charactor
+        # active character
         return [match.player_tables[
-            self.position.player_idx].get_active_charactor().position]
+            self.position.player_idx].get_active_character().position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
@@ -297,7 +297,7 @@ class Starsigns_3_3(EventCardBase):
         assert target is not None
         return [ChargeAction(
             player_idx = target.player_idx,
-            charactor_idx = target.charactor_idx,
+            character_idx = target.character_idx,
             charge = 1,
         )]
 
@@ -313,11 +313,11 @@ class ClaxsArts_3_3(EventCardBase):
         Get charge source and targets.
         """
         table = match.player_tables[self.position.player_idx]
-        source = table.active_charactor_idx
-        assert source >= 0 and source < len(table.charactors)
+        source = table.active_character_idx
+        assert source >= 0 and source < len(table.characters)
         targets = []
-        for idx, charactor in enumerate(table.charactors):
-            if idx != source and charactor.charge > 0:
+        for idx, character in enumerate(table.characters):
+            if idx != source and character.charge > 0:
                 targets.append(idx)
         if len(targets) > 2:
             targets = targets[:2]
@@ -340,13 +340,13 @@ class ClaxsArts_3_3(EventCardBase):
         ret: List[ChargeAction] = []
         ret.append(ChargeAction(
             player_idx = self.position.player_idx,
-            charactor_idx = source,
+            character_idx = source,
             charge = len(targets),
         ))
         for t in targets:
             ret.append(ChargeAction(
                 player_idx = self.position.player_idx,
-                charactor_idx = t,
+                character_idx = t,
                 charge = -1,
             ))
         return ret
@@ -361,37 +361,37 @@ class MasterOfWeaponry_4_1(MultiTargetEventCardBase):
     ] = ObjectType.WEAPON
     reset_usage: bool = True
 
-    def _move_target_id(self, charactor: Any) -> int | None:
+    def _move_target_id(self, character: Any) -> int | None:
         """
         If has target, return target id. otherwise return None
         """
         if self.move_type == ObjectType.WEAPON:
-            return None if charactor.weapon is None else charactor.weapon.id
+            return None if character.weapon is None else character.weapon.id
         elif self.move_type == ObjectType.ARTIFACT:
             return (
-                None if charactor.artifact is None 
-                else charactor.artifact.id
+                None if character.artifact is None 
+                else character.artifact.id
             )
         else:
             raise AssertionError('Unknown move type')
 
     def get_targets(self, match: Any) -> List[MultipleObjectPosition]:
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         ret: List[MultipleObjectPosition] = []
-        for charactor in charactors:
-            target_id = self._move_target_id(charactor)
+        for character in characters:
+            target_id = self._move_target_id(character)
             if target_id is not None:
-                for target in charactors:
-                    if target.id != charactor.id:
+                for target in characters:
+                    if target.id != character.id:
                         if (
                             self.move_type == ObjectType.WEAPON
-                            and charactor.weapon_type != target.weapon_type
+                            and character.weapon_type != target.weapon_type
                         ):
                             # weapon type not right
                             continue
                         ret.append(MultipleObjectPosition(
                             positions = [
-                                charactor.position.set_id(target_id),
+                                character.position.set_id(target_id),
                                 target.position.set_id(target_id)
                             ]
                         ))
@@ -406,13 +406,13 @@ class MasterOfWeaponry_4_1(MultiTargetEventCardBase):
         assert target is not None
         assert len(target.positions) == 2
         ret: List[RemoveObjectAction | MoveObjectAction] = []
-        target_charactor = match.player_tables[target.positions[
-            1].player_idx].charactors[target.positions[1].charactor_idx]
+        target_character = match.player_tables[target.positions[
+            1].player_idx].characters[target.positions[1].character_idx]
         target_equip: Any = None
         if self.move_type == ObjectType.WEAPON:
-            target_equip = target_charactor.weapon
+            target_equip = target_character.weapon
         elif self.move_type == ObjectType.ARTIFACT:
-            target_equip = target_charactor.artifact
+            target_equip = target_character.artifact
         else:
             raise AssertionError('Unknown move type')
         if target_equip is not None:
@@ -569,9 +569,9 @@ class PlungingStrike_3_7(EventCardBase):
         """
         pos: List[ObjectPosition] = []
         table = match.player_tables[self.position.player_idx]
-        for cid, charactor in enumerate(table.charactors):
-            if charactor.is_alive and cid != table.active_charactor_idx:
-                pos.append(charactor.position)
+        for cid, character in enumerate(table.characters):
+            if character.is_alive and cid != table.active_character_idx:
+                pos.append(character.position)
         return pos
 
     def is_valid(self, match: Any) -> bool:
@@ -579,22 +579,22 @@ class PlungingStrike_3_7(EventCardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[SwitchCharactorAction | UseSkillAction | SkillEndAction]:
+    ) -> List[SwitchCharacterAction | UseSkillAction | SkillEndAction]:
         """
         Switch to target, and use target's normal attack
         """
         assert target is not None
-        skills = match.player_tables[target.player_idx].charactors[
-            target.charactor_idx].skills
+        skills = match.player_tables[target.player_idx].characters[
+            target.character_idx].skills
         normal_idx: int = -1
         for idx, skill in enumerate(skills):
             if skill.skill_type == SkillType.NORMAL_ATTACK:
                 assert normal_idx == -1, 'Multiple normal attack skill'
                 normal_idx = idx
         return [
-            SwitchCharactorAction(
+            SwitchCharacterAction(
                 player_idx = target.player_idx,
-                charactor_idx = target.charactor_idx
+                character_idx = target.character_idx
             ),
             UseSkillAction(
                 skill_position = skills[normal_idx].position,
@@ -602,7 +602,7 @@ class PlungingStrike_3_7(EventCardBase):
             SkillEndAction(
                 position = skills[normal_idx].position,
                 target_position = match.player_tables[
-                    1 - target.player_idx].get_active_charactor().position,
+                    1 - target.player_idx].get_active_character().position,
                 skill_type = SkillType.NORMAL_ATTACK
             )
         ]
@@ -614,21 +614,21 @@ class HeavyStrike_3_7(EventCardBase):
     cost: Cost = Cost(same_dice_number = 1)
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # active charactor
+        # active character
         return [match.player_tables[
-            self.position.player_idx].get_active_charactor().position]
+            self.position.player_idx].get_active_character().position]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
     ) -> List[CreateObjectAction]:
         """
-        Act the card. Create charactor status.
+        Act the card. Create character status.
         """
         assert target is not None
         return [CreateObjectAction(
             object_name = self.name,
             object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_arguments = {}
         )]
 
@@ -734,13 +734,13 @@ class WhereIstheUnseenRazor_4_0(EventCardBase):
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
-        Self charactors that have weapon.
+        Self characters that have weapon.
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         res: List[ObjectPosition] = []
-        for charactor in charactors:
-            if charactor.weapon is not None:
-                res.append(charactor.position)
+        for character in characters:
+            if character.weapon is not None:
+                res.append(character.position)
         return res
 
     def is_valid(self, match: Any) -> bool:
@@ -750,14 +750,14 @@ class WhereIstheUnseenRazor_4_0(EventCardBase):
         self, target: ObjectPosition | None, match: Any
     ) -> List[MoveObjectAction | CreateObjectAction]:
         assert target is not None
-        charactor = match.get_object(target)
-        assert charactor is not None
-        assert charactor.weapon is not None
-        target_position = charactor.weapon.position.set_area(
+        character = match.get_object(target)
+        assert character is not None
+        assert character.weapon is not None
+        target_position = character.weapon.position.set_area(
             ObjectPositionType.HAND)
         return [
             MoveObjectAction(
-                object_position = charactor.weapon.position,
+                object_position = character.weapon.position,
                 target_position = target_position
             ),
             CreateObjectAction(
@@ -814,13 +814,13 @@ class Lyresong_4_2(EventCardBase):
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
-        Self charactors that have artifact.
+        Self characters that have artifact.
         """
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         res: List[ObjectPosition] = []
-        for charactor in charactors:
-            if charactor.artifact is not None:
-                res.append(charactor.position)
+        for character in characters:
+            if character.artifact is not None:
+                res.append(character.position)
         return res
 
     def is_valid(self, match: Any) -> bool:
@@ -830,14 +830,14 @@ class Lyresong_4_2(EventCardBase):
         self, target: ObjectPosition | None, match: Any
     ) -> List[MoveObjectAction | CreateObjectAction]:
         assert target is not None
-        charactor = match.get_object(target)
-        assert charactor is not None
-        assert charactor.artifact is not None
-        target_position = charactor.artifact.position.set_area(
+        character = match.get_object(target)
+        assert character is not None
+        assert character.artifact is not None
+        target_position = character.artifact.position.set_area(
             ObjectPositionType.HAND)
         return [
             MoveObjectAction(
-                object_position = charactor.artifact.position,
+                object_position = character.artifact.position,
                 target_position = target_position
             ),
             CreateObjectAction(

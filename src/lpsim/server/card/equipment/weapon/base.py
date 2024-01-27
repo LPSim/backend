@@ -35,21 +35,21 @@ class WeaponBase(CardBase):
 
     def equip(self, match: Any) -> List[Actions]:
         """
-        The weapon is equipped, i.e. from hand to charactor. Set the status
+        The weapon is equipped, i.e. from hand to character. Set the status
         of weapon, and if it has actions when equipped, return the actions.
         """
         return []
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # can quip on self alive charactors that have same weapon type
+        # can quip on self alive characters that have same weapon type
         ret: List[ObjectPosition] = []
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
+        for character in match.player_tables[
+                self.position.player_idx].characters:
             if (
-                charactor.is_alive 
-                and charactor.weapon_type == self.weapon_type
+                character.is_alive 
+                and character.weapon_type == self.weapon_type
             ):
-                ret.append(charactor.position)
+                ret.append(character.position)
         return ret
 
     def is_valid(self, match: Any) -> bool:
@@ -70,16 +70,16 @@ class WeaponBase(CardBase):
         assert target is not None
         ret: List[MoveObjectAction | RemoveObjectAction] = []
         position = target.set_id(self.id)
-        charactor_id = target.id
-        assert position.area == ObjectPositionType.CHARACTOR
+        character_id = target.id
+        assert position.area == ObjectPositionType.CHARACTER
         assert position.player_idx == self.position.player_idx
-        charactors = match.player_tables[position.player_idx].charactors
-        for charactor in charactors:
-            if charactor.id == charactor_id:
+        characters = match.player_tables[position.player_idx].characters
+        for character in characters:
+            if character.id == character_id:
                 # check if need to remove current weapon
-                if charactor.weapon is not None:
+                if character.weapon is not None:
                     ret.append(RemoveObjectAction(
-                        object_position = charactor.weapon.position,
+                        object_position = character.weapon.position,
                     ))
         ret.append(MoveObjectAction(
             object_position = self.position,
@@ -91,16 +91,16 @@ class WeaponBase(CardBase):
         self, event: MoveObjectEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When this weapon is moved from hand to charactor, it is considered
+        When this weapon is moved from hand to character, it is considered
         as equipped, and will call `self.equip`.
         """
         if (
             event.action.object_position.id == self.id
             and event.action.object_position.area == ObjectPositionType.HAND
             and event.action.target_position.area 
-            == ObjectPositionType.CHARACTOR
+            == ObjectPositionType.CHARACTER
         ):
-            # this weapon equipped from hand to charactor
+            # this weapon equipped from hand to character
             return self.equip(match)
         return []
 
@@ -109,15 +109,15 @@ class WeaponBase(CardBase):
         mode: Literal['TEST', 'REAL']
     ) -> DamageIncreaseValue:
         """
-        When equipped charactor is using skill, increase the damage.
+        When equipped character is using skill, increase the damage.
         """
-        if self.position.area != ObjectPositionType.CHARACTOR:
+        if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return value
-        if not value.is_corresponding_charactor_use_damage_skill(
+        if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
-            # not current charactor using skill
+            # not current character using skill
             return value
         if value.damage_elemental_type == DamageElementalType.PIERCING:
             # piercing damage
@@ -158,17 +158,17 @@ class RoundEffectWeaponBase(WeaponBase):
         self, event: MoveObjectEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When this weapon is moved from charactor to charactor, and mark as
+        When this weapon is moved from character to character, and mark as
         reset_usage, reset usage.
         """
         if (
             event.action.object_position.id == self.id
             and event.action.object_position.area 
-            == ObjectPositionType.CHARACTOR
+            == ObjectPositionType.CHARACTER
             and event.action.target_position.area 
-            == ObjectPositionType.CHARACTOR
+            == ObjectPositionType.CHARACTER
             and event.action.reset_usage
         ):
-            # this weapon equipped from charactor to charactor
+            # this weapon equipped from character to character
             self.usage = self.max_usage_per_round
         return super().event_handler_MOVE_OBJECT(event, match)

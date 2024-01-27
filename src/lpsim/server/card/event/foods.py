@@ -3,7 +3,7 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_base_class, register_class
 
 from ...action import (
-    ActionTypes, Actions, CharactorReviveAction, CreateObjectAction, 
+    ActionTypes, Actions, CharacterReviveAction, CreateObjectAction, 
     MakeDamageAction
 )
 from ...struct import Cost, ObjectPosition
@@ -25,21 +25,21 @@ class FoodCardBase(EventCardBase):
 
     def eat_target(self, match: Any) -> List[int]:
         """
-        Get target charactor idxs that can eat.
+        Get target character idxs that can eat.
         """
         ret: List[int] = []
         table = match.player_tables[self.position.player_idx]
-        for idx, charactor in enumerate(table.charactors):
-            if charactor.is_defeated:
+        for idx, character in enumerate(table.characters):
+            if character.is_defeated:
                 continue
             is_full = False
-            for status in charactor.status:
+            for status in character.status:
                 if status.name == 'Satiated':
                     is_full = True
                     break
             if is_full:
                 continue
-            if self.can_eat_only_if_damaged and charactor.damage_taken <= 0:
+            if self.can_eat_only_if_damaged and character.damage_taken <= 0:
                 continue
             ret.append(idx)
         return ret
@@ -55,19 +55,19 @@ class FoodCardBase(EventCardBase):
         Get targets of this card.
         """
         ret: List[ObjectPosition] = []
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         for idx in self.eat_target(match):
-            ret.append(charactors[idx].position)
+            ret.append(characters[idx].position)
         return ret
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
     ) -> List[CreateObjectAction]:
         """
-        Add Satiated status to target charactor.
+        Add Satiated status to target character.
         """
         assert target is not None
-        pos = target.set_area(ObjectPositionType.CHARACTOR_STATUS)
+        pos = target.set_area(ObjectPositionType.CHARACTER_STATUS)
         return [CreateObjectAction(
             object_name = 'Satiated',
             object_position = pos,
@@ -78,14 +78,14 @@ class FoodCardBase(EventCardBase):
 register_base_class(FoodCardBase)
 
 
-class AllCharactorFoodCard(FoodCardBase):
+class AllCharacterFoodCard(FoodCardBase):
     """
-    Food card that can be eaten by all charactors.
+    Food card that can be eaten by all characters.
     """
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
-        As it fulfills all charactors, no need to specify target.
+        As it fulfills all characters, no need to specify target.
         """
         return []
 
@@ -93,25 +93,25 @@ class AllCharactorFoodCard(FoodCardBase):
         self, target: ObjectPosition | None, match: Any
     ) -> List[Actions]:
         """
-        It will add status to all charactors that is not satiated.
+        It will add status to all characters that is not satiated.
         """
         ret: List[Actions] = []
         targets = self.eat_target(match)
         assert len(targets) > 0
-        charactors = match.player_tables[self.position.player_idx].charactors
+        characters = match.player_tables[self.position.player_idx].characters
         for t in targets:
-            charactor = charactors[t]
-            ret += self.one_charactor_action(charactor.position)
+            character = characters[t]
+            ret += self.one_character_action(character.position)
         return ret
 
-    def one_charactor_action(self, pos: ObjectPosition) -> List[Actions]:
+    def one_character_action(self, pos: ObjectPosition) -> List[Actions]:
         """
-        Actions that will be applied to one charactor. Default is to add 
+        Actions that will be applied to one character. Default is to add 
         Satiated and status that has same name as the card.
         """
         ret: List[Actions] = []
         pos = pos.set_area(
-            ObjectPositionType.CHARACTOR_STATUS)
+            ObjectPositionType.CHARACTER_STATUS)
         ret.append(CreateObjectAction(
             object_name = 'Satiated',
             object_position = pos,
@@ -341,18 +341,18 @@ class TeyvatFriedEgg_4_1(FoodCardBase):
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         """
-        Can only target defeated charactors
+        Can only target defeated characters
         """
         return [
-            charactor.position for charactor 
-            in match.player_tables[self.position.player_idx].charactors 
-            if charactor.is_defeated
+            character.position for character 
+            in match.player_tables[self.position.player_idx].characters 
+            if character.is_defeated
         ]
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[CreateObjectAction | CharactorReviveAction]:
-        ret: List[CreateObjectAction | CharactorReviveAction] = []
+    ) -> List[CreateObjectAction | CharacterReviveAction]:
+        ret: List[CreateObjectAction | CharacterReviveAction] = []
         ret = list(super().get_actions(target, match))
         assert len(ret) == 1
         assert target is not None
@@ -368,9 +368,9 @@ class TeyvatFriedEgg_4_1(FoodCardBase):
             object_arguments = {}
         ))
         ret = [
-            CharactorReviveAction(
+            CharacterReviveAction(
                 player_idx = target.player_idx,
-                charactor_idx = target.charactor_idx,
+                character_idx = target.character_idx,
                 revive_hp = 1
             )
         ] + ret
@@ -402,7 +402,7 @@ class SashimiPlatter_3_7(FoodCardBase):
         return ret
 
 
-class TandooriRoastChicken_3_7(AllCharactorFoodCard):
+class TandooriRoastChicken_3_7(AllCharacterFoodCard):
     name: Literal['Tandoori Roast Chicken']
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 2)
@@ -410,7 +410,7 @@ class TandooriRoastChicken_3_7(AllCharactorFoodCard):
     can_eat_only_if_damaged: bool = False
 
 
-class ButterCrab_3_7(AllCharactorFoodCard):
+class ButterCrab_3_7(AllCharacterFoodCard):
     name: Literal['Butter Crab']
     version: Literal['3.7'] = '3.7'
     cost: Cost = Cost(any_dice_number = 2)

@@ -12,8 +12,8 @@ def test_dunyarzad_no_draw():
     match.config.history_level = 0
     # modify hp
     # for i in range(2):
-    #     charactors = match.player_tables[i].player_deck_information.charactors  # noqa: E501
-    #     for c in charactors:
+    #     characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
+    #     for c in characters:
     #         c.hp = c.max_hp = 30
     # add omnipotent guide
     set_16_omni(match)

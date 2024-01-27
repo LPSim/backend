@@ -44,19 +44,19 @@ class SacrificialWeapons_3_3(RoundEffectWeaponBase):
         If self use elemental skill, create one corresponding dice
         """
         if not (
-            self.position.area == ObjectPositionType.CHARACTOR
+            self.position.area == ObjectPositionType.CHARACTER
             and event.action.position.player_idx == self.position.player_idx 
-            and event.action.position.charactor_idx 
-            == self.position.charactor_idx
+            and event.action.position.character_idx 
+            == self.position.character_idx
             and event.action.skill_type == SkillType.ELEMENTAL_SKILL
             and self.usage > 0
         ):
             # not equipped or not self use elemental skill or no usage
             return []
         self.usage -= 1
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        ele_type: ElementType = charactor.element
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
+        ele_type: ElementType = character.element
         die_color = ELEMENT_TO_DIE_COLOR[ele_type]
         return [CreateDiceAction(
             player_idx = self.position.player_idx,

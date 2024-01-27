@@ -4,13 +4,13 @@ from .card.support.base import SupportBase
 
 from .summon.base import SummonBase
 
-from .charactor.charactor_base import CharactorBase
+from .character.character_base import CharacterBase
 
 from .status.team_status.base import TeamStatusBase
 from .struct import ObjectPosition
 from ..utils import BaseModel, get_instance
 from typing import Literal, List, Tuple
-from ..resources.consts import CharactorIcons
+from ..resources.consts import CharacterIcons
 from .consts import (
     DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
 )
@@ -27,15 +27,15 @@ class PlayerTable(BaseModel):
     Attributes:
         name (str): class name.
         player_name (str): The name of the player.
-        player_icon (CharactorIcons): The icon of the player's character.
+        player_icon (CharacterIcons): The icon of the player's character.
         player_deck_information (Deck): The description of the player's deck.
 
-        active_charactor_idx (int): The index of the active character.
+        active_character_idx (int): The index of the active character.
         has_round_ended (bool): Whether the player has declared that the
             round has ended.
         dice (List[Dice]): The list of dice on the table.
         team_status (List[Buffs]): The list of status applied to the team.
-        charactors (List[Charactors]): The list of characters on the table.
+        characters (List[Characters]): The list of characters on the table.
         summons (List[Summons]): The list of summons on the table.
         supports (List[Supports]): The list of supports on the table.
         hands (List[Cards]): The list of cards in the player's hand.
@@ -46,16 +46,16 @@ class PlayerTable(BaseModel):
 
     # player information
     player_name: str = 'Nahida'
-    player_icon: CharactorIcons = CharactorIcons.NAHIDA
+    player_icon: CharacterIcons = CharacterIcons.NAHIDA
     player_deck_information: Deck = Deck()
 
     # table information
     player_idx: int
-    active_charactor_idx: int = -1
+    active_character_idx: int = -1
     has_round_ended: bool = False
     dice: Dice = Dice()
     team_status: List[TeamStatusBase] = []
-    charactors: List[CharactorBase] = []
+    characters: List[CharacterBase] = []
     summons: List[SummonBase] = []
     supports: List[SupportBase] = []
     hands: List[CardBase] = []
@@ -73,9 +73,9 @@ class PlayerTable(BaseModel):
     def parse_team_status(cls, v):
         return get_instance(TeamStatusBase, v)
 
-    @validator('charactors', each_item = True, pre = True)
-    def parse_charactors(cls, v):
-        return get_instance(CharactorBase, v)
+    @validator('characters', each_item = True, pre = True)
+    def parse_characters(cls, v):
+        return get_instance(CharacterBase, v)
 
     @validator('summons', each_item = True, pre = True)
     def parse_summons(cls, v):
@@ -104,14 +104,14 @@ class PlayerTable(BaseModel):
         Returns the order of dice colors.
         """
         result: List[DieColor] = [DieColor.OMNI]
-        assert self.active_charactor_idx != -1, (
-            'Cannot get order when active charactor index not set.'
+        assert self.active_character_idx != -1, (
+            'Cannot get order when active character index not set.'
         )
-        c_element = self.charactors[self.active_charactor_idx].element
+        c_element = self.characters[self.active_character_idx].element
         color = ELEMENT_TO_DIE_COLOR[c_element]
         result.append(color)
-        for charactor in self.charactors:
-            c_element = charactor.element
+        for character in self.characters:
+            c_element = character.element
             color = ELEMENT_TO_DIE_COLOR[c_element]
             if color not in result:
                 result.append(color)
@@ -155,12 +155,12 @@ class PlayerTable(BaseModel):
                     return status
             return None
         elif position.area in [
-            ObjectPositionType.CHARACTOR,
+            ObjectPositionType.CHARACTER,
             ObjectPositionType.SKILL,
-            ObjectPositionType.CHARACTOR_STATUS
+            ObjectPositionType.CHARACTER_STATUS
         ]:
-            charactor = self.charactors[position.charactor_idx]
-            return charactor.get_object(position)
+            character = self.characters[position.character_idx]
+            return character.get_object(position)
         elif position.area == ObjectPositionType.SUMMON:
             for summon in self.summons:
                 if summon.id == position.id:
@@ -194,10 +194,10 @@ class PlayerTable(BaseModel):
         Get all objects in the table.
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
-        2. objects belongs to charactor goes first
-            2.1. active charactor first, then next, next ... until all alive
-                charactors are included.
-            2.2. for one charactor, order is weapon, artifact, talent, status.
+        2. objects belongs to character goes first
+            2.1. active character first, then next, next ... until all alive
+                characters are included.
+            2.2. for one character, order is weapon, artifact, talent, status.
             2.3. for status, order is their index in status list, i.e. 
                 generated time.
         3. for other objects, order is: summon, support, hand, dice, deck.
@@ -205,13 +205,13 @@ class PlayerTable(BaseModel):
                 the list.
         """
         result: List[ObjectBase] = []
-        start_charactor_idx = self.active_charactor_idx
-        if start_charactor_idx == -1:
-            start_charactor_idx = 0
-        for i in range(len(self.charactors)):
-            target = (start_charactor_idx + i) % len(self.charactors)
-            if self.charactors[target].is_alive:
-                result += self.charactors[target].get_object_lists()
+        start_character_idx = self.active_character_idx
+        if start_character_idx == -1:
+            start_character_idx = 0
+        for i in range(len(self.characters)):
+            target = (start_character_idx + i) % len(self.characters)
+            if self.characters[target].is_alive:
+                result += self.characters[target].get_object_lists()
         result += self.team_status
         result += self.summons
         result += self.supports
@@ -227,63 +227,63 @@ class PlayerTable(BaseModel):
 
         return result
 
-    def get_active_charactor(self) -> CharactorBase:
+    def get_active_character(self) -> CharacterBase:
         """
-        Returns the active charactor.
+        Returns the active character.
         """
         assert (
-            self.active_charactor_idx >= 0 
-            and self.active_charactor_idx < len(self.charactors)
+            self.active_character_idx >= 0 
+            and self.active_character_idx < len(self.characters)
         )
-        return self.charactors[self.active_charactor_idx]
+        return self.characters[self.active_character_idx]
 
-    def next_charactor_idx(self, current_idx: int | None = None) -> int | None:
+    def next_character_idx(self, current_idx: int | None = None) -> int | None:
         """
-        Returns the next charactor index. If `current_id` is not provided, the
-        active charactor index will be used.
+        Returns the next character index. If `current_id` is not provided, the
+        active character index will be used.
 
         Returns:
-            int: the next charactor ID. If there is no next charactor, returns
+            int: the next character ID. If there is no next character, returns
                 None.
         """
         if current_idx is None:
-            current_idx = self.active_charactor_idx
-        assert self.charactors[current_idx].is_alive, (
-            'Cannot get next charactor when current charactor is not alive.'
+            current_idx = self.active_character_idx
+        assert self.characters[current_idx].is_alive, (
+            'Cannot get next character when current character is not alive.'
         )
-        cnum = len(self.charactors)
+        cnum = len(self.characters)
         for i in range(1, cnum):
             target = (current_idx + i) % cnum
-            if self.charactors[target].is_alive:
+            if self.characters[target].is_alive:
                 return target
         return None
 
-    def previous_charactor_idx(
+    def previous_character_idx(
             self, current_idx: int | None = None) -> int | None:
         """
-        Returns the previous charactor ID. If `current_id` is not provided, the
-        active charactor index will be used.
+        Returns the previous character ID. If `current_id` is not provided, the
+        active character index will be used.
 
         Returns:
-            int: the previous charactor ID. If there is no previous charactor,
+            int: the previous character ID. If there is no previous character,
                 returns None.
         """
         if current_idx is None:
-            current_idx = self.active_charactor_idx
-        assert self.charactors[current_idx].is_alive, (
-            'Cannot get previous charactor when current charactor is not '
+            current_idx = self.active_character_idx
+        assert self.characters[current_idx].is_alive, (
+            'Cannot get previous character when current character is not '
             'alive.'
         )
-        cnum = len(self.charactors)
+        cnum = len(self.characters)
         for i in range(1, cnum):
             target = (cnum + current_idx - i) % cnum
-            if self.charactors[target].is_alive:
+            if self.characters[target].is_alive:
                 return target
         return None
 
     def get_charge_and_arcane_legend(self) -> Tuple[int, bool]:
         """
-        Get charge of active charactor and arcane legend mark together.
+        Get charge of active character and arcane legend mark together.
         """
-        charge = self.get_active_charactor().charge
+        charge = self.get_active_character().charge
         return charge, self.arcane_legend

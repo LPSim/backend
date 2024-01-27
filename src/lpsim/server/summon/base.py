@@ -100,14 +100,14 @@ class AttackerSummonBase(SummonBase):
         if self.damage_elemental_type == DamageElementalType.HEAL:
             damage_type = DamageType.HEAL
             target_table = match.player_tables[player_idx]
-        target_charactor = target_table.get_active_charactor()
+        target_character = target_table.get_active_character()
         return [
             MakeDamageAction(
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
                         damage_type = damage_type,
-                        target_position = target_charactor.position,
+                        target_position = target_character.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
                         cost = Cost(),
@@ -153,7 +153,7 @@ class AttackerSummonBase(SummonBase):
 
 class AOESummonBase(AttackerSummonBase):
     """
-    Base class that deals AOE damage. It will attack active charactor 
+    Base class that deals AOE damage. It will attack active character 
     damage+element, back chractor back_damage_piercing.
     """
     back_damage: int
@@ -165,17 +165,17 @@ class AOESummonBase(AttackerSummonBase):
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
         target_table = match.player_tables[1 - self.position.player_idx]
-        charactors = target_table.charactors
-        for cid, charactor in enumerate(charactors):
-            if cid == target_table.active_charactor_idx:
+        characters = target_table.characters
+        for cid, character in enumerate(characters):
+            if cid == target_table.active_character_idx:
                 continue
-            if charactor.is_defeated:
+            if character.is_defeated:
                 continue
             damage_action.damage_value_list.append(
                 DamageValue(
                     position = self.position,
                     damage_type = DamageType.DAMAGE,
-                    target_position = charactor.position,
+                    target_position = character.position,
                     damage = self.back_damage,
                     damage_elemental_type = DamageElementalType.PIERCING,
                     cost = Cost(),
@@ -259,14 +259,14 @@ class DefendSummonBase(SummonBase):
             # attack until run out of usage
             return []
         target_table = match.player_tables[1 - player_idx]
-        target_charactor = target_table.get_active_charactor()
+        target_character = target_table.get_active_character()
         return [
             MakeDamageAction(
                 damage_value_list = [
                     DamageValue(
                         position = self.position,
                         damage_type = DamageType.DAMAGE,
-                        target_position = target_charactor.position,
+                        target_position = target_character.position,
                         damage = self.damage,
                         damage_elemental_type = self.damage_elemental_type,
                         cost = Cost(),
@@ -291,10 +291,10 @@ class DefendSummonBase(SummonBase):
         """
         Decrease damage with its rule, and decrease usage.
         """
-        if not value.is_corresponding_charactor_receive_damage(
+        if not value.is_corresponding_character_receive_damage(
             self.position, match,
         ):
-            # not this charactor receive damage, not modify
+            # not this character receive damage, not modify
             return value
         new_usage = value.apply_shield(
             self.usage, self.min_damage_to_trigger, self.max_in_one_time,
@@ -345,7 +345,7 @@ class ShieldSummonBase(DefendSummonBase):
 class SwirlChangeSummonBase(AttackerSummonBase):
     """
     Base class for summons that can change damage elemental type when swirl
-    reaction made by our charactor or summon. 
+    reaction made by our character or summon. 
     Note: create summon before attack, so it can change element immediately.
     """
     name: str
@@ -367,7 +367,7 @@ class SwirlChangeSummonBase(AttackerSummonBase):
     ) -> List[Actions]:
         """
         When anyone receives damage, and has swirl reaction, and made by
-        our charactor or summon, and current damage type is anemo, 
+        our character or summon, and current damage type is anemo, 
         change stormeye damage element.
         """
         if self.damage_elemental_type != DamageElementalType.ANEMO:
@@ -376,7 +376,7 @@ class SwirlChangeSummonBase(AttackerSummonBase):
         if event.final_damage.position.area not in [
             ObjectPositionType.SKILL, ObjectPositionType.SUMMON
         ]:  # pragma: no cover
-            # not charactor or summon made damage, do nothing
+            # not character or summon made damage, do nothing
             return []
         if event.final_damage.position.player_idx != self.position.player_idx:
             # not our player made damage, do nothing

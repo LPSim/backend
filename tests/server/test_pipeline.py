@@ -16,7 +16,7 @@ from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from src.lpsim.agents.random_agent import RandomAgent
 from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.charactor.electro.fischl_3_3 import Oz_3_3
+from src.lpsim.server.character.electro.fischl_3_3 import Oz_3_3
 from tests.utils_for_test import (
     get_test_id_from_command, set_16_omni, make_respond, remove_ids, 
     get_random_state, check_hp
@@ -25,7 +25,7 @@ from tests.utils_for_test import (
 
 TEST_DECK = {
     'name': 'Deck',
-    'charactors': [
+    'characters': [
         {
             'name': 'DendroMobMage',
             'element': 'DENDRO',
@@ -183,9 +183,9 @@ def test_copy_speed():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Rana*10
         Wine-Stained Tricorne*10
         The Seed of Stored Knowledge*10
@@ -243,8 +243,8 @@ def test_random_same_after_load():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -253,14 +253,14 @@ def test_random_same_after_load():
         Fatui Conspiracy*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 99
+    for character in deck.characters:
+        character.hp = character.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     initial_match = match.copy(deep = True)
     initial_agent_0 = agent_0.copy(deep = True)
@@ -317,8 +317,8 @@ def test_save_load_same():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -328,14 +328,14 @@ def test_save_load_same():
         Timmie*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 99
+    for character in deck.characters:
+        character.hp = character.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     test_step = 100
     assert match.start()[0]
@@ -436,7 +436,7 @@ def test_support_over_maximum_and_error_tests():
     match = Match(random_state = get_random_state())
     deck = {
         'name': 'Deck',
-        'charactors': [
+        'characters': [
             {
                 'name': 'DendroMobMage',
                 'element': 'DENDRO',
@@ -596,15 +596,15 @@ def test_summon_over_maximum():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Mona
-        charactor:Fischl
-        charactor:Rhodeia of Loch
+        character:Mona
+        character:Fischl
+        character:Rhodeia of Loch
         Send Off*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -692,15 +692,15 @@ def test_plunge_mark():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Nahida
-        charactor:Fischl
-        charactor:Rhodeia of Loch
+        character:Nahida
+        character:Fischl
+        character:Rhodeia of Loch
         Send Off*30
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -745,14 +745,14 @@ def test_higher_version_compatible():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Yoimiya@3.3
-        charactor:Yoimiya@3.4
-        charactor:Yoimiya@3.5
-        charactor:Yoimiya@3.6
-        charactor:Yoimiya@3.7
-        charactor:Yoimiya@3.8
-        charactor:Yoimiya@4.0
-        charactor:Yoimiya
+        character:Yoimiya@3.3
+        character:Yoimiya@3.4
+        character:Yoimiya@3.5
+        character:Yoimiya@3.6
+        character:Yoimiya@3.7
+        character:Yoimiya@3.8
+        character:Yoimiya@4.0
+        character:Yoimiya
         Send Off@3.3
         Send Off@3.4
         Send Off@3.5*1
@@ -765,7 +765,7 @@ def test_higher_version_compatible():
     )
     res = ['3.3', '3.4', '3.4', '3.4', '3.4', '3.8', '3.8', '3.8']
     res2 = ['3.3', '3.3', '3.3', '3.3', '3.7', '3.7', '3.7', '3.7']
-    for c, r in zip(deck.charactors, res):
+    for c, r in zip(deck.characters, res):
         assert c.version == r
     for c, r in zip(deck.cards, res2):
         assert c.version == r
@@ -778,8 +778,8 @@ def test_save_history():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -789,14 +789,14 @@ def test_save_history():
         Timmie*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 99
+    for character in deck.characters:
+        character.hp = character.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     match.config.compress_history = False
@@ -837,20 +837,20 @@ def test_save_history_2():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Toss-Up*10
         Nature and Wisdom*10
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 1
+    for character in deck.characters:
+        character.hp = character.max_hp = 1
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     match.config.compress_history = False
@@ -871,25 +871,25 @@ def test_generate_unused_cards():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:AnemoMob
-        charactor:PyroMob
-        charactor:DendroMob
-        charactor:ElectroMob
-        charactor:HydroMob
-        charactor:CryoMob
-        charactor:GeoMob
+        character:AnemoMob
+        character:PyroMob
+        character:DendroMob
+        character:ElectroMob
+        character:HydroMob
+        character:CryoMob
+        character:GeoMob
         Elemental Resonance: Woven Stone
         Skyward Harp
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 1
+    for character in deck.characters:
+        character.hp = character.max_hp = 1
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     test_step = 10
@@ -933,9 +933,9 @@ def test_prediction():
     match = Match(random_state = get_random_state())
     deck = Deck.from_str(
         """
-        charactor:Fischl
-        charactor:Mona
-        charactor:Nahida
+        character:Fischl
+        character:Mona
+        character:Nahida
         Rana*10
         Wine-Stained Tricorne*10
         The Seed of Stored Knowledge*10
@@ -959,13 +959,13 @@ def test_prediction():
                     check_hp(match, [[4, 8, 8], [10, 10, 10]])
                 elif test_id == 2:
                     check_hp(match, [[0, 7, 7], [10, 10, 10]])
-                    for charactor in match.player_tables[0].charactors:
-                        if charactor.is_alive:
-                            assert len(charactor.status) == 1
-                            assert charactor.status[
+                    for character in match.player_tables[0].characters:
+                        if character.is_alive:
+                            assert len(character.status) == 1
+                            assert character.status[
                                 0].name == "Seed of Skandha"
                         else:
-                            assert len(charactor.status) == 0
+                            assert len(character.status) == 0
                 elif test_id == 3:
                     check_hp(match, [[0, 1, 5], [10, 10, 10]])
                 else:
@@ -980,8 +980,8 @@ def test_prediction():
                 prediction_all = match.skill_predictions
                 for p in prediction_all:
                     assert p['player_idx'] == 1
-                    assert (p['charactor_idx'] 
-                            == match.player_tables[1].active_charactor_idx)
+                    assert (p['character_idx'] 
+                            == match.player_tables[1].active_character_idx)
                     skill_idx = int(agent_1.commands[0].split()[1])
                     if skill_idx == p['skill_idx']:
                         prediction_found = p
@@ -1030,12 +1030,12 @@ def test_prediction():
     assert match.state != MatchState.ERROR
 
 
-def test_player_table_charactor_order():
+def test_player_table_character_order():
     deck_str = '''
     default_version:4.0
-    charactor:Fischl
-    charactor:Mona
-    charactor:Nahida
+    character:Fischl
+    character:Mona
+    character:Nahida
     Strategize*30
     '''
     deck = Deck.from_str(deck_str)
@@ -1045,12 +1045,12 @@ def test_player_table_charactor_order():
     assert match.start()[0]
     table = match.player_tables[0].copy(deep = True)
     for active_idx in range(3):
-        table.active_charactor_idx = active_idx
+        table.active_character_idx = active_idx
         objs = table.get_object_lists()
         result = []
         for obj in objs:
-            if obj.type == ObjectType.CHARACTOR:
-                result.append(obj.position.charactor_idx)
+            if obj.type == ObjectType.CHARACTER:
+                result.append(obj.position.character_idx)
         if active_idx == 0:
             assert result == [0, 1, 2]
         elif active_idx == 1:
@@ -1097,15 +1097,15 @@ def test_frozen_cannot_use_skill_talent():
     deck = Deck.from_str(
         '''
         default_version:4.2
-        charactor:Electro Hypostasis
-        charactor:Kaeya
-        charactor:Mona
+        character:Electro Hypostasis
+        character:Kaeya
+        character:Mona
         Cold-Blooded Strike*15
         '''
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.card_number = None
     match.config.check_deck_restriction = False
     # check whether random_first_player is enabled.
@@ -1148,8 +1148,8 @@ def test_new_match_from_history():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -1159,14 +1159,14 @@ def test_new_match_from_history():
         Timmie*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 99
+    for character in deck.characters:
+        character.hp = character.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     match.config.compress_history = False
@@ -1206,8 +1206,8 @@ def test_new_match_from_history_compressed():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -1217,14 +1217,14 @@ def test_new_match_from_history_compressed():
         Timmie*5
         '''
     )
-    for charactor in deck.charactors:
-        charactor.hp = charactor.max_hp = 99
+    for character in deck.characters:
+        character.hp = character.max_hp = 99
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.history_level = 10  # record important history
     assert match.start()[0]
@@ -1326,8 +1326,8 @@ def test_round_end_all_lose():
     deck = Deck.from_str(
         '''
         default_version:4.0
-        charactor:Rhodeia of Loch
-        charactor:Kamisato Ayaka
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
         Traveler's Handy Sword*5
         Gambler's Earrings*5
         Kanten Senmyou Blessing*5
@@ -1344,7 +1344,7 @@ def test_round_end_all_lose():
     match.config.max_hand_size = 30
     match.config.initial_hand_size = 10
     match.config.card_number = None
-    match.config.charactor_number = None
+    match.config.character_number = None
     match.config.check_deck_restriction = False
     match.config.random_first_player = False
     match.config.history_level = 0
@@ -1399,7 +1399,7 @@ if __name__ == '__main__':
     # test_save_history_2()
     # test_generate_unused_cards()
     # test_prediction()
-    # test_player_table_charactor_order()
+    # test_player_table_character_order()
     # test_frozen_cannot_use_skill_talent()
     # test_new_match_from_history()
     # test_new_match_from_history_compressed()

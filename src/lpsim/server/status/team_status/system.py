@@ -36,9 +36,9 @@ class CatalyzingField_3_4(UsageTeamStatus):
             return value
         if not self.position.check_position_valid(
             value.target_position, match, 
-            player_idx_same = False, target_is_active_charactor = True,
+            player_idx_same = False, target_is_active_character = True,
         ):
-            # target not enemy, or target not active charactor, not activate
+            # target not enemy, or target not active character, not activate
             return value
         if value.damage_elemental_type in [
             DamageElementalType.DENDRO,
@@ -85,9 +85,9 @@ class DendroCore_3_3(UsageTeamStatus):
             return value
         if not self.position.check_position_valid(
             value.target_position, match, 
-            player_idx_same = False, target_is_active_charactor = True,
+            player_idx_same = False, target_is_active_character = True,
         ):
-            # target not enemy, or target not active charactor, not activate
+            # target not enemy, or target not active character, not activate
             return value
         if value.damage_elemental_type in [
             DamageElementalType.ELECTRO,
