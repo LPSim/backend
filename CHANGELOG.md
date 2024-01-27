@@ -7,6 +7,9 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+### Fixed
+- Mass typos in the project.
+
 ## [0.4.3.3] - 2024-01-11
 
 ### Changed
