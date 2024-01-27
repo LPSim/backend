@@ -62,9 +62,12 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         event and available in deck, call them.
         """
         candidate_list = self._get_candidate_list(match)
+        args = {}
+        if self._accept_version is not None:
+            args['version'] = self._accept_version
         candidate_instance = [
             get_instance(self._accept_card_types, {
-                'name': name, 'version': self.version
+                'name': name, **args
             }) for name in candidate_list
         ]
         res: List[Actions] = []
