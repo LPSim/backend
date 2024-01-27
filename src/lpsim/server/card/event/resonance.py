@@ -89,7 +89,7 @@ class ShatteringIce_3_3(ElementalResonanceCardBase):
     element: ElementType = ElementType.CRYO
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # avtive character
+        # active character
         return [match.player_tables[
             self.position.player_idx].get_active_character().position]
 
@@ -180,7 +180,7 @@ class FerventFlames_3_3(ElementalResonanceCardBase):
     element: ElementType = ElementType.PYRO
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
-        # avtive character
+        # active character
         return [match.player_tables[
             self.position.player_idx].get_active_character().position]
 

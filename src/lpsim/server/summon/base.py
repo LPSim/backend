@@ -154,7 +154,7 @@ class AttackerSummonBase(SummonBase):
 class AOESummonBase(AttackerSummonBase):
     """
     Base class that deals AOE damage. It will attack active character 
-    damage+element, back chractor back_damage_piercing.
+    damage+element, back character back_damage_piercing.
     """
     back_damage: int
 

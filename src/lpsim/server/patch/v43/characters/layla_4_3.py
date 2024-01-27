@@ -184,7 +184,7 @@ class LightsRemit_4_3(SkillTalent):
         When equipped, self Shooting Star deal damage, draw 1 card
         """
         if self.position.area != ObjectPositionType.CHARACTER:
-            # not equiped, return
+            # not equipped, return
             return []
         if (
             self.position.player_idx 

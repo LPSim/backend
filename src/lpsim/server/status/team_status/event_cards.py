@@ -560,7 +560,7 @@ class Pankration_4_1(TeamStatusBase):
         self, event: DeclareRoundEndEventArguments, match: Any
     ) -> List[DrawCardAction | RemoveObjectAction]:
         """
-        When anyone declears round end, another draw 2 cards and remove self
+        When anyone declares round end, another draw 2 cards and remove self
         """
         return [
             DrawCardAction(

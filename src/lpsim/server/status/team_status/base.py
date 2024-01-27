@@ -43,7 +43,7 @@ class UsageTeamStatus(TeamStatusBase):
     By default, it listens to MAKE_DAMAGE event to check if run out of usage,
     as most usage-based status will decrease usage when damage made.
     Not using AFTER_MAKE_DAMAGE because we should remove the status before
-    side effects of elemental reaction, which is triggered on RECEVIE_DAMAGE.
+    side effects of elemental reaction, which is triggered on RECEIVE_DAMAGE.
 
     If it is not a damage related status, check_should_remove should be
     called manually.

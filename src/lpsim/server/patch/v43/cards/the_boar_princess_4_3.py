@@ -31,7 +31,7 @@ class TheBoarPrincessStatus_4_3(RoundTeamStatus):
             # not self
             return []
         if position.area != ObjectPositionType.CHARACTER:
-            # not remove character objects, i.e. equipments
+            # not remove character objects, i.e. equipment
             return []
         if event.object_type == ObjectType.TALENT:
             # is talent, it should be removed because of character defeated.

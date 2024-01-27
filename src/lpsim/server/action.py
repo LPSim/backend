@@ -284,7 +284,7 @@ class CharacterDefeatedAction(ActionBase):
 class CreateObjectAction(ActionBase):
     """
     Action for creating objects, e.g. status, summons, supports.
-    Note some objects are not created but moved, e.g. equipments and supports,
+    Note some objects are not created but moved, e.g. equipment and supports,
     for these objects, do not use this action.
     """
     type: Literal[ActionTypes.CREATE_OBJECT] = \

@@ -147,7 +147,7 @@ class TranscendentAutomaton_3_3(SkillTalent):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[SwitchCharacterAction]:
         """
-        When self use elemental skill, swich to previous or next character
+        When self use elemental skill, switch to previous or next character
         """
         if not self.position.check_position_valid(
             event.action.position, match, player_idx_same = True,

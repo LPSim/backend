@@ -54,7 +54,7 @@ class Wavestrider(ElementalSkillBase):
 
     def is_valid(self, match: Any) -> bool:
         """
-        alway invalid to directly use.
+        always invalid to directly use.
         """
         return False
 

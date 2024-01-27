@@ -888,7 +888,7 @@ class Match(BaseModel):
         """
         Do one action in `self.event_frames`. If the last event frame has
         triggered actions, it will do one action and stack new event frame.
-        If triggered actions is empty and has triggerred objects, get 
+        If triggered actions is empty and has triggered objects, get 
         actions and do the first. If have unprocessed event arguments,
         trigger objects. If none of all, pop last event frame.
         Unless there are no actions, this function will exactly do one action.
@@ -1099,7 +1099,7 @@ class Match(BaseModel):
         else:
             # not all declare ended, go to next action
             # change to ROUND_PREPARING so will immediately transform to
-            # PLAYER_ACTION_START in next step, and trigger correcponding event
+            # PLAYER_ACTION_START in next step, and trigger corresponding event
             self._set_match_state(MatchState.ROUND_PREPARING)
 
     def _round_ending(self):
@@ -1117,7 +1117,7 @@ class Match(BaseModel):
         self, position: ObjectPosition, action: ActionTypes | None = None
     ) -> ObjectBase | None:
         """
-        Get object by its position. If obect not exist, return None.
+        Get object by its position. If object not exist, return None.
         When action is specified, it will check trashbin and find objects that
         can handle the action.
         """
@@ -1614,7 +1614,7 @@ class Match(BaseModel):
 
     def _respond_elemental_tuning(self, response: ElementalTuningResponse):
         """
-        Deal with elemental tuning response. It is splitted into 3 actions,
+        Deal with elemental tuning response. It is split into 3 actions,
         remove one hand card, remove one die, and add one die.
         """
         die_idx = response.dice_idx
@@ -1654,7 +1654,7 @@ class Match(BaseModel):
 
     def _respond_declare_round_end(self, response: DeclareRoundEndResponse):
         """
-        Deal with declare round end response. It is splitted into 2 actions,
+        Deal with declare round end response. It is split into 2 actions,
         declare round end and combat action.
         """
         actions: List[ActionBase] = []
@@ -2242,7 +2242,7 @@ class Match(BaseModel):
             A SwitchCharacterEventArguments will be generated.
             NOTE: only character switch of character received this damage will
             trigger this event, character switch of attacker (Kazuha, Kenki, 
-            When the Crane Returned) should be another SwtichCharacterAction.
+            When the Crane Returned) should be another SwitchCharacterAction.
             TODO is it possible to have character switch of attacker in
                 make damage action?
         3. CreateObjectEventArguments: If this damage action contains create
@@ -2418,7 +2418,7 @@ class Match(BaseModel):
         self, action: CharacterDefeatedAction
     ) -> List[CharacterDefeatedEventArguments | RemoveObjectEventArguments]:
         """
-        Character defeated action, all equipments and status are removed, 
+        Character defeated action, all equipment and status are removed, 
         and is marked as defeated. Currently not support PVE character
         disappear features. Event arguments returned contains
         CharacterDefeatedEventArguments and RemoveObjectEventArguments.
@@ -2438,7 +2438,7 @@ class Match(BaseModel):
             f'character {character.name}:{character_idx} '
             f'defeated.'
         )
-        removed_objects = character.attachs
+        removed_objects = character.attaches
         for obj in removed_objects:
             ret.append(RemoveObjectEventArguments(
                 action = RemoveObjectAction(
@@ -2448,7 +2448,7 @@ class Match(BaseModel):
                 object_type = obj.type,
             ))
             self.trashbin.append(obj)
-        character.attachs = []
+        character.attaches = []
         character.element_application = []
         character.is_alive = False
         character.charge = 0
@@ -2489,7 +2489,7 @@ class Match(BaseModel):
             -> List[CreateObjectEventArguments]:
         """
         Action for creating objects, e.g. status, summons, supports.
-        Note some objects are not created but moved, e.g. equipments and 
+        Note some objects are not created but moved, e.g. equipment and 
         supports, for these objects, do not use this action.
         """
         player_idx = action.object_position.player_idx
@@ -2503,7 +2503,7 @@ class Match(BaseModel):
                 == ObjectPositionType.CHARACTER_STATUS:
             target_class = CharacterStatusBase
             target_list = table.characters[
-                action.object_position.character_idx].attachs
+                action.object_position.character_idx].attaches
             renew_target_list = table.characters[
                 action.object_position.character_idx].status
             character = table.characters[action.object_position.character_idx]
@@ -2582,7 +2582,7 @@ class Match(BaseModel):
             -> List[RemoveObjectEventArguments]:
         """
         Action for removing objects, e.g. status, summons, supports.
-        It supports removing equipments and supports.
+        It supports removing equipment and supports.
         """
         player_idx = action.object_position.player_idx
         table = self.player_tables[player_idx]
@@ -2593,7 +2593,7 @@ class Match(BaseModel):
         elif action.object_position.area \
                 == ObjectPositionType.CHARACTER_STATUS:
             target_list = table.characters[
-                action.object_position.character_idx].attachs
+                action.object_position.character_idx].attaches
             target_name = 'character status'
             assert table.characters[
                 action.object_position.character_idx].is_alive, (
@@ -2724,7 +2724,7 @@ class Match(BaseModel):
     def _action_move_object(self, action: MoveObjectAction) \
             -> List[MoveObjectEventArguments]:
         """
-        Action for moving objects, e.g. equipments, supports.
+        Action for moving objects, e.g. equipment, supports.
         """
         player_idx = action.object_position.player_idx
         character_idx = action.object_position.character_idx
@@ -2745,7 +2745,7 @@ class Match(BaseModel):
             current_list = table.supports
             current_name = 'support'
         elif action.object_position.area == ObjectPositionType.CHARACTER:
-            # move equipments
+            # move equipment
             character = table.characters[character_idx]
             weapon = character.weapon
             artifact = character.artifact
@@ -2789,7 +2789,7 @@ class Match(BaseModel):
                     target_name = 'support'
                 elif action.target_position.area \
                         == ObjectPositionType.CHARACTER:
-                    # quip equipments
+                    # quip equipment
                     assert (action.object_position.player_idx
                             == action.target_position.player_idx)
                     character = table.characters[
@@ -2814,7 +2814,7 @@ class Match(BaseModel):
                             f'Move object action as eqipment with type '
                             f'{current_object.type} is not implemented.'
                         )
-                    character.attachs.append(current_object)  # type: ignore
+                    character.attaches.append(current_object)  # type: ignore
                     logging.info(
                         f'player {player_idx} '
                         f'moved {current_name} {current_object.name} '
@@ -2870,7 +2870,7 @@ class Match(BaseModel):
         )]
 
     """
-    Action funtions that only used to trigger specific event
+    Action functions that only used to trigger specific event
     """
 
     def _action_use_skill(self, action: UseSkillAction) \

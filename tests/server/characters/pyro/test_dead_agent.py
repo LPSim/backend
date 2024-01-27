@@ -101,7 +101,7 @@ def test_dead_agent():
             area = ObjectPositionType.CHARACTER,
             id = talent.id
         )
-        character.attachs.append(talent)
+        character.attaches.append(talent)
     match.step()
 
     while True:

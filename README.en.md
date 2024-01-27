@@ -1,11 +1,11 @@
-# Lochfolk Prinzessin Simulator (LPSim): A Genius Invokation TCG Simulator
+# Lochfolk Prinzessin Simulator (LPSim): A Genius Invocation TCG Simulator
 
 ---
 
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 
-Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
+Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invocation 
 TCG, written with Python 3.10 using Pydantic and FastAPI. This project has
 another [frontend repository](https://github.com/LPSim/frontend) which contains 
 a frontend page to interact with this backend.
@@ -17,7 +17,7 @@ and distribution based on this project, please comply with this license.
 
 This project is for learning and communication only. The frontend is only used
 for displaying game states and debugging, and you should delete all related 
-files in 24 hours after donwloading. All related codes are open source
+files in 24 hours after downloading. All related codes are open source
 under AGPLv3 license. This project is not related to miHoYo, and all game
 materials are owned by miHoYo. This project and its code repository do not
 contain any image materials owned by miHoYo, or any non-public information
@@ -115,7 +115,7 @@ Refer to `server/deck.py` for details.
 3. Modify the `Match.config` if specific configurations are necessary.
 4. Once the decks are set, initiate the match using the `Match.start` function. 
    This initializes the match according to the configurations and decks.
-   If error occured (e.g. deck is not valid), it will return False and detailed 
+   If error occurred (e.g. deck is not valid), it will return False and detailed 
    error message.
 5. Progress through the match by employing the `Match.step` function. 
    By default, the step function will continually execute until the match 

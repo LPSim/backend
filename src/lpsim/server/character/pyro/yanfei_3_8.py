@@ -82,7 +82,7 @@ class RightOfFinalInterpretation_3_8(SkillTalent):
         mode: Literal['TEST', 'REAL'],
     ) -> DamageIncreaseValue:
         if not self.position.area == ObjectPositionType.CHARACTER:
-            # not equiped
+            # not equipped
             return value
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK

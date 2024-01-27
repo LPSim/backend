@@ -147,7 +147,7 @@ class PlayerTable(BaseModel):
 
     def get_object(self, position: ObjectPosition) -> ObjectBase | None:
         """
-        Get object by its position. If obect not exist, return None.
+        Get object by its position. If object not exist, return None.
         """
         if position.area == ObjectPositionType.TEAM_STATUS:
             for status in self.team_status:

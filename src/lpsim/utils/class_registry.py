@@ -254,7 +254,7 @@ def get_class_list_by_base_class(
 ) -> List[str]:
     """
     Get list of class names by base class and version. If the base class is a 
-    union type, class names that matchs any type in the union will be returned.
+    union type, class names that matches any type in the union will be returned.
 
     Args:
         base_class: The base class to search.

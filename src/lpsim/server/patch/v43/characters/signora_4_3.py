@@ -119,7 +119,7 @@ class SheerCold_4_3(RoundEndAttackCharacterStatus):
         self, event: CreateObjectEventArguments, match: Match
     ) -> List[RemoveObjectAction]:
         """
-        When a character attachs two status, remove status in previous.
+        When a character attaches two status, remove status in previous.
         This will only perform on Blazing Heat to avoid generating multiple
         RemoveObjectAction for same status.
         """

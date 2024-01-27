@@ -349,14 +349,14 @@ def apply_elemental_reaction(
 
 def elemental_reaction_side_effect_ver_3_4(
         reaction: ElementalReactionType, player_idx: int,
-        charator_idx: int) -> CreateObjectAction | None:
+        character_idx: int) -> CreateObjectAction | None:
     """
     Apply side effect of elemental reaction. 
     """
     if reaction == ElementalReactionType.FROZEN:
         position = ObjectPosition(
             player_idx = player_idx,
-            character_idx = charator_idx,
+            character_idx = character_idx,
             area = ObjectPositionType.CHARACTER_STATUS,
             id = -1,
         )
@@ -414,7 +414,7 @@ def elemental_reaction_side_effect_ver_3_4(
 
 def elemental_reaction_side_effect_ver_3_3(
         reaction: ElementalReactionType, player_idx: int,
-        charator_idx: int) -> CreateObjectAction | None:
+        character_idx: int) -> CreateObjectAction | None:
     """
     Apply side effect of elemental reaction. In 3.3, only quicken is different.
     """
@@ -430,18 +430,18 @@ def elemental_reaction_side_effect_ver_3_3(
             object_arguments = { 'version': '3.3' }
         )
     return elemental_reaction_side_effect_ver_3_4(
-        reaction, player_idx, charator_idx
+        reaction, player_idx, character_idx
     )
 
 
 def elemental_reaction_side_effect(
         reaction: ElementalReactionType, player_idx: int,
-        charator_idx: int, version: Literal['3.3', '3.4'] = '3.4'
+        character_idx: int, version: Literal['3.3', '3.4'] = '3.4'
 ) -> CreateObjectAction | None:
     if version == '3.3':
         return elemental_reaction_side_effect_ver_3_3(
-            reaction, player_idx, charator_idx
+            reaction, player_idx, character_idx
         )
     return elemental_reaction_side_effect_ver_3_4(
-        reaction, player_idx, charator_idx
+        reaction, player_idx, character_idx
     )

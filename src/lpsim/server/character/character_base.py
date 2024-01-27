@@ -350,7 +350,7 @@ class AOESkillBase(SkillBase):
     """
     Base class that deals AOE damage. Can inherit this class after previous
     classes to do AOE attack. It will attack active character damage+element, 
-    back chractor back_damage_piercing.
+    back character back_damage_piercing.
     """
     back_damage: int
 
@@ -511,7 +511,7 @@ class TalentBase(CardBase):
         Act the talent. will place it into talent area.
         When other talent is equipped, remove the old one.
         For subclasses, inherit this and add other actions (e.g. trigger
-        correcponding skills)
+        corresponding skills)
         """
         assert target is not None
         ret: List[Actions] = []
@@ -648,11 +648,11 @@ class CharacterBase(ObjectBase):
     is_alive: bool = True
 
     # objects attached to the character, including equips and character status
-    attachs: List[
+    attaches: List[
         CharacterStatusBase | WeaponBase | ArtifactBase | TalentBase] = []
 
-    @validator('attachs', each_item = True, pre = True)
-    def parse_attachs(cls, v):
+    @validator('attaches', each_item = True, pre = True)
+    def parse_attaches(cls, v):
         obj = get_instance(
             CharacterStatusBase | WeaponBase | ArtifactBase | TalentBase, v)
         return obj
@@ -705,7 +705,7 @@ class CharacterBase(ObjectBase):
         Get all status of the character.
         """
         return [
-            x for x in self.attachs if isinstance(x, CharacterStatusBase)
+            x for x in self.attaches if isinstance(x, CharacterStatusBase)
         ]
 
     @property
@@ -713,7 +713,7 @@ class CharacterBase(ObjectBase):
         """
         Get weapon of the character.
         """
-        for x in self.attachs:
+        for x in self.attaches:
             if isinstance(x, WeaponBase):
                 return x
         return None
@@ -723,7 +723,7 @@ class CharacterBase(ObjectBase):
         """
         Get artifact of the character.
         """
-        for x in self.attachs:
+        for x in self.attaches:
             if isinstance(x, ArtifactBase):
                 return x
         return None
@@ -733,7 +733,7 @@ class CharacterBase(ObjectBase):
         """
         Get talent of the character.
         """
-        for x in self.attachs:
+        for x in self.attaches:
             if isinstance(x, TalentBase):
                 return x
         return None
@@ -747,9 +747,9 @@ class CharacterBase(ObjectBase):
         assert equip_type in [
             ObjectType.WEAPON, ObjectType.ARTIFACT, ObjectType.TALENT
         ]
-        for idx, obj in enumerate(self.attachs):
+        for idx, obj in enumerate(self.attaches):
             if obj.type == equip_type:
-                ret = self.attachs.pop(idx)
+                ret = self.attaches.pop(idx)
                 assert isinstance(ret, WeaponBase | ArtifactBase | TalentBase)
                 return ret
         raise AssertionError('Equip not found')
@@ -790,12 +790,12 @@ class CharacterBase(ObjectBase):
         result: List[ObjectBase] = [self]
         for skill in self.skills:
             result.append(skill)
-        result += self.attachs
+        result += self.attaches
         return result
 
     def get_object(self, position: ObjectPosition) -> ObjectBase | None:
         """
-        Get object by its position. If obect not exist, return None.
+        Get object by its position. If object not exist, return None.
         """
         if position.area == ObjectPositionType.CHARACTER_STATUS:
             for status in self.status:

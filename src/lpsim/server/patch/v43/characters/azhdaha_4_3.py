@@ -135,7 +135,7 @@ class StoneFacetsElementalAbsorption_4_3(CharacterStatusBase):
                 or dmg.damage_elemental_type == self.current_damage_element
             ):
                 # not damage, or elemental type not right, or currently 
-                # abosrbed this element, do nothing
+                # absorbed this element, do nothing
                 return []
             crystallization_status = None
             for s in match.player_tables[

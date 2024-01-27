@@ -140,7 +140,7 @@ class HavocObliteration(ElementalBurstBase, AttachRiptideWhenSkillEnd):
 class TideWithholder(PassiveSkillBase):
     """
     Only generate Ranged Stance at game start, and generate riptide event
-    handler for system. status swicth will be controlled by two status 
+    handler for system. status switch will be controlled by two status 
     themself.
     """
     name: Literal['Tide Withholder'] = 'Tide Withholder'

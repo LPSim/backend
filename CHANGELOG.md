@@ -24,7 +24,7 @@ of the game, and the last number is the patch version of this project.
   talents.
 - #2 Dunyarzad draw card effect will be trigger when it is covered by the new 
   support.
-- #35 Equipments will always trigger earlier than character status.
+- #35 Equipment will always trigger earlier than character status.
 - Some wrong descriptions.
 - With memory compression, reset match to a given index will break the diff
   history.
@@ -225,7 +225,7 @@ Happy New Year 2024! New year comes in coding time!
 - Move template files to `templates` folder.
 - Define `AllCharacterFoodCard` for foods that will effect all characters.
 - Now `CostLabels` contains `EQUIPMENT` and `EVENT` enum, to represent 
-  equipments (Weapons, Artifacts, most Talent cards) and event cards (Most
+  equipment (Weapons, Artifacts, most Talent cards) and event cards (Most
   normal event cards, Arcane-legend cards, and some talents).
 - New `FactionType` is added for future characters.
 - `ChangeUsageAction` removes `change_type`, it only supports change type of
@@ -248,7 +248,7 @@ Happy New Year 2024! New year comes in coding time!
 - Now `desc` for a class means description hints for the class, e.g. with 
   talent activated, descriptions of some class will change. `desc` is a Literal
   now and default contains empty string. If a class has hints, add more strings
-  into it, and modify `desc` when situation matchs. When `desc` is set, its
+  into it, and modify `desc` when situation matches. When `desc` is set, its
   corresponding descriptions should also be valid. Refer to Sucrose's Large
   Wind Spirit and desc_class for more details.
 - #6 Now HTTPServer will send detailed error about deck in `/deck` when deck is 
@@ -313,7 +313,7 @@ Happy New Year 2024! New year comes in coding time!
     - The Starry Skies Their Flowers Rain
     - Discretionary Supplement
     - All Things Are of the Earth
-  - Equipments
+  - Equipment
     - Ocean-Hued Clam
     - Shadow of the Sand King
   - Supports
@@ -364,7 +364,7 @@ Happy New Year 2024! New year comes in coding time!
 - Histories by action level, now important actions will generate a history,
   and frontend can see what happened during two requests.
 - Re-create mode is added to Match, in this mode, all randomness is removed,
-  which can be used to re-create existing matchs.
+  which can be used to re-create existing matches.
 - Add `Match.last_action` and `Match.action_info` to get information for 
   frontend.
 - Skill prediction support is added. When it is player's turn, regardless of 
@@ -401,7 +401,7 @@ Happy New Year 2024! New year comes in coding time!
     - Stalwart and True
     - Gales of Reverie
     - Beneficient
-  - Equipments
+  - Equipment
     - MoonPiercer
     - Crown of Watatsumi
   - Supports

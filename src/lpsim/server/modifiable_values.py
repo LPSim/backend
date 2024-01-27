@@ -149,7 +149,7 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         makes damages by using skills. This function checks if the object
         with given object_position is the corresponding character using skill.
 
-        If object position is on certain character, i.e. equipments or 
+        If object position is on certain character, i.e. equipment or 
         character status, the character should match damage source. Otherwise,
         the active character should be the damage source.
 
@@ -199,11 +199,11 @@ class DamageElementEnhanceValue(ModifiableValueBase):
         ignore_piercing: bool = True
     ) -> bool:
         """
-        Most objects modifing damage only when current character
+        Most objects modifying damage only when current character
         receives damages. This function checks if the object with given
         object_position is the corresponding character receiving damage.
 
-        If object position is on certain character, i.e. equipments or 
+        If object position is on certain character, i.e. equipment or 
         character status, the character should match damage target. Otherwise,
         the active character should be the damage target.
 
