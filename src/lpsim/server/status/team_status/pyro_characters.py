@@ -4,25 +4,30 @@ from ....utils.class_registry import register_class
 
 from ...struct import Cost
 
-from ...modifiable_values import (
-    DamageDecreaseValue, DamageIncreaseValue, DamageValue
-)
+from ...modifiable_values import DamageDecreaseValue, DamageIncreaseValue, DamageValue
 
 from ...consts import (
-    DamageElementalType, DamageType, IconType, ObjectPositionType, SkillType
+    DamageElementalType,
+    DamageType,
+    IconType,
+    ObjectPositionType,
+    SkillType,
 )
 
 from ...action import MakeDamageAction, RemoveObjectAction
 
 from ...event import MakeDamageEventArguments, SkillEndEventArguments
 from .base import (
-    DefendTeamStatus, ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
+    DefendTeamStatus,
+    ExtraAttackTeamStatus,
+    RoundTeamStatus,
+    UsageTeamStatus,
 )
 
 
 class SparksNSplash_3_4(UsageTeamStatus):
     name: Literal["Sparks 'n' Splash"] = "Sparks 'n' Splash"
-    version: Literal['3.4'] = '3.4'
+    version: Literal["3.4"] = "3.4"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -34,33 +39,40 @@ class SparksNSplash_3_4(UsageTeamStatus):
         When attached character use skill, then damage itself.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True, 
-            target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not character use skill, not modify
             return []
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         if self.usage > 0:  # pragma: no branch
             self.usage -= 1
-            return [MakeDamageAction(
-                damage_value_list = [DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = active_character.position,
-                    damage = 2,
-                    damage_elemental_type = DamageElementalType.PYRO,
-                    cost = Cost()
-                )]
-            )]
+            return [
+                MakeDamageAction(
+                    damage_value_list=[
+                        DamageValue(
+                            position=self.position,
+                            damage_type=DamageType.DAMAGE,
+                            target_position=active_character.position,
+                            damage=2,
+                            damage_elemental_type=DamageElementalType.PYRO,
+                            cost=Cost(),
+                        )
+                    ]
+                )
+            ]
         else:
             return []  # pragma: no cover
 
 
 class InspirationField_3_3(RoundTeamStatus):
-    name: Literal['Inspiration Field'] = 'Inspiration Field'
-    desc: Literal['', 'talent'] = ''
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Inspiration Field"] = "Inspiration Field"
+    desc: Literal["", "talent"] = ""
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -70,30 +82,30 @@ class InspirationField_3_3(RoundTeamStatus):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.talent_activated:
-            self.desc = 'talent'
+            self.desc = "talent"
 
-    def renew(self, new_status: 'InspirationField_3_3') -> None:
+    def renew(self, new_status: "InspirationField_3_3") -> None:
         super().renew(new_status)
         if new_status.talent_activated:
             self.talent_activated = True
-            self.desc = 'talent'
+            self.desc = "talent"
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If character HP greater than 7, or talent activated, increase damage
         by 2
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
             # not our character use skill, do nothing
             return value
         character = match.player_tables[value.position.player_idx].characters[
-            value.position.character_idx]
+            value.position.character_idx
+        ]
         if not self.talent_activated and character.hp < 7:
             # no talent and hp less than 7, do nothing
             return value
@@ -110,30 +122,32 @@ class InspirationField_3_3(RoundTeamStatus):
         if self.position.player_idx != event.action.position.player_idx:
             # not our character, do nothing
             return []
-        character = match.player_tables[
-            event.action.position.player_idx].characters[
-                event.action.position.character_idx]
+        character = match.player_tables[event.action.position.player_idx].characters[
+            event.action.position.character_idx
+        ]
         if character.hp > 6:
             # HP greater than 6, do nothing
             return []
         # heal this character by 2
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -2,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost()
-                )
-            ],
-        )]
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-2,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
+                    )
+                ],
+            )
+        ]
 
 
 class AurousBlaze_3_3(RoundTeamStatus, ExtraAttackTeamStatus):
-    name: Literal['Aurous Blaze'] = 'Aurous Blaze'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Aurous Blaze"] = "Aurous Blaze"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -150,17 +164,16 @@ class AurousBlaze_3_3(RoundTeamStatus, ExtraAttackTeamStatus):
         if skill used by self player but not yoimiya, make damage to opponent
         active character.
         """
-        character = match.player_tables[
-            self.position.player_idx].get_active_character()
-        if character.name == 'Yoimiya':
+        character = match.player_tables[self.position.player_idx].get_active_character()
+        if character.name == "Yoimiya":
             # yoimiya use skill
             return []
         return super().event_handler_SKILL_END(event, match)
 
 
 class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
-    name: Literal['Pyronado'] = 'Pyronado'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Pyronado"] = "Pyronado"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -174,15 +187,15 @@ class Pyronado_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         skill = match.get_object(event.action.position)
-        if skill.name == 'Pyronado':
+        if skill.name == "Pyronado":
             # Xiangling use burst Pyronado
             return []
         return super().event_handler_SKILL_END(event, match)
 
 
 class FierySanctumField_4_1(DefendTeamStatus):
-    name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Fiery Sanctum Field"] = "Fiery Sanctum Field"
+    version: Literal["4.1"] = "4.1"
     usage: int = 1
     max_usage: int = 1
     min_damage_to_trigger: int = 1
@@ -195,20 +208,14 @@ class FierySanctumField_4_1(DefendTeamStatus):
         Find first alive and standby dehya. If not found, return -1.
         """
         characters = match.player_tables[self.position.player_idx].characters
-        active_idx = match.player_tables[
-            self.position.player_idx].active_character_idx
+        active_idx = match.player_tables[self.position.player_idx].active_character_idx
         for cidx, character in enumerate(characters):
-            if (
-                character.name == 'Dehya'
-                and character.is_alive
-                and cidx != active_idx
-            ):
+            if character.name == "Dehya" and character.is_alive and cidx != active_idx:
                 return cidx
         return -1
 
     def value_modifier_DAMAGE_DECREASE(
-        self, value: DamageDecreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageDecreaseValue:
         """
         Check if have alive dehya on standby, if not, no effect.
@@ -235,31 +242,31 @@ class FierySanctumField_4_1(DefendTeamStatus):
             # check if should attack dehya
             dehya_idx = self._find_dehya(match)
             assert dehya_idx != -1
-            dehya = match.player_tables[
-                self.position.player_idx].characters[dehya_idx]
-            if (
-                dehya.hp >= 7
-                and dehya.is_alive
-            ):
+            dehya = match.player_tables[self.position.player_idx].characters[dehya_idx]
+            if dehya.hp >= 7 and dehya.is_alive:
                 # after shield triggered, dehya has at least 7 hp and alive,
                 # make 1 piercing damage to dehya
-                ret.append(MakeDamageAction(
-                    damage_value_list = [
-                        DamageValue(
-                            position = self.position,
-                            target_position = dehya.position,
-                            damage = 1,
-                            damage_type = DamageType.DAMAGE,
-                            damage_elemental_type 
-                            = DamageElementalType.PIERCING,
-                            cost = Cost(),
-                        )
-                    ]
-                ))
+                ret.append(
+                    MakeDamageAction(
+                        damage_value_list=[
+                            DamageValue(
+                                position=self.position,
+                                target_position=dehya.position,
+                                damage=1,
+                                damage_type=DamageType.DAMAGE,
+                                damage_elemental_type=DamageElementalType.PIERCING,
+                                cost=Cost(),
+                            )
+                        ]
+                    )
+                )
         return ret + super().event_handler_MAKE_DAMAGE(event, match)
 
 
 register_class(
-    SparksNSplash_3_4 | InspirationField_3_3 | AurousBlaze_3_3 | Pyronado_3_3 
+    SparksNSplash_3_4
+    | InspirationField_3_3
+    | AurousBlaze_3_3
+    | Pyronado_3_3
     | FierySanctumField_4_1
 )

@@ -7,19 +7,28 @@ from ...summon.base import AttackerSummonBase
 from ...modifiable_values import CostValue, DamageValue
 from ...event import RoundPrepareEventArguments
 
-from ...action import (
-    Actions, CreateObjectAction, MakeDamageAction
-)
+from ...action import Actions, CreateObjectAction, MakeDamageAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DamageType, 
-    DieColor, ElementType, FactionType, ObjectPositionType, PlayerActionLabels,
-    WeaponType
+    ELEMENT_TO_DAMAGE_TYPE,
+    CostLabels,
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    PlayerActionLabels,
+    WeaponType,
 )
 from ..character_base import (
-    CreateStatusPassiveSkill, ElementalBurstBase, ElementalNormalAttackBase, 
-    ElementalSkillBase, CharacterBase, TalentBase
+    CreateStatusPassiveSkill,
+    ElementalBurstBase,
+    ElementalNormalAttackBase,
+    ElementalSkillBase,
+    CharacterBase,
+    TalentBase,
 )
 
 
@@ -27,8 +36,8 @@ from ..character_base import (
 
 
 class ChainsOfWardingThunder_3_7(AttackerSummonBase):
-    name: Literal['Chains of Warding Thunder'] = 'Chains of Warding Thunder'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Chains of Warding Thunder"] = "Chains of Warding Thunder"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
@@ -46,7 +55,7 @@ class ChainsOfWardingThunder_3_7(AttackerSummonBase):
         return []
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         When increase_cost_valid, enemy perform character switch will increase
@@ -63,7 +72,7 @@ class ChainsOfWardingThunder_3_7(AttackerSummonBase):
             return value
         # add 1 cost
         value.cost.any_dice_number += 1
-        if mode == 'REAL':
+        if mode == "REAL":
             self.increase_cost_valid = False
         return value
 
@@ -72,27 +81,24 @@ class ChainsOfWardingThunder_3_7(AttackerSummonBase):
 
 
 class RockPaperScissorsCombo(ElementalSkillBase):
-    name: Literal['Rock-Paper-Scissors Combo'] = 'Rock-Paper-Scissors Combo'
+    name: Literal["Rock-Paper-Scissors Combo"] = "Rock-Paper-Scissors Combo"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 5
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=5)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create prepare skill
         """
-        return super().get_actions(match, [
-            self.create_character_status('Rock-Paper-Scissors Combo: Scissors')
-        ])
+        return super().get_actions(
+            match, [self.create_character_status("Rock-Paper-Scissors Combo: Scissors")]
+        )
 
 
 class RockPaperScissorsComboScissors(ElementalSkillBase):
     name: Literal[
-        'Rock-Paper-Scissors Combo: Scissors'
-    ] = 'Rock-Paper-Scissors Combo: Scissors'
+        "Rock-Paper-Scissors Combo: Scissors"
+    ] = "Rock-Paper-Scissors Combo: Scissors"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost()
@@ -109,17 +115,18 @@ class RockPaperScissorsComboScissors(ElementalSkillBase):
         """
         return [
             self.attack_opposite_active(
-                match, self.damage, self.damage_type,
-                [self.create_character_status(
-                    'Rock-Paper-Scissors Combo: Paper')]
+                match,
+                self.damage,
+                self.damage_type,
+                [self.create_character_status("Rock-Paper-Scissors Combo: Paper")],
             )
         ]
 
 
 class RockPaperScissorsComboPaper(ElementalSkillBase):
     name: Literal[
-        'Rock-Paper-Scissors Combo: Paper'
-    ] = 'Rock-Paper-Scissors Combo: Paper'
+        "Rock-Paper-Scissors Combo: Paper"
+    ] = "Rock-Paper-Scissors Combo: Paper"
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost()
 
@@ -139,27 +146,25 @@ class RockPaperScissorsComboPaper(ElementalSkillBase):
 
 
 class LightningLockdown(ElementalBurstBase):
-    name: Literal['Lightning Lockdown'] = 'Lightning Lockdown'
+    name: Literal["Lightning Lockdown"] = "Lightning Lockdown"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_summon('Chains of Warding Thunder')
-        ])
+        return super().get_actions(
+            match, [self.create_summon("Chains of Warding Thunder")]
+        )
 
 
 class ElectroCrystalCore(CreateStatusPassiveSkill):
-    name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
-    status_name: Literal['Electro Crystal Core'] = 'Electro Crystal Core'
+    name: Literal["Electro Crystal Core"] = "Electro Crystal Core"
+    status_name: Literal["Electro Crystal Core"] = "Electro Crystal Core"
     regenerate_when_revive: bool = False
 
 
@@ -167,16 +172,12 @@ class ElectroCrystalCore(CreateStatusPassiveSkill):
 
 
 class AbsorbingPrism_3_7(TalentBase):
-    name: Literal['Absorbing Prism']
-    version: Literal['3.7']
-    character_name: Literal['Electro Hypostasis'] = 'Electro Hypostasis'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3
-    )
+    name: Literal["Absorbing Prism"]
+    version: Literal["3.7"]
+    character_name: Literal["Electro Hypostasis"] = "Electro Hypostasis"
+    cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3)
     cost_label: int = (
-        CostLabels.CARD.value | CostLabels.TALENT.value
-        | CostLabels.EVENT.value
+        CostLabels.CARD.value | CostLabels.TALENT.value | CostLabels.EVENT.value
     )
     remove_when_used: bool = True
 
@@ -190,64 +191,62 @@ class AbsorbingPrism_3_7(TalentBase):
         Using this card will heal electro hypostasis by 3 hp and attach
         electro crystal core to it. No need to equip it.
         """
-        character = match.player_tables[
-            self.position.player_idx].get_active_character()
+        character = match.player_tables[self.position.player_idx].get_active_character()
         assert character.name == self.character_name
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = character.position,
-                        damage = -3,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = Cost(),
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-3,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
                     )
                 ],
             ),
             CreateObjectAction(
-                object_name = 'Electro Crystal Core',
-                object_position = character.position.set_area(
-                    ObjectPositionType.CHARACTER_STATUS),
-                object_arguments = {}
-            )
+                object_name="Electro Crystal Core",
+                object_position=character.position.set_area(
+                    ObjectPositionType.CHARACTER_STATUS
+                ),
+                object_arguments={},
+            ),
         ]
 
 
 class AbsorbingPrism_4_2(AbsorbingPrism_3_7):
-    version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 2
-    )
+    version: Literal["4.2"] = "4.2"
+    cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=2)
 
 
 # character base
 
 
 class ElectroHypostasis_3_7(CharacterBase):
-    name: Literal['Electro Hypostasis']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Electro Hypostasis"]
+    version: Literal["3.7"] = "3.7"
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 8
     max_charge: int = 2
     skills: List[
-        ElementalNormalAttackBase | RockPaperScissorsCombo 
-        | RockPaperScissorsComboScissors | RockPaperScissorsComboPaper
-        | LightningLockdown | ElectroCrystalCore
+        ElementalNormalAttackBase
+        | RockPaperScissorsCombo
+        | RockPaperScissorsComboScissors
+        | RockPaperScissorsComboPaper
+        | LightningLockdown
+        | ElectroCrystalCore
     ] = []
-    faction: List[FactionType] = [
-        FactionType.MONSTER
-    ]
+    faction: List[FactionType] = [FactionType.MONSTER]
     weapon_type: WeaponType = WeaponType.OTHER
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'Electro Crystal Projection',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="Electro Crystal Projection",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             RockPaperScissorsCombo(),
             RockPaperScissorsComboScissors(),
@@ -258,6 +257,8 @@ class ElectroHypostasis_3_7(CharacterBase):
 
 
 register_class(
-    ElectroHypostasis_3_7 | AbsorbingPrism_3_7 | AbsorbingPrism_4_2
+    ElectroHypostasis_3_7
+    | AbsorbingPrism_3_7
+    | AbsorbingPrism_4_2
     | ChainsOfWardingThunder_3_7
 )

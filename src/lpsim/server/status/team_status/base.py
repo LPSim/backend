@@ -5,18 +5,27 @@ from ....utils.class_registry import register_base_class
 from ...struct import Cost
 
 from ...modifiable_values import (
-    DamageDecreaseValue, DamageElementEnhanceValue, DamageValue
+    DamageDecreaseValue,
+    DamageElementEnhanceValue,
+    DamageValue,
 )
 from ..base import StatusBase
 from ...consts import (
-    ELEMENT_TO_ENCHANT_ICON, DamageElementalType, DamageType, ElementType, 
-    IconType, ObjectType, SkillType
+    ELEMENT_TO_ENCHANT_ICON,
+    DamageElementalType,
+    DamageType,
+    ElementType,
+    IconType,
+    ObjectType,
+    SkillType,
 )
 from ...action import MakeDamageAction, RemoveObjectAction, Actions
 from ...event import (
-    ChooseCharacterEventArguments, MakeDamageEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharacterEventArguments
+    ChooseCharacterEventArguments,
+    MakeDamageEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
+    SwitchCharacterEventArguments,
 )
 
 
@@ -24,6 +33,7 @@ class TeamStatusBase(StatusBase):
     """
     Base class of team status.
     """
+
     type: Literal[ObjectType.TEAM_STATUS] = ObjectType.TEAM_STATUS
     name: str
     version: str
@@ -48,6 +58,7 @@ class UsageTeamStatus(TeamStatusBase):
     If it is not a damage related status, check_should_remove should be
     called manually.
     """
+
     name: str
     version: str
     usage: int
@@ -60,9 +71,11 @@ class UsageTeamStatus(TeamStatusBase):
         should be removed.
         """
         if self.usage <= 0:
-            return [RemoveObjectAction(
-                object_position = self.position,
-            )]
+            return [
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            ]
         return []
 
     def event_handler_MAKE_DAMAGE(
@@ -76,10 +89,11 @@ class UsageTeamStatus(TeamStatusBase):
 
 class RoundTeamStatus(TeamStatusBase):
     """
-    Base class of team status that based on rounds.  It will implement the 
+    Base class of team status that based on rounds.  It will implement the
     event trigger on ROUND_PREPARE to check if run out of usages; when run out
     of usages, it will remove itself.
     """
+
     name: str
     version: str
     usage: int
@@ -92,16 +106,18 @@ class RoundTeamStatus(TeamStatusBase):
         should be removed.
         """
         if self.usage <= 0:
-            return [RemoveObjectAction(
-                object_position = self.position,
-            )]
+            return [
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            ]
         return []
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When reaching prepare, decrease usage and check whether the team 
+        When reaching prepare, decrease usage and check whether the team
         status should be removed.
         """
         self.usage -= 1
@@ -113,6 +129,7 @@ class DefendTeamStatus(UsageTeamStatus):
     Base class of defend status (purple shield), decrease damage with its rule
     when receive damage, and decrease usage by 1.
     """
+
     name: str
     version: str
     usage: int
@@ -124,13 +141,14 @@ class DefendTeamStatus(UsageTeamStatus):
     icon_type: Literal[IconType.BARRIER] = IconType.BARRIER
 
     def value_modifier_DAMAGE_DECREASE(
-            self, value: DamageDecreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageDecreaseValue:
         """
         Decrease damage with its rule, and decrease 1 usage.
         """
         if not value.is_corresponding_character_receive_damage(
-            self.position, match,
+            self.position,
+            match,
         ):
             # not this character receive damage, not modify
             return value
@@ -138,10 +156,12 @@ class DefendTeamStatus(UsageTeamStatus):
             # no usage, not modify
             return value
         new_usage = value.apply_shield(
-            self.usage, self.min_damage_to_trigger, 
-            self.max_in_one_time, self.decrease_usage_by_damage,
+            self.usage,
+            self.min_damage_to_trigger,
+            self.max_in_one_time,
+            self.decrease_usage_by_damage,
         )
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage = new_usage
         return value
 
@@ -151,6 +171,7 @@ class ShieldTeamStatus(DefendTeamStatus):
     Base class of shield status (yellow shield), decrease damage by its usage
     and decrease corresponding usage.
     """
+
     name: str
     version: str
     usage: int
@@ -178,9 +199,9 @@ class ExtraAttackTeamStatus(TeamStatusBase):
     ) -> List[MakeDamageAction]:
         """
         if skill used by self player, and is trigger skill type or trigger
-        skill type is none, then make damage to opponent player's active 
+        skill type is none, then make damage to opponent player's active
         character.
-        If self.decrease_usage is True, when make damage success, 
+        If self.decrease_usage is True, when make damage success,
         decrease usage by 1.
         """
         assert self.usage >= 0
@@ -194,21 +215,24 @@ class ExtraAttackTeamStatus(TeamStatusBase):
             # not trigger skill type
             return []
         target = match.player_tables[
-            1 - self.position.player_idx].get_active_character()
+            1 - self.position.player_idx
+        ].get_active_character()
         if self.decrease_usage:
             self.usage -= 1
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = target.position,
-                    damage = self.damage,
-                    damage_elemental_type = self.damage_elemental_type,
-                    cost = Cost(),
-                )
-            ]
-        )]
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.DAMAGE,
+                        target_position=target.position,
+                        damage=self.damage,
+                        damage_elemental_type=self.damage_elemental_type,
+                        cost=Cost(),
+                    )
+                ]
+            )
+        ]
 
 
 class ElementalInfusionTeamStatus(TeamStatusBase):
@@ -219,13 +243,13 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
     """
 
     name: Literal[
-        'Pyro Elemental Infusion',
-        'Hydro Elemental Infusion',
-        'Electro Elemental Infusion',
-        'Cryo Elemental Infusion',
-        'Anemo Elemental Infusion',
-        'Geo Elemental Infusion',
-        'Dendro Elemental Infusion',
+        "Pyro Elemental Infusion",
+        "Hydro Elemental Infusion",
+        "Electro Elemental Infusion",
+        "Cryo Elemental Infusion",
+        "Anemo Elemental Infusion",
+        "Geo Elemental Infusion",
+        "Dendro Elemental Infusion",
     ]
     infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
@@ -244,25 +268,34 @@ class ElementalInfusionTeamStatus(TeamStatusBase):
         super().__init__(*args, **kwargs)
         if self.infused_elemental_type == DamageElementalType.PHYSICAL:
             # not set elemental type manually, get it from name
-            element = self.name.split(' ')[0].upper()
+            element = self.name.split(" ")[0].upper()
             assert element in [
-                'PYRO', 'HYDRO', 'ELECTRO', 'CRYO', 'ANEMO', 'GEO', 'DENDRO'
-            ], ('In ElementalInfusion: element not set right value')
-            assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
+                "PYRO",
+                "HYDRO",
+                "ELECTRO",
+                "CRYO",
+                "ANEMO",
+                "GEO",
+                "DENDRO",
+            ], "In ElementalInfusion: element not set right value"
+            assert self.name.split(" ")[1:] == ["Elemental", "Infusion"]
             self.infused_elemental_type = DamageElementalType(element)
         if self.icon_type == IconType.ATK_UP:
             self.icon_type = ELEMENT_TO_ENCHANT_ICON[
-                ElementType(self.infused_elemental_type.value)]  # type: ignore
+                ElementType(self.infused_elemental_type.value)
+            ]  # type: ignore
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
         """
         When self use skill, change physical to corresponding element.
         NOTE: this function will not change the usage.
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):

@@ -9,28 +9,50 @@ from ...modifiable_values import CombatActionValue, CostValue, FullCostValue
 from ...dice import Dice
 
 from .base import (
-    LimitedEffectSupportBase, RoundEffectSupportBase, SupportBase, 
-    UsageWithRoundRestrictionSupportBase
+    LimitedEffectSupportBase,
+    RoundEffectSupportBase,
+    SupportBase,
+    UsageWithRoundRestrictionSupportBase,
 )
 from ...consts import (
-    DIE_COLOR_TO_ELEMENT, ELEMENT_DEFAULT_ORDER, CostLabels, 
-    DamageElementalType, DamageType, DieColor, ElementType, 
-    ELEMENT_TO_DIE_COLOR, ElementalReactionType, IconType, ObjectPositionType,
-    PlayerActionLabels, SkillType
+    DIE_COLOR_TO_ELEMENT,
+    ELEMENT_DEFAULT_ORDER,
+    CostLabels,
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    ELEMENT_TO_DIE_COLOR,
+    ElementalReactionType,
+    IconType,
+    ObjectPositionType,
+    PlayerActionLabels,
+    SkillType,
 )
 from ...struct import Cost, ObjectPosition
 from ...action import (
-    Actions, ChangeObjectUsageAction, ChargeAction, CreateDiceAction, 
-    DrawCardAction, MoveObjectAction, RemoveDiceAction, RemoveObjectAction
+    Actions,
+    ChangeObjectUsageAction,
+    ChargeAction,
+    CreateDiceAction,
+    DrawCardAction,
+    MoveObjectAction,
+    RemoveDiceAction,
+    RemoveObjectAction,
 )
 from ...event import (
-    ActionEndEventArguments, ChangeObjectUsageEventArguments, 
-    ChooseCharacterEventArguments, MoveObjectEventArguments, 
-    PlayerActionStartEventArguments, 
+    ActionEndEventArguments,
+    ChangeObjectUsageEventArguments,
+    ChooseCharacterEventArguments,
+    MoveObjectEventArguments,
+    PlayerActionStartEventArguments,
     ReceiveDamageEventArguments,
-    RemoveObjectEventArguments, RoundEndEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharacterEventArguments, UseCardEventArguments
+    RemoveObjectEventArguments,
+    RoundEndEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
+    SwitchCharacterEventArguments,
+    UseCardEventArguments,
 )
 
 
@@ -46,9 +68,9 @@ class RoundEffectCompanionBase(RoundEffectSupportBase, CompanionBase):
 
 
 class Paimon_3_3(CompanionBase):
-    name: Literal['Paimon']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 3)
+    name: Literal["Paimon"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=3)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -56,29 +78,30 @@ class Paimon_3_3(CompanionBase):
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[CreateDiceAction | RemoveObjectAction]:
         """
-        When in round prepare, increase usage. 
+        When in round prepare, increase usage.
         If usage is 3, remove self, draw a card and create a dice.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
         self.usage -= 1
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 2,
-            color = DieColor.OMNI,
-        )] + self.check_should_remove()
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=2,
+                color=DieColor.OMNI,
+            )
+        ] + self.check_should_remove()
 
 
 class Katheryne_3_6(RoundEffectCompanionBase):
-    name: Literal['Katheryne']
-    version: Literal['3.6'] = '3.6'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Katheryne"]
+    version: Literal["3.6"] = "3.6"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
 
     def value_modifier_COMBAT_ACTION(
-        self, value: CombatActionValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: CombatActionValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CombatActionValue:
         """
         Copied from team status Leave It to Me!
@@ -90,7 +113,9 @@ class Katheryne_3_6(RoundEffectCompanionBase):
             # no usage
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
+            value.position,
+            match,
+            player_idx_same=True,
         ):
             # not self switch character, do nothing
             return value
@@ -102,20 +127,20 @@ class Katheryne_3_6(RoundEffectCompanionBase):
             return value
         # self switch character, change to quick action
         value.do_combat_action = False
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage -= 1
         return value
 
 
 class Katheryne_3_3(Katheryne_3_6):
-    version: Literal['3.3']
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal["3.3"]
+    cost: Cost = Cost(any_dice_number=2)
 
 
 class Timaeus_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
-    name: Literal['Timaeus']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Timaeus"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_one_round: int = 1
     decrease_target: int = CostLabels.ARTIFACT.value
     usage: int = 2
@@ -139,7 +164,7 @@ class Timaeus_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         return []
 
     def value_modifier_FULL_COST(
-        self, value: FullCostValue, match: Any, mode: Literal['REAL', 'TEST']
+        self, value: FullCostValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> FullCostValue:
         """
         When in support, and self equip, and usage is enough, and has round
@@ -154,37 +179,39 @@ class Timaeus_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
             or decrease_number == 0
             or self.usage_this_round <= 0
         ):
-            # not in support, not self player, not target equip, not enough 
+            # not in support, not self player, not target equip, not enough
             # usage this round or total usage, do nothing
             return value
         # decrease all cost
         for _ in range(decrease_number):
             value.cost.decrease_cost(None)
-        if mode == 'REAL':
+        if mode == "REAL":
             self.usage_this_round -= 1
             self.usage -= decrease_number
         return value
 
 
 class Wagner_3_3(Timaeus_3_3):
-    name: Literal['Wagner']
+    name: Literal["Wagner"]
     decrease_target: int = CostLabels.WEAPON.value
 
 
 class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
-    name: Literal['Chef Mao']
-    version: Literal['4.1'] = '4.1'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Chef Mao"]
+    version: Literal["4.1"] = "4.1"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
     limited_usage: int = 1
 
     def _limited_action(self, match: Any) -> List[DrawCardAction]:
-        return [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            whitelist_cost_labels = CostLabels.FOOD.value,
-            draw_if_filtered_not_enough = False,
-        )]
+        return [
+            DrawCardAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                whitelist_cost_labels=CostLabels.FOOD.value,
+                draw_if_filtered_not_enough=False,
+            )
+        ]
 
     def event_handler_USE_CARD(
         self, event: UseCardEventArguments, match: Any
@@ -198,10 +225,7 @@ class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
             if self.usage <= 0:
                 # usage is 0, do nothing
                 return []
-            if (
-                event.action.card_position.player_idx 
-                != self.position.player_idx
-            ):
+            if event.action.card_position.player_idx != self.position.player_idx:
                 # not our character use card, do nothing
                 return []
             if event.card_cost.label & CostLabels.FOOD.value == 0:
@@ -209,38 +233,40 @@ class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
                 return []
             # our use food card, generate die and do limited action
             self.usage -= 1
-            return [CreateDiceAction(
-                player_idx = self.position.player_idx,
-                number = 1,
-                different = True  # use different to avoid generating OMNI
-            )] + self.do_limited_action(match)
+            return [
+                CreateDiceAction(
+                    player_idx=self.position.player_idx,
+                    number=1,
+                    different=True,  # use different to avoid generating OMNI
+                )
+            ] + self.do_limited_action(match)
         # otherwise, do normal response
         return super().event_handler_USE_CARD(event, match)
 
 
 class ChefMao_3_3(ChefMao_4_1):
-    version: Literal['3.3']
+    version: Literal["3.3"]
     limited_usage: int = 0
 
 
 class Tubby_3_3(RoundEffectCompanionBase):
-    name: Literal['Tubby']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Tubby"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1
     decrease_target: int = CostLabels.LOCATION.value
     decrease_cost: int = 2
 
-    def use(self, mode: Literal['REAL', 'TEST'], result: List[bool]) -> None:
+    def use(self, mode: Literal["REAL", "TEST"], result: List[bool]) -> None:
         """
         When used, check whether need to decrease usage.
         """
         if True in result:
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+        self, value: CostValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> CostValue:
         """
         If in support and self use target card, decrease cost by 2.
@@ -258,16 +284,14 @@ class Tubby_3_3(RoundEffectCompanionBase):
             # not decrease target
             return value
         # decrease
-        result = [
-            value.cost.decrease_cost(None) for _ in range(self.decrease_cost)
-        ]
+        result = [value.cost.decrease_cost(None) for _ in range(self.decrease_cost)]
         self.use(mode, result)
         return value
 
 
 class Timmie_3_3(CompanionBase):
-    name: Literal['Timmie']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Timmie"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
@@ -278,31 +302,25 @@ class Timmie_3_3(CompanionBase):
         When played, first reset usage to 0, then increase usage.
         """
         self.usage = 0
-        return [ChangeObjectUsageAction(
-            object_position = self.position,
-            change_usage = 1
-        )]
+        return [ChangeObjectUsageAction(object_position=self.position, change_usage=1)]
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When in round prepare, increase usage. 
+        When in round prepare, increase usage.
         If usage is 3, remove self, draw a card and create a dice.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        return [ChangeObjectUsageAction(
-            object_position = self.position,
-            change_usage = 1
-        )]
+        return [ChangeObjectUsageAction(object_position=self.position, change_usage=1)]
 
     def event_handler_CHANGE_OBJECT_USAGE(
         self, event: ChangeObjectUsageEventArguments, match: Any
     ) -> List[RemoveObjectAction | DrawCardAction | CreateDiceAction]:
         """
-        when self usage changed to 3, remove self, draw a card and create a 
+        when self usage changed to 3, remove self, draw a card and create a
         dice.
         """
         if self.position.area != ObjectPositionType.SUPPORT:
@@ -315,25 +333,25 @@ class Timmie_3_3(CompanionBase):
         if self.usage == 3:
             ret += [
                 RemoveObjectAction(
-                    object_position = self.position,
+                    object_position=self.position,
                 ),
                 DrawCardAction(
-                    player_idx = self.position.player_idx,
-                    number = 1,
-                    draw_if_filtered_not_enough = True,
+                    player_idx=self.position.player_idx,
+                    number=1,
+                    draw_if_filtered_not_enough=True,
                 ),
                 CreateDiceAction(
-                    player_idx = self.position.player_idx,
-                    number = 1,
-                    color = DieColor.OMNI,
+                    player_idx=self.position.player_idx,
+                    number=1,
+                    color=DieColor.OMNI,
                 ),
             ]
         return ret
 
 
 class Liben_3_3(CompanionBase):
-    name: Literal['Liben']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Liben"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
@@ -343,15 +361,14 @@ class Liben_3_3(CompanionBase):
         self.usage = 0
         return []
 
-    def _sort_colors(
-            self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
+    def _sort_colors(self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
         """
         Sort colors. Omni always last, others has two keys, 1. number of
-        this color, 2. default order. 
-        Return: List[Tuple[number, default_order, color]]. For Omni, the 
+        this color, 2. default order.
+        Return: List[Tuple[number, default_order, color]]. For Omni, the
         default order is filled with 0.
         """
-        colors_dict: Dict[DieColor, int] = { DieColor.OMNI: 0 }
+        colors_dict: Dict[DieColor, int] = {DieColor.OMNI: 0}
         for element in ELEMENT_DEFAULT_ORDER:
             colors_dict[ELEMENT_TO_DIE_COLOR[element]] = 0
         for color in colors:
@@ -366,13 +383,15 @@ class Liben_3_3(CompanionBase):
             if color == DieColor.OMNI:
                 omni_num = colors_dict[color]
                 continue
-            colors_lists.append((
-                colors_dict[color], 
-                ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]), 
-                color
-            ))
+            colors_lists.append(
+                (
+                    colors_dict[color],
+                    ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]),
+                    color,
+                )
+            )
         # number desc, default order asc
-        colors_lists.sort(key = lambda x: (-x[0], x[1]))
+        colors_lists.sort(key=lambda x: (-x[0], x[1]))
         if omni_num > 0:
             colors_lists.append((omni_num, 0, DieColor.OMNI))
         return colors_lists
@@ -400,16 +419,18 @@ class Liben_3_3(CompanionBase):
         # only collect dice if usage is not full
         collect_order = color_order[: self.max_usage - self.usage]
         self.usage += len(collect_order)
-        return [RemoveDiceAction(
-            player_idx = self.position.player_idx,
-            dice_idxs = dice.colors_to_idx(collect_order)
-        )]
+        return [
+            RemoveDiceAction(
+                player_idx=self.position.player_idx,
+                dice_idxs=dice.colors_to_idx(collect_order),
+            )
+        ]
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[CreateDiceAction | DrawCardAction | RemoveObjectAction]:
         """
-        If this card has collected 3 Elemental Dice, draw 2 cards and create 
+        If this card has collected 3 Elemental Dice, draw 2 cards and create
         Omni Element x2, then discard this card.'
         """
         if self.position.area != ObjectPositionType.SUPPORT:
@@ -418,26 +439,26 @@ class Liben_3_3(CompanionBase):
         if self.usage != self.max_usage:
             # not enough dice collected
             return []
-        return [ 
+        return [
             CreateDiceAction(
-                player_idx = self.position.player_idx,
-                number = 2,
-                color = DieColor.OMNI,
+                player_idx=self.position.player_idx,
+                number=2,
+                color=DieColor.OMNI,
             ),
             DrawCardAction(
-                player_idx = self.position.player_idx,
-                number = 2,
-                draw_if_filtered_not_enough = True
+                player_idx=self.position.player_idx,
+                number=2,
+                draw_if_filtered_not_enough=True,
             ),
             RemoveObjectAction(
-                object_position = self.position,
+                object_position=self.position,
             ),
         ]
 
 
 class ChangTheNinth_3_3(CompanionBase):
-    name: Literal['Chang the Ninth']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Chang the Ninth"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
@@ -466,10 +487,9 @@ class ChangTheNinth_3_3(CompanionBase):
             # heal, do nothing
             return []
         if (
-            event.final_damage.damage_elemental_type not in [
-                DamageElementalType.PHYSICAL, DamageElementalType.PIERCING]
-            and event.final_damage.element_reaction 
-            == ElementalReactionType.NONE
+            event.final_damage.damage_elemental_type
+            not in [DamageElementalType.PHYSICAL, DamageElementalType.PIERCING]
+            and event.final_damage.element_reaction == ElementalReactionType.NONE
         ):
             # not physical piercing and not elemental reaction, do nothing
             return []
@@ -481,7 +501,7 @@ class ChangTheNinth_3_3(CompanionBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[DrawCardAction | RemoveObjectAction]:
         """
-        If inspiration got, increase usage. If usage receives max_usage, 
+        If inspiration got, increase usage. If usage receives max_usage,
         remove self and draw two cards.
         """
         if self.inspiration_got:
@@ -491,28 +511,28 @@ class ChangTheNinth_3_3(CompanionBase):
             # remove self and draw two cards
             return [
                 RemoveObjectAction(
-                    object_position = self.position,
+                    object_position=self.position,
                 ),
                 DrawCardAction(
-                    player_idx = self.position.player_idx,
-                    number = 2,
-                    draw_if_filtered_not_enough = True
+                    player_idx=self.position.player_idx,
+                    number=2,
+                    draw_if_filtered_not_enough=True,
                 ),
             ]
         return []
 
 
 class Ellin_3_3(CreateSystemEventHandlerObject, RoundEffectCompanionBase):
-    name: Literal['Ellin']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Ellin"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 0
     max_usage_per_round: int = 1
 
-    handler_name: str = 'Ellin'
+    handler_name: str = "Ellin"
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+        self, value: CostValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> CostValue:
         """
         When a skill id is recorded, and has usage, decrease cost.
@@ -521,11 +541,13 @@ class Ellin_3_3(CreateSystemEventHandlerObject, RoundEffectCompanionBase):
             self.position.area != ObjectPositionType.SUPPORT
             or self.usage <= 0
             or value.position.player_idx != self.position.player_idx
-            or value.cost.label & (
+            or value.cost.label
+            & (
                 CostLabels.NORMAL_ATTACK.value
                 | CostLabels.ELEMENTAL_SKILL.value
                 | CostLabels.ELEMENTAL_BURST.value
-            ) == 0
+            )
+            == 0
         ):
             # no usage, not self player or not skill
             return value
@@ -535,15 +557,15 @@ class Ellin_3_3(CreateSystemEventHandlerObject, RoundEffectCompanionBase):
             return value
         # decrease
         if value.cost.decrease_cost(value.cost.elemental_dice_color):
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
 
 class IronTongueTian_3_3(CompanionBase):
-    name: Literal['Iron Tongue Tian']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    name: Literal["Iron Tongue Tian"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(any_dice_number=2)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -562,60 +584,65 @@ class IronTongueTian_3_3(CompanionBase):
             if c.is_alive and c.charge < c.max_charge:
                 assert self.usage > 0
                 self.usage -= 1
-                return [ChargeAction(
-                    player_idx = c.position.player_idx,
-                    character_idx = c.position.character_idx,
-                    charge = 1,
-                )] + self.check_should_remove()
+                return [
+                    ChargeAction(
+                        player_idx=c.position.player_idx,
+                        character_idx=c.position.character_idx,
+                        charge=1,
+                    )
+                ] + self.check_should_remove()
         return []
 
 
 class LiuSu_3_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
-    name: Literal['Liu Su']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Liu Su"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 2
     max_usage_one_round: int = 1
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
-    def charge(self, character: Any) -> List[ChargeAction 
-                                             | RemoveObjectAction]:
+    def charge(self, character: Any) -> List[ChargeAction | RemoveObjectAction]:
         """
         If this character is our character and has no energy, charge it.
         """
         if (
             self.position.area == ObjectPositionType.SUPPORT
             and character.position.player_idx == self.position.player_idx
-            and character.charge == 0 
+            and character.charge == 0
             and self.has_usage()
         ):
             # in support, and our character, and no energy
             self.use()
-            return [ChargeAction(
-                player_idx = character.position.player_idx,
-                character_idx = character.position.character_idx,
-                charge = 1,
-            )] + self.check_should_remove()
+            return [
+                ChargeAction(
+                    player_idx=character.position.player_idx,
+                    character_idx=character.position.character_idx,
+                    charge=1,
+                )
+            ] + self.check_should_remove()
         return []
 
     def event_handler_SWITCH_CHARACTER(
         self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[ChargeAction | RemoveObjectAction]:
         character = match.player_tables[event.action.player_idx].characters[
-            event.action.character_idx]
+            event.action.character_idx
+        ]
         return self.charge(character)
 
     def event_handler_CHOOSE_CHARACTER(
         self, event: ChooseCharacterEventArguments, match: Any
     ) -> List[ChargeAction | RemoveObjectAction]:
         character = match.player_tables[event.action.player_idx].characters[
-            event.action.character_idx]
+            event.action.character_idx
+        ]
         return self.charge(character)
 
 
 class Hanachirusato_3_7(CompanionBase):
-    name: Literal['Hanachirusato']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Hanachirusato"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost()
     usage: int = 0
     max_usage: int = 3
@@ -640,7 +667,7 @@ class Hanachirusato_3_7(CompanionBase):
         return []
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+        self, value: CostValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> CostValue:
         """
         When in support, and self use target card, decrease cost by 2.
@@ -663,7 +690,7 @@ class Hanachirusato_3_7(CompanionBase):
             value.cost.decrease_cost(None),
         ]
         if True in result:
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.effect_triggered = True
         return value
 
@@ -673,15 +700,17 @@ class Hanachirusato_3_7(CompanionBase):
         if self.position.area == ObjectPositionType.SUPPORT:
             # in support, check if effect triggered. If so, remove self.
             if self.effect_triggered:
-                return [RemoveObjectAction(
-                    object_position = self.position,
-                )]
+                return [
+                    RemoveObjectAction(
+                        object_position=self.position,
+                    )
+                ]
         return super().event_handler_MOVE_OBJECT(event, match)
 
 
 class KidKujirai_3_7(CompanionBase):
-    name: Literal['Kid Kujirai']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Kid Kujirai"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost()
     usage: int = 0
     icon_type: Literal[IconType.NONE] = IconType.NONE
@@ -696,45 +725,50 @@ class KidKujirai_3_7(CompanionBase):
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
             return []
-        ret: List[CreateDiceAction | MoveObjectAction 
-                  | RemoveObjectAction] = []
-        ret.append(CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = DieColor.OMNI,
-        ))
+        ret: List[CreateDiceAction | MoveObjectAction | RemoveObjectAction] = []
+        ret.append(
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                color=DieColor.OMNI,
+            )
+        )
         opposite = match.player_tables[1 - self.position.player_idx].supports
         max_number = match.config.max_support_number
         if len(opposite) >= max_number:
             # opposite side support is full, remove self
-            ret.append(RemoveObjectAction(
-                object_position = self.position,
-            ))
+            ret.append(
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            )
         else:
             # opposite side support is not full, move to opposite
-            ret.append(MoveObjectAction(
-                object_position = self.position,
-                target_position = ObjectPosition(
-                    player_idx = 1 - self.position.player_idx,
-                    area = ObjectPositionType.SUPPORT,
-                    id = self.position.id
-                ),
-            ))
+            ret.append(
+                MoveObjectAction(
+                    object_position=self.position,
+                    target_position=ObjectPosition(
+                        player_idx=1 - self.position.player_idx,
+                        area=ObjectPositionType.SUPPORT,
+                        id=self.position.id,
+                    ),
+                )
+            )
         return ret
 
 
 class Xudong_3_7(Tubby_3_3):
-    name: Literal['Xudong']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(any_dice_number = 2)
+    name: Literal["Xudong"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(any_dice_number=2)
     decrease_target: int = CostLabels.FOOD.value
     decrease_cost: int = 2
 
 
 class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
-    name: Literal['Dunyarzad']
-    version: Literal['4.1'] = '4.1'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Dunyarzad"]
+    version: Literal["4.1"] = "4.1"
+    cost: Cost = Cost(same_dice_number=1)
     decrease_target: int = CostLabels.COMPANION.value
     decrease_cost: int = 1
 
@@ -742,12 +776,14 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
     triggered: bool = False
 
     def _limited_action(self, match: Any) -> List[DrawCardAction]:
-        return [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            whitelist_cost_labels = self.decrease_target,
-            draw_if_filtered_not_enough = False,
-        )]
+        return [
+            DrawCardAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                whitelist_cost_labels=self.decrease_target,
+                draw_if_filtered_not_enough=False,
+            )
+        ]
 
     def event_handler_MOVE_OBJECT(
         self, event: MoveObjectEventArguments, match: Any
@@ -775,15 +811,15 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
         return ret
 
 
-class Dunyarzad_3_7(Dunyarzad_4_1): 
-    version: Literal['3.7']
+class Dunyarzad_3_7(Dunyarzad_4_1):
+    version: Literal["3.7"]
     limited_usage: int = 0
 
 
 class Rana_3_7(RoundEffectCompanionBase):
-    name: Literal['Rana']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Rana"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1
 
     def event_handler_SKILL_END(
@@ -791,12 +827,12 @@ class Rana_3_7(RoundEffectCompanionBase):
     ) -> List[CreateDiceAction]:
         """
         if it is in support are, and self player used a elemental skill,
-        and have usage, and have next character, generate a die with color 
+        and have usage, and have next character, generate a die with color
         of next character.
         """
         if (
             self.position.area == ObjectPositionType.SUPPORT
-            and event.action.position.player_idx == self.position.player_idx 
+            and event.action.position.player_idx == self.position.player_idx
             and event.action.skill_type == SkillType.ELEMENTAL_SKILL
             and self.usage > 0
         ):
@@ -806,23 +842,25 @@ class Rana_3_7(RoundEffectCompanionBase):
                 self.usage -= 1
                 ele_type: ElementType = table.characters[next_idx].element
                 die_color = ELEMENT_TO_DIE_COLOR[ele_type]
-                return [CreateDiceAction(
-                    player_idx = self.position.player_idx,
-                    number = 1,
-                    color = die_color,
-                )]
+                return [
+                    CreateDiceAction(
+                        player_idx=self.position.player_idx,
+                        number=1,
+                        color=die_color,
+                    )
+                ]
         return []
 
 
 class MasterZhang_3_8(RoundEffectCompanionBase):
-    name: Literal['Master Zhang']
-    version: Literal['3.8'] = '3.8'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Master Zhang"]
+    version: Literal["3.8"] = "3.8"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
     card_cost_label: int = CostLabels.WEAPON.value
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['REAL', 'TEST']
+        self, value: CostValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> CostValue:
         """
         If has usage, and self use weapon card, decrease.
@@ -844,11 +882,11 @@ class MasterZhang_3_8(RoundEffectCompanionBase):
         table = match.player_tables[self.position.player_idx]
         for character in table.characters:
             if (
-                character.weapon is not None 
+                character.weapon is not None
                 and self.card_cost_label & CostLabels.WEAPON.value > 0
-                or character.artifact is not None 
+                or character.artifact is not None
                 and self.card_cost_label & CostLabels.ARTIFACT.value > 0
-                or character.talent is not None 
+                or character.talent is not None
                 and self.card_cost_label & CostLabels.TALENT.value > 0
             ):
                 decrease_number += 1
@@ -856,15 +894,15 @@ class MasterZhang_3_8(RoundEffectCompanionBase):
         for _ in range(decrease_number):
             result.append(value.cost.decrease_cost(None))
         if True in result:
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
 
 class Setaria_4_0(CompanionBase):
-    name: Literal['Setaria']
-    version: Literal['4.0'] = '4.0'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Setaria"]
+    version: Literal["4.0"] = "4.0"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 3
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -882,23 +920,43 @@ class Setaria_4_0(CompanionBase):
             return []
         # draw a card
         self.usage -= 1
-        return [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            draw_if_filtered_not_enough = True,
-        )] + self.check_should_remove()
+        return [
+            DrawCardAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                draw_if_filtered_not_enough=True,
+            )
+        ] + self.check_should_remove()
 
 
 class YayoiNanatsuki_4_1(MasterZhang_3_8):
-    name: Literal['Yayoi Nanatsuki']
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Yayoi Nanatsuki"]
+    version: Literal["4.1"] = "4.1"
     card_cost_label: int = CostLabels.ARTIFACT.value
 
 
 register_class(
-    Paimon_3_3 | Katheryne_3_6 | Timaeus_3_3 | Wagner_3_3 | ChefMao_4_1 
-    | Tubby_3_3 | Timmie_3_3 | Liben_3_3 | ChangTheNinth_3_3 | Ellin_3_3 
-    | IronTongueTian_3_3 | LiuSu_3_3 | Hanachirusato_3_7 | KidKujirai_3_7 
-    | Xudong_3_7 | Dunyarzad_4_1 | Rana_3_7 | MasterZhang_3_8 | Setaria_4_0
-    | YayoiNanatsuki_4_1 | Dunyarzad_3_7 | Katheryne_3_3 | ChefMao_3_3
+    Paimon_3_3
+    | Katheryne_3_6
+    | Timaeus_3_3
+    | Wagner_3_3
+    | ChefMao_4_1
+    | Tubby_3_3
+    | Timmie_3_3
+    | Liben_3_3
+    | ChangTheNinth_3_3
+    | Ellin_3_3
+    | IronTongueTian_3_3
+    | LiuSu_3_3
+    | Hanachirusato_3_7
+    | KidKujirai_3_7
+    | Xudong_3_7
+    | Dunyarzad_4_1
+    | Rana_3_7
+    | MasterZhang_3_8
+    | Setaria_4_0
+    | YayoiNanatsuki_4_1
+    | Dunyarzad_3_7
+    | Katheryne_3_3
+    | ChefMao_3_3
 )

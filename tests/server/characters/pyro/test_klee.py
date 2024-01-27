@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -36,7 +39,7 @@ def test_klee():
             "skill 0 0 1",
             "skill 0 0 1",
             "TEST 1 2 10 10 2 3 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -51,33 +54,27 @@ def test_klee():
             "sw_char 1",
             "sw_char 0",
             "TEST 1 5 10 10 2 3 0",
-            "card 0 0 0 1 2"
-        ]
+            "card 0 0 0 1 2",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Venti
         character:ElectroMobMage
         Pounding Surprise*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -97,7 +94,7 @@ def test_klee():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -107,7 +104,7 @@ def test_klee():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -116,7 +113,7 @@ def test_klee():
                 sid = int(cmd[3])
                 c = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         if req.skill_idx == sid:
                             assert req.cost.total_dice_cost == c
             elif test_id == 3:
@@ -128,7 +125,7 @@ def test_klee():
                 for status, u in zip(match.player_tables[1].team_status, us):
                     assert status.usage == u
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -138,5 +135,5 @@ def test_klee():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_klee()

@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -35,7 +38,7 @@ def test_keqing():
             "TEST 4 hand 10 10",
             "skill 1 0 1 2",
             "TEST 2 p0c0 status usage",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -60,33 +63,27 @@ def test_keqing():
             "skill 1 0 1 2",
             "sw_char 1 0",
             "end",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Keqing
         character:Kaeya
         character:Fischl
         Thundering Penance*30
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 20
@@ -109,7 +106,7 @@ def test_keqing():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -119,7 +116,7 @@ def test_keqing():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -143,7 +140,7 @@ def test_keqing():
                 for table, h in zip(match.player_tables, hand):
                     assert len(table.hands) == h
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -157,7 +154,7 @@ def test_keqing_2():
     """
     This test mainly tests the following:
         1. when hands have multiple Lightning Stiletto, use skill will remove
-            all of them (to get multiple Lightning Stiletto, use Nature and 
+            all of them (to get multiple Lightning Stiletto, use Nature and
             Wisdom to put them into deck)
         2. Artifacts can decrease the cost of Lightning Stiletto, even if
             Keqing is not active character
@@ -195,7 +192,7 @@ def test_keqing_2():
             "end",
             "choose 2",
             "TEST 3 card 0 1 cannot use",
-            "end"
+            "end",
         ],
         [
             "sw_card 1",
@@ -233,34 +230,28 @@ def test_keqing_2():
             "card 3 0 13 12",
             "TEST 1 p1 hand 5",
             "skill 2 11 10 9 8",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Kaeya
         character:Keqing
         character:Fischl
         Nature and Wisdom*15
         Thunder Summoner's Crown*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -280,7 +271,7 @@ def test_keqing_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -291,14 +282,14 @@ def test_keqing_2():
                 assert len(match.player_tables[1].hands) == 5
             elif test_id == 2:
                 for req in match.requests:
-                    if req.name == 'UseCardRequest' and req.card_idx == 4:
+                    if req.name == "UseCardRequest" and req.card_idx == 4:
                         assert req.cost.total_dice_cost == 2
             elif test_id == 3:
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert req.card_idx not in [0, 1]
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -323,7 +314,7 @@ def test_keqing_freeze():
             "skill 1 9 8 7",
             "end",
             "sw_char 0 15",
-            "skill 1 14 13 12"
+            "skill 1 14 13 12",
         ],
         [
             "sw_card 1 2",
@@ -338,34 +329,28 @@ def test_keqing_freeze():
             "TEST 2 card 5 cannot use",
             "end",
             "TEST 1 card 5 can use",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Kaeya
         character:Keqing
         character:Mona
         Nature and Wisdom*15
         Thunder Summoner's Crown*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -385,7 +370,7 @@ def test_keqing_freeze():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_cmd = agent.commands[0]
@@ -396,17 +381,17 @@ def test_keqing_freeze():
             elif test_id == 1:
                 cidx = int(test_cmd.split()[3])
                 for req in match.requests:
-                    if req.name == 'UseCardRequest' and req.card_idx == cidx:
+                    if req.name == "UseCardRequest" and req.card_idx == cidx:
                         break
                 else:
-                    raise AssertionError('Request not found')
+                    raise AssertionError("Request not found")
             elif test_id == 2:
                 cidx = int(test_cmd.split()[3])
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert req.card_idx != cidx
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -416,7 +401,7 @@ def test_keqing_freeze():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_keqing()
     test_keqing_2()
     # test_keqing_freeze()

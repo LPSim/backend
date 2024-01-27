@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -26,7 +29,7 @@ def test_elec_hypo():
             "sw_char 0 0",
             "skill 1 0 1 2 3 4",
             "TEST 1 1 8 8 1 6 10",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -47,33 +50,27 @@ def test_elec_hypo():
             "TEST 5 p0c1 status empty",
             "sw_char 0 0 1",
             "sw_char 1 0",
-            "skill 1 0 1 2"
-        ]
+            "skill 1 0 1 2",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Electro Hypostasis
         character:Klee
         character:Keqing
         Absorbing Prism*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -93,7 +90,7 @@ def test_elec_hypo():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -103,28 +100,28 @@ def test_elec_hypo():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 found = set()
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         found.add(req.skill_idx)
                 assert found == set([0, 1])
             elif test_id == 3:
                 cmd = cmd.split()
                 sc = int(cmd[-1])
                 for req in match.requests:
-                    if req.name == 'SwitchCharacterRequest':
+                    if req.name == "SwitchCharacterRequest":
                         assert sc == req.cost.total_dice_cost
             elif test_id == 4:
                 assert match.current_player == 1
             elif test_id == 5:
                 assert len(match.player_tables[0].characters[1].status) == 0
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -150,7 +147,7 @@ def test_2():
             "sw_char 2 0",
             "skill 0 0 1 2",
             "skill 0 0 1 2",
-            "choose 1"
+            "choose 1",
         ],
         [
             "sw_card",
@@ -174,33 +171,27 @@ def test_2():
             "skill 2 0 1 2",
             "sw_char 0 0",
             "end",
-            "skill 1 0 1 2 3 4"
-        ]
+            "skill 1 0 1 2 3 4",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Electro Hypostasis
         character:Klee
         character:Keqing
         Absorbing Prism*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -220,7 +211,7 @@ def test_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -232,12 +223,7 @@ def test_2():
 
 def test_prepare_frozen():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 0",
-            "skill 1 0 1 2 3 4",
-            "end"
-        ],
+        ["sw_card", "choose 0", "skill 1 0 1 2 3 4", "end"],
         [
             "sw_card",
             "choose 2",
@@ -247,33 +233,27 @@ def test_prepare_frozen():
             "TEST 1 5 10 10 8 10 7",
             "end",
             "TEST 1 4 10 10 8 7 7",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Electro Hypostasis
         character:CryoMobMage
         character:Mona
         Absorbing Prism*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -293,7 +273,7 @@ def test_prepare_frozen():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -303,12 +283,12 @@ def test_prepare_frozen():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -327,7 +307,7 @@ def test_electro_bennett():
             "skill 0 0 1 2",
             "card 0 0 0 1 2 3",
             "sw_char 2 0",
-            "skill 1 0 1 2 3 4"
+            "skill 1 0 1 2 3 4",
         ],
         [
             "sw_card",
@@ -340,33 +320,27 @@ def test_electro_bennett():
             "skill 0 0 1 2",
             "sw_char 2 0",
             "TEST 1 8 10 6 4 2 3",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Bennett
         character:Maguu Kenki
         character:Electro Hypostasis
         Grand Expectation*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -386,7 +360,7 @@ def test_electro_bennett():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -396,12 +370,12 @@ def test_electro_bennett():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -413,44 +387,27 @@ def test_electro_bennett():
 
 def test_frozen_talent():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 2",
-            "skill 1 15 14 13",
-            "sw_char 1 12",
-            "skill 1 11 10 9"
-        ],
-        [
-            "sw_card",
-            "choose 0",
-            "skill 0 15 14 13",
-            "card 0 0 12 11"
-        ]
+        ["sw_card", "choose 2", "skill 1 15 14 13", "sw_char 1 12", "skill 1 11 10 9"],
+        ["sw_card", "choose 0", "skill 0 15 14 13", "card 0 0 12 11"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Electro Hypostasis
         character:Kaeya
         character:Mona
         Absorbing Prism*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -470,7 +427,7 @@ def test_frozen_talent():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -480,7 +437,7 @@ def test_frozen_talent():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_elec_hypo()
     # test_prepare_frozen()
     # test_electro_bennett()

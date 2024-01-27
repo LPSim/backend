@@ -3,8 +3,11 @@ from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from src.lpsim.server.consts import DamageElementalType
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -41,7 +44,7 @@ def test_sucrose():
             "skill 1 4 3 2",
             "end",
             "TEST 1 16 12 6 12 17 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -69,34 +72,28 @@ def test_sucrose():
             "sw_char 0 9",
             "end",
             "TEST 1 18 14 8 12 17 0",
-            "skill 1 15 14 13"
-        ]
+            "skill 1 15 14 13",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Mona
         character:Sucrose
         Chaotic Entropy*15
         Sweet Madame*15
-        '''
+        """
     )
     # change HP
     for character in deck.characters:
@@ -120,7 +117,7 @@ def test_sucrose():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -130,7 +127,7 @@ def test_sucrose():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -139,12 +136,9 @@ def test_sucrose():
                 assert len(summons) == 1
                 summon = summons[0]
                 assert isinstance(summon, LargeWindSpirit_3_3)
-                assert (
-                    summon.damage_elemental_type
-                    == DamageElementalType.HYDRO
-                )
+                assert summon.damage_elemental_type == DamageElementalType.HYDRO
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -175,7 +169,7 @@ def test_sucrose_2():
             "card 4 0 5 4 3",
             "skill 1 2 1 0",
             "end",
-            "choose 1"
+            "choose 1",
         ],
         [
             "sw_card",
@@ -196,34 +190,28 @@ def test_sucrose_2():
             "choose 0",
             "end",
             "TEST 1 10 8 0 5 0 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Mona
         character:Sucrose
         Chaotic Entropy*15
         Sweet Madame*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -243,7 +231,7 @@ def test_sucrose_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -253,12 +241,12 @@ def test_sucrose_2():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -268,5 +256,5 @@ def test_sucrose_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_sucrose()

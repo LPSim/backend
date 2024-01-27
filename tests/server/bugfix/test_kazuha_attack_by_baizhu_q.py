@@ -1,14 +1,17 @@
 import os
 from src.lpsim import MatchState
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, set_16_omni, 
-    read_from_log_json
+    check_hp,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
+    read_from_log_json,
 )
 
 
 def test_kazuha_attack_by_baizhu_q():
-    json_fname = 'test_kazuha_attack_by_baizhu_q.json'
-    json_path = os.path.join(os.path.dirname(__file__), 'jsons', json_fname)
+    json_fname = "test_kazuha_attack_by_baizhu_q.json"
+    json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
     match, agent_0, agent_1 = read_from_log_json(json_path)
     match.config.history_level = 0
     # modify hp
@@ -29,11 +32,11 @@ def test_kazuha_attack_by_baizhu_q():
             agent = agent_1
             nc = new_commands[1]
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             nc.append(agent.commands[0])
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -44,7 +47,7 @@ def test_kazuha_attack_by_baizhu_q():
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -54,5 +57,5 @@ def test_kazuha_attack_by_baizhu_q():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_kazuha_attack_by_baizhu_q()

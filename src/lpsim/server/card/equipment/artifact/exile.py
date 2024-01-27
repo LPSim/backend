@@ -14,8 +14,8 @@ from .base import RoundEffectArtifactBase
 
 class ExilesCirclet_3_3(RoundEffectArtifactBase):
     name: Literal["Exile's Circlet"]
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(any_dice_number=2)
     max_usage_per_round: int = 1
 
     def event_handler_SKILL_END(
@@ -25,10 +25,12 @@ class ExilesCirclet_3_3(RoundEffectArtifactBase):
         If self use elemental burst, charge standby characters.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTER,
-            target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_area=ObjectPositionType.CHARACTER,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not equipped, or not this character use skill
             return []
@@ -41,19 +43,19 @@ class ExilesCirclet_3_3(RoundEffectArtifactBase):
         # charge
         self.usage -= 1
         ret: List[ChargeAction] = []
-        for cid, character in enumerate(match.player_tables[
-                self.position.player_idx].characters):
-            if (
-                cid == self.position.character_idx
-                or character.is_defeated
-            ):
+        for cid, character in enumerate(
+            match.player_tables[self.position.player_idx].characters
+        ):
+            if cid == self.position.character_idx or character.is_defeated:
                 # skip self and defeated characters
                 continue
-            ret.append(ChargeAction(
-                player_idx = self.position.player_idx,
-                character_idx = cid,
-                charge = 1,
-            ))
+            ret.append(
+                ChargeAction(
+                    player_idx=self.position.player_idx,
+                    character_idx=cid,
+                    charge=1,
+                )
+            )
         return ret
 
 

@@ -10,12 +10,18 @@ from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -23,8 +29,8 @@ from ..character_base import (
 
 
 class CuileinAnbar_3_3(AttackerSummonBase):
-    name: Literal['Cuilein-Anbar'] = 'Cuilein-Anbar'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Cuilein-Anbar"] = "Cuilein-Anbar"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.DENDRO
@@ -35,11 +41,11 @@ class CuileinAnbar_3_3(AttackerSummonBase):
 
 
 class FloralBrush(ElementalSkillBase):
-    name: Literal['Floral Brush'] = 'Floral Brush'
+    name: Literal["Floral Brush"] = "Floral Brush"
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3,
+        elemental_dice_color=DieColor.DENDRO,
+        elemental_dice_number=3,
     )
     create_status_counter: int = 0
 
@@ -61,7 +67,7 @@ class FloralBrush(ElementalSkillBase):
         if event.action.object_position.player_idx != self.position.player_idx:
             # not our character
             return []
-        if event.action.object_name != 'Floral Sidewinder':
+        if event.action.object_name != "Floral Sidewinder":
             # not Floral Sidewinder
             return []
         self.create_status_counter += 1
@@ -75,33 +81,32 @@ class FloralBrush(ElementalSkillBase):
         if self.create_status_counter > 0:
             # created this round, not create
             return ret
-        character = match.player_tables[
-            self.position.player_idx].characters[self.position.character_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx
+        ]
         if character.talent is None:
             # no talent equipped
             return ret
-        return super().get_actions(match, [
-            self.create_team_status('Floral Sidewinder')
-        ])
+        return super().get_actions(
+            match, [self.create_team_status("Floral Sidewinder")]
+        )
 
 
 class TrumpCardKitty(ElementalBurstBase):
-    name: Literal['Trump-Card Kitty'] = 'Trump-Card Kitty'
+    name: Literal["Trump-Card Kitty"] = "Trump-Card Kitty"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3,
-        charge = 2,
+        elemental_dice_color=DieColor.DENDRO,
+        elemental_dice_number=3,
+        charge=2,
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_summon('Cuilein-Anbar')
-        ])
+        return super().get_actions(match, [self.create_summon("Cuilein-Anbar")])
 
 
 # Talents
@@ -110,53 +115,43 @@ class TrumpCardKitty(ElementalBurstBase):
 class FloralSidewinder_3_4(SkillTalent):
     """
     Because before using skill, the status should appear, and status need to
-    listen DAMAGE_RECEIVE event, we should modify both actions of 
+    listen DAMAGE_RECEIVE event, we should modify both actions of
     elemental skill and equipping this card.
     """
-    name: Literal['Floral Sidewinder']
-    version: Literal['3.4'] = '3.4'
-    character_name: Literal['Collei'] = 'Collei'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 4
-    )
-    skill: Literal['Floral Brush'] = 'Floral Brush'
+
+    name: Literal["Floral Sidewinder"]
+    version: Literal["3.4"] = "3.4"
+    character_name: Literal["Collei"] = "Collei"
+    cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=4)
+    skill: Literal["Floral Brush"] = "Floral Brush"
 
 
 class FloralSidewinder_3_3(FloralSidewinder_3_4):
-    version: Literal['3.3']
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3
-    )
+    version: Literal["3.3"]
+    cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
 
 
 # character base
 
 
 class Collei_3_3(CharacterBase):
-    name: Literal['Collei']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Collei"]
+    version: Literal["3.3"] = "3.3"
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        PhysicalNormalAttackBase
-        | FloralBrush | TrumpCardKitty
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.SUMERU
-    ]
+    skills: List[PhysicalNormalAttackBase | FloralBrush | TrumpCardKitty] = []
+    faction: List[FactionType] = [FactionType.SUMERU]
     weapon_type: WeaponType = WeaponType.BOW
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = "Supplicant's Bowmanship",
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Supplicant's Bowmanship",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             FloralBrush(),
-            TrumpCardKitty()
+            TrumpCardKitty(),
         ]
 
 

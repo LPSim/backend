@@ -5,19 +5,19 @@ from tests.utils_for_test import get_random_state
 import logging
 
 
-logging.basicConfig(level = logging.INFO)
+logging.basicConfig(level=logging.INFO)
 
 
-if __name__ == '__main__':
-    deck_str_1 = '''
+if __name__ == "__main__":
+    deck_str_1 = """
         default_version:4.2
         character:Baizhu
         character:Nilou
         character:Tighnari
         All Things Are of the Earth*15
         Lotus Flower Crisp*15
-    '''
-    deck_str_2 = '''
+    """
+    deck_str_2 = """
     character:Nahida@3.7
     character:Rhodeia of Loch@3.3
     character:Fischl@3.3
@@ -37,27 +37,27 @@ if __name__ == '__main__':
     Send Off@3.7
     Lotus Flower Crisp@3.3
     Magic Guide@3.3*15
-    '''
+    """
     server = HTTPServer(
-        decks = [deck_str_1, deck_str_1],
-        match_config = MatchConfig(
-            check_deck_restriction = False,
-            card_number = None,
-            max_same_card_number = None,
-            character_number = None,
-            max_round_number = 999,
-            random_first_player = False,
+        decks=[deck_str_1, deck_str_1],
+        match_config=MatchConfig(
+            check_deck_restriction=False,
+            card_number=None,
+            max_same_card_number=None,
+            character_number=None,
+            max_round_number=999,
+            random_first_player=False,
             # max_hand_size = 999,
             # recreate_mode = True,
-            history_level = 10,
+            history_level=10,
             # make_skill_prediction = True,
             # random_object_information = {
             #     'rhodeia': [
-            #         'squirrel', 'raptor', 'frog', 'squirrel', 'raptor', 
+            #         'squirrel', 'raptor', 'frog', 'squirrel', 'raptor',
             #         'frog', 'frog', 'squirrel', 'squirrel'
             #     ],
             # }
-        )
+        ),
     )
 
     # # modify hp
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     #         character.max_hp = 40
 
     # fix random seed
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     match.set_deck(server.decks)
     match.config = server.match.config
 

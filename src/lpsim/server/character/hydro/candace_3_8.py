@@ -6,11 +6,18 @@ from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -25,14 +32,10 @@ from ..character_base import (
 
 
 class SacredRiteHeronsSanctum(ElementalSkillBase):
-    name: Literal[
-        "Sacred Rite: Heron's Sanctum"] = "Sacred Rite: Heron's Sanctum"
+    name: Literal["Sacred Rite: Heron's Sanctum"] = "Sacred Rite: Heron's Sanctum"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -40,12 +43,12 @@ class SacredRiteHeronsSanctum(ElementalSkillBase):
         """
         return [
             self.charge_self(1),
-            self.create_character_status('Heron Shield'),
+            self.create_character_status("Heron Shield"),
         ]
 
 
 class HeronStrike(ElementalSkillBase):
-    name: Literal['Heron Strike'] = 'Heron Strike'
+    name: Literal["Heron Strike"] = "Heron Strike"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost()
@@ -60,51 +63,43 @@ class HeronStrike(ElementalSkillBase):
         """
         no charge, only attack
         """
-        return [
-            self.attack_opposite_active(match, self.damage, self.damage_type)
-        ]
+        return [self.attack_opposite_active(match, self.damage, self.damage_type)]
 
 
 class SacredRiteWagtailsTide(ElementalBurstBase):
-    name: Literal[
-        "Sacred Rite: Wagtail's Tide"] = "Sacred Rite: Wagtail's Tide"
+    name: Literal["Sacred Rite: Wagtail's Tide"] = "Sacred Rite: Wagtail's Tide"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_team_status('Prayer of the Crimson Crown'),
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_team_status("Prayer of the Crimson Crown"),
+            ],
+        )
 
 
 # Talents
 
 
 class TheOverflow_3_8(SkillTalent):
-    name: Literal['The Overflow']
-    version: Literal['3.8']
-    character_name: Literal['Candace'] = 'Candace'
+    name: Literal["The Overflow"]
+    version: Literal["3.8"]
+    character_name: Literal["Candace"] = "Candace"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=4, charge=2
     )
-    skill: Literal[
-        "Sacred Rite: Wagtail's Tide"
-    ] = "Sacred Rite: Wagtail's Tide"
+    skill: Literal["Sacred Rite: Wagtail's Tide"] = "Sacred Rite: Wagtail's Tide"
 
 
 class TheOverflow_4_2(TheOverflow_3_8):
-    version: Literal['4.2'] = '4.2'
+    version: Literal["4.2"] = "4.2"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
 
 
@@ -112,25 +107,25 @@ class TheOverflow_4_2(TheOverflow_3_8):
 
 
 class Candace_3_8(CharacterBase):
-    name: Literal['Candace']  # Do not set default value for character name
-    version: Literal['3.8'] = '3.8'
+    name: Literal["Candace"]  # Do not set default value for character name
+    version: Literal["3.8"] = "3.8"
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | SacredRiteHeronsSanctum 
-        | SacredRiteWagtailsTide | HeronStrike
+        PhysicalNormalAttackBase
+        | SacredRiteHeronsSanctum
+        | SacredRiteWagtailsTide
+        | HeronStrike
     ] = []
-    faction: List[FactionType] = [
-        FactionType.SUMERU
-    ]
+    faction: List[FactionType] = [FactionType.SUMERU]
     weapon_type: WeaponType = WeaponType.POLEARM
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Gleaming Spear - Guardian Stance',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Gleaming Spear - Guardian Stance",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             SacredRiteHeronsSanctum(),
             SacredRiteWagtailsTide(),

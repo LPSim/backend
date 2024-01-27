@@ -2,9 +2,7 @@ from typing import Any, List, Literal
 
 from .....utils.class_registry import register_class
 
-from ....consts import (
-    ELEMENT_TO_DIE_COLOR, ElementalReactionType, ObjectPositionType
-)
+from ....consts import ELEMENT_TO_DIE_COLOR, ElementalReactionType, ObjectPositionType
 
 from ....action import CreateDiceAction
 
@@ -18,8 +16,8 @@ class InstructorsCap_3_3(RoundEffectArtifactBase):
     # TODO electro hypostasis triggers reaction for second punch,
     # may generate dice for the next attack. Same as Chang and parametric?
     name: Literal["Instructor's Cap"]
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(any_dice_number=2)
     max_usage_per_round: int = 3
     element_reaction_triggered: bool = False
 
@@ -49,22 +47,25 @@ class InstructorsCap_3_3(RoundEffectArtifactBase):
             # no usage
             return []
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTER,
-            target_area = ObjectPositionType.SKILL
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_area=ObjectPositionType.CHARACTER,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self player use skill or not equipped
             return []
         # create die
         self.usage -= 1
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         return [
             CreateDiceAction(
-                player_idx = self.position.player_idx,
-                number = 1,
-                color = ELEMENT_TO_DIE_COLOR[character.element],
+                player_idx=self.position.player_idx,
+                number=1,
+                color=ELEMENT_TO_DIE_COLOR[character.element],
             )
         ]
 

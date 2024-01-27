@@ -6,8 +6,11 @@ from ....action import CreateDiceAction
 
 from ....event import SkillEndEventArguments
 from ....consts import (
-    ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, SkillType, 
-    WeaponType
+    ELEMENT_TO_DIE_COLOR,
+    ElementType,
+    ObjectPositionType,
+    SkillType,
+    WeaponType,
 )
 from ....struct import Cost
 from .base import RoundEffectWeaponBase
@@ -15,26 +18,26 @@ from .base import RoundEffectWeaponBase
 
 class SacrificialWeapons_3_3(RoundEffectWeaponBase):
     name: Literal[
-        'Sacrificial Fragments',
-        'Sacrificial Greatsword',
-        'Sacrificial Sword',
-        'Sacrificial Bow',
+        "Sacrificial Fragments",
+        "Sacrificial Greatsword",
+        "Sacrificial Sword",
+        "Sacrificial Bow",
     ]
-    cost: Cost = Cost(same_dice_number = 3)
-    version: Literal['3.3'] = '3.3'
+    cost: Cost = Cost(same_dice_number=3)
+    version: Literal["3.3"] = "3.3"
     weapon_type: WeaponType = WeaponType.OTHER
     max_usage_per_round: int = 1
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        if self.name == 'Sacrificial Fragments':
+        if self.name == "Sacrificial Fragments":
             self.weapon_type = WeaponType.CATALYST
-        elif self.name == 'Sacrificial Bow':
+        elif self.name == "Sacrificial Bow":
             self.weapon_type = WeaponType.BOW
-        elif self.name == 'Sacrificial Sword':
+        elif self.name == "Sacrificial Sword":
             self.weapon_type = WeaponType.SWORD
         else:
-            assert self.name == 'Sacrificial Greatsword'
+            assert self.name == "Sacrificial Greatsword"
             self.weapon_type = WeaponType.CLAYMORE
 
     def event_handler_SKILL_END(
@@ -45,9 +48,8 @@ class SacrificialWeapons_3_3(RoundEffectWeaponBase):
         """
         if not (
             self.position.area == ObjectPositionType.CHARACTER
-            and event.action.position.player_idx == self.position.player_idx 
-            and event.action.position.character_idx 
-            == self.position.character_idx
+            and event.action.position.player_idx == self.position.player_idx
+            and event.action.position.character_idx == self.position.character_idx
             and event.action.skill_type == SkillType.ELEMENTAL_SKILL
             and self.usage > 0
         ):
@@ -55,14 +57,17 @@ class SacrificialWeapons_3_3(RoundEffectWeaponBase):
             return []
         self.usage -= 1
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         ele_type: ElementType = character.element
         die_color = ELEMENT_TO_DIE_COLOR[ele_type]
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = die_color,
-        )]
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                color=die_color,
+            )
+        ]
 
 
 register_class(SacrificialWeapons_3_3)

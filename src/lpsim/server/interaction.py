@@ -8,18 +8,19 @@ class RequestBase(BaseModel):
     """
     Base class of request.
     """
-    name: Literal['RequestBase'] = 'RequestBase'
+
+    name: Literal["RequestBase"] = "RequestBase"
     player_idx: int
 
 
 class SwitchCardRequest(RequestBase):
-    name: Literal['SwitchCardRequest'] = 'SwitchCardRequest'
+    name: Literal["SwitchCardRequest"] = "SwitchCardRequest"
     card_names: List[str]
     maximum_switch_number: int = 999
 
 
 class ChooseCharacterRequest(RequestBase):
-    name: Literal['ChooseCharacterRequest'] = 'ChooseCharacterRequest'
+    name: Literal["ChooseCharacterRequest"] = "ChooseCharacterRequest"
     available_character_idxs: List[int]
 
 
@@ -33,7 +34,8 @@ class RerollDiceRequest(RequestBase):
             any number of dice to reroll, and after one reroll, the reroll
             times will decrease by 1. If it reaches 0, the request is removed.
     """
-    name: Literal['RerollDiceRequest'] = 'RerollDiceRequest'
+
+    name: Literal["RerollDiceRequest"] = "RerollDiceRequest"
     colors: List[DieColor]
     reroll_times: int
 
@@ -42,7 +44,8 @@ class SwitchCharacterRequest(RequestBase):
     """
     Request for switch character. It can be combat or quick request.
     """
-    name: Literal['SwitchCharacterRequest'] = 'SwitchCharacterRequest'
+
+    name: Literal["SwitchCharacterRequest"] = "SwitchCharacterRequest"
     active_character_idx: int
     target_character_idx: int
     dice_colors: List[DieColor]
@@ -53,7 +56,8 @@ class ElementalTuningRequest(RequestBase):
     """
     Request for elemental tuning.
     """
-    name: Literal['ElementalTuningRequest'] = 'ElementalTuningRequest'
+
+    name: Literal["ElementalTuningRequest"] = "ElementalTuningRequest"
     dice_colors: List[DieColor]
     dice_idxs: List[int]
     card_idxs: List[int]
@@ -63,14 +67,16 @@ class DeclareRoundEndRequest(RequestBase):
     """
     Request for declare round end.
     """
-    name: Literal['DeclareRoundEndRequest'] = 'DeclareRoundEndRequest'
+
+    name: Literal["DeclareRoundEndRequest"] = "DeclareRoundEndRequest"
 
 
 class UseSkillRequest(RequestBase):
     """
     Request for use skill.
     """
-    name: Literal['UseSkillRequest'] = 'UseSkillRequest'
+
+    name: Literal["UseSkillRequest"] = "UseSkillRequest"
     character_idx: int
     skill_idx: int
     dice_colors: List[DieColor]
@@ -81,7 +87,8 @@ class UseCardRequest(RequestBase):
     """
     Request for use card.
     """
-    name: Literal['UseCardRequest'] = 'UseCardRequest'
+
+    name: Literal["UseCardRequest"] = "UseCardRequest"
     card_idx: int
     dice_colors: List[DieColor]
     targets: List[ObjectPosition | MultipleObjectPosition]
@@ -92,7 +99,8 @@ class ResponseBase(BaseModel):
     """
     Base class of response.
     """
-    name: Literal['ResponseBase'] = 'ResponseBase'
+
+    name: Literal["ResponseBase"] = "ResponseBase"
     request: RequestBase
 
     @property
@@ -113,7 +121,8 @@ class SwitchCardResponse(ResponseBase):
     """
     Card indices want to switch, based on the request.
     """
-    name: Literal['SwitchCardResponse'] = 'SwitchCardResponse'
+
+    name: Literal["SwitchCardResponse"] = "SwitchCardResponse"
     request: SwitchCardRequest
     card_idxs: List[int]
 
@@ -121,7 +130,8 @@ class SwitchCardResponse(ResponseBase):
         if len(self.card_idxs) > self.request.maximum_switch_number:
             return False
         return list_unique_range_right(
-            self.card_idxs, minn = 0, maxn = len(self.request.card_names))
+            self.card_idxs, minn=0, maxn=len(self.request.card_names)
+        )
 
     @property
     def card_names(self) -> List[str]:
@@ -132,7 +142,7 @@ class SwitchCardResponse(ResponseBase):
 
 
 class ChooseCharacterResponse(ResponseBase):
-    name: Literal['ChooseCharacterResponse'] = 'ChooseCharacterResponse'
+    name: Literal["ChooseCharacterResponse"] = "ChooseCharacterResponse"
     request: ChooseCharacterRequest
     character_idx: int
 
@@ -141,21 +151,22 @@ class ChooseCharacterResponse(ResponseBase):
 
 
 class RerollDiceResponse(ResponseBase):
-    name: Literal['RerollDiceResponse'] = 'RerollDiceResponse'
+    name: Literal["RerollDiceResponse"] = "RerollDiceResponse"
     request: RerollDiceRequest
     reroll_dice_idxs: List[int]
 
     def is_valid(self, match: Any) -> bool:
         """
-        if have duplicate dice indices, or dice indices out of range, 
+        if have duplicate dice indices, or dice indices out of range,
         return False.
         """
         return list_unique_range_right(
-            self.reroll_dice_idxs, minn = 0, maxn = len(self.request.colors))
+            self.reroll_dice_idxs, minn=0, maxn=len(self.request.colors)
+        )
 
 
 class SwitchCharacterResponse(ResponseBase):
-    name: Literal['SwitchCharacterResponse'] = 'SwitchCharacterResponse'
+    name: Literal["SwitchCharacterResponse"] = "SwitchCharacterResponse"
     request: SwitchCharacterRequest
     dice_idxs: List[int]
 
@@ -164,7 +175,7 @@ class SwitchCharacterResponse(ResponseBase):
         Cost matches the request.
         """
         if not list_unique_range_right(
-            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn=0, maxn=len(self.request.dice_colors)
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
@@ -172,7 +183,7 @@ class SwitchCharacterResponse(ResponseBase):
 
 
 class ElementalTuningResponse(ResponseBase):
-    name: Literal['ElementalTuningResponse'] = 'ElementalTuningResponse'
+    name: Literal["ElementalTuningResponse"] = "ElementalTuningResponse"
     request: ElementalTuningRequest
     dice_idx: int
     card_idx: int
@@ -188,7 +199,7 @@ class ElementalTuningResponse(ResponseBase):
 
 
 class DeclareRoundEndResponse(ResponseBase):
-    name: Literal['DeclareRoundEndResponse'] = 'DeclareRoundEndResponse'
+    name: Literal["DeclareRoundEndResponse"] = "DeclareRoundEndResponse"
     request: DeclareRoundEndRequest
 
 
@@ -196,7 +207,8 @@ class UseSkillResponse(ResponseBase):
     """
     Response for use skill. Currently not support choose skill target.
     """
-    name: Literal['UseSkillResponse'] = 'UseSkillResponse'
+
+    name: Literal["UseSkillResponse"] = "UseSkillResponse"
     request: UseSkillRequest
     dice_idxs: List[int]
 
@@ -205,7 +217,7 @@ class UseSkillResponse(ResponseBase):
         Check whether the response is valid.
         """
         if not list_unique_range_right(
-            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn=0, maxn=len(self.request.dice_colors)
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
@@ -215,7 +227,7 @@ class UseSkillResponse(ResponseBase):
 
 
 class UseCardResponse(ResponseBase):
-    name: Literal['UseCardResponse'] = 'UseCardResponse'
+    name: Literal["UseCardResponse"] = "UseCardResponse"
     request: UseCardRequest
     dice_idxs: List[int]
     target: ObjectPosition | MultipleObjectPosition | None
@@ -226,7 +238,7 @@ class UseCardResponse(ResponseBase):
         """
         # dice color right
         if not list_unique_range_right(
-            self.dice_idxs, minn = 0, maxn = len(self.request.dice_colors)
+            self.dice_idxs, minn=0, maxn=len(self.request.dice_colors)
         ):
             return False
         cost_colors = [self.request.dice_colors[i] for i in self.dice_idxs]
@@ -245,13 +257,23 @@ class UseCardResponse(ResponseBase):
 
 
 Requests = (
-    SwitchCardRequest | ChooseCharacterRequest | RerollDiceRequest
-    | SwitchCharacterRequest | ElementalTuningRequest
-    | DeclareRoundEndRequest | UseSkillRequest | UseCardRequest
+    SwitchCardRequest
+    | ChooseCharacterRequest
+    | RerollDiceRequest
+    | SwitchCharacterRequest
+    | ElementalTuningRequest
+    | DeclareRoundEndRequest
+    | UseSkillRequest
+    | UseCardRequest
 )
 
 Responses = (
-    SwitchCardResponse | ChooseCharacterResponse | RerollDiceResponse
-    | SwitchCharacterResponse | ElementalTuningResponse
-    | DeclareRoundEndResponse | UseSkillResponse | UseCardResponse
+    SwitchCardResponse
+    | ChooseCharacterResponse
+    | RerollDiceResponse
+    | SwitchCharacterResponse
+    | ElementalTuningResponse
+    | DeclareRoundEndResponse
+    | UseSkillResponse
+    | UseCardResponse
 )

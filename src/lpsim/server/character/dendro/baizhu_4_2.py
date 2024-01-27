@@ -8,19 +8,31 @@ from ...modifiable_values import DamageValue
 from ...event import MakeDamageEventArguments, RoundEndEventArguments
 
 from ...action import (
-    ActionTypes, Actions, ChangeObjectUsageAction, CreateDiceAction, 
-    MakeDamageAction
+    ActionTypes,
+    Actions,
+    ChangeObjectUsageAction,
+    CreateDiceAction,
+    MakeDamageAction,
 )
 from ...struct import Cost
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, ELEMENT_TO_DIE_COLOR, DamageElementalType, 
-    DamageType, DieColor, ElementType, FactionType, ObjectPositionType, 
-    WeaponType
+    ELEMENT_TO_DAMAGE_TYPE,
+    ELEMENT_TO_DIE_COLOR,
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalNormalAttackBase,
+    ElementalSkillBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -28,8 +40,8 @@ from ..character_base import (
 
 
 class GossamerSprite_4_2(AttackerSummonBase):
-    name: Literal['Gossamer Sprite'] = 'Gossamer Sprite'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Gossamer Sprite"] = "Gossamer Sprite"
+    version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 1
     damage_elemental_type: DamageElementalType = DamageElementalType.DENDRO
@@ -40,17 +52,20 @@ class GossamerSprite_4_2(AttackerSummonBase):
     ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         make_damage_action = ret[0]
         assert make_damage_action.type == ActionTypes.MAKE_DAMAGE
-        make_damage_action.damage_value_list.append(DamageValue(
-            position = self.position,
-            damage_type = DamageType.HEAL,
-            target_position = active_character.position,
-            damage = -1,
-            damage_elemental_type = DamageElementalType.HEAL,
-            cost = Cost(),
-        ))
+        make_damage_action.damage_value_list.append(
+            DamageValue(
+                position=self.position,
+                damage_type=DamageType.HEAL,
+                target_position=active_character.position,
+                damage=-1,
+                damage_elemental_type=DamageElementalType.HEAL,
+                cost=Cost(),
+            )
+        )
         return ret
 
 
@@ -58,38 +73,31 @@ class GossamerSprite_4_2(AttackerSummonBase):
 
 
 class UniversalDiagnosis(ElementalSkillBase):
-    name: Literal['Universal Diagnosis'] = 'Universal Diagnosis'
+    name: Literal["Universal Diagnosis"] = "Universal Diagnosis"
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.DENDRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_summon('Gossamer Sprite')
-        ])
+        return super().get_actions(match, [self.create_summon("Gossamer Sprite")])
 
 
 class HolisticRevivification(ElementalBurstBase):
-    name: Literal['Holistic Revivification'] = 'Holistic Revivification'
+    name: Literal["Holistic Revivification"] = "Holistic Revivification"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.DENDRO, elemental_dice_number=4, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
         return [
             self.charge_self(-2),
-            self.create_team_status('Pulsing Clarity'),
-            self.create_team_status('Seamless Shield'),
+            self.create_team_status("Pulsing Clarity"),
+            self.create_team_status("Seamless Shield"),
         ]
 
 
@@ -97,15 +105,13 @@ class HolisticRevivification(ElementalBurstBase):
 
 
 class AllThingsAreOfTheEarth_4_2(SkillTalent):
-    name: Literal['All Things Are of the Earth']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Baizhu'] = 'Baizhu'
+    name: Literal["All Things Are of the Earth"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Baizhu"] = "Baizhu"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.DENDRO, elemental_dice_number=4, charge=2
     )
-    skill: Literal['Holistic Revivification'] = 'Holistic Revivification'
+    skill: Literal["Holistic Revivification"] = "Holistic Revivification"
 
     def event_handler_MAKE_DAMAGE(
         self, event: MakeDamageEventArguments, match: Any
@@ -122,17 +128,18 @@ class AllThingsAreOfTheEarth_4_2(SkillTalent):
             # not our team status, or not equipped
             return []
         source = match.get_object(source_position)
-        if source.name != 'Seamless Shield':
+        if source.name != "Seamless Shield":
             # not our shield
             return []
         # create dice
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         return [
             CreateDiceAction(
-                player_idx = self.position.player_idx,
-                color = ELEMENT_TO_DIE_COLOR[active_character.element],
-                number = 1,
+                player_idx=self.position.player_idx,
+                color=ELEMENT_TO_DIE_COLOR[active_character.element],
+                number=1,
             )
         ]
 
@@ -141,25 +148,23 @@ class AllThingsAreOfTheEarth_4_2(SkillTalent):
 
 
 class Baizhu_4_2(CharacterBase):
-    name: Literal['Baizhu']
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Baizhu"]
+    version: Literal["4.2"] = "4.2"
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
         ElementalNormalAttackBase | UniversalDiagnosis | HolisticRevivification
     ] = []
-    faction: List[FactionType] = [
-        FactionType.LIYUE
-    ]
+    faction: List[FactionType] = [FactionType.LIYUE]
     weapon_type: WeaponType = WeaponType.CATALYST
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'The Classics of Acupuncture',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="The Classics of Acupuncture",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             UniversalDiagnosis(),
             HolisticRevivification(),

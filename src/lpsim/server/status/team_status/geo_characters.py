@@ -10,27 +10,26 @@ from ...event import SkillEndEventArguments
 
 from ...consts import DamageElementalType, DamageType, SkillType
 
-from ...modifiable_values import (
-    DamageDecreaseValue, DamageIncreaseValue, DamageValue
-)
+from ...modifiable_values import DamageDecreaseValue, DamageIncreaseValue, DamageValue
 from .base import DefendTeamStatus, ShieldTeamStatus
 
 
 class FullPlate_3_3(ShieldTeamStatus):
-    name: Literal['Full Plate'] = 'Full Plate'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Full Plate"] = "Full Plate"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
 
     def value_modifier_DAMAGE_MULTIPLY(
-            self, value: DamageDecreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageDecreaseValue:
         """
         If this shield exists, decrease physical damage by half.
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_receive_damage(
-            self.position, match,
+            self.position,
+            match,
         ):
             # not this character receive damage, not modify
             return value
@@ -49,8 +48,8 @@ class FullPlate_3_3(ShieldTeamStatus):
         talent I Got Your Back, heal all our characters for 1 HP.
 
         TODO: from description, HP heal is triggered by the shield, not talent.
-        The difference is when Noelle uses normal attack, other team status 
-        (e.g. Sparks 'n' Splash) triggers before the shield and removes this 
+        The difference is when Noelle uses normal attack, other team status
+        (e.g. Sparks 'n' Splash) triggers before the shield and removes this
         shield, whether HP heal will be triggered.
         """
         if event.action.skill_type != SkillType.NORMAL_ATTACK:
@@ -61,45 +60,43 @@ class FullPlate_3_3(ShieldTeamStatus):
             return []
         table = match.player_tables[self.position.player_idx]
         character = table.get_active_character()
-        if character.name != 'Noelle':
+        if character.name != "Noelle":
             # not Noelle
             return []
-        if (
-            character.talent is None
-            or character.talent.name != 'I Got Your Back'
-        ):
+        if character.talent is None or character.talent.name != "I Got Your Back":
             # not Noelle with talent I Got Your Back
             return []
         # heal all characters for 1 HP.
         ret: List[MakeDamageAction] = []
         for character in table.characters:
             if character.is_alive:
-                ret.append(MakeDamageAction(
-                    damage_value_list = [
-                        DamageValue(
-                            position = self.position,
-                            damage_type = DamageType.HEAL,
-                            target_position = character.position,
-                            damage = -1,
-                            damage_elemental_type = DamageElementalType.HEAL,
-                            cost = Cost(),
-                        )
-                    ],
-                ))
+                ret.append(
+                    MakeDamageAction(
+                        damage_value_list=[
+                            DamageValue(
+                                position=self.position,
+                                damage_type=DamageType.HEAL,
+                                target_position=character.position,
+                                damage=-1,
+                                damage_elemental_type=DamageElementalType.HEAL,
+                                cost=Cost(),
+                            )
+                        ],
+                    )
+                )
         return ret
 
 
 class JadeScreen_3_3(DefendTeamStatus):
-    name: Literal['Jade Screen'] = 'Jade Screen'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Jade Screen"] = "Jade Screen"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     min_damage_to_trigger: int = 2
     max_in_one_time: int = 1
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If our Ningguang has talent, then increase our geo damage by 1
@@ -113,7 +110,7 @@ class JadeScreen_3_3(DefendTeamStatus):
         characters = match.player_tables[self.position.player_idx].characters
         ningguang_talent = False
         for character in characters:
-            if character.name == 'Ningguang' and character.talent is not None:
+            if character.name == "Ningguang" and character.talent is not None:
                 ningguang_talent = True
                 break
         if not ningguang_talent:
@@ -125,8 +122,8 @@ class JadeScreen_3_3(DefendTeamStatus):
 
 
 class JadeShield_3_7(ShieldTeamStatus):
-    name: Literal['Jade Shield'] = 'Jade Shield'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Jade Shield"] = "Jade Shield"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
 

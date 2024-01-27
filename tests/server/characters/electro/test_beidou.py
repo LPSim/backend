@@ -1,8 +1,12 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, get_pidx_cidx, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -47,7 +51,7 @@ def test_beidou():
             "end",
             "skill 1 15 14 13",
             "TEST 1 2 0 3 4 2 7 2 9",
-            "sw_char 0 12"
+            "sw_char 0 12",
         ],
         [
             "sw_card 1 2 3",
@@ -83,27 +87,21 @@ def test_beidou():
             "card 1 0",
             "skill 1 15 14 13",
             "TEST 3 skill 0 cost 2",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Chongyun
         character:Beidou
@@ -111,7 +109,7 @@ def test_beidou():
         character:Razor
         Lightning Storm*15
         Sweet Madame*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -131,7 +129,7 @@ def test_beidou():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -141,27 +139,26 @@ def test_beidou():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:4], hps[4:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
-                assert match.player_tables[pidx].characters[
-                    cidx].charge == int(cmd[4])
+                assert match.player_tables[pidx].characters[cidx].charge == int(cmd[4])
             elif test_id == 3:
                 cmd = cmd.split()
                 sidx = int(cmd[3])
                 cost = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest' and req.skill_idx == sidx:
+                    if req.name == "UseSkillRequest" and req.skill_idx == sidx:
                         assert req.cost.total_dice_cost == cost
             elif test_id == 4:
                 for req in match.requests:
-                    assert req.name != 'UseSkillRequest'
+                    assert req.name != "UseSkillRequest"
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -171,5 +168,5 @@ def test_beidou():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_beidou()

@@ -7,8 +7,8 @@ from .base import AttackerSummonBase
 
 
 class CryoHilichurlShooter_3_3(AttackerSummonBase):
-    name: Literal['Cryo Hilichurl Shooter'] = 'Cryo Hilichurl Shooter'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Cryo Hilichurl Shooter"] = "Cryo Hilichurl Shooter"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.CRYO
@@ -16,8 +16,8 @@ class CryoHilichurlShooter_3_3(AttackerSummonBase):
 
 
 class ElectroHilichurlShooter_3_3(AttackerSummonBase):
-    name: Literal['Electro Hilichurl Shooter'] = 'Electro Hilichurl Shooter'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Electro Hilichurl Shooter"] = "Electro Hilichurl Shooter"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
@@ -25,8 +25,8 @@ class ElectroHilichurlShooter_3_3(AttackerSummonBase):
 
 
 class HilichurlBerserker_3_3(AttackerSummonBase):
-    name: Literal['Hilichurl Berserker'] = 'Hilichurl Berserker'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Hilichurl Berserker"] = "Hilichurl Berserker"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -34,8 +34,8 @@ class HilichurlBerserker_3_3(AttackerSummonBase):
 
 
 class HydroSamachurl_3_3(AttackerSummonBase):
-    name: Literal['Hydro Samachurl'] = 'Hydro Samachurl'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Hydro Samachurl"] = "Hydro Samachurl"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -43,6 +43,8 @@ class HydroSamachurl_3_3(AttackerSummonBase):
 
 
 register_class(
-    CryoHilichurlShooter_3_3 | ElectroHilichurlShooter_3_3 
-    | HilichurlBerserker_3_3 | HydroSamachurl_3_3
+    CryoHilichurlShooter_3_3
+    | ElectroHilichurlShooter_3_3
+    | HilichurlBerserker_3_3
+    | HydroSamachurl_3_3
 )

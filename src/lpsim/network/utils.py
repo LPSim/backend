@@ -7,7 +7,7 @@ from ..server.deck import Deck
 
 def get_new_match(
     decks: List[Deck],
-    seed: Any = None, 
+    seed: Any = None,
     rich_mode: bool = False,
     match_config: MatchConfig | None = None,
     history_level: int = 10,
@@ -32,11 +32,11 @@ def get_new_match(
             effect when match_config is not None.
         auto_step: If True, auto step the match once.
     Returns:
-        The generated match and its initial random state. 
+        The generated match and its initial random state.
         If generate failed or error occurred, raise error.
     """
     if seed:
-        match: Match = Match(random_state = seed)
+        match: Match = Match(random_state=seed)
     else:
         match: Match = Match()
 
@@ -56,11 +56,11 @@ def get_new_match(
         match.set_deck(decks)
         start_result = match.start()
         if not start_result[0]:
-            raise RuntimeError(f'Match start failed. {start_result[1]}')
+            raise RuntimeError(f"Match start failed. {start_result[1]}")
 
     if auto_step:
         if len(decks) == 0:
-            logging.warning('No deck is set, match will not auto_step.')
+            logging.warning("No deck is set, match will not auto_step.")
         else:
             match._save_history()
             match.step()

@@ -15,13 +15,9 @@ from ..utils import BaseModel, accept_same_or_higher_version
 from typing import List, Literal, Any, Tuple
 from pydantic import validator
 from .action import Actions, ActionTypes, CreateObjectAction, RemoveCardAction
-from .consts import (
-    ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
-)
+from .consts import ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
 from .modifiable_values import ModifiableValueTypes
-from .struct import (
-    DeckRestriction, MultipleObjectPosition, ObjectPosition, Cost
-)
+from .struct import DeckRestriction, MultipleObjectPosition, ObjectPosition, Cost
 
 
 used_object_ids = set()
@@ -32,18 +28,19 @@ ID_RAND_NUM = 1024
 
 class ObjectBase(BaseModel):
     """
-    Base class of objects in the game table. All objects in the game table 
+    Base class of objects in the game table. All objects in the game table
     should inherit from this class.
     Args:
         name (str): Name of the object.
         desc (str): Description of the object. When set, frontend
-            will add desc to the name, i.e. `{name}_{desc}`, to find 
-            descriptions. This is useful for objects that have different 
+            will add desc to the name, i.e. `{name}_{desc}`, to find
+            descriptions. This is useful for objects that have different
             descriptions with different state (talent effect activated etc.).
-            Defaults to empty string, and frontend will do nothing. 
+            Defaults to empty string, and frontend will do nothing.
     """
+
     name: str
-    desc: Literal[''] = ''
+    desc: Literal[""] = ""
     type: ObjectType = ObjectType.EMPTY
     position: ObjectPosition
     id: int = -1
@@ -60,18 +57,18 @@ class ObjectBase(BaseModel):
         super().__init__(*argv, **kwargs)
         # check event handler name valid
         for k in dir(self):
-            if k[:14] == 'event_handler_':
+            if k[:14] == "event_handler_":
                 k = k[14:]
                 try:
                     k = ActionTypes(k)
                 except ValueError:
-                    raise ValueError(f'Invalid event handler name: {k}')
-            if k[:15] == 'value_modifier_':
+                    raise ValueError(f"Invalid event handler name: {k}")
+            if k[:15] == "value_modifier_":
                 k = k[15:]
                 try:
                     k = ModifiableValueTypes(k)
                 except ValueError:
-                    raise ValueError(f'Invalid value modifier name: {k}')
+                    raise ValueError(f"Invalid value modifier name: {k}")
         # if id is -1, generate a new id
         if self.id == -1:
             self.renew_id()
@@ -84,10 +81,9 @@ class ObjectBase(BaseModel):
         Renew the id of the object.
         """
         while True:
-            new_id = (
-                int(time.time() % ID_MOD_NUM * ID_MULTI_NUM) 
-                * ID_RAND_NUM + random.randint(0, ID_RAND_NUM - 1)
-            )
+            new_id = int(
+                time.time() % ID_MOD_NUM * ID_MULTI_NUM
+            ) * ID_RAND_NUM + random.randint(0, ID_RAND_NUM - 1)
             if new_id in used_object_ids:  # pragma: no cover
                 continue
             self.id = new_id
@@ -98,26 +94,31 @@ class ObjectBase(BaseModel):
 
 class CardBase(ObjectBase):
     """
-    Base class of all real cards. 
+    Base class of all real cards.
     """
+
     name: str
     type: Literal[
-        ObjectType.CARD, ObjectType.WEAPON, ObjectType.ARTIFACT,
-        ObjectType.TALENT, ObjectType.SUPPORT, ObjectType.ARCANE,
+        ObjectType.CARD,
+        ObjectType.WEAPON,
+        ObjectType.ARTIFACT,
+        ObjectType.TALENT,
+        ObjectType.SUPPORT,
+        ObjectType.ARCANE,
     ] = ObjectType.CARD
     strict_version_validation: bool = False  # default accept higher versions
     version: str
     position: ObjectPosition = ObjectPosition(
-        player_idx = -1,
-        area = ObjectPositionType.INVALID,
-        id = -1,
+        player_idx=-1,
+        area=ObjectPositionType.INVALID,
+        id=-1,
     )
     cost: Cost
     cost_label: int
     remove_when_used: bool = True
     target_position_type_multiple: Literal[False] = False
 
-    @validator('version', pre = True)
+    @validator("version", pre=True)
     def accept_same_or_higher_version(cls, v: str, values):
         return accept_same_or_higher_version(cls, v, values)
 
@@ -132,11 +133,11 @@ class CardBase(ObjectBase):
         Get the deck restriction of the card. It will be checked when deck is
         created.
         """
-        return DeckRestriction(type = 'NONE', name = '', number = 0)
+        return DeckRestriction(type="NONE", name="", number=0)
 
     def get_action_type(self, match: Any) -> Tuple[int, bool]:
         """
-        Get the action type of using the card. 
+        Get the action type of using the card.
 
         Returns:
             Tuple[int, bool]: The first element is the action label, the second
@@ -150,9 +151,7 @@ class CardBase(ObjectBase):
         """
         raise NotImplementedError()
 
-    def get_actions(
-        self, target: ObjectPosition | None, match: Any
-    ) -> List[Actions]:
+    def get_actions(self, target: ObjectPosition | None, match: Any) -> List[Actions]:
         """
         Act the card. It will return a list of actions.
 
@@ -160,7 +159,7 @@ class CardBase(ObjectBase):
             target (ObjectPosition | None): The target of the action.
                 for cards that do not need to specify target, target is None.
                 Note: the ID of the target may not be the same as the ID of the
-                card, e.g. equipping artifact. Reconstruct correct 
+                card, e.g. equipping artifact. Reconstruct correct
                 ObjectPosition if needed.
             match (Any): The match object.
         """
@@ -184,27 +183,26 @@ class CardBase(ObjectBase):
             # not this card
             return actions
         if self.remove_when_used:
-            actions.append(RemoveCardAction(
-                position = ObjectPosition(
-                    player_idx = self.position.player_idx,
-                    area = ObjectPositionType.HAND,
-                    id = self.id,
-                ),
-                remove_type = 'USED',
-            ))
-        # target is None, otherwise should match class
-        assert (
-            event.action.target is None
-            or (
-                isinstance(event.action.target, MultipleObjectPosition)
-                == self.target_position_type_multiple
+            actions.append(
+                RemoveCardAction(
+                    position=ObjectPosition(
+                        player_idx=self.position.player_idx,
+                        area=ObjectPositionType.HAND,
+                        id=self.id,
+                    ),
+                    remove_type="USED",
+                )
             )
+        # target is None, otherwise should match class
+        assert event.action.target is None or (
+            isinstance(event.action.target, MultipleObjectPosition)
+            == self.target_position_type_multiple
         )
         if event.use_card_success:
             # use success, add actions of the card
             actions += self.get_actions(
-                target = event.action.target,  # type: ignore
-                match = match,
+                target=event.action.target,  # type: ignore
+                match=match,
             )
         return actions
 
@@ -218,6 +216,7 @@ class MultiTargetEventCardBase(EventCardBase):
     """
     Base class of cards that can target multiple targets.
     """
+
     target_position_type_multiple: Literal[True] = True
 
     def get_targets(self, match: Any) -> List[MultipleObjectPosition]:
@@ -233,7 +232,7 @@ class MultiTargetEventCardBase(EventCardBase):
             target (MultipleObjectPosition | None): The target of the action.
                 for cards that do not need to specify target, target is None.
                 Note: the ID of the target may not be the same as the ID of the
-                card, e.g. equipping artifact. Reconstruct correct 
+                card, e.g. equipping artifact. Reconstruct correct
                 ObjectPosition if needed.
             match (Any): The match object.
         """
@@ -244,6 +243,7 @@ class CreateSystemEventHandlerObject(BaseModel):
     """
     objects that will create system event handler at game start
     """
+
     handler_name: str
 
     available_handler_in_deck: List[ActionTypes] = [
@@ -256,15 +256,17 @@ class CreateSystemEventHandlerObject(BaseModel):
         """
         When game start, create event handler with specified name
         """
-        return [CreateObjectAction(
-            object_name = self.handler_name,
-            object_position = ObjectPosition(
-                player_idx = -1,
-                area = ObjectPositionType.SYSTEM,
-                id = -1,
-            ),
-            object_arguments = {},
-        )]
+        return [
+            CreateObjectAction(
+                object_name=self.handler_name,
+                object_position=ObjectPosition(
+                    player_idx=-1,
+                    area=ObjectPositionType.SYSTEM,
+                    id=-1,
+                ),
+                object_arguments={},
+            )
+        ]
 
     def _get_event_handler(self, match: Any):
         """
@@ -276,9 +278,7 @@ class CreateSystemEventHandlerObject(BaseModel):
                 target_event_handler = event_handler
                 break
         else:
-            raise AssertionError(
-                f'event handler {self.handler_name} not found'
-            )
+            raise AssertionError(f"event handler {self.handler_name} not found")
         return target_event_handler
 
 

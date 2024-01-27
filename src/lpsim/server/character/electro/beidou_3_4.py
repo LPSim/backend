@@ -18,19 +18,17 @@ class Wavestrider(Wavestrider_3_8):
 class Stormbreaker(Stormbreaker_3_8):
     damage: int = 3
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 4,
-        charge = 3
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=4, charge=3
     )
 
 
 class LightningStorm_3_4(LightningStorm_4_2):
-    version: Literal['3.4'] = '3.4'
+    version: Literal["3.4"] = "3.4"
     need_to_activate: bool = True
 
 
 class Beidou_3_4(Beidou_3_8):
-    version: Literal['3.4']
+    version: Literal["3.4"]
     skills: List[
         PhysicalNormalAttackBase | Tidecaller | Wavestrider | Stormbreaker
     ] = []
@@ -38,8 +36,8 @@ class Beidou_3_4(Beidou_3_8):
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Oceanborne',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Oceanborne",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             Tidecaller(),
             Wavestrider(),

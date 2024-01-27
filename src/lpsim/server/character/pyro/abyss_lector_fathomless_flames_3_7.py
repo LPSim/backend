@@ -10,12 +10,22 @@ from ...action import Actions, CreateObjectAction, RemoveObjectAction
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, CostLabels, DamageElementalType, DieColor, 
-    ElementType, FactionType, ObjectPositionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE,
+    CostLabels,
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    WeaponType,
 )
 from ..character_base import (
-    CreateStatusPassiveSkill, ElementalBurstBase, ElementalNormalAttackBase, 
-    ElementalSkillBase, CharacterBase, TalentBase
+    CreateStatusPassiveSkill,
+    ElementalBurstBase,
+    ElementalNormalAttackBase,
+    ElementalSkillBase,
+    CharacterBase,
+    TalentBase,
 )
 
 
@@ -23,8 +33,8 @@ from ..character_base import (
 
 
 class DarkfireFurnace_3_7(AOESummonBase):
-    name: Literal['Darkfire Furnace'] = 'Darkfire Furnace'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Darkfire Furnace"] = "Darkfire Furnace"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -36,24 +46,20 @@ class DarkfireFurnace_3_7(AOESummonBase):
 
 
 class OminousStar(ElementalBurstBase):
-    name: Literal['Ominous Star'] = 'Ominous Star'
+    name: Literal["Ominous Star"] = "Ominous Star"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.PYRO, elemental_dice_number=4, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_summon('Darkfire Furnace')
-        ])
+        return super().get_actions(match, [self.create_summon("Darkfire Furnace")])
 
 
 class FieryRebirth(CreateStatusPassiveSkill):
-    name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
-    status_name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
+    name: Literal["Fiery Rebirth"] = "Fiery Rebirth"
+    status_name: Literal["Fiery Rebirth"] = "Fiery Rebirth"
     regenerate_when_revive: bool = False
 
 
@@ -61,23 +67,20 @@ class FieryRebirth(CreateStatusPassiveSkill):
 
 
 class EmbersRekindled_3_7(TalentBase):
-    name: Literal['Embers Rekindled']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Embers Rekindled"]
+    version: Literal["3.7"] = "3.7"
     character_name: Literal[
-        'Abyss Lector: Fathomless Flames'] = 'Abyss Lector: Fathomless Flames'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 2
-    )
+        "Abyss Lector: Fathomless Flames"
+    ] = "Abyss Lector: Fathomless Flames"
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=2)
     cost_label: int = (
-        CostLabels.CARD.value | CostLabels.TALENT.value 
-        | CostLabels.EQUIPMENT.value
+        CostLabels.CARD.value | CostLabels.TALENT.value | CostLabels.EQUIPMENT.value
     )
 
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         ret: List[ObjectPosition] = []
         for c in match.player_tables[self.position.player_idx].characters:
-            if c.name == 'Abyss Lector: Fathomless Flames':
+            if c.name == "Abyss Lector: Fathomless Flames":
                 ret.append(c.position)
         return ret
 
@@ -89,26 +92,27 @@ class EmbersRekindled_3_7(TalentBase):
         If self character do not have Fiery Rebirth, remove self and attach
         Aegis of Abyssal Flame to character.
         """
-        character = match.player_tables[
-            self.position.player_idx].characters[self.position.character_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx
+        ]
         status = character.status
         fiery_rebirth_found = False
         for s in status:
-            if s.name == 'Fiery Rebirth':
+            if s.name == "Fiery Rebirth":
                 fiery_rebirth_found = True
                 break
         if not fiery_rebirth_found:
             # remove self and attach Aegis of Abyssal Flame to character
             return [
                 RemoveObjectAction(
-                    object_position = self.position,
+                    object_position=self.position,
                 ),
                 CreateObjectAction(
-                    object_position = self.position.set_area(
+                    object_position=self.position.set_area(
                         ObjectPositionType.CHARACTER_STATUS
                     ),
-                    object_name = 'Aegis of Abyssal Flame',
-                    object_arguments = {}
+                    object_name="Aegis of Abyssal Flame",
+                    object_arguments={},
                 ),
             ]
         return []
@@ -128,31 +132,28 @@ class EmbersRekindled_3_7(TalentBase):
 
 
 class AbyssLectorFathomlessFlames_3_7(CharacterBase):
-    name: Literal['Abyss Lector: Fathomless Flames']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Abyss Lector: Fathomless Flames"]
+    version: Literal["3.7"] = "3.7"
     element: ElementType = ElementType.PYRO
     max_hp: int = 6
     max_charge: int = 2
     skills: List[
-        ElementalNormalAttackBase | ElementalSkillBase | OminousStar 
-        | FieryRebirth
+        ElementalNormalAttackBase | ElementalSkillBase | OminousStar | FieryRebirth
     ] = []
-    faction: List[FactionType] = [
-        FactionType.MONSTER
-    ]
+    faction: List[FactionType] = [FactionType.MONSTER]
     weapon_type: WeaponType = WeaponType.OTHER
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'Flame of Salvation',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="Flame of Salvation",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             ElementalSkillBase(
-                name = 'Searing Precept',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalSkillBase.get_cost(self.element),
+                name="Searing Precept",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalSkillBase.get_cost(self.element),
             ),
             OminousStar(),
             FieryRebirth(),

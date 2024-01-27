@@ -5,20 +5,25 @@ from ....utils.class_registry import register_base_class, register_class
 from ...modifiable_values import CombatActionValue, CostValue
 
 
-from ...action import (
-    Actions, CreateDiceAction, DrawCardAction, RemoveObjectAction
-)
+from ...action import Actions, CreateDiceAction, DrawCardAction, RemoveObjectAction
 
 from ...event import (
-    PlayerActionStartEventArguments, ReceiveDamageEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments, 
-    SwitchCharacterEventArguments, UseCardEventArguments
+    PlayerActionStartEventArguments,
+    ReceiveDamageEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
+    SwitchCharacterEventArguments,
+    UseCardEventArguments,
 )
 
 from ...struct import Cost
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
-    PlayerActionLabels
+    CostLabels,
+    DamageElementalType,
+    DamageType,
+    IconType,
+    ObjectPositionType,
+    PlayerActionLabels,
 )
 from .base import RoundEffectSupportBase, SupportBase
 
@@ -35,9 +40,9 @@ class RoundEffectItemBase(RoundEffectSupportBase, ItemBase):
 
 
 class ParametricTransformer_3_3(ItemBase):
-    name: Literal['Parametric Transformer']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    name: Literal["Parametric Transformer"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(any_dice_number=2)
     usage: int = 0
     max_usage: int = 3
     create_dice_number: int = 3
@@ -65,12 +70,11 @@ class ParametricTransformer_3_3(ItemBase):
         if event.final_damage.damage_type == DamageType.HEAL:
             # heal, do nothing
             return []
-        if (
-            event.final_damage.damage_elemental_type in [
-                DamageElementalType.PHYSICAL, DamageElementalType.PIERCING,
-                DamageElementalType.HEAL
-            ]
-        ):
+        if event.final_damage.damage_elemental_type in [
+            DamageElementalType.PHYSICAL,
+            DamageElementalType.PIERCING,
+            DamageElementalType.HEAL,
+        ]:
             # physical or piercing or heal, do nothing
             return []
         # get progress
@@ -81,7 +85,7 @@ class ParametricTransformer_3_3(ItemBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateDiceAction | RemoveObjectAction]:
         """
-        If progress got, increase usage. If usage receives max_usage, 
+        If progress got, increase usage. If usage receives max_usage,
         remove self and create different dice.
         """
         if self.progress_got:
@@ -91,29 +95,29 @@ class ParametricTransformer_3_3(ItemBase):
             # remove self and create different dice
             return [
                 RemoveObjectAction(
-                    object_position = self.position,
+                    object_position=self.position,
                 ),
                 CreateDiceAction(
-                    player_idx = self.position.player_idx,
-                    number = self.create_dice_number,
-                    different = True
-                )
+                    player_idx=self.position.player_idx,
+                    number=self.create_dice_number,
+                    different=True,
+                ),
             ]
         return []
 
 
 class NRE_4_1(RoundEffectItemBase):
-    name: Literal['NRE']
-    version: Literal['4.1'] = '4.1'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["NRE"]
+    version: Literal["4.1"] = "4.1"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
 
     def draw_food_card(self) -> DrawCardAction:
         return DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            draw_if_filtered_not_enough = False,
-            whitelist_cost_labels = CostLabels.FOOD.value
+            player_idx=self.position.player_idx,
+            number=1,
+            draw_if_filtered_not_enough=False,
+            whitelist_cost_labels=CostLabels.FOOD.value,
         )
 
     def play(self, match: Any) -> List[Actions]:
@@ -127,10 +131,7 @@ class NRE_4_1(RoundEffectItemBase):
             if self.usage <= 0:
                 # usage is 0, do nothing
                 return []
-            if (
-                event.action.card_position.player_idx 
-                != self.position.player_idx
-            ):
+            if event.action.card_position.player_idx != self.position.player_idx:
                 # not our character use card, do nothing
                 return []
             if event.card_cost.label & CostLabels.FOOD.value == 0:
@@ -144,14 +145,14 @@ class NRE_4_1(RoundEffectItemBase):
 
 
 class NRE_3_3(NRE_4_1):
-    version: Literal['3.3']
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal["3.3"]
+    cost: Cost = Cost(any_dice_number=2)
 
 
 class RedFeatherFan_3_7(RoundEffectItemBase):
-    name: Literal['Red Feather Fan']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Red Feather Fan"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1
     switch_count: int = 0  # activate after first switch
 
@@ -185,7 +186,7 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
         return []
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         if activated, and our switch character, try to decrease cost.
@@ -198,18 +199,17 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
             or self.usage <= 0
             or value.cost.label & CostLabels.SWITCH_CHARACTER.value == 0
         ):
-            # not activated, or not equipped, or not our character, 
+            # not activated, or not equipped, or not our character,
             # or no usage, or not switch character, do nothing
             return value
         # decrease cost
         if value.cost.decrease_cost(None):
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.is_cost_decreased = True
         return value
 
     def value_modifier_COMBAT_ACTION(
-        self, value: CombatActionValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: CombatActionValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CombatActionValue:
         """
         If activated, and our switch character, try to act as fast action.
@@ -222,7 +222,7 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
             or self.usage <= 0
             or value.action_label & PlayerActionLabels.SWITCH.value == 0
         ):
-            # not activated, or not equipped, or not our character, 
+            # not activated, or not equipped, or not our character,
             # or no usage, or not switch character, do nothing
             return value
         # change to fast action
@@ -230,7 +230,7 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
         if value.do_combat_action:
             value.do_combat_action = False
             changed = True
-        assert mode == 'REAL'
+        assert mode == "REAL"
         # decrease usage
         if changed or self.is_cost_decreased:
             self.usage -= 1
@@ -238,9 +238,9 @@ class RedFeatherFan_3_7(RoundEffectItemBase):
 
 
 class TreasureSeekingSeelie_3_7(ItemBase):
-    name: Literal['Treasure-Seeking Seelie']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Treasure-Seeking Seelie"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 0
     max_usage: int = 3
     icon_type: Literal[IconType.COUNTER] = IconType.COUNTER
@@ -253,9 +253,11 @@ class TreasureSeekingSeelie_3_7(ItemBase):
         reaches max_usage, draw 3 cards and remove self.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            source_area = ObjectPositionType.SUPPORT,
-            target_area = ObjectPositionType.SKILL
+            event.action.position,
+            match,
+            player_idx_same=True,
+            source_area=ObjectPositionType.SUPPORT,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not on support area, or not our character use skill
             return []
@@ -267,17 +269,18 @@ class TreasureSeekingSeelie_3_7(ItemBase):
         # reach max usage, draw 3 cards and remove self
         return [
             DrawCardAction(
-                player_idx = self.position.player_idx,
-                number = 3,
-                draw_if_filtered_not_enough = True
+                player_idx=self.position.player_idx,
+                number=3,
+                draw_if_filtered_not_enough=True,
             ),
-            RemoveObjectAction(
-                object_position = self.position
-            )
+            RemoveObjectAction(object_position=self.position),
         ]
 
 
 register_class(
-    ParametricTransformer_3_3 | NRE_4_1 | NRE_3_3 | RedFeatherFan_3_7 
+    ParametricTransformer_3_3
+    | NRE_4_1
+    | NRE_3_3
+    | RedFeatherFan_3_7
     | TreasureSeekingSeelie_3_7
 )

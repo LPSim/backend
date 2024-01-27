@@ -13,21 +13,20 @@ from .base import RoundCharacterStatus
 
 
 class HeavyStrike_3_7(RoundCharacterStatus):
-    name: Literal['Heavy Strike'] = 'Heavy Strike'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Heavy Strike"] = "Heavy Strike"
+    version: Literal["3.7"] = "3.7"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
-        Increase damage for normal attack by 1 and decrease usage. 
+        Increase damage for normal attack by 1 and decrease usage.
         If it is charged attack, increase damage more 1.
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -53,16 +52,15 @@ class HeavyStrike_3_7(RoundCharacterStatus):
 
 class ShatteringIce_3_3(RoundCharacterStatus):
     name: Literal[
-        'Elemental Resonance: Shattering Ice'
-    ] = 'Elemental Resonance: Shattering Ice'
-    version: Literal['3.3'] = '3.3'
+        "Elemental Resonance: Shattering Ice"
+    ] = "Elemental Resonance: Shattering Ice"
+    version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         add 2 damage for skills.
@@ -76,7 +74,7 @@ class ShatteringIce_3_3(RoundCharacterStatus):
             # no usage, do nothing
             return value
         # we trigger elemental reaction, add 2 damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage -= 1
         value.damage += 2
         return value
@@ -92,16 +90,15 @@ class ShatteringIce_3_3(RoundCharacterStatus):
 
 class FerventFlames_3_3(RoundCharacterStatus):
     name: Literal[
-        'Elemental Resonance: Fervent Flames'
-    ] = 'Elemental Resonance: Fervent Flames'
-    version: Literal['3.3'] = '3.3'
+        "Elemental Resonance: Fervent Flames"
+    ] = "Elemental Resonance: Fervent Flames"
+    version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If we trigger pyro elemental reaction, add 3 damage.
@@ -118,7 +115,7 @@ class FerventFlames_3_3(RoundCharacterStatus):
             # no usage, do nothing
             return value
         # we trigger elemental reaction, add 2 damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage -= 1
         value.damage += 3
         return value

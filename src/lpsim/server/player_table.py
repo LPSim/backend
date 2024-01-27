@@ -12,7 +12,10 @@ from ..utils import BaseModel, get_instance
 from typing import Literal, List, Tuple
 from ..resources.consts import CharacterIcons
 from .consts import (
-    DieColor, ELEMENT_TO_DIE_COLOR, ELEMENT_DEFAULT_ORDER, ObjectPositionType
+    DieColor,
+    ELEMENT_TO_DIE_COLOR,
+    ELEMENT_DEFAULT_ORDER,
+    ObjectPositionType,
 )
 from .object_base import CardBase, ObjectBase
 from .deck import Deck
@@ -21,7 +24,7 @@ from .dice import Dice
 
 class PlayerTable(BaseModel):
     """
-    Represents the player's table, which contains information about the 
+    Represents the player's table, which contains information about the
     player's deck information and current state of the table.
 
     Attributes:
@@ -41,11 +44,12 @@ class PlayerTable(BaseModel):
         hands (List[Cards]): The list of cards in the player's hand.
         table_deck (List[Cards]): The list of cards in the table deck.
     """
-    name: Literal['PlayerTable'] = 'PlayerTable'
-    version: Literal['0.0.1', '0.0.2', '0.0.3', '0.0.4']
+
+    name: Literal["PlayerTable"] = "PlayerTable"
+    version: Literal["0.0.1", "0.0.2", "0.0.3", "0.0.4"]
 
     # player information
-    player_name: str = 'Nahida'
+    player_name: str = "Nahida"
     player_icon: CharacterIcons = CharacterIcons.NAHIDA
     player_deck_information: Deck = Deck()
 
@@ -69,23 +73,23 @@ class PlayerTable(BaseModel):
     # be moved or removed.
     using_hand: CardBase | None = None
 
-    @validator('team_status', each_item = True, pre = True)
+    @validator("team_status", each_item=True, pre=True)
     def parse_team_status(cls, v):
         return get_instance(TeamStatusBase, v)
 
-    @validator('characters', each_item = True, pre = True)
+    @validator("characters", each_item=True, pre=True)
     def parse_characters(cls, v):
         return get_instance(CharacterBase, v)
 
-    @validator('summons', each_item = True, pre = True)
+    @validator("summons", each_item=True, pre=True)
     def parse_summons(cls, v):
         return get_instance(SummonBase, v)
 
-    @validator('supports', each_item = True, pre = True)
+    @validator("supports", each_item=True, pre=True)
     def parse_supports(cls, v):
         return get_instance(SupportBase, v)
 
-    @validator('hands', 'table_deck', each_item = True, pre = True)
+    @validator("hands", "table_deck", each_item=True, pre=True)
     def parse_cards(cls, v):
         return get_instance(CardBase, v)
 
@@ -93,20 +97,22 @@ class PlayerTable(BaseModel):
         super().__init__(*argv, **kwargs)
         if self.dice.position.area == ObjectPositionType.INVALID:
             # not initialized, do initialize.
-            self.dice = Dice(position = ObjectPosition(
-                player_idx = kwargs['player_idx'],
-                area = ObjectPositionType.DICE,
-                id = -1,
-            ))
+            self.dice = Dice(
+                position=ObjectPosition(
+                    player_idx=kwargs["player_idx"],
+                    area=ObjectPositionType.DICE,
+                    id=-1,
+                )
+            )
 
     def dice_color_order_0_0_1(self) -> List[DieColor]:
         """
         Returns the order of dice colors.
         """
         result: List[DieColor] = [DieColor.OMNI]
-        assert self.active_character_idx != -1, (
-            'Cannot get order when active character index not set.'
-        )
+        assert (
+            self.active_character_idx != -1
+        ), "Cannot get order when active character index not set."
         c_element = self.characters[self.active_character_idx].element
         color = ELEMENT_TO_DIE_COLOR[c_element]
         result.append(color)
@@ -134,7 +140,7 @@ class PlayerTable(BaseModel):
         """
         Returns the order of dice colors.
         """
-        if self.version == '0.0.1':
+        if self.version == "0.0.1":
             return self.dice_color_order_0_0_1()
         return self.dice_color_order_0_0_2()
 
@@ -157,7 +163,7 @@ class PlayerTable(BaseModel):
         elif position.area in [
             ObjectPositionType.CHARACTER,
             ObjectPositionType.SKILL,
-            ObjectPositionType.CHARACTER_STATUS
+            ObjectPositionType.CHARACTER_STATUS,
         ]:
             character = self.characters[position.character_idx]
             return character.get_object(position)
@@ -172,10 +178,7 @@ class PlayerTable(BaseModel):
                     return support
             return None
         elif position.area == ObjectPositionType.HAND:
-            if (
-                self.using_hand is not None 
-                and self.using_hand.id == position.id
-            ):
+            if self.using_hand is not None and self.using_hand.id == position.id:
                 return self.using_hand
             for card in self.hands:
                 if card.id == position.id:
@@ -187,7 +190,7 @@ class PlayerTable(BaseModel):
                     return card
             return None
         else:
-            raise AssertionError(f'Unknown area {position.area}.')
+            raise AssertionError(f"Unknown area {position.area}.")
 
     def get_object_lists(self) -> List[ObjectBase]:
         """
@@ -198,7 +201,7 @@ class PlayerTable(BaseModel):
             2.1. active character first, then next, next ... until all alive
                 characters are included.
             2.2. for one character, order is weapon, artifact, talent, status.
-            2.3. for status, order is their index in status list, i.e. 
+            2.3. for status, order is their index in status list, i.e.
                 generated time.
         3. for other objects, order is: summon, support, hand, dice, deck.
             3.1. all other objects in same region are sorted by their index in
@@ -231,9 +234,8 @@ class PlayerTable(BaseModel):
         """
         Returns the active character.
         """
-        assert (
-            self.active_character_idx >= 0 
-            and self.active_character_idx < len(self.characters)
+        assert self.active_character_idx >= 0 and self.active_character_idx < len(
+            self.characters
         )
         return self.characters[self.active_character_idx]
 
@@ -248,9 +250,9 @@ class PlayerTable(BaseModel):
         """
         if current_idx is None:
             current_idx = self.active_character_idx
-        assert self.characters[current_idx].is_alive, (
-            'Cannot get next character when current character is not alive.'
-        )
+        assert self.characters[
+            current_idx
+        ].is_alive, "Cannot get next character when current character is not alive."
         cnum = len(self.characters)
         for i in range(1, cnum):
             target = (current_idx + i) % cnum
@@ -258,8 +260,7 @@ class PlayerTable(BaseModel):
                 return target
         return None
 
-    def previous_character_idx(
-            self, current_idx: int | None = None) -> int | None:
+    def previous_character_idx(self, current_idx: int | None = None) -> int | None:
         """
         Returns the previous character ID. If `current_id` is not provided, the
         active character index will be used.
@@ -271,8 +272,7 @@ class PlayerTable(BaseModel):
         if current_idx is None:
             current_idx = self.active_character_idx
         assert self.characters[current_idx].is_alive, (
-            'Cannot get previous character when current character is not '
-            'alive.'
+            "Cannot get previous character when current character is not " "alive."
         )
         cnum = len(self.characters)
         for i in range(1, cnum):

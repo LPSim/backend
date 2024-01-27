@@ -11,12 +11,19 @@ from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
-    CostLabels, DamageElementalType, DieColor, ElementType, FactionType, 
-    WeaponType
+    CostLabels,
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -24,8 +31,8 @@ from ..character_base import (
 
 
 class SolarIsotoma_4_0(AttackerSummonBase):
-    name: Literal['Solar Isotoma'] = 'Solar Isotoma'
-    version: Literal['4.0'] = '4.0'
+    name: Literal["Solar Isotoma"] = "Solar Isotoma"
+    version: Literal["4.0"] = "4.0"
     usage: int = 3
     max_usage: int = 3
     damage_elemental_type: DamageElementalType = DamageElementalType.GEO
@@ -47,7 +54,7 @@ class SolarIsotoma_4_0(AttackerSummonBase):
         return []
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         if self use plunging attack and has usage, decrease cost
@@ -59,13 +66,12 @@ class SolarIsotoma_4_0(AttackerSummonBase):
         ):
             # is self and has usage and plunging attack
             if value.cost.decrease_cost(None):
-                if mode == 'REAL':
+                if mode == "REAL":
                     self.attack_cost_decrease_usage -= 1
         return value
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['REAL', 'TEST']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["REAL", "TEST"]
     ) -> DamageIncreaseValue:
         """
         If has albedo equip talent, increase plunging attack by 1
@@ -76,7 +82,7 @@ class SolarIsotoma_4_0(AttackerSummonBase):
         found_talent_albedo = False
         characters = match.player_tables[self.position.player_idx].characters
         for character in characters:
-            if character.name == 'Albedo' and character.talent is not None:
+            if character.name == "Albedo" and character.talent is not None:
                 found_talent_albedo = True
                 break
         if not found_talent_albedo:
@@ -87,7 +93,7 @@ class SolarIsotoma_4_0(AttackerSummonBase):
             and match.player_tables[self.position.player_idx].plunge_satisfied
         ):
             # plunging attack
-            assert mode == 'REAL'
+            assert mode == "REAL"
             value.damage += 1
         return value
 
@@ -96,34 +102,29 @@ class SolarIsotoma_4_0(AttackerSummonBase):
 
 
 class AbiogenesisSolarIsotoma(ElementalSkillBase):
-    name: Literal['Abiogenesis: Solar Isotoma'] = 'Abiogenesis: Solar Isotoma'
+    name: Literal["Abiogenesis: Solar Isotoma"] = "Abiogenesis: Solar Isotoma"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.GEO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         create object
         """
         return [
-            self.create_summon('Solar Isotoma'),
+            self.create_summon("Solar Isotoma"),
             self.charge_self(1),
         ]
 
 
 class RiteOfProgenitureTectonicTide(ElementalBurstBase):
     name: Literal[
-        'Rite of Progeniture: Tectonic Tide'
-    ] = 'Rite of Progeniture: Tectonic Tide'
+        "Rite of Progeniture: Tectonic Tide"
+    ] = "Rite of Progeniture: Tectonic Tide"
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.GEO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -133,7 +134,7 @@ class RiteOfProgenitureTectonicTide(ElementalBurstBase):
         summons = match.player_tables[self.position.player_idx].summons
         isotoma_exist: bool = False
         for s in summons:
-            if s.name == 'Solar Isotoma':
+            if s.name == "Solar Isotoma":
                 isotoma_exist = True
                 break
         if isotoma_exist:
@@ -148,42 +149,38 @@ class RiteOfProgenitureTectonicTide(ElementalBurstBase):
 
 
 class DescentOfDivinity_4_0(SkillTalent):
-    name: Literal['Descent of Divinity']
-    version: Literal['4.0'] = '4.0'
-    character_name: Literal['Albedo'] = 'Albedo'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Abiogenesis: Solar Isotoma'] = 'Abiogenesis: Solar Isotoma'
+    name: Literal["Descent of Divinity"]
+    version: Literal["4.0"] = "4.0"
+    character_name: Literal["Albedo"] = "Albedo"
+    cost: Cost = Cost(elemental_dice_color=DieColor.GEO, elemental_dice_number=3)
+    skill: Literal["Abiogenesis: Solar Isotoma"] = "Abiogenesis: Solar Isotoma"
 
 
 # character base
 
 
 class Albedo_4_0(CharacterBase):
-    name: Literal['Albedo']
-    version: Literal['4.0'] = '4.0'
+    name: Literal["Albedo"]
+    version: Literal["4.0"] = "4.0"
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | AbiogenesisSolarIsotoma 
+        PhysicalNormalAttackBase
+        | AbiogenesisSolarIsotoma
         | RiteOfProgenitureTectonicTide
     ] = []
-    faction: List[FactionType] = [
-        FactionType.MONDSTADT
-    ]
+    faction: List[FactionType] = [FactionType.MONDSTADT]
     weapon_type: WeaponType = WeaponType.SWORD
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Favonius Bladework - Weiss',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Favonius Bladework - Weiss",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             AbiogenesisSolarIsotoma(),
-            RiteOfProgenitureTectonicTide()
+            RiteOfProgenitureTectonicTide(),
         ]
 
 

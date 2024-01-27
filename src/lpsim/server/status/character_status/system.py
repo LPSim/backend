@@ -16,30 +16,33 @@ class Frozen_3_3(RoundCharacterStatus):
     """
     Frozen.
     """
-    name: Literal['Frozen'] = 'Frozen'
-    version: Literal['3.3'] = '3.3'
+
+    name: Literal["Frozen"] = "Frozen"
+    version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.FROZEN] = IconType.FROZEN
 
     def value_modifier_DAMAGE_INCREASE(
-            self, value: DamageIncreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageIncreaseValue:
         """
-        Increase damage for pyro and physical damages to self by 2, and 
+        Increase damage for pyro and physical damages to self by 2, and
         decrease usage.
         """
-        if not value.is_corresponding_character_receive_damage(
-            self.position, match
-        ):
+        if not value.is_corresponding_character_receive_damage(self.position, match):
             # not this character receive damage, not modify
             return value
-        if value.damage_elemental_type in [
-            DamageElementalType.PYRO,
-            DamageElementalType.PHYSICAL,
-        ] and self.usage > 0:
+        if (
+            value.damage_elemental_type
+            in [
+                DamageElementalType.PYRO,
+                DamageElementalType.PHYSICAL,
+            ]
+            and self.usage > 0
+        ):
             value.damage += 2
-            assert mode == 'REAL'
+            assert mode == "REAL"
             self.usage -= 1
         return value
 

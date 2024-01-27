@@ -14,9 +14,9 @@ from ....struct import Cost
 
 
 class CrownOfWatatsumi_4_1(ArtifactBase):
-    name: Literal['Crown of Watatsumi']
-    version: Literal['4.1'] = '4.1'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Crown of Watatsumi"]
+    version: Literal["4.1"] = "4.1"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 0
     max_usage: int = 2
     counter: int = 0
@@ -27,8 +27,7 @@ class CrownOfWatatsumi_4_1(ArtifactBase):
         return []
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
@@ -36,7 +35,7 @@ class CrownOfWatatsumi_4_1(ArtifactBase):
             # not self use damage skill
             return value
         # increase damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         value.damage += self.usage
         self.usage = 0
         return value
@@ -71,25 +70,26 @@ class CrownOfWatatsumi_4_1(ArtifactBase):
 
 
 class OceanHuedClam_4_2(CrownOfWatatsumi_4_1):
-    name: Literal['Ocean-Hued Clam']
-    version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(any_dice_number = 3)
+    name: Literal["Ocean-Hued Clam"]
+    version: Literal["4.2"] = "4.2"
+    cost: Cost = Cost(any_dice_number=3)
 
     def equip(self, match: Any) -> List[Actions]:
         super().equip(match)
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         # heal self
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        target_position = character.position,
-                        damage_type = DamageType.HEAL,
-                        damage = -3,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = Cost()
+                        position=self.position,
+                        target_position=character.position,
+                        damage_type=DamageType.HEAL,
+                        damage=-3,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
                     )
                 ]
             )

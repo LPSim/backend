@@ -14,8 +14,8 @@ from .base import ArtifactBase, RoundEffectArtifactBase
 
 class GeneralsAncientHelm_3_5(ArtifactBase):
     name: Literal["General's Ancient Helm"]
-    version: Literal['3.5'] = '3.5'
-    cost: Cost = Cost(same_dice_number = 2)
+    version: Literal["3.5"] = "3.5"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 0
 
     def event_handler_ROUND_PREPARE(
@@ -28,17 +28,19 @@ class GeneralsAncientHelm_3_5(ArtifactBase):
             # not equipped
             return []
         position = self.position.set_area(ObjectPositionType.CHARACTER_STATUS)
-        return [CreateObjectAction(
-            object_name = 'Unmovable Mountain',
-            object_position = position,
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Unmovable Mountain",
+                object_position=position,
+                object_arguments={},
+            )
+        ]
 
 
 class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
-    name: Literal['Tenacity of the Millelith']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 3)
+    name: Literal["Tenacity of the Millelith"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=3)
     max_usage_per_round: int = 1
 
     def event_handler_ROUND_PREPARE(
@@ -49,11 +51,13 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
             return []
         super().event_handler_ROUND_PREPARE(event, match)
         position = self.position.set_area(ObjectPositionType.CHARACTER_STATUS)
-        return [CreateObjectAction(
-            object_name = 'Unmovable Mountain',
-            object_position = position,
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Unmovable Mountain",
+                object_position=position,
+                object_arguments={},
+            )
+        ]
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Any
@@ -69,24 +73,30 @@ class TenacityOfTheMillelith_3_7(RoundEffectArtifactBase):
             # no usage
             return []
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         if character.hp == 0:
             # character is dying
             return []
         damage = event.final_damage
         if not self.position.check_position_valid(
-            damage.target_position, match, player_idx_same = True,
-            character_idx_same = True, source_is_active_character = True
+            damage.target_position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_is_active_character=True,
         ):
             # damage not attack self, or self not active character
             return []
         # create die
         self.usage -= 1
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = ELEMENT_TO_DIE_COLOR[character.element]
-        )]
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                color=ELEMENT_TO_DIE_COLOR[character.element],
+            )
+        ]
 
 
 register_class(GeneralsAncientHelm_3_5 | TenacityOfTheMillelith_3_7)

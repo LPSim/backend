@@ -13,17 +13,17 @@ from .base import RoundEffectArtifactBase
 
 
 class ShadowOfTheSandKing_4_2(RoundEffectArtifactBase):
-    name: Literal['Shadow of the Sand King']
-    version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Shadow of the Sand King"]
+    version: Literal["4.2"] = "4.2"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
 
     def equip(self, match: Any) -> List[Actions]:
         return super().equip(match) + [
             DrawCardAction(
-                player_idx = self.position.player_idx,
-                number = 1,
-                draw_if_filtered_not_enough = True
+                player_idx=self.position.player_idx,
+                number=1,
+                draw_if_filtered_not_enough=True,
             )
         ]
 
@@ -35,25 +35,25 @@ class ShadowOfTheSandKing_4_2(RoundEffectArtifactBase):
         """
         if (
             self.position.area != ObjectPositionType.CHARACTER
-            or self.position.player_idx 
-            == event.final_damage.target_position.player_idx
-            or event.final_damage.element_reaction
-            == ElementalReactionType.NONE
+            or self.position.player_idx == event.final_damage.target_position.player_idx
+            or event.final_damage.element_reaction == ElementalReactionType.NONE
             or event.final_damage.damage_type != DamageType.DAMAGE
             or self.usage <= 0
-            or self.position.character_idx != match.player_tables[
-                self.position.player_idx].active_character_idx
+            or self.position.character_idx
+            != match.player_tables[self.position.player_idx].active_character_idx
         ):
-            # not equipped, not opponent character, or not elemental reaction, 
+            # not equipped, not opponent character, or not elemental reaction,
             # or not damage, or no usage, or self not active character
             return []
         # draw card
         self.usage -= 1
-        return [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            draw_if_filtered_not_enough = True
-        )]
+        return [
+            DrawCardAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                draw_if_filtered_not_enough=True,
+            )
+        ]
 
 
 register_class(ShadowOfTheSandKing_4_2)

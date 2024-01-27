@@ -14,33 +14,30 @@ from .ganyu_3_7 import FrostflakeArrow, TrailOftheQilin
 class CelestialShower(CS_3_7):
     damage: int = 1
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.CRYO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.CRYO, elemental_dice_number=3, charge=2
     )
 
 
 class UndividedHeart_3_3(UH_3_7):
-    version: Literal['3.3'] = '3.3'
+    version: Literal["3.3"] = "3.3"
 
 
 class Ganyu_3_3(G_3_7):
-    version: Literal['3.3'] = '3.3'
+    version: Literal["3.3"] = "3.3"
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | TrailOftheQilin | FrostflakeArrow 
-        | CelestialShower
+        PhysicalNormalAttackBase | TrailOftheQilin | FrostflakeArrow | CelestialShower
     ] = []
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Liutian Archery',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Liutian Archery",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             TrailOftheQilin(),
             FrostflakeArrow(),
-            CelestialShower()
+            CelestialShower(),
         ]
 
 

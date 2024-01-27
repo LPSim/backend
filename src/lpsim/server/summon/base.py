@@ -5,8 +5,14 @@ from ...utils import accept_same_or_higher_version
 from ...utils.class_registry import register_base_class
 from ..object_base import ObjectBase
 from ..consts import (
-    ELEMENT_TO_DAMAGE_TYPE, ElementType, ElementalReactionType, IconType, 
-    ObjectPositionType, ObjectType, DamageElementalType, DamageType
+    ELEMENT_TO_DAMAGE_TYPE,
+    ElementType,
+    ElementalReactionType,
+    IconType,
+    ObjectPositionType,
+    ObjectType,
+    DamageElementalType,
+    DamageType,
 )
 from ..event import (
     CreateObjectEventArguments,
@@ -18,8 +24,12 @@ from ..event import (
     RoundPrepareEventArguments,
 )
 from ..action import (
-    ActionTypes, Actions, ChangeObjectUsageAction, CreateObjectAction, 
-    MakeDamageAction, RemoveObjectAction
+    ActionTypes,
+    Actions,
+    ChangeObjectUsageAction,
+    CreateObjectAction,
+    MakeDamageAction,
+    RemoveObjectAction,
 )
 from ..modifiable_values import DamageDecreaseValue, DamageValue
 from ..struct import Cost, ObjectPosition
@@ -27,7 +37,7 @@ from ..struct import Cost, ObjectPosition
 
 class SummonBase(ObjectBase):
     type: Literal[ObjectType.SUMMON] = ObjectType.SUMMON
-    renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'RESET_WITH_MAX'
+    renew_type: Literal["ADD", "RESET", "RESET_WITH_MAX"] = "RESET_WITH_MAX"
     name: str
     strict_version_validation: bool = False  # default accept higher versions
     version: str
@@ -36,37 +46,37 @@ class SummonBase(ObjectBase):
     damage_elemental_type: DamageElementalType
     damage: int
 
-    # icon type is used to show the icon on the summon top right. 
+    # icon type is used to show the icon on the summon top right.
     icon_type: Literal[
         IconType.SHIELD, IconType.BARRIER, IconType.TIMESTATE, IconType.COUNTER
     ]
     # when status icon type is not none, it will show in team status area
     status_icon_type: Literal[IconType.NONE] = IconType.NONE
 
-    @validator('version', pre = True)
+    @validator("version", pre=True)
     def accept_same_or_higher_version(cls, v: str, values):
         return accept_same_or_higher_version(cls, v, values)
 
-    def renew(self, new_status: 'SummonBase') -> None:
+    def renew(self, new_status: "SummonBase") -> None:
         """
-        Renew the status. 
+        Renew the status.
         """
-        if self.renew_type == 'ADD':
+        if self.renew_type == "ADD":
             self.usage += new_status.usage
             if self.max_usage < self.usage:
                 self.usage = self.max_usage
-        elif self.renew_type == 'RESET':
-            raise NotImplementedError('RESET is not supported')
+        elif self.renew_type == "RESET":
+            raise NotImplementedError("RESET is not supported")
             self.usage = new_status.usage
         else:
-            assert self.renew_type == 'RESET_WITH_MAX'
+            assert self.renew_type == "RESET_WITH_MAX"
             self.usage = max(self.usage, new_status.usage)
 
     def is_valid(self, match: Any) -> bool:
         """
         For summons, it is expected to never be used as card.
         """
-        raise AssertionError('SummonBase is not expected to be used as card')
+        raise AssertionError("SummonBase is not expected to be used as card")
 
 
 register_base_class(SummonBase)
@@ -74,10 +84,11 @@ register_base_class(SummonBase)
 
 class AttackerSummonBase(SummonBase):
     """
-    Attacker summons, e.g. Guoba, Oz. They do attack on round end, and 
+    Attacker summons, e.g. Guoba, Oz. They do attack on round end, and
     disappears when run out of usage. Specially, Melody Loop can also be a
     Attacker Summon, as it also makes damage with type HEAL.
     """
+
     name: str
     version: str
     usage: int
@@ -103,21 +114,18 @@ class AttackerSummonBase(SummonBase):
         target_character = target_table.get_active_character()
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = damage_type,
-                        target_position = target_character.position,
-                        damage = self.damage,
-                        damage_elemental_type = self.damage_elemental_type,
-                        cost = Cost(),
+                        position=self.position,
+                        damage_type=damage_type,
+                        target_position=target_character.position,
+                        damage=self.damage,
+                        damage_elemental_type=self.damage_elemental_type,
+                        cost=Cost(),
                     )
                 ],
             ),
-            ChangeObjectUsageAction(
-                object_position = self.position,
-                change_usage = -1
-            )
+            ChangeObjectUsageAction(object_position=self.position, change_usage=-1),
         ]
 
     def _remove(self, match: Any) -> List[RemoveObjectAction]:
@@ -126,13 +134,13 @@ class AttackerSummonBase(SummonBase):
         """
         return [
             RemoveObjectAction(
-                object_position = self.position,
+                object_position=self.position,
             )
         ]
 
     def event_handler_CHANGE_OBJECT_USAGE(
-            self, event: ChangeObjectUsageEventArguments, match: Any) \
-            -> List[RemoveObjectAction]:
+        self, event: ChangeObjectUsageEventArguments, match: Any
+    ) -> List[RemoveObjectAction]:
         """
         When usage is 0, remove the summon.
         """
@@ -153,9 +161,10 @@ class AttackerSummonBase(SummonBase):
 
 class AOESummonBase(AttackerSummonBase):
     """
-    Base class that deals AOE damage. It will attack active character 
+    Base class that deals AOE damage. It will attack active character
     damage+element, back character back_damage_piercing.
     """
+
     back_damage: int
 
     def event_handler_ROUND_END(
@@ -173,12 +182,12 @@ class AOESummonBase(AttackerSummonBase):
                 continue
             damage_action.damage_value_list.append(
                 DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = character.position,
-                    damage = self.back_damage,
-                    damage_elemental_type = DamageElementalType.PIERCING,
-                    cost = Cost(),
+                    position=self.position,
+                    damage_type=DamageType.DAMAGE,
+                    target_position=character.position,
+                    damage=self.back_damage,
+                    damage_elemental_type=DamageElementalType.PIERCING,
+                    cost=Cost(),
                 )
             )
         return ret
@@ -188,6 +197,7 @@ class DeclareRoundEndAttackSummonBase(AttackerSummonBase):
     """
     Summons that will attack when declare round end, e.g. Sesshou Sakura.
     """
+
     extra_attack_usage: int
 
     def event_handler_DECLARE_ROUND_END(
@@ -211,7 +221,7 @@ class DeclareRoundEndAttackSummonBase(AttackerSummonBase):
 class DefendSummonBase(SummonBase):
     """
     Defend summons, e.g. Ushi, Frog, Baron Bunny. decrease damage with its rule
-    when receive damage, and decrease usage by 1, and will do one-time damage 
+    when receive damage, and decrease usage by 1, and will do one-time damage
     in round end.
 
     Args:
@@ -225,11 +235,12 @@ class DefendSummonBase(SummonBase):
             If true, when usage is not zero, it will remain on the summon area
             and do nothing in round end. If false, when usage is not zero, it
             will do damage in round end and disappear.
-        min_damage_to_trigger: The minimum damage to trigger the damage 
+        min_damage_to_trigger: The minimum damage to trigger the damage
             decrease.
         max_in_one_time: the maximum damage decrease in one time.
         decrease_usage_by_damage: Always be false for defend summons.
     """
+
     name: str
     version: str
     usage: int
@@ -262,14 +273,14 @@ class DefendSummonBase(SummonBase):
         target_character = target_table.get_active_character()
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.DAMAGE,
-                        target_position = target_character.position,
-                        damage = self.damage,
-                        damage_elemental_type = self.damage_elemental_type,
-                        cost = Cost(),
+                        position=self.position,
+                        damage_type=DamageType.DAMAGE,
+                        target_position=target_character.position,
+                        damage=self.damage,
+                        damage_elemental_type=self.damage_elemental_type,
+                        cost=Cost(),
                     )
                 ],
             )
@@ -281,33 +292,36 @@ class DefendSummonBase(SummonBase):
         """
         return [
             RemoveObjectAction(
-                object_position = self.position,
+                object_position=self.position,
             )
         ]
 
     def value_modifier_DAMAGE_DECREASE(
-            self, value: DamageDecreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageDecreaseValue:
         """
         Decrease damage with its rule, and decrease usage.
         """
         if not value.is_corresponding_character_receive_damage(
-            self.position, match,
+            self.position,
+            match,
         ):
             # not this character receive damage, not modify
             return value
         new_usage = value.apply_shield(
-            self.usage, self.min_damage_to_trigger, self.max_in_one_time,
-            self.decrease_usage_by_damage
+            self.usage,
+            self.min_damage_to_trigger,
+            self.max_in_one_time,
+            self.decrease_usage_by_damage,
         )
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage = new_usage
         return value
 
 
 class ShieldSummonBase(DefendSummonBase):
     """
-    Shield summons, which decrease damage like yellow shield, decrease damage 
+    Shield summons, which decrease damage like yellow shield, decrease damage
     by its usage and decrease corresponding usage. Currently no such summon.
 
     Args:
@@ -326,6 +340,7 @@ class ShieldSummonBase(DefendSummonBase):
         min_damage_to_trigger: Not used, always be 0 for shield summons.
         max_in_one_time: Not used, always be 0 for shield summons.
     """
+
     name: str
     version: str
     usage: int
@@ -345,9 +360,10 @@ class ShieldSummonBase(DefendSummonBase):
 class SwirlChangeSummonBase(AttackerSummonBase):
     """
     Base class for summons that can change damage elemental type when swirl
-    reaction made by our character or summon. 
+    reaction made by our character or summon.
     Note: create summon before attack, so it can change element immediately.
     """
+
     name: str
     version: str
     usage: int
@@ -367,14 +383,15 @@ class SwirlChangeSummonBase(AttackerSummonBase):
     ) -> List[Actions]:
         """
         When anyone receives damage, and has swirl reaction, and made by
-        our character or summon, and current damage type is anemo, 
+        our character or summon, and current damage type is anemo,
         change stormeye damage element.
         """
         if self.damage_elemental_type != DamageElementalType.ANEMO:
             # already changed, do nothing
             return []
         if event.final_damage.position.area not in [
-            ObjectPositionType.SKILL, ObjectPositionType.SUMMON
+            ObjectPositionType.SKILL,
+            ObjectPositionType.SUMMON,
         ]:  # pragma: no cover
             # not character or summon made damage, do nothing
             return []
@@ -385,7 +402,7 @@ class SwirlChangeSummonBase(AttackerSummonBase):
             # not swirl reaction, do nothing
             return []
         elements = event.final_damage.reacted_elements
-        assert elements[0] == ElementType.ANEMO, 'First element must be anemo'
+        assert elements[0] == ElementType.ANEMO, "First element must be anemo"
         # do type change
         self.damage_elemental_type = ELEMENT_TO_DAMAGE_TYPE[elements[1]]
         return []
@@ -397,6 +414,7 @@ class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
     usually defend status. e.g. Dehya, Lynette. When the summon is removed,
     it will also try to remove the status.
     """
+
     name: str
     version: str
     usage: int
@@ -413,15 +431,17 @@ class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
             name = self.status_name
         else:
             name = self.name
-        return [CreateObjectAction(
-            object_name = name,
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.TEAM_STATUS,
-                id = 0,
-            ),
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name=name,
+                object_position=ObjectPosition(
+                    player_idx=self.position.player_idx,
+                    area=ObjectPositionType.TEAM_STATUS,
+                    id=0,
+                ),
+                object_arguments={},
+            )
+        ]
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any
@@ -429,15 +449,11 @@ class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
         """
         When created object is self, and not renew, also create teams status
         """
-        if event.create_result == 'RENEW':
+        if event.create_result == "RENEW":
             # renew, do nothing
             return []
-        if (
-            event.action.object_name == self.name
-            and self.position.check_position_valid(
-                event.action.object_position, match, player_idx_same = True,
-                area_same = True
-            )
+        if event.action.object_name == self.name and self.position.check_position_valid(
+            event.action.object_position, match, player_idx_same=True, area_same=True
         ):
             # name same, and position same, is self created
             return self._create_status(match)
@@ -453,18 +469,17 @@ class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
         """
         If self should remove, and has generated status, remove together.
         """
-        status = match.player_tables[
-            self.position.player_idx].team_status
+        status = match.player_tables[self.position.player_idx].team_status
         target_status = None
         for s in status:
             if s.name == self.name:
                 target_status = s
                 break
-        ret: List[RemoveObjectAction] = [RemoveObjectAction(
-            object_position = self.position,
-        )]
+        ret: List[RemoveObjectAction] = [
+            RemoveObjectAction(
+                object_position=self.position,
+            )
+        ]
         if target_status is not None:
-            ret.append(RemoveObjectAction(
-                object_position = target_status.position
-            ))
+            ret.append(RemoveObjectAction(object_position=target_status.position))
         return ret

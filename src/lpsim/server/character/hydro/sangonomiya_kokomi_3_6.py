@@ -8,18 +8,24 @@ from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageValue
 
-from ...action import (
-    ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
-)
+from ...action import ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DamageType, DieColor, 
-    ElementType, FactionType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE,
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalNormalAttackBase,
+    ElementalSkillBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -27,8 +33,8 @@ from ..character_base import (
 
 
 class BakeKurage_3_5(AttackerSummonBase):
-    name: Literal['Bake-Kurage'] = 'Bake-Kurage'
-    version: Literal['3.5'] = '3.5'
+    name: Literal["Bake-Kurage"] = "Bake-Kurage"
+    version: Literal["3.5"] = "3.5"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -39,29 +45,29 @@ class BakeKurage_3_5(AttackerSummonBase):
     ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         make_damage_action = ret[0]
         assert make_damage_action.type == ActionTypes.MAKE_DAMAGE
-        make_damage_action.damage_value_list.append(DamageValue(
-            position = self.position,
-            damage_type = DamageType.HEAL,
-            target_position = active_character.position,
-            damage = -1,
-            damage_elemental_type = DamageElementalType.HEAL,
-            cost = Cost(),
-        ))
+        make_damage_action.damage_value_list.append(
+            DamageValue(
+                position=self.position,
+                damage_type=DamageType.HEAL,
+                target_position=active_character.position,
+                damage=-1,
+                damage_elemental_type=DamageElementalType.HEAL,
+                cost=Cost(),
+            )
+        )
         # if our Kokomi with talent and Ceremonial Garment, increase damage
         characters = match.player_tables[self.position.player_idx].characters
         is_kokomi_talent_status: bool = False
         for c in characters:
-            if (
-                c.name == 'Sangonomiya Kokomi'
-                and c.talent is not None
-            ):
+            if c.name == "Sangonomiya Kokomi" and c.talent is not None:
                 # our Kokomi with talent
                 status_found = False
                 for s in c.status:
-                    if s.name == 'Ceremonial Garment':
+                    if s.name == "Ceremonial Garment":
                         # Ceremonial Garment exists
                         status_found = True
                         break
@@ -82,10 +88,7 @@ class KuragesOath(ElementalSkillBase):
     name: Literal["Kurage's Oath"] = "Kurage's Oath"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -95,7 +98,7 @@ class KuragesOath(ElementalSkillBase):
             self.charge_self(1),
             self.element_application_self(match, DamageElementalType.HYDRO),
         ]
-        summon = self.create_summon('Bake-Kurage')
+        summon = self.create_summon("Bake-Kurage")
         ret[1].create_objects.append(summon)
         return ret
 
@@ -105,9 +108,7 @@ class NereidsAscension(ElementalBurstBase):
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -120,49 +121,55 @@ class NereidsAscension(ElementalBurstBase):
         characters = match.player_tables[self.position.player_idx].characters
         for character in characters:
             if character.is_alive:
-                damage_action.damage_value_list.append(DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost(),
-                ))
+                damage_action.damage_value_list.append(
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-1,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
+                    )
+                )
         damage_action.create_objects.append(
-            self.create_character_status('Ceremonial Garment'))
+            self.create_character_status("Ceremonial Garment")
+        )
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
-        summons = match.player_tables[
-            self.position.player_idx].summons
+            self.position.character_idx
+        ]
+        summons = match.player_tables[self.position.player_idx].summons
         kurage_found = None
         for s in summons:
-            if s.name == 'Bake-Kurage':
+            if s.name == "Bake-Kurage":
                 kurage_found = s
                 break
         talent = character.talent
         if talent is not None:
-            if talent.version == '3.5':
+            if talent.version == "3.5":
                 # if has 3.5 talent, re-create Bake-Kurage
                 if kurage_found:
                     damage_action.create_objects.append(
-                        self.create_summon('Bake-Kurage'))
-            elif talent.version == '4.2':
+                        self.create_summon("Bake-Kurage")
+                    )
+            elif talent.version == "4.2":
                 # with 4.2 talent
                 if kurage_found is not None:
                     # found kurage, increase usage
                     ret.append(
                         ChangeObjectUsageAction(
-                            object_position = kurage_found.position,
-                            change_usage = 1
+                            object_position=kurage_found.position, change_usage=1
                         )
                     )
                 else:
                     # otherwise, create kurage with 1 usage
                     damage_action.create_objects.append(
-                        self.create_summon('Bake-Kurage', {
-                            'usage': 1,
-                            'max_usage': 1,
-                        })
+                        self.create_summon(
+                            "Bake-Kurage",
+                            {
+                                "usage": 1,
+                                "max_usage": 1,
+                            },
+                        )
                     )
             else:
                 raise NotImplementedError
@@ -173,13 +180,11 @@ class NereidsAscension(ElementalBurstBase):
 
 
 class TamakushiCasket_4_2(SkillTalent):
-    name: Literal['Tamakushi Casket']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Sangonomiya Kokomi'] = 'Sangonomiya Kokomi'
+    name: Literal["Tamakushi Casket"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Sangonomiya Kokomi"] = "Sangonomiya Kokomi"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
     skill: Literal["Nereid's Ascension"] = "Nereid's Ascension"
 
@@ -188,28 +193,24 @@ class TamakushiCasket_4_2(SkillTalent):
 
 
 class SangonomiyaKokomi_3_6(CharacterBase):
-    name: Literal['Sangonomiya Kokomi']
-    version: Literal['3.6'] = '3.6'
+    name: Literal["Sangonomiya Kokomi"]
+    version: Literal["3.6"] = "3.6"
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        ElementalNormalAttackBase | KuragesOath | NereidsAscension
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.INAZUMA
-    ]
+    skills: List[ElementalNormalAttackBase | KuragesOath | NereidsAscension] = []
+    faction: List[FactionType] = [FactionType.INAZUMA]
     weapon_type: WeaponType = WeaponType.CATALYST
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'The Shape of Water',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="The Shape of Water",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             KuragesOath(),
-            NereidsAscension()
+            NereidsAscension(),
         ]
 
 

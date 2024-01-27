@@ -1,8 +1,12 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -68,7 +72,7 @@ def test_dehya():
             "sw_char 2 15",
             "sw_char 0 14",
             "TEST 1 7 2 7 2 1 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -128,27 +132,21 @@ def test_dehya():
             "card 9 0",
             "end",
             "TEST 1 7 2 7 1 1 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Wanderer
         character:Mona
@@ -157,7 +155,7 @@ def test_dehya():
         # Beneficent*10
         Stalwart and True*10
         Sweet Madame*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -177,10 +175,10 @@ def test_dehya():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -196,7 +194,7 @@ def test_dehya():
                 summon = match.player_tables[pidx].summons
                 check_usage(summon, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -235,7 +233,7 @@ def test_dehya_2():
             "TEST 2 p0 team usage 2",
             "sw_char 2 1",
             "TEST 1 10 10 8 10 3 4",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -260,27 +258,21 @@ def test_dehya_2():
             "sw_char 0 8",
             "sw_char 2 7",
             "skill 1 6 5 4",
-            "skill 2 3 2 1 0"
-        ]
+            "skill 2 3 2 1 0",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Noelle
         character:Mona
@@ -289,7 +281,7 @@ def test_dehya_2():
         # Beneficent*10
         Stalwart and True*10
         Sweet Madame*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -309,10 +301,10 @@ def test_dehya_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -328,7 +320,7 @@ def test_dehya_2():
                 status = match.player_tables[pidx].team_status
                 check_usage(status, cmd[5:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -338,6 +330,6 @@ def test_dehya_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_dehya()
     test_dehya_2()

@@ -1,14 +1,19 @@
 import os
 from src.lpsim import MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_test_id_from_command, 
-    make_respond, set_16_omni, read_from_log_json
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
+    read_from_log_json,
 )
 
 
 def test_lyney():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_lyney.json')
+        os.path.join(os.path.dirname(__file__), "jsons", "test_lyney.json")
     )
     # modify hp
     for i in range(2):
@@ -26,10 +31,10 @@ def test_lyney():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -48,7 +53,7 @@ def test_lyney():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].summons, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -58,5 +63,5 @@ def test_lyney():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_lyney()

@@ -6,12 +6,21 @@ from ...event import SkillEndEventArguments
 
 from ...action import Actions, MakeDamageAction
 from ...consts import (
-    ElementType, FactionType, SkillType, WeaponType, DamageElementalType,
-    DamageType, DieColor
+    ElementType,
+    FactionType,
+    SkillType,
+    WeaponType,
+    DamageElementalType,
+    DamageType,
+    DieColor,
 )
 from ..character_base import (
-    AOESkillBase, PhysicalNormalAttackBase, ElementalSkillBase, 
-    ElementalBurstBase, CharacterBase, SkillTalent
+    AOESkillBase,
+    PhysicalNormalAttackBase,
+    ElementalSkillBase,
+    ElementalBurstBase,
+    CharacterBase,
+    SkillTalent,
 )
 from ...struct import Cost
 from ...modifiable_values import DamageValue
@@ -19,55 +28,55 @@ from ...summon.base import AttackerSummonBase
 
 
 class Nightrider(ElementalSkillBase):
-    name: Literal['Nightrider'] = 'Nightrider'
+    name: Literal["Nightrider"] = "Nightrider"
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
+        elemental_dice_color=DieColor.ELECTRO,
+        elemental_dice_number=3,
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon('Oz')])
+        return super().get_actions(match, [self.create_summon("Oz")])
 
 
 class MidnightPhantasmagoria(ElementalBurstBase, AOESkillBase):
-    name: Literal['Midnight Phantasmagoria'] = 'Midnight Phantasmagoria'
+    name: Literal["Midnight Phantasmagoria"] = "Midnight Phantasmagoria"
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     back_damage: int = 2
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 3,
+        elemental_dice_color=DieColor.ELECTRO,
+        elemental_dice_number=3,
+        charge=3,
     )
 
 
 class StellarPredator_3_3(SkillTalent):
-    name: Literal['Stellar Predator']
-    character_name: Literal['Fischl'] = 'Fischl'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Stellar Predator"]
+    character_name: Literal["Fischl"] = "Fischl"
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
+        elemental_dice_color=DieColor.ELECTRO,
+        elemental_dice_number=3,
     )
-    skill: Literal['Nightrider'] = 'Nightrider'
+    skill: Literal["Nightrider"] = "Nightrider"
 
 
 class Oz_3_3(AttackerSummonBase):
-    name: Literal['Oz']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Oz"]
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
     damage: int = 1
-    renew_type: Literal['RESET_WITH_MAX'] = 'RESET_WITH_MAX'
+    renew_type: Literal["RESET_WITH_MAX"] = "RESET_WITH_MAX"
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         """
-        If Fischl made normal attack and with talent, make 2 electro damage 
+        If Fischl made normal attack and with talent, make 2 electro damage
         to front.
         """
         action = event.action
@@ -81,8 +90,9 @@ class Oz_3_3(AttackerSummonBase):
             action.position.character_idx
         ]
         if (
-            character.talent is not None and character.name == 'Fischl'
-            and character.talent.name == 'Stellar Predator'
+            character.talent is not None
+            and character.name == "Fischl"
+            and character.talent.name == "Stellar Predator"
         ):
             # match, decrease usage, attack.
             # after make damage, will trigger usage check, so no need to
@@ -95,14 +105,14 @@ class Oz_3_3(AttackerSummonBase):
             ]
             return [
                 MakeDamageAction(
-                    damage_value_list = [
+                    damage_value_list=[
                         DamageValue(
-                            position = self.position,
-                            damage_type = DamageType.DAMAGE,
-                            target_position = target_character.position,
-                            damage = 2,
-                            damage_elemental_type = self.damage_elemental_type,
-                            cost = Cost()
+                            position=self.position,
+                            damage_type=DamageType.DAMAGE,
+                            target_position=target_character.position,
+                            damage=2,
+                            damage_elemental_type=self.damage_elemental_type,
+                            cost=Cost(),
                         )
                     ],
                 )
@@ -111,14 +121,12 @@ class Oz_3_3(AttackerSummonBase):
 
 
 class Fischl_3_3(CharacterBase):
-    name: Literal['Fischl']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Fischl"]
+    version: Literal["3.3"] = "3.3"
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 3
-    skills: List[
-        PhysicalNormalAttackBase | Nightrider | MidnightPhantasmagoria
-    ] = []
+    skills: List[PhysicalNormalAttackBase | Nightrider | MidnightPhantasmagoria] = []
     faction: List[FactionType] = [
         FactionType.MONDSTADT,
     ]
@@ -127,8 +135,8 @@ class Fischl_3_3(CharacterBase):
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Bolts of Downfall',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Bolts of Downfall",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             Nightrider(),
             MidnightPhantasmagoria(),

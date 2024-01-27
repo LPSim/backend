@@ -3,4 +3,4 @@ from .base import ArtifactBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('ArtifactBase',)
+__all__ = ("ArtifactBase",)

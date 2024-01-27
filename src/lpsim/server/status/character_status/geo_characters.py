@@ -9,22 +9,30 @@ from ...action import Actions, CreateObjectAction
 from ...event import RoundPrepareEventArguments, SkillEndEventArguments
 
 from ...consts import (
-    DamageElementalType, DieColor, IconType, ObjectPositionType, SkillType
+    DamageElementalType,
+    DieColor,
+    IconType,
+    ObjectPositionType,
+    SkillType,
 )
 from ...modifiable_values import (
-    CostValue, DamageDecreaseValue, DamageElementEnhanceValue, 
-    DamageIncreaseValue
+    CostValue,
+    DamageDecreaseValue,
+    DamageElementEnhanceValue,
+    DamageIncreaseValue,
 )
 
 from .base import (
-    DefendCharacterStatus, ElementalInfusionCharacterStatus, 
-    RoundCharacterStatus, UsageCharacterStatus
+    DefendCharacterStatus,
+    ElementalInfusionCharacterStatus,
+    RoundCharacterStatus,
+    UsageCharacterStatus,
 )
 
 
 class SweepingTime_3_3(RoundCharacterStatus, ElementalInfusionCharacterStatus):
-    name: Literal['Sweeping Time'] = 'Sweeping Time'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Sweeping Time"] = "Sweeping Time"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     cost_decrease_usage: int = 1
@@ -44,7 +52,7 @@ class SweepingTime_3_3(RoundCharacterStatus, ElementalInfusionCharacterStatus):
         return super().event_handler_ROUND_PREPARE(event, match)
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         If self use normal attack, and not decreased this round, and has
@@ -54,8 +62,11 @@ class SweepingTime_3_3(RoundCharacterStatus, ElementalInfusionCharacterStatus):
             # out of usage, not modify
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True, 
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            value.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not this character use skill, not modify
             return value
@@ -67,29 +78,28 @@ class SweepingTime_3_3(RoundCharacterStatus, ElementalInfusionCharacterStatus):
         # decrease geo cost
         if value.cost.decrease_cost(DieColor.GEO):  # pragma: no branch
             # decrease success
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.cost_decrease_usage -= 1
         return value
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
             # not this character use normal attack, not modify
             return value
-        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
-            value, match, mode
-        )
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(value, match, mode)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -100,10 +110,9 @@ class SweepingTime_3_3(RoundCharacterStatus, ElementalInfusionCharacterStatus):
         return value
 
 
-class RagingOniKing_4_2(RoundCharacterStatus, 
-                        ElementalInfusionCharacterStatus):
-    name: Literal['Raging Oni King'] = 'Raging Oni King'
-    version: Literal['4.2'] = '4.2'
+class RagingOniKing_4_2(RoundCharacterStatus, ElementalInfusionCharacterStatus):
+    name: Literal["Raging Oni King"] = "Raging Oni King"
+    version: Literal["4.2"] = "4.2"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -129,23 +138,23 @@ class RagingOniKing_4_2(RoundCharacterStatus,
         return super().event_handler_ROUND_PREPARE(event, match)
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
             # not this character use normal attack, not modify
             return value
-        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
-            value, match, mode)
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(value, match, mode)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -159,7 +168,7 @@ class RagingOniKing_4_2(RoundCharacterStatus,
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        If self use normal attack, and has status increase usage, 
+        If self use normal attack, and has status increase usage,
         gain superlative superstrength.
         """
         action = event.action
@@ -167,8 +176,10 @@ class RagingOniKing_4_2(RoundCharacterStatus,
             # not using normal attack
             return []
         if not self.position.check_position_valid(
-            action.position, match, player_idx_same = True,
-            character_idx_same = True,
+            action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
         ):
             # not attack by self
             return []
@@ -178,25 +189,26 @@ class RagingOniKing_4_2(RoundCharacterStatus,
         # trigger
         self.status_increase_usage -= 1
         position = self.position.set_area(ObjectPositionType.CHARACTER_STATUS)
-        return [CreateObjectAction(
-            object_position = position,
-            object_name = 'Superlative Superstrength',
-            object_arguments = {},
-        )]
+        return [
+            CreateObjectAction(
+                object_position=position,
+                object_name="Superlative Superstrength",
+                object_arguments={},
+            )
+        ]
 
 
 class SuperlativeSuperstrength_3_6(UsageCharacterStatus):
-    name: Literal['Superlative Superstrength'] = 'Superlative Superstrength'
-    version: Literal['3.6'] = '3.6'
+    name: Literal["Superlative Superstrength"] = "Superlative Superstrength"
+    version: Literal["3.6"] = "3.6"
     usage: int = 1
     max_usage: int = 3
     icon_type: Literal[IconType.ATK_UP_ROCK] = IconType.ATK_UP_ROCK
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -212,18 +224,21 @@ class SuperlativeSuperstrength_3_6(UsageCharacterStatus):
         return value
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
-        If self use charged attack, and has 2 or more usage, decrease one 
+        If self use charged attack, and has 2 or more usage, decrease one
         unaligned die cost.
         """
         if self.usage < 2:
             # not enough usage, not modify
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True, 
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            value.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not this character use skill, not modify
             return value
@@ -244,8 +259,9 @@ class Stonehide_3_3(ElementalInfusionCharacterStatus, DefendCharacterStatus):
     """
     Combined Stonehide and Stone Force into one.
     """
-    name: Literal['Stonehide'] = 'Stonehide'
-    version: Literal['3.3'] = '3.3'
+
+    name: Literal["Stonehide"] = "Stonehide"
+    version: Literal["3.3"] = "3.3"
     usage: int = 3
     max_usage: int = 3
 
@@ -269,14 +285,11 @@ class Stonehide_3_3(ElementalInfusionCharacterStatus, DefendCharacterStatus):
         return []
 
     def value_modifier_DAMAGE_DECREASE(
-        self, value: DamageDecreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageDecreaseValue:
         value = super().value_modifier_DAMAGE_DECREASE(value, match, mode)
         # check if need to decrease usage 1 more
-        if not value.is_corresponding_character_receive_damage(
-            self.position, match
-        ):
+        if not value.is_corresponding_character_receive_damage(self.position, match):
             # not corresponding character, return
             return value
         if value.damage_elemental_type != DamageElementalType.GEO:
@@ -288,13 +301,12 @@ class Stonehide_3_3(ElementalInfusionCharacterStatus, DefendCharacterStatus):
         return value
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         Increase damage by 1
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
@@ -310,19 +322,23 @@ class Stonehide_3_3(ElementalInfusionCharacterStatus, DefendCharacterStatus):
 
 
 class Petrification_3_7(RoundCharacterStatus):
-    name: Literal['Petrification'] = 'Petrification'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Petrification"] = "Petrification"
+    version: Literal["3.7"] = "3.7"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
 class RagingOniKing_3_6(RagingOniKing_4_2):
-    version: Literal['3.6']
+    version: Literal["3.6"]
     damage_increase: int = 2
 
 
 register_class(
-    SweepingTime_3_3 | RagingOniKing_4_2 | SuperlativeSuperstrength_3_6 
-    | Stonehide_3_3 | Petrification_3_7 | RagingOniKing_3_6
+    SweepingTime_3_3
+    | RagingOniKing_4_2
+    | SuperlativeSuperstrength_3_6
+    | Stonehide_3_3
+    | Petrification_3_7
+    | RagingOniKing_3_6
 )
