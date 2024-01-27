@@ -12,20 +12,20 @@ from ....match import Match
 from ....event import (
     GameStartEventArguments, RoundEndEventArguments, RoundPrepareEventArguments
 )
-from ....status.charactor_status.base import DefendCharactorStatus
+from ....status.character_status.base import DefendCharacterStatus
 from ....struct import Cost
 from ....consts import (
     CostLabels, DamageElementalType, DieColor, ElementType, FactionType, 
     ObjectPositionType, WeaponType
 )
-from ....charactor.charactor_base import (
-    CharactorBase, CreateStatusPassiveSkill, ElementalBurstBase, 
+from ....character.character_base import (
+    CharacterBase, CreateStatusPassiveSkill, ElementalBurstBase, 
     ElementalSkillBase, PhysicalNormalAttackBase, TalentBase
 )
 from .....utils.desc_registry import DescDictType
 
 
-class FontemerPearl_4_4(DefendCharactorStatus):
+class FontemerPearl_4_4(DefendCharacterStatus):
     name: Literal['Fontemer Pearl'] = 'Fontemer Pearl'
     desc: Literal['', 'talent'] = ''
     version: Literal['4.4'] = '4.4'
@@ -79,10 +79,10 @@ class FontemerPearl_4_4(DefendCharactorStatus):
         self, event: RoundEndEventArguments, match: Match
     ) -> List[DrawCardAction]:
         if (
-            match.player_tables[self.position.player_idx].active_charactor_idx 
-            == self.position.charactor_idx
+            match.player_tables[self.position.player_idx].active_character_idx 
+            == self.position.character_idx
         ):
-            # active charactor
+            # active character
             return [
                 DrawCardAction(
                     player_idx = self.position.player_idx,
@@ -115,8 +115,8 @@ class SwirlingSchoolOfFish(ElementalSkillBase):
         ret = super().get_actions(match)
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        status = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx].status
+        status = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx].status
         target_status = None
         for s in status:
             if s.name == 'Fontemer Pearl':
@@ -148,7 +148,7 @@ class FontemerHoarthunder(ElementalBurstBase):
         if self.is_talent_equipped(match):
             args['desc'] = 'talent'
         return super().get_actions(match, [
-            self.create_charactor_status('Fontemer Pearl', args),
+            self.create_character_status('Fontemer Pearl', args),
             self.create_summon('Resonant Coral Orb')
         ])
 
@@ -164,7 +164,7 @@ class PearlArmor(CreateStatusPassiveSkill):
         """
         When game begin, gain status
         """
-        return [self.create_charactor_status(self.status_name, {
+        return [self.create_character_status(self.status_name, {
             'usage': 2
         })]
 
@@ -172,7 +172,7 @@ class PearlArmor(CreateStatusPassiveSkill):
 class PearlSolidification_4_4(TalentBase):
     name: Literal['Pearl Solidification']
     version: Literal['4.4'] = '4.4'
-    charactor_name: Literal[
+    character_name: Literal[
         'Millennial Pearl Seahorse'] = 'Millennial Pearl Seahorse'
     cost: Cost = Cost()
     cost_label: int = (
@@ -190,11 +190,11 @@ class PearlSolidification_4_4(TalentBase):
         ret += [CreateObjectAction(
             object_name = 'Fontemer Pearl',
             object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_arguments = { 'desc': 'talent' }
         )]
-        status = match.player_tables[target.player_idx].charactors[
-            target.charactor_idx].status
+        status = match.player_tables[target.player_idx].characters[
+            target.character_idx].status
         pearl_status = None
         for s in status:
             if s.name == 'Fontemer Pearl':
@@ -209,7 +209,7 @@ class PearlSolidification_4_4(TalentBase):
         return ret
 
 
-class MillennialPearlSeahorse_4_4(CharactorBase):
+class MillennialPearlSeahorse_4_4(CharacterBase):
     name: Literal['Millennial Pearl Seahorse']
     version: Literal['4.4'] = '4.4'
     element: ElementType = ElementType.ELECTRO
@@ -237,7 +237,7 @@ class MillennialPearlSeahorse_4_4(CharactorBase):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Millennial Pearl Seahorse": {
+    "CHARACTER/Millennial Pearl Seahorse": {
         "names": {
             "en-US": "Millennial Pearl Seahorse",
             "zh-CN": "千年珍珠骏麟"
@@ -275,7 +275,7 @@ desc: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Fontemer Pearl": {
+    "CHARACTER_STATUS/Fontemer Pearl": {
         "names": {
             "en-US": "Fontemer Pearl",
             "zh-CN": "原海明珠"
@@ -287,7 +287,7 @@ desc: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Fontemer Pearl_talent": {
+    "CHARACTER_STATUS/Fontemer Pearl_talent": {
         "names": {
             "en-US": "Fontemer Pearl",
             "zh-CN": "原海明珠"

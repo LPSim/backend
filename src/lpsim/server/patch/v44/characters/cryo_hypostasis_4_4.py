@@ -7,8 +7,8 @@ from ....event import (
     RemoveObjectEventArguments, RoundEndEventArguments
 )
 from ....match import Match
-from ....status.charactor_status.base import (
-    ReviveCharactorStatus, UsageCharactorStatus
+from ....status.character_status.base import (
+    ReviveCharacterStatus, UsageCharacterStatus
 )
 from .....utils.class_registry import register_class
 from .....utils.desc_registry import DescDictType
@@ -19,13 +19,13 @@ from ....consts import (
     CostLabels, DamageElementalType, DieColor, ElementType, FactionType, 
     IconType, ObjectPositionType, WeaponType
 )
-from ....charactor.charactor_base import (
+from ....character.character_base import (
     AOESkillBase, CreateStatusPassiveSkill, ElementalBurstBase, 
-    ElementalNormalAttackBase, ElementalSkillBase, CharactorBase, TalentBase
+    ElementalNormalAttackBase, ElementalSkillBase, CharacterBase, TalentBase
 )
 
 
-class OverwhelmingIce_4_4(UsageCharactorStatus):
+class OverwhelmingIce_4_4(UsageCharacterStatus):
     name: Literal['Overwhelming Ice'] = 'Overwhelming Ice'
     version: Literal['4.4'] = '4.4'
     usage: int = 1
@@ -33,7 +33,7 @@ class OverwhelmingIce_4_4(UsageCharactorStatus):
     icon_type: IconType = IconType.OTHERS
 
 
-class CryocrystalCore_4_4(ReviveCharactorStatus):
+class CryocrystalCore_4_4(ReviveCharacterStatus):
     name: Literal['Cryocrystal Core'] = 'Cryocrystal Core'
     version: Literal['4.4'] = '4.4'
     heal: int = 1
@@ -53,21 +53,21 @@ class PiercingIceridge_4_4(AttackerSummonBase):
         ret = super().event_handler_ROUND_END(event, match)
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        # get closest charactor
+        # get closest character
         our_active = match.player_tables[
-            self.position.player_idx].active_charactor_idx
-        target_charactors = match.player_tables[
-            1 - self.position.player_idx].charactors
+            self.position.player_idx].active_character_idx
+        target_characters = match.player_tables[
+            1 - self.position.player_idx].characters
         target_idx = our_active
-        if target_charactors[target_idx].is_defeated:
-            # need to choose another charactor
-            for idx, charactor in enumerate(target_charactors):
-                if not charactor.is_defeated:
+        if target_characters[target_idx].is_defeated:
+            # need to choose another character
+            for idx, character in enumerate(target_characters):
+                if not character.is_defeated:
                     target_idx = idx
                     break
             else:
-                raise AssertionError('No charactor alive')
-        damage_action.damage_value_list[0].target_position = target_charactors[
+                raise AssertionError('No character alive')
+        damage_action.damage_value_list[0].target_position = target_characters[
             target_idx].position
         return ret
 
@@ -88,8 +88,8 @@ class IcespikeShot(ElementalNormalAttackBase, AOESkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        status = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx].status
+        status = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx].status
         found_target = None
         for s in status:
             if s.name == 'Overwhelming Ice':
@@ -125,7 +125,7 @@ class IceRingWaltz(ElementalSkillBase):
         Attack and create object
         """
         return super().get_actions(match, [
-            self.create_charactor_status('Overwhelming Ice'),
+            self.create_character_status('Overwhelming Ice'),
         ])
 
 
@@ -158,7 +158,7 @@ class CryocrystalCore(CreateStatusPassiveSkill):
 class SternfrostPrism_4_4(TalentBase):
     name: Literal['Sternfrost Prism']
     version: Literal['4.4'] = '4.4'
-    charactor_name: Literal['Cryo Hypostasis'] = 'Cryo Hypostasis'
+    character_name: Literal['Cryo Hypostasis'] = 'Cryo Hypostasis'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.CRYO,
         elemental_dice_number = 1,
@@ -176,14 +176,14 @@ class SternfrostPrism_4_4(TalentBase):
         Using this card will attach cryo crystal core to it.
         """
         ret = super().get_actions(target, match)
-        charactor = match.player_tables[
-            self.position.player_idx].get_active_charactor()
-        assert charactor.name == self.charactor_name
+        character = match.player_tables[
+            self.position.player_idx].get_active_character()
+        assert character.name == self.character_name
         return ret + [
             CreateObjectAction(
                 object_name = 'Cryocrystal Core',
-                object_position = charactor.position.set_area(
-                    ObjectPositionType.CHARACTOR_STATUS),
+                object_position = character.position.set_area(
+                    ObjectPositionType.CHARACTER_STATUS),
                 object_arguments = {}
             )
         ]
@@ -197,26 +197,26 @@ class SternfrostPrism_4_4(TalentBase):
         """
         if not self.position.check_position_valid(
             event.action.object_position, match, player_idx_same = True,
-            charactor_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTOR,
-            target_area = ObjectPositionType.CHARACTOR_STATUS
+            character_idx_same = True, 
+            source_area = ObjectPositionType.CHARACTER,
+            target_area = ObjectPositionType.CHARACTER_STATUS
         ):
-            # not equipped, or target not self charactor status
+            # not equipped, or target not self character status
             return []
         if event.object_name != 'Cryocrystal Core':
             # not cryo crystal core
             return []
         target = match.player_tables[
-            1 - self.position.player_idx].get_active_charactor()
+            1 - self.position.player_idx].get_active_character()
         return [CreateObjectAction(
             object_position = target.position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_name = 'Sheer Cold',
             object_arguments = {}
         )]
 
 
-class CryoHypostasis_4_4(CharactorBase):
+class CryoHypostasis_4_4(CharacterBase):
     name: Literal['Cryo Hypostasis']
     version: Literal['4.4'] = '4.4'
     element: ElementType = ElementType.CRYO
@@ -241,9 +241,9 @@ class CryoHypostasis_4_4(CharactorBase):
 
 
 # define descriptions of newly defined classes. Note key of skills and talents
-# have charactor names. For balance changes, only descs are needed to define.
-charactor_descs: Dict[str, DescDictType] = {
-    "CHARACTOR/Cryo Hypostasis": {
+# have character names. For balance changes, only descs are needed to define.
+character_descs: Dict[str, DescDictType] = {
+    "CHARACTER/Cryo Hypostasis": {
         "names": {
             "en-US": "Cryo Hypostasis",
             "zh-CN": "无相之冰"
@@ -281,7 +281,7 @@ charactor_descs: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Overwhelming Ice": {
+    "CHARACTER_STATUS/Overwhelming Ice": {
         "names": {
             "en-US": "Overwhelming Ice",
             "zh-CN": "四迸冰锥"
@@ -329,7 +329,7 @@ charactor_descs: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Cryocrystal Core": {
+    "CHARACTER_STATUS/Cryocrystal Core": {
         "names": {
             "en-US": "Cryocrystal Core",
             "zh-CN": "冰晶核心"
@@ -361,5 +361,5 @@ charactor_descs: Dict[str, DescDictType] = {
 register_class(
     CryoHypostasis_4_4 | OverwhelmingIce_4_4 | CryocrystalCore_4_4
     | PiercingIceridge_4_4 | SternfrostPrism_4_4,
-    charactor_descs
+    character_descs
 )

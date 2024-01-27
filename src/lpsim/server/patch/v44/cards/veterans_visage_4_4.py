@@ -26,15 +26,15 @@ class VeteransVisage_4_4(RoundEffectArtifactBase):
             return []
         if not self.position.check_position_valid(
             event.final_damage.target_position, match, player_idx_same = True,
-            charactor_idx_same = True, area_same = True,
-            source_area = ObjectPositionType.CHARACTOR,
+            character_idx_same = True, area_same = True,
+            source_area = ObjectPositionType.CHARACTER,
         ):
             # not equipped, or not self receive damage
             return []
-        charactor = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx]
-        if charactor.hp == 0:
-            # charactor is dying
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx]
+        if character.hp == 0:
+            # character is dying
             return []
         if event.final_damage.damage_type not in [
             DamageType.DAMAGE, DamageType.HEAL
@@ -44,12 +44,12 @@ class VeteransVisage_4_4(RoundEffectArtifactBase):
         if self.usage == 2:
             # create die
             self.usage -= 1
-            charactor = match.player_tables[
-                self.position.player_idx].charactors[
-                    self.position.charactor_idx]
+            character = match.player_tables[
+                self.position.player_idx].characters[
+                    self.position.character_idx]
             return [CreateDiceAction(
                 player_idx = self.position.player_idx,
-                color = ELEMENT_TO_DIE_COLOR[charactor.element],
+                color = ELEMENT_TO_DIE_COLOR[character.element],
                 number = 1,
             )]
         else:

@@ -1,8 +1,8 @@
 from typing import Dict, List, Literal
 
-from ....charactor.charactor_base import SkillBase
+from ....character.character_base import SkillBase
 from ....event import SkillEndEventArguments
-from ....status.charactor_status.base import RoundCharactorStatus
+from ....status.character_status.base import RoundCharacterStatus
 from ....match import Match
 from ....card.equipment.weapon.base import WeaponBase
 from ....action import (
@@ -16,7 +16,7 @@ from .....utils.class_registry import register_class
 from .....utils.desc_registry import DescDictType
 
 
-class SapwoodBladeStatus_4_4(RoundCharactorStatus):
+class SapwoodBladeStatus_4_4(RoundCharacterStatus):
     name: Literal['Sapwood Blade']
     version: Literal['4.4'] = '4.4'
     usage: int = 1
@@ -33,7 +33,7 @@ class SapwoodBladeStatus_4_4(RoundCharactorStatus):
         position = event.action.position
         if not self.position.check_position_valid(
             position, match, player_idx_same = True,
-            charactor_idx_same = True,
+            character_idx_same = True,
         ):
             # not self use skill
             return []
@@ -41,13 +41,13 @@ class SapwoodBladeStatus_4_4(RoundCharactorStatus):
         if skill.skill_type != SkillType.NORMAL_ATTACK:
             # not using normal attack
             return []
-        charactor = match.player_tables[position.player_idx].charactors[
-            position.charactor_idx]
+        character = match.player_tables[position.player_idx].characters[
+            position.character_idx]
         assert self.usage > 0
         self.usage -= 1
         return [CreateDiceAction(
             player_idx = position.player_idx,
-            color = ELEMENT_TO_DIE_COLOR[charactor.element],
+            color = ELEMENT_TO_DIE_COLOR[character.element],
             number = 2,
         )] + self.check_should_remove()
 
@@ -64,14 +64,14 @@ class SapwoodBlade_4_4(WeaponBase):
         """
         return [CreateObjectAction(
             object_position = self.position.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_name = self.name,
             object_arguments = {}
         )]
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR_STATUS/Sapwood Blade": {
+    "CHARACTER_STATUS/Sapwood Blade": {
         "names": {
             "en-US": "Sapwood Blade",
             "zh-CN": "原木刀"

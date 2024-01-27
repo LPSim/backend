@@ -6,8 +6,8 @@ from ....action import (
     ActionTypes, CreateObjectAction, MakeDamageAction
 )
 from ....consts import DamageElementalType, DamageType, IconType
-from ....status.charactor_status.base import (
-    RoundEndAttackCharactorStatus
+from ....status.character_status.base import (
+    RoundEndAttackCharacterStatus
 )
 from ....match import Match
 from ....struct import Cost, ObjectPosition
@@ -15,7 +15,7 @@ from ....card.event.foods import FoodCardBase
 from .....utils.desc_registry import DescDictType
 
 
-class MatsutakeMeatRollsStatus_4_4(RoundEndAttackCharactorStatus):
+class MatsutakeMeatRollsStatus_4_4(RoundEndAttackCharacterStatus):
     name: Literal['Matsutake Meat Rolls'] = 'Matsutake Meat Rolls'
     version: Literal['4.4'] = '4.4'
     usage: int = 3
@@ -62,7 +62,7 @@ class MatsutakeMeatRolls_4_4(FoodCardBase):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR_STATUS/Matsutake Meat Rolls": {
+    "CHARACTER_STATUS/Matsutake Meat Rolls": {
         "names": {
             "en-US": "Matsutake Meat Rolls",
             "zh-CN": "松茸酿肉卷"

@@ -8,16 +8,16 @@ from ....event import (
     AfterMakeDamageEventArguments, MakeDamageEventArguments
 )
 from ....match import Match
-from ....patch.v43.charactors.thunder_manifestation_4_3 import (
+from ....patch.v43.characters.thunder_manifestation_4_3 import (
     GrievingEcho_4_3, LightningProbe, LightningRod_4_3, 
     LightningStrikeProbe_4_3, StrifefulLightning, 
     ThunderManifestation_4_3, ThunderingShackles
 )
-from ....status.charactor_status.base import UsageCharactorStatus
-from ....charactor.charactor_base import SkillTalent
+from ....status.character_status.base import UsageCharacterStatus
+from ....character.character_base import SkillTalent
 from ....struct import Cost
 from .....utils.class_registry import register_class
-from ....charactor.charactor_base import ElementalNormalAttackBase
+from ....character.character_base import ElementalNormalAttackBase
 from ....consts import ELEMENT_TO_DAMAGE_TYPE, DieColor
 from .....utils.desc_registry import DescDictType
 
@@ -26,7 +26,7 @@ class LightningStrikeProbe_4_4(LightningStrikeProbe_4_3):
     version: Literal['4.4'] = '4.4'
 
 
-class LightningRod_4_4(LightningRod_4_3, UsageCharactorStatus):
+class LightningRod_4_4(LightningRod_4_3, UsageCharacterStatus):
     version: Literal['4.4'] = '4.4'
 
     def event_handler_MAKE_DAMAGE(
@@ -48,7 +48,7 @@ class LightningProbe_4_4(LightningProbe):
 
 class GrievingEcho_4_4(SkillTalent, GrievingEcho_4_3):
     version: Literal['4.4'] = '4.4'
-    charactor_name: Literal['Thunder Manifestation'] = 'Thunder Manifestation'
+    character_name: Literal['Thunder Manifestation'] = 'Thunder Manifestation'
     skill: Literal['Strifeful Lightning'] = 'Strifeful Lightning'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.ELECTRO,
@@ -77,7 +77,7 @@ class ThunderManifestation_4_4(ThunderManifestation_4_3):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Thunder Manifestation": {
+    "CHARACTER/Thunder Manifestation": {
         "descs": {
             "4.4": {
                 "en-US": "",
@@ -101,7 +101,7 @@ desc: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Lightning Rod": {
+    "CHARACTER_STATUS/Lightning Rod": {
         "descs": {
             "4.4": {
                 "en-US": "While this status is active, can be triggered once and remove this status: DMG received by the attached character from Thunder Manifestation or its summons is increased by 1.\n(Only one of this status can exist on the field at once. Some of Thunder Manifestation's skills will target the character to which this is attached.)",  # noqa: E501

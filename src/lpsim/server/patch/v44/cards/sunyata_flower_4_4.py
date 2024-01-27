@@ -37,7 +37,7 @@ class SunyataFlowerStatus_4_4(UsageTeamStatus, RoundTeamStatus):
         decrease weapons or artifact cost by 1
         """
         if value.position.player_idx != self.position.player_idx:
-            # not self charactor, do nothing
+            # not self character, do nothing
             return value
         if value.cost.label & self.target_label == 0:
             # not weapon or artifact, do nothing

@@ -15,8 +15,8 @@ from ....consts import (
     DamageElementalType, DieColor, ElementType, FactionType, IconType, 
     ObjectPositionType, SkillType, WeaponType
 )
-from ....charactor.charactor_base import (
-    CharactorBase, ElementalBurstBase, ElementalSkillBase, 
+from ....character.character_base import (
+    CharacterBase, ElementalBurstBase, ElementalSkillBase, 
     PhysicalNormalAttackBase, SkillTalent
 )
 from .....utils.desc_registry import DescDictType
@@ -112,7 +112,7 @@ class CrimsonOoyoroi(ElementalBurstBase):
 class ASubordinatesSkills_4_4(SkillTalent):
     name: Literal["A Subordinate's Skills"]
     version: Literal['4.4'] = '4.4'
-    charactor_name: Literal['Thoma'] = 'Thoma'
+    character_name: Literal['Thoma'] = 'Thoma'
     skill: Literal['Crimson Ooyoroi'] = 'Crimson Ooyoroi'
     cost: Cost = Cost(
         elemental_dice_color = DieColor.PYRO,
@@ -121,7 +121,7 @@ class ASubordinatesSkills_4_4(SkillTalent):
     )
 
 
-class Thoma_4_4(CharactorBase):
+class Thoma_4_4(CharacterBase):
     name: Literal['Thoma']
     version: Literal['4.4'] = '4.4'
     element: ElementType = ElementType.PYRO
@@ -147,7 +147,7 @@ class Thoma_4_4(CharactorBase):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Thoma": {
+    "CHARACTER/Thoma": {
         "names": {
             "en-US": "Thoma",
             "zh-CN": "托马"

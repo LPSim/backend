@@ -4,7 +4,7 @@ from pydantic import PrivateAttr
 from ....action import Actions, CreateObjectAction
 from ....modifiable_values import CostValue
 from ....event import ReceiveDamageEventArguments
-from ....status.charactor_status.base import CharactorStatusBase
+from ....status.character_status.base import CharacterStatusBase
 from ....consts import (
     CostLabels, DamageType, IconType, ObjectPositionType
 )
@@ -15,7 +15,7 @@ from .....utils.class_registry import register_class
 from .....utils.desc_registry import DescDictType
 
 
-class MachineAssemblyLineStatus_4_4(CharactorStatusBase):
+class MachineAssemblyLineStatus_4_4(CharacterStatusBase):
     name: Literal['Machine Assembly Line'] = 'Machine Assembly Line'
     version: Literal['4.4'] = '4.4'
     usage: int = 0
@@ -28,7 +28,7 @@ class MachineAssemblyLineStatus_4_4(CharactorStatusBase):
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Match
     ) -> List[Actions]:
-        if not event.final_damage.is_corresponding_charactor_receive_damage(
+        if not event.final_damage.is_corresponding_character_receive_damage(
             self.position, match, ignore_piercing = False
         ):
             # not self receive damage
@@ -36,7 +36,7 @@ class MachineAssemblyLineStatus_4_4(CharactorStatusBase):
                 event.final_damage.damage_type == DamageType.HEAL
                 and self.position.check_position_valid(
                     event.final_damage.target_position, match, 
-                    player_idx_same = True, charactor_idx_same = True,
+                    player_idx_same = True, character_idx_same = True,
                 )
             ):
                 # and not heal self
@@ -74,12 +74,12 @@ class MachineAssemblyLine_4_4(EventCardBase):
     cost: Cost = Cost()
 
     def get_targets(self, match: Match) -> List[ObjectPosition]:
-        # can quip on all self alive charactors
+        # can quip on all self alive characters
         ret: List[ObjectPosition] = []
-        for charactor in match.player_tables[
-                self.position.player_idx].charactors:
-            if charactor.is_alive:
-                ret.append(charactor.position)
+        for character in match.player_tables[
+                self.position.player_idx].characters:
+            if character.is_alive:
+                ret.append(character.position)
         return ret
 
     def get_actions(
@@ -89,13 +89,13 @@ class MachineAssemblyLine_4_4(EventCardBase):
         return [CreateObjectAction(
             object_name = self.name,
             object_position = target.set_area(
-                ObjectPositionType.CHARACTOR_STATUS),
+                ObjectPositionType.CHARACTER_STATUS),
             object_arguments = {}
         )]
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR_STATUS/Machine Assembly Line": {
+    "CHARACTER_STATUS/Machine Assembly Line": {
         "names": {
             "en-US": "Machine Assembly Line",
             "zh-CN": "机关铸成之链"

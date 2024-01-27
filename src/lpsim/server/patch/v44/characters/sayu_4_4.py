@@ -1,12 +1,12 @@
 from typing import Dict, List, Literal
 
 from ....match import Match
-from ....charactor import CharactorBase
+from ....character import CharacterBase
 from ....action import (
     ActionTypes, Actions, ChangeObjectUsageAction, DrawCardAction, 
     MakeDamageAction
 )
-from ....charactor.charactor_base import (
+from ....character.character_base import (
     ElementalBurstBase, ElementalSkillBase, PhysicalNormalAttackBase, 
     SkillTalent
 )
@@ -20,7 +20,7 @@ from ....event import (
     RoundPrepareEventArguments
 )
 from ....modifiable_values import DamageValue
-from ....status.charactor_status.base import PrepareCharactorStatus
+from ....status.character_status.base import PrepareCharacterStatus
 from ....struct import Cost
 from ....summon.base import AttackerSummonBase
 from .....utils import register_class, DescDictType
@@ -40,19 +40,19 @@ class MujiMujiDaruma_4_4(AttackerSummonBase):
     ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
         ret = super().event_handler_ROUND_END(event, match)
         table = match.player_tables[self.position.player_idx]
-        charactors = table.charactors
-        # select charactor with most damage taken
-        selected_charactor = charactors[table.active_charactor_idx]
-        for c in charactors:
-            if c.is_alive and c.damage_taken > selected_charactor.damage_taken:
-                selected_charactor = c
-        # heal charactor, and do default actions
+        characters = table.characters
+        # select character with most damage taken
+        selected_character = characters[table.active_character_idx]
+        for c in characters:
+            if c.is_alive and c.damage_taken > selected_character.damage_taken:
+                selected_character = c
+        # heal character, and do default actions
         assert ret[0].type == ActionTypes.MAKE_DAMAGE
         ret[0].damage_value_list.append(
             DamageValue(
                 position = self.position,
                 damage_type = DamageType.HEAL,
-                target_position = selected_charactor.position,
+                target_position = selected_character.position,
                 damage = -self.heal,
                 damage_elemental_type = DamageElementalType.HEAL,
                 cost = Cost(),
@@ -61,10 +61,10 @@ class MujiMujiDaruma_4_4(AttackerSummonBase):
         return ret
 
 
-class FuufuuWhirlwindKickStatus_4_4(PrepareCharactorStatus):
+class FuufuuWhirlwindKickStatus_4_4(PrepareCharacterStatus):
     name: Literal['Fuufuu Whirlwind Kick'] = 'Fuufuu Whirlwind Kick'
     version: Literal['4.4'] = '4.4'
-    charactor_name: Literal['Sayu'] = 'Sayu'
+    character_name: Literal['Sayu'] = 'Sayu'
     skill_name: Literal['Fuufuu Whirlwind Kick'] = 'Fuufuu Whirlwind Kick'
     element: DamageElementalType = DamageElementalType.ANEMO
     icon_type: IconType = IconType.OTHERS
@@ -78,7 +78,7 @@ class FuufuuWhirlwindKickStatus_4_4(PrepareCharactorStatus):
             return []
         if not self.position.check_position_valid(
             event.final_damage.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
         ):
             # not self use skill, skip
             return []
@@ -107,7 +107,7 @@ class YooHooArtFuuinDash(ElementalSkillBase):
 
     def get_actions(self, match: Match) -> List[Actions]:
         return super().get_actions(match, [
-            self.create_charactor_status('Fuufuu Whirlwind Kick'),
+            self.create_character_status('Fuufuu Whirlwind Kick'),
         ])
 
 
@@ -122,8 +122,8 @@ class FuufuuWhirlwindKick(ElementalSkillBase):
 
     def get_actions(self, match: Match) -> List[Actions]:
         # first change self element based on status, then call super
-        status = match.player_tables[self.position.player_idx].charactors[
-            self.position.charactor_idx].status
+        status = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx].status
         for s in status:
             if s.name == 'Fuufuu Whirlwind Kick':
                 self.damage_type = s.element  # type: ignore
@@ -158,7 +158,7 @@ class SkivingNewAndImproved_4_4(SkillTalent):
         elemental_dice_number = 3
     )
     skill: Literal['Yoohoo Art: Fuuin Dash'] = 'Yoohoo Art: Fuuin Dash'
-    charactor_name: Literal['Sayu'] = 'Sayu'
+    character_name: Literal['Sayu'] = 'Sayu'
     usage: int = 1
     max_usage_per_round: int = 1
 
@@ -180,9 +180,9 @@ class SkivingNewAndImproved_4_4(SkillTalent):
             return []
         if not self.position.check_position_valid(
             event.final_damage.position, match, player_idx_same = True,
-            charactor_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTOR,
-            source_is_active_charactor = True,
+            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            source_area = ObjectPositionType.CHARACTER,
+            source_is_active_character = True,
         ):
             # not self skill or not equipped or self not active
             return []
@@ -198,7 +198,7 @@ class SkivingNewAndImproved_4_4(SkillTalent):
         )]
 
 
-class Sayu_4_4(CharactorBase):
+class Sayu_4_4(CharacterBase):
     name: Literal["Sayu"]
     version: Literal['4.4'] = '4.4'
     element: ElementType = ElementType.ANEMO
@@ -226,7 +226,7 @@ class Sayu_4_4(CharactorBase):
 
 
 desc: Dict[str, DescDictType] = {
-    "CHARACTOR/Sayu": {
+    "CHARACTER/Sayu": {
         "names": {
             "en-US": "Sayu",
             "zh-CN": "早柚"
@@ -264,7 +264,7 @@ desc: Dict[str, DescDictType] = {
             }
         }
     },
-    "CHARACTOR_STATUS/Fuufuu Whirlwind Kick": {
+    "CHARACTER_STATUS/Fuufuu Whirlwind Kick": {
         "names": {
             "en-US": "Fuufuu Whirlwind Kick",
             "zh-CN": "风风轮舞踢"
