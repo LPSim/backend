@@ -1,5 +1,5 @@
 import pytest
-from src.lpsim.server.deck import Deck
+from lpsim.server.deck import Deck
 
 
 def test_create_mob():

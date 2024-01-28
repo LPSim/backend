@@ -1,7 +1,7 @@
-from src.lpsim.server.status.character_status.geo_characters import RagingOniKing_3_6
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.status.character_status.geo_characters import RagingOniKing_3_6
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     check_usage,

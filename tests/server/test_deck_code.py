@@ -1,6 +1,6 @@
 import pytest
-from src.lpsim.utils import deck_code_to_deck_str, deck_str_to_deck_code
-from src.lpsim import Deck
+from lpsim.utils import deck_code_to_deck_str, deck_str_to_deck_code
+from lpsim import Deck
 
 
 def test_deck_code():

@@ -1,6 +1,6 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     check_usage,
@@ -88,9 +88,9 @@ def test_dead_agent():
     for table in match.player_tables:
         character = table.characters[1]
         assert character.name == "Fatui Pyro Agent"
-        from src.lpsim.server.character.pyro.fatui_pyro_agent_3_3 import PaidinFull_3_3
-        from src.lpsim.server.consts import ObjectPositionType
-        from src.lpsim.server.struct import ObjectPosition
+        from lpsim.server.character.pyro.fatui_pyro_agent_3_3 import PaidinFull_3_3
+        from lpsim.server.consts import ObjectPositionType
+        from lpsim.server.struct import ObjectPosition
 
         talent = PaidinFull_3_3(name="Paid in Full")
         talent.position = ObjectPosition(
