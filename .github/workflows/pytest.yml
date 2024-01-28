@@ -26,7 +26,7 @@ jobs:
     - name: Run tests with coverage
       run: |
         python -m setuptools_scm
-        pytest --cov
+        python -m pytest --cov
         coverage xml
 
     - name: Upload coverage to Coveralls
