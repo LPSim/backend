@@ -14,42 +14,38 @@ from .kamisato_ayato_4_1 import KamisatoArtSuiyuu as KAS_4_1
 class KamisatoArtSuiyuu(KAS_4_1):
     damage: int = 3
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 3
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=3
     )
 
 
 class KamisatoArtKyouka(ElementalSkillBase):
-    name: Literal['Kamisato Art: Kyouka'] = 'Kamisato Art: Kyouka'
+    name: Literal["Kamisato Art: Kyouka"] = "Kamisato Art: Kyouka"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_character_status('Takimeguri Kanka'),
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_character_status("Takimeguri Kanka"),
+            ],
+        )
 
 
 class KamisatoAyato_3_6(KA_4_1):
-    version: Literal['3.6']
+    version: Literal["3.6"]
     max_charge: int = 3
-    skills: List[
-        PhysicalNormalAttackBase | KamisatoArtKyouka | KamisatoArtSuiyuu
-    ] = []
+    skills: List[PhysicalNormalAttackBase | KamisatoArtKyouka | KamisatoArtSuiyuu] = []
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Kamisato Art: Marobashi',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Kamisato Art: Marobashi",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             KamisatoArtKyouka(),
             KamisatoArtSuiyuu(),

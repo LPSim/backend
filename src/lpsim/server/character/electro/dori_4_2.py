@@ -6,17 +6,22 @@ from ...summon.base import AttackerSummonBase
 
 from ...event import RoundEndEventArguments
 
-from ...action import (
-    Actions, ChangeObjectUsageAction, ChargeAction, MakeDamageAction
-)
+from ...action import Actions, ChangeObjectUsageAction, ChargeAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -24,8 +29,8 @@ from ..character_base import (
 
 
 class AfterSalesServiceRounds_4_2(AttackerSummonBase):
-    name: Literal['After-Sales Service Rounds'] = 'After-Sales Service Rounds'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["After-Sales Service Rounds"] = "After-Sales Service Rounds"
+    version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 1
     damage_elemental_type: DamageElementalType = DamageElementalType.ELECTRO
@@ -33,8 +38,8 @@ class AfterSalesServiceRounds_4_2(AttackerSummonBase):
 
 
 class Jinni_4_2(AttackerSummonBase):
-    name: Literal['Jinni'] = 'Jinni'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Jinni"] = "Jinni"
+    version: Literal["4.2"] = "4.2"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.HEAL
@@ -45,7 +50,8 @@ class Jinni_4_2(AttackerSummonBase):
         self, event: RoundEndEventArguments, match: Any
     ) -> List[MakeDamageAction | ChargeAction | ChangeObjectUsageAction]:
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         charge = 1
         if self.talent_activated:
             if active_character.hp <= 6:
@@ -54,9 +60,9 @@ class Jinni_4_2(AttackerSummonBase):
                 charge = 2
         ret = super().event_handler_ROUND_END(event, match) + [
             ChargeAction(
-                player_idx = self.position.player_idx,
-                character_idx = active_character.position.character_idx,
-                charge = charge,
+                player_idx=self.position.player_idx,
+                character_idx=active_character.position.character_idx,
+                charge=charge,
             )
         ]
         self.damage = -2
@@ -68,22 +74,19 @@ class Jinni_4_2(AttackerSummonBase):
 
 class SpiritWaridingLampTroubleshooterCannon(ElementalSkillBase):
     name: Literal[
-        'Spirit-Warding Lamp: Troubleshooter Cannon'
-    ] = 'Spirit-Warding Lamp: Troubleshooter Cannon'
+        "Spirit-Warding Lamp: Troubleshooter Cannon"
+    ] = "Spirit-Warding Lamp: Troubleshooter Cannon"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_summon('After-Sales Service Rounds')
-        ])
+        return super().get_actions(
+            match, [self.create_summon("After-Sales Service Rounds")]
+        )
 
 
 class AlcazarzaraysExactitude(ElementalBurstBase):
@@ -91,30 +94,29 @@ class AlcazarzaraysExactitude(ElementalBurstBase):
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_summon('Jinni', {
-                'talent_activated': self.is_talent_equipped(match)
-            })
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_summon(
+                    "Jinni", {"talent_activated": self.is_talent_equipped(match)}
+                )
+            ],
+        )
 
 
 # Talents
 
 
 class DiscretionarySupplement_4_2(SkillTalent):
-    name: Literal['Discretionary Supplement']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Dori'] = 'Dori'
+    name: Literal["Discretionary Supplement"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Dori"] = "Dori"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3, charge=2
     )
     skill: Literal["Alcazarzaray's Exactitude"] = "Alcazarzaray's Exactitude"
 
@@ -123,32 +125,30 @@ class DiscretionarySupplement_4_2(SkillTalent):
 
 
 class Dori_4_2(CharacterBase):
-    name: Literal['Dori']
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Dori"]
+    version: Literal["4.2"] = "4.2"
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | SpiritWaridingLampTroubleshooterCannon 
+        PhysicalNormalAttackBase
+        | SpiritWaridingLampTroubleshooterCannon
         | AlcazarzaraysExactitude
     ] = []
-    faction: List[FactionType] = [
-        FactionType.SUMERU
-    ]
+    faction: List[FactionType] = [FactionType.SUMERU]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Marvelous Sword-Dance (Modified)',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Marvelous Sword-Dance (Modified)",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             SpiritWaridingLampTroubleshooterCannon(),
-            AlcazarzaraysExactitude()
+            AlcazarzaraysExactitude(),
         ]
 
 
 register_class(
-    Dori_4_2 | DiscretionarySupplement_4_2 | Jinni_4_2 
-    | AfterSalesServiceRounds_4_2
+    Dori_4_2 | DiscretionarySupplement_4_2 | Jinni_4_2 | AfterSalesServiceRounds_4_2
 )

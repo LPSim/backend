@@ -6,20 +6,30 @@ from ...summon.base import DefendSummonBase
 
 from ...modifiable_values import DamageIncreaseValue
 from ...event import (
-    CharacterReviveEventArguments, ReceiveDamageEventArguments, 
-    RoundPrepareEventArguments
+    CharacterReviveEventArguments,
+    ReceiveDamageEventArguments,
+    RoundPrepareEventArguments,
 )
 
 from ...action import Actions, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, SkillType, WeaponType
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    SkillType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -27,8 +37,8 @@ from ..character_base import (
 
 
 class Ushi_3_6(DefendSummonBase):
-    name: Literal['Ushi'] = 'Ushi'
-    version: Literal['3.6'] = '3.6'
+    name: Literal["Ushi"] = "Ushi"
+    version: Literal["3.6"] = "3.6"
     usage: int = 1
     max_usage: int = 1
     damage_elemental_type: DamageElementalType = DamageElementalType.GEO
@@ -39,7 +49,7 @@ class Ushi_3_6(DefendSummonBase):
 
     create_status_triggered: bool = False
 
-    def renew(self, new_status: 'Ushi_3_6') -> None:
+    def renew(self, new_status: "Ushi_3_6") -> None:
         self.create_status_triggered = new_status.create_status_triggered
         return super().renew(new_status)
 
@@ -53,10 +63,7 @@ class Ushi_3_6(DefendSummonBase):
         if self.create_status_triggered:
             # already triggered, no effect
             return []
-        if (
-            event.final_damage.target_position.player_idx 
-            != self.position.player_idx
-        ):
+        if event.final_damage.target_position.player_idx != self.position.player_idx:
             # not attack our player, no effect
             return []
         if event.final_damage.damage_type != DamageType.DAMAGE:
@@ -65,17 +72,19 @@ class Ushi_3_6(DefendSummonBase):
         # trigger, gain Superlative Superstrength for first Arataki Itto
         characters = match.player_tables[self.position.player_idx].characters
         for character in characters:
-            if character.is_alive and character.name == 'Arataki Itto':
+            if character.is_alive and character.name == "Arataki Itto":
                 # found alive itto, gain status
                 status_position = character.position.set_area(
                     ObjectPositionType.CHARACTER_STATUS
                 )
                 self.create_status_triggered = True
-                return [CreateObjectAction(
-                    object_name = 'Superlative Superstrength',
-                    object_position = status_position,
-                    object_arguments = {}
-                )]
+                return [
+                    CreateObjectAction(
+                        object_name="Superlative Superstrength",
+                        object_position=status_position,
+                        object_arguments={},
+                    )
+                ]
         else:  # pragma: no cover
             # not found alive Itto, no effect
             return []
@@ -85,90 +94,87 @@ class Ushi_3_6(DefendSummonBase):
 
 
 class FightClubLegend(PhysicalNormalAttackBase):
-    name: Literal['Fight Club Legend'] = 'Fight Club Legend'
+    name: Literal["Fight Club Legend"] = "Fight Club Legend"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 1,
-        any_dice_number = 2,
+        elemental_dice_color=DieColor.GEO,
+        elemental_dice_number=1,
+        any_dice_number=2,
     )
 
 
 class MasatsuZetsugiAkaushiBurst(ElementalSkillBase):
-    name: Literal[
-        'Masatsu Zetsugi: Akaushi Burst!'] = 'Masatsu Zetsugi: Akaushi Burst!'
+    name: Literal["Masatsu Zetsugi: Akaushi Burst!"] = "Masatsu Zetsugi: Akaushi Burst!"
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.GEO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.GEO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack, create Ushi and create status
         """
-        ret = super().get_actions(match, [
-            self.create_summon('Ushi'),
-            self.create_character_status('Superlative Superstrength'),
-        ])
+        ret = super().get_actions(
+            match,
+            [
+                self.create_summon("Ushi"),
+                self.create_character_status("Superlative Superstrength"),
+            ],
+        )
         return ret
 
 
 class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
     name: Literal[
-        'Royal Descent: Behold, Itto the Evil!'
-    ] = 'Royal Descent: Behold, Itto the Evil!'
+        "Royal Descent: Behold, Itto the Evil!"
+    ] = "Royal Descent: Behold, Itto the Evil!"
     damage: int = 5
     damage_type: DamageElementalType = DamageElementalType.GEO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 3,
-        charge = 3
+        elemental_dice_color=DieColor.GEO, elemental_dice_number=3, charge=3
     )
-    version: Literal['3.6'] = '3.6'
+    version: Literal["3.6"] = "3.6"
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create status
         """
-        return super().get_actions(match, [
-            self.create_character_status('Raging Oni King', {
-                'version': self.version
-            })
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_character_status(
+                    "Raging Oni King", {"version": self.version}
+                )
+            ],
+        )
 
 
 # Talents
 
 
 class AratakiIchiban_3_6(SkillTalent):
-    name: Literal['Arataki Ichiban']
-    version: Literal['3.6'] = '3.6'
-    character_name: Literal['Arataki Itto'] = 'Arataki Itto'
+    name: Literal["Arataki Ichiban"]
+    version: Literal["3.6"] = "3.6"
+    character_name: Literal["Arataki Itto"] = "Arataki Itto"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.GEO,
-        elemental_dice_number = 1,
-        any_dice_number = 2,
+        elemental_dice_color=DieColor.GEO,
+        elemental_dice_number=1,
+        any_dice_number=2,
     )
-    skill: Literal['Fight Club Legend'] = 'Fight Club Legend'
+    skill: Literal["Fight Club Legend"] = "Fight Club Legend"
 
 
 # character base
 
 
 class AratakiItto_3_6(CharacterBase):
-    name: Literal['Arataki Itto']
-    version: Literal['3.6'] = '3.6'
+    name: Literal["Arataki Itto"]
+    version: Literal["3.6"] = "3.6"
     element: ElementType = ElementType.GEO
     max_hp: int = 10
     max_charge: int = 3
     skills: List[
-        FightClubLegend | MasatsuZetsugiAkaushiBurst 
-        | RoyalDescentBeholdIttoTheEvil
+        FightClubLegend | MasatsuZetsugiAkaushiBurst | RoyalDescentBeholdIttoTheEvil
     ] = []
-    faction: List[FactionType] = [
-        FactionType.INAZUMA
-    ]
+    faction: List[FactionType] = [FactionType.INAZUMA]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     normal_attack_this_round: int = 0
@@ -201,11 +207,10 @@ class AratakiItto_3_6(CharacterBase):
         return []
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, 
-        match: Any, mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ):
         """
-        When use normal attack, add counter. 
+        When use normal attack, add counter.
 
         For the second time or more using normal attack this round,
         and is charged attack, and has status Superlative Superstrength,
@@ -226,7 +231,7 @@ class AratakiItto_3_6(CharacterBase):
             return value
         status_found = False
         for status in self.status:
-            if status.name == 'Superlative Superstrength':
+            if status.name == "Superlative Superstrength":
                 status_found = True
                 break
         if not status_found:
@@ -240,6 +245,4 @@ class AratakiItto_3_6(CharacterBase):
         return value
 
 
-register_class(
-    AratakiItto_3_6 | AratakiIchiban_3_6 | Ushi_3_6
-)
+register_class(AratakiItto_3_6 | AratakiIchiban_3_6 | Ushi_3_6)

@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -39,7 +42,7 @@ def test_collei():
             "skill 1 0 1 2",
             "end",
             "sw_char 1 0",
-            "end"
+            "end",
         ],
         [
             "sw_card 0 1 2",
@@ -64,38 +67,32 @@ def test_collei():
             "TEST 1 3 82 10 7 49 3",
             "skill 1 0 1 2",
             "TEST 2 p1 0 status",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Collei
         character:Nahida
         character:Fischl
         Floral Sidewinder*15
-        '''
+        """
     )
     # use old version cards
-    old = {'name': 'Floral Sidewinder', 'version': '3.3'}
+    old = {"name": "Floral Sidewinder", "version": "3.3"}
     deck_dict = deck.dict()
-    deck_dict['cards'] += [old] * 15
+    deck_dict["cards"] += [old] * 15
     deck = Deck(**deck_dict)
     # change HP
     # for character in deck.characters:
@@ -121,7 +118,7 @@ def test_collei():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -131,7 +128,7 @@ def test_collei():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -144,10 +141,9 @@ def test_collei():
             elif test_id == 3:
                 assert len(match.player_tables[0].team_status) == 1
                 assert match.player_tables[0].team_status[0].usage == 1
-                assert match.player_tables[
-                    0].team_status[0].name == 'Catalyzing Field'
+                assert match.player_tables[0].team_status[0].name == "Catalyzing Field"
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -157,5 +153,5 @@ def test_collei():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_collei()

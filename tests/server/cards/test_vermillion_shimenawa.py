@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -34,7 +37,7 @@ def test_vermillion_shimenawa():
             "sw_char 1 11",
             "skill 1 10 9 8",
             "TEST 1 4 8 10 6 7 10",
-            "end"
+            "end",
         ],
         [
             "sw_card 1",
@@ -55,27 +58,21 @@ def test_vermillion_shimenawa():
             "sw_char 1 13",
             "sw_char 0 12",
             "sw_char 1 11",
-            "skill 0 10 9"
-        ]
+            "skill 0 10 9",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Xingqiu
         character:Qiqi
@@ -88,7 +85,7 @@ def test_vermillion_shimenawa():
         Shimenawa's Reminiscence@3.7*5
         Thundering Poise@3.7*5
         Vermillion Hereafter@3.7*5
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -108,7 +105,7 @@ def test_vermillion_shimenawa():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -118,7 +115,7 @@ def test_vermillion_shimenawa():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -127,7 +124,7 @@ def test_vermillion_shimenawa():
                 sid = int(cmd[3])
                 cost = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest' and req.skill_idx == sid:
+                    if req.name == "UseSkillRequest" and req.skill_idx == sid:
                         assert req.cost.total_dice_cost == cost
             elif test_id == 3:
                 cmd = cmd.split()
@@ -147,7 +144,7 @@ def test_vermillion_shimenawa():
                 for u, s in zip(usage, status):
                     assert u == s.usage
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -173,7 +170,7 @@ def test_vermillion_shimenawa_2():
             "card 0 0 0 1 2",
             "card 3 0 0",
             "TEST 2 card 1 cost 2",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -185,27 +182,21 @@ def test_vermillion_shimenawa_2():
             "card 1 0 11",
             "skill 1 10 9 8",
             "card 0 0 7 6",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Xingqiu
         character:Kamisato Ayaka
@@ -215,7 +206,7 @@ def test_vermillion_shimenawa_2():
         Thundering Poise*5
         Vermillion Hereafter*5
         Kanten Senmyou Blessing*20
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -235,7 +226,7 @@ def test_vermillion_shimenawa_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -245,7 +236,7 @@ def test_vermillion_shimenawa_2():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -254,10 +245,10 @@ def test_vermillion_shimenawa_2():
                 cid = int(cmd[3])
                 cost = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseCardRequest' and req.card_idx == cid:
+                    if req.name == "UseCardRequest" and req.card_idx == cid:
                         assert req.cost.total_dice_cost == cost
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -267,6 +258,6 @@ def test_vermillion_shimenawa_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_vermillion_shimenawa()
     test_vermillion_shimenawa_2()

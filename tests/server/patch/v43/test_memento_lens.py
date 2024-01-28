@@ -1,9 +1,7 @@
 import json
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
-from tests.utils_for_test import (
-    get_random_state, make_respond, remove_ids, set_16_omni
-)
+from tests.utils_for_test import get_random_state, make_respond, remove_ids, set_16_omni
 
 
 def get_memento_lens_match():
@@ -25,7 +23,7 @@ def get_memento_lens_match():
             "card 0 0 8",
             "card 0 0",
             "end",
-            "sw_char 1 15"
+            "sw_char 1 15",
         ],
         [
             "sw_card",
@@ -45,27 +43,21 @@ def get_memento_lens_match():
             "end",
             "card 0 0",
             "card 1 0 15 14 13",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         character:Ningguang@3.3
         character:Kaeya@3.3
         character:Chongyun@3.3
@@ -75,7 +67,7 @@ def get_memento_lens_match():
         Paimon@3.3*5
         Memento Lens@4.3*5
         Abyssal Summons@3.3*5
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -100,7 +92,7 @@ def test_memento_lens():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -121,7 +113,7 @@ def test_memento_lens_load_and_save():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         make_respond(agent, match)
         histories.append(match.json())
@@ -131,18 +123,18 @@ def test_memento_lens_load_and_save():
     assert match.start()[0]
     match.step()
     for old_match_json in histories:  # pragma: no branch
-        match_copy = match.copy(deep = True)
+        match_copy = match.copy(deep=True)
         assert remove_ids(match_copy) == remove_ids(
-            Match(**json.loads(match_copy.json())))
-        assert remove_ids(match_copy) == remove_ids(
-            Match(**json.loads(old_match_json)))
+            Match(**json.loads(match_copy.json()))
+        )
+        assert remove_ids(match_copy) == remove_ids(Match(**json.loads(old_match_json)))
         match = Match(**json.loads(match.json()))
         if match.need_respond(0):
             agent = agent_0
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -150,6 +142,6 @@ def test_memento_lens_load_and_save():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_memento_lens()
     test_memento_lens_load_and_save()

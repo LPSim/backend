@@ -4,4 +4,4 @@ from .weapon import WeaponBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('ArtifactBase', 'WeaponBase')
+__all__ = ("ArtifactBase", "WeaponBase")

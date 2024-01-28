@@ -4,27 +4,44 @@ from ....utils.class_registry import register_base_class, register_class
 from ...dice import Dice
 
 from ...action import (
-    Actions, CreateDiceAction, DrawCardAction, 
-    GenerateRerollDiceRequestAction, MakeDamageAction, RemoveDiceAction, 
-    RemoveObjectAction
+    Actions,
+    CreateDiceAction,
+    DrawCardAction,
+    GenerateRerollDiceRequestAction,
+    MakeDamageAction,
+    RemoveDiceAction,
+    RemoveObjectAction,
 )
 from ...event import (
-    MoveObjectEventArguments, PlayerActionStartEventArguments, 
-    SkillEndEventArguments, UseCardEventArguments
+    MoveObjectEventArguments,
+    PlayerActionStartEventArguments,
+    SkillEndEventArguments,
+    UseCardEventArguments,
 )
 from ...modifiable_values import (
-    CostValue, DamageValue, InitialDiceColorValue, RerollValue
+    CostValue,
+    DamageValue,
+    InitialDiceColorValue,
+    RerollValue,
 )
 from ...event import RoundEndEventArguments, RoundPrepareEventArguments
 
 from ...struct import Cost
 from ...consts import (
-    DIE_COLOR_TO_ELEMENT, ELEMENT_DEFAULT_ORDER, ELEMENT_TO_DIE_COLOR, 
-    CostLabels, DamageElementalType, DamageType, DieColor, IconType, 
-    ObjectPositionType
+    DIE_COLOR_TO_ELEMENT,
+    ELEMENT_DEFAULT_ORDER,
+    ELEMENT_TO_DIE_COLOR,
+    CostLabels,
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    IconType,
+    ObjectPositionType,
 )
 from .base import (
-    RoundEffectSupportBase, SupportBase, UsageWithRoundRestrictionSupportBase
+    RoundEffectSupportBase,
+    SupportBase,
+    UsageWithRoundRestrictionSupportBase,
 )
 
 
@@ -40,9 +57,9 @@ class RoundEffectLocationBase(RoundEffectSupportBase, LocationBase):
 
 
 class LiyueHarborWharf_3_3(LocationBase):
-    name: Literal['Liyue Harbor Wharf']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Liyue Harbor Wharf"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -52,34 +69,36 @@ class LiyueHarborWharf_3_3(LocationBase):
         """
         When in round end, draw 2 cards, and check if should remove.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         self.usage -= 1
         return [
             DrawCardAction(
-                player_idx = self.position.player_idx,
-                number = 2,
-                draw_if_filtered_not_enough = True
+                player_idx=self.position.player_idx,
+                number=2,
+                draw_if_filtered_not_enough=True,
             ),
         ] + self.check_should_remove()
 
 
 class KnightsOfFavoniusLibrary_3_3(LocationBase):
-    name: Literal['Knights of Favonius Library']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Knights of Favonius Library"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 0
     icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def play(self, match: Any) -> List[GenerateRerollDiceRequestAction]:
-        return [GenerateRerollDiceRequestAction(
-            player_idx = self.position.player_idx,
-            reroll_times = 1,
-        )]
+        return [
+            GenerateRerollDiceRequestAction(
+                player_idx=self.position.player_idx,
+                reroll_times=1,
+            )
+        ]
 
     def value_modifier_REROLL(
-        self, value: RerollValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: RerollValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> RerollValue:
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
@@ -92,16 +111,15 @@ class KnightsOfFavoniusLibrary_3_3(LocationBase):
 
 
 class JadeChamber_4_0(LocationBase):
-    name: Literal['Jade Chamber']
-    version: Literal['4.0'] = '4.0'
+    name: Literal["Jade Chamber"]
+    version: Literal["4.0"] = "4.0"
     cost: Cost = Cost()
     usage: int = 0
     icon_type: Literal[IconType.NONE] = IconType.NONE
 
     def value_modifier_INITIAL_DICE_COLOR(
-            self, value: InitialDiceColorValue, 
-            match: Any,
-            mode: Literal['REAL', 'TEST']) -> InitialDiceColorValue:
+        self, value: InitialDiceColorValue, match: Any, mode: Literal["REAL", "TEST"]
+    ) -> InitialDiceColorValue:
         """
         If self in support, fix two dice colors to self
         """
@@ -111,26 +129,25 @@ class JadeChamber_4_0(LocationBase):
         if value.position.player_idx != self.position.player_idx:
             # not self player
             return value
-        active = match.player_tables[
-            self.position.player_idx].get_active_character()
+        active = match.player_tables[self.position.player_idx].get_active_character()
         element = active.element
         value.dice_colors += [ELEMENT_TO_DIE_COLOR[element]] * 2
         return value
 
 
 class JadeChamber_3_3(JadeChamber_4_0):
-    version: Literal['3.3']
-    cost: Cost = Cost(same_dice_number = 1)
+    version: Literal["3.3"]
+    cost: Cost = Cost(same_dice_number=1)
 
 
 class DawnWinery_3_3(RoundEffectLocationBase):
-    name: Literal['Dawn Winery']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Dawn Winery"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         if self.position.area != ObjectPositionType.SUPPORT:
             # not in support area, do nothing
@@ -146,15 +163,15 @@ class DawnWinery_3_3(RoundEffectLocationBase):
             return value
         # decrease cost
         if value.cost.decrease_cost(None):
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
 
 class WangshuInn_3_3(LocationBase):
-    name: Literal['Wangshu Inn']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Wangshu Inn"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -164,7 +181,7 @@ class WangshuInn_3_3(LocationBase):
         """
         If back character not full hp, heal 2 hp, and check if should remove.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         table = match.player_tables[self.position.player_idx]
@@ -184,24 +201,26 @@ class WangshuInn_3_3(LocationBase):
             # full hp, do nothing
             return []
         self.usage -= 1
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -2,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = self.cost.copy()
-                )
-            ],
-        )] + self.check_should_remove()
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-2,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=self.cost.copy(),
+                    )
+                ],
+            )
+        ] + self.check_should_remove()
 
 
 class FavoniusCathedral_3_3(LocationBase):
-    name: Literal['Favonius Cathedral']
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Favonius Cathedral"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -211,33 +230,34 @@ class FavoniusCathedral_3_3(LocationBase):
         """
         If active character not full hp, heal 2 hp, and check if should remove.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
-        character = match.player_tables[
-            self.position.player_idx].get_active_character()
+        character = match.player_tables[self.position.player_idx].get_active_character()
         if character.damage_taken <= 0:
             # full hp, do nothing
             return []
         self.usage -= 1
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -2,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = self.cost.copy()
-                )
-            ],
-        )] + self.check_should_remove()
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-2,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=self.cost.copy(),
+                    )
+                ],
+            )
+        ] + self.check_should_remove()
 
 
 class Tenshukaku_3_7(LocationBase):
-    name: Literal['Tenshukaku']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Tenshukaku"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 0
     icon_type: Literal[IconType.NONE] = IconType.NONE
 
@@ -248,7 +268,7 @@ class Tenshukaku_3_7(LocationBase):
         When in round prepare, if have 5 different kinds of elemental dice,
         create 1 omni element.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         colors = match.player_tables[self.position.player_idx].dice.colors
@@ -262,17 +282,17 @@ class Tenshukaku_3_7(LocationBase):
         if len(color_set) + omni_number < 5:
             # not enough different kinds of elemental dice
             return []
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = DieColor.OMNI
-        )]
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx, number=1, color=DieColor.OMNI
+            )
+        ]
 
 
 class GrandNarukamiShrine_3_6(LocationBase):
-    name: Literal['Grand Narukami Shrine']
-    version: Literal['3.6'] = '3.6'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Grand Narukami Shrine"]
+    version: Literal["3.6"] = "3.6"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 3
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -281,11 +301,13 @@ class GrandNarukamiShrine_3_6(LocationBase):
         When played, set usage to 2 and generate one random die.
         """
         self.usage = 2
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            different = True  # use different to avoid OMNI die
-        )]
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                different=True,  # use different to avoid OMNI die
+            )
+        ]
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
@@ -297,17 +319,19 @@ class GrandNarukamiShrine_3_6(LocationBase):
             # not in support area, do nothing
             return []
         self.usage -= 1
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            different = True  # use different to avoid OMNI die
-        )] + self.check_should_remove()
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                different=True,  # use different to avoid OMNI die
+            )
+        ] + self.check_should_remove()
 
 
 class SangonomiyaShrine_3_7(LocationBase):
-    name: Literal['Sangonomiya Shrine']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Sangonomiya Shrine"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 2
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -317,12 +341,12 @@ class SangonomiyaShrine_3_7(LocationBase):
         """
         If active character not full hp, heal 2 hp, and check if should remove.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         characters = match.player_tables[self.position.player_idx].characters
         damage_action = MakeDamageAction(
-            damage_value_list = [],
+            damage_value_list=[],
         )
         for character in characters:
             if character.is_defeated or character.damage_taken <= 0:
@@ -330,12 +354,12 @@ class SangonomiyaShrine_3_7(LocationBase):
                 continue
             damage_action.damage_value_list.append(
                 DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = self.cost.copy()
+                    position=self.position,
+                    damage_type=DamageType.HEAL,
+                    target_position=character.position,
+                    damage=-1,
+                    damage_elemental_type=DamageElementalType.HEAL,
+                    cost=self.cost.copy(),
                 )
             )
         if len(damage_action.damage_value_list) == 0:
@@ -346,9 +370,9 @@ class SangonomiyaShrine_3_7(LocationBase):
 
 
 class SumeruCity_3_7(RoundEffectLocationBase):
-    name: Literal['Sumeru City']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 2)
+    name: Literal["Sumeru City"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1
 
     def play(self, match: Any) -> List[Actions]:
@@ -359,13 +383,13 @@ class SumeruCity_3_7(RoundEffectLocationBase):
         return super().play(match)
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         When self character use skills or equip talents, and have usage,
         and have less or equal elemental dice than cards in hand, reduce cost.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return value
         if self.usage == 0:
@@ -375,8 +399,10 @@ class SumeruCity_3_7(RoundEffectLocationBase):
             # not self player
             return value
         label = (
-            CostLabels.NORMAL_ATTACK.value | CostLabels.ELEMENTAL_SKILL.value
-            | CostLabels.ELEMENTAL_BURST.value | CostLabels.TALENT.value
+            CostLabels.NORMAL_ATTACK.value
+            | CostLabels.ELEMENTAL_SKILL.value
+            | CostLabels.ELEMENTAL_BURST.value
+            | CostLabels.TALENT.value
         )
         if value.cost.label & label == 0:
             # not skill or talent
@@ -388,14 +414,14 @@ class SumeruCity_3_7(RoundEffectLocationBase):
         # reduce cost
         if value.cost.decrease_cost(value.cost.elemental_dice_color):
             # success
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
 
 class Vanarana_3_7(LocationBase):
-    name: Literal['Vanarana']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Vanarana"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost()
     usage: int = 0
     colors: List[DieColor] = []
@@ -413,7 +439,7 @@ class Vanarana_3_7(LocationBase):
         When in round prepare, give collected dice back.
         """
         assert self.usage == len(self.colors)
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         if self.usage == 0:
@@ -421,24 +447,23 @@ class Vanarana_3_7(LocationBase):
             return []
         ret: List[CreateDiceAction] = []
         for color in self.colors:
-            ret.append(CreateDiceAction(
-                player_idx = self.position.player_idx,
-                color = color,
-                number = 1
-            ))
+            ret.append(
+                CreateDiceAction(
+                    player_idx=self.position.player_idx, color=color, number=1
+                )
+            )
         self.usage = 0
         self.colors = []
         return ret
 
-    def _sort_colors(
-            self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
+    def _sort_colors(self, colors: List[DieColor]) -> List[Tuple[int, int, DieColor]]:
         """
         Sort colors. Omni always last, others has two keys, 1. number of
-        this color, 2. default order. 
-        Return: List[Tuple[number, default_order, color]]. For Omni, the 
+        this color, 2. default order.
+        Return: List[Tuple[number, default_order, color]]. For Omni, the
         default order is filled with 0.
         """
-        colors_dict: Dict[DieColor, int] = { DieColor.OMNI: 0 }
+        colors_dict: Dict[DieColor, int] = {DieColor.OMNI: 0}
         for element in ELEMENT_DEFAULT_ORDER:
             colors_dict[ELEMENT_TO_DIE_COLOR[element]] = 0
         for color in colors:
@@ -453,13 +478,15 @@ class Vanarana_3_7(LocationBase):
             if color == DieColor.OMNI:
                 omni_num = colors_dict[color]
                 continue
-            colors_lists.append((
-                colors_dict[color], 
-                ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]), 
-                color
-            ))
+            colors_lists.append(
+                (
+                    colors_dict[color],
+                    ELEMENT_DEFAULT_ORDER.index(DIE_COLOR_TO_ELEMENT[color]),
+                    color,
+                )
+            )
         # number desc, default order asc
-        colors_lists.sort(key = lambda x: (-x[0], x[1]))
+        colors_lists.sort(key=lambda x: (-x[0], x[1]))
         if omni_num > 0:
             colors_lists.append((omni_num, 0, DieColor.OMNI))
         return colors_lists
@@ -470,12 +497,11 @@ class Vanarana_3_7(LocationBase):
         """
         When in round end, collect up to 2 unused elemental dice.
         """
-        if self.position.area != 'SUPPORT':
+        if self.position.area != "SUPPORT":
             # not in support area, do nothing
             return []
         assert self.usage == 0 and len(self.colors) == 0
-        current_dice: Dice = match.player_tables[
-            self.position.player_idx].dice
+        current_dice: Dice = match.player_tables[self.position.player_idx].dice
         current_dice_colors = current_dice.colors
         if len(current_dice_colors) == 0:
             # no dice, do nothing
@@ -493,16 +519,18 @@ class Vanarana_3_7(LocationBase):
                 self.colors += [colors_lists[1][2]]
         self.usage = len(self.colors)
         dice_idxs = current_dice.colors_to_idx(self.colors)
-        return [RemoveDiceAction(
-            player_idx = self.position.player_idx,
-            dice_idxs = dice_idxs,
-        )]
+        return [
+            RemoveDiceAction(
+                player_idx=self.position.player_idx,
+                dice_idxs=dice_idxs,
+            )
+        ]
 
 
 class ChinjuForest_3_7(LocationBase):
-    name: Literal['Chinju Forest']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Chinju Forest"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 3
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
@@ -526,16 +554,18 @@ class ChinjuForest_3_7(LocationBase):
         active = table.get_active_character()
         element = active.element
         self.usage -= 1
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = ELEMENT_TO_DIE_COLOR[element]
-        )] + self.check_should_remove()
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                color=ELEMENT_TO_DIE_COLOR[element],
+            )
+        ] + self.check_should_remove()
 
 
 class GoldenHouse_4_0(LocationBase, UsageWithRoundRestrictionSupportBase):
-    name: Literal['Golden House']
-    version: Literal['4.0'] = '4.0'
+    name: Literal["Golden House"]
+    version: Literal["4.0"] = "4.0"
     cost: Cost = Cost()
     usage: int = 2
     max_usage_one_round: int = 1
@@ -545,25 +575,24 @@ class GoldenHouse_4_0(LocationBase, UsageWithRoundRestrictionSupportBase):
     decrease_threshold: int = 3
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
-        if card label match and original cost greater than threshold, 
+        if card label match and original cost greater than threshold,
         reduce cost.
         """
         assert value.cost.original_value is not None
         if (
             self.position.area == ObjectPositionType.SUPPORT
             and value.position.player_idx == self.position.player_idx
-            and value.cost.original_value.total_dice_cost
-            >= self.decrease_threshold
+            and value.cost.original_value.total_dice_cost >= self.decrease_threshold
             and value.cost.label & self.card_cost_label != 0
             and self.has_usage()
         ):
             # area right, player right, cost label match, cost greater than
             # threshold, and not used this round
             if value.cost.decrease_cost(None):
-                if mode == 'REAL':
+                if mode == "REAL":
                     self.use()
         return value
 
@@ -578,9 +607,9 @@ class GoldenHouse_4_0(LocationBase, UsageWithRoundRestrictionSupportBase):
 
 
 class GandharvaVille_4_1(LocationBase, UsageWithRoundRestrictionSupportBase):
-    name: Literal['Gandharva Ville']
-    version: Literal['4.1'] = '4.1'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Gandharva Ville"]
+    version: Literal["4.1"] = "4.1"
+    cost: Cost = Cost(same_dice_number=1)
     usage: int = 3
     max_usage_one_round: int = 1
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
@@ -596,24 +625,23 @@ class GandharvaVille_4_1(LocationBase, UsageWithRoundRestrictionSupportBase):
             self.position.area == ObjectPositionType.SUPPORT
             and event.player_idx == self.position.player_idx
             and self.has_usage()
-            and len(match.player_tables[
-                self.position.player_idx].dice.colors) == 0
+            and len(match.player_tables[self.position.player_idx].dice.colors) == 0
         ):
             # not equipped, or not self, or no usage, or have elemental dice
             return []
         # create one omni element
         self.use()
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = DieColor.OMNI
-        )]
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx, number=1, color=DieColor.OMNI
+            )
+        ]
 
 
 class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
     name: Literal["Stormterror's Lair"]
-    version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(same_dice_number = 2)
+    version: Literal["4.2"] = "4.2"
+    cost: Cost = Cost(same_dice_number=2)
     usage: int = 3
     max_usage_one_round: int = 1
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
@@ -625,18 +653,20 @@ class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
         """
         Draw a talent card
         """
-        return super().play(match) + [DrawCardAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            whitelist_cost_labels = CostLabels.TALENT.value,
-            draw_if_filtered_not_enough = False,
-        )]
+        return super().play(match) + [
+            DrawCardAction(
+                player_idx=self.position.player_idx,
+                number=1,
+                whitelist_cost_labels=CostLabels.TALENT.value,
+                draw_if_filtered_not_enough=False,
+            )
+        ]
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
-        if card label match and original cost greater than threshold, 
+        if card label match and original cost greater than threshold,
         or is talent cost, reduce cost.
         """
         if (
@@ -647,16 +677,12 @@ class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
             # area right, player right, and not used this round
             assert value.cost.original_value is not None
             if (
-                (
-                    value.cost.original_value.total_dice_cost
-                    >= self.decrease_threshold
-                    and value.cost.label & self.card_cost_label != 0
-                )
-                or value.cost.label & CostLabels.TALENT.value != 0
-            ):
+                value.cost.original_value.total_dice_cost >= self.decrease_threshold
+                and value.cost.label & self.card_cost_label != 0
+            ) or value.cost.label & CostLabels.TALENT.value != 0:
                 # cost label match, cost greater than threshold; or is talent
                 if value.cost.decrease_cost(value.cost.elemental_dice_color):
-                    if mode == 'REAL':
+                    if mode == "REAL":
                         self.use()
         return value
 
@@ -679,9 +705,20 @@ class StormterrorsLair_4_2(LocationBase, UsageWithRoundRestrictionSupportBase):
 
 
 register_class(
-    LiyueHarborWharf_3_3 | KnightsOfFavoniusLibrary_3_3 | JadeChamber_4_0 
-    | JadeChamber_3_3 | DawnWinery_3_3 | WangshuInn_3_3 
-    | FavoniusCathedral_3_3 | Tenshukaku_3_7 | GrandNarukamiShrine_3_6 
-    | SangonomiyaShrine_3_7 | SumeruCity_3_7 | Vanarana_3_7 | ChinjuForest_3_7 
-    | GoldenHouse_4_0 | GandharvaVille_4_1 | StormterrorsLair_4_2
+    LiyueHarborWharf_3_3
+    | KnightsOfFavoniusLibrary_3_3
+    | JadeChamber_4_0
+    | JadeChamber_3_3
+    | DawnWinery_3_3
+    | WangshuInn_3_3
+    | FavoniusCathedral_3_3
+    | Tenshukaku_3_7
+    | GrandNarukamiShrine_3_6
+    | SangonomiyaShrine_3_7
+    | SumeruCity_3_7
+    | Vanarana_3_7
+    | ChinjuForest_3_7
+    | GoldenHouse_4_0
+    | GandharvaVille_4_1
+    | StormterrorsLair_4_2
 )

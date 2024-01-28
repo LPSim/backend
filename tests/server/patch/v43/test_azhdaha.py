@@ -6,14 +6,20 @@ from src.lpsim.server.match import Match
 from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim import MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, 
-    get_test_id_from_command, make_respond, read_from_log_json, set_16_omni
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    read_from_log_json,
+    set_16_omni,
 )
 
 
 def test_azhdaha():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_azhdaha.json')
+        os.path.join(os.path.dirname(__file__), "jsons", "test_azhdaha.json")
     )
     # modify hp
     # for i in range(2):
@@ -31,10 +37,10 @@ def test_azhdaha():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -49,7 +55,7 @@ def test_azhdaha():
                 pidx = int(cmd[2][1])
                 colors = {}
                 for c in cmd[3:]:
-                    c, n = c.strip().split('*')
+                    c, n = c.strip().split("*")
                     colors[c] = int(n)
                 for c in match.player_tables[pidx].dice.colors:
                     c = c.value.lower()
@@ -64,10 +70,9 @@ def test_azhdaha():
             elif test_id == 4:
                 pidx, cidx = get_pidx_cidx(cmd)
                 desc = cmd[-1]
-                assert match.player_tables[pidx].characters[
-                    cidx].desc.lower() == desc
+                assert match.player_tables[pidx].characters[cidx].desc.lower() == desc
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -89,7 +94,7 @@ def test_azhdaha_2():
             "sw_char 1 12",
             "skill 1 11 10 9",
             "TEST 4 p0c1 desc cryo",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -97,32 +102,26 @@ def test_azhdaha_2():
             "skill 0 15 14 13",
             "skill 0 12 11 10",
             "sw_char 3 9",
-            "skill 1 8 7 6"
-        ]
+            "skill 1 8 7 6",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.3
         character:Azhdaha*3
         character:Kaeya
         character:Klee
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -142,10 +141,10 @@ def test_azhdaha_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -153,12 +152,11 @@ def test_azhdaha_2():
             elif test_id == 4:
                 pidx, cidx = get_pidx_cidx(cmd)
                 desc = cmd[-1]
-                if desc == 'empty':
-                    desc = ''
-                assert match.player_tables[pidx].characters[
-                    cidx].desc.lower() == desc
+                if desc == "empty":
+                    desc = ""
+                assert match.player_tables[pidx].characters[cidx].desc.lower() == desc
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -168,6 +166,6 @@ def test_azhdaha_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_azhdaha()
     test_azhdaha_2()

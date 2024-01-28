@@ -1,15 +1,16 @@
 import os
 from src.lpsim import MatchState
 from tests.utils_for_test import (
-    get_test_id_from_command, make_respond, set_16_omni, read_from_log_json
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
+    read_from_log_json,
 )
 
 
 def test_seed_dispensary():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 
-                     'jsons', 
-                     'test_seed_dispensary.json')
+        os.path.join(os.path.dirname(__file__), "jsons", "test_seed_dispensary.json")
     )
     # modify hp
     for i in range(2):
@@ -27,7 +28,7 @@ def test_seed_dispensary():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -35,7 +36,7 @@ def test_seed_dispensary():
                 # id 0 means current command is not a test command.
                 break
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -45,5 +46,5 @@ def test_seed_dispensary():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_seed_dispensary()

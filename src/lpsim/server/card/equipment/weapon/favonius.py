@@ -12,7 +12,7 @@ from .base import RoundEffectWeaponBase
 
 class FavoniusBase(RoundEffectWeaponBase):
     name: str
-    cost: Cost = Cost(same_dice_number = 3)
+    cost: Cost = Cost(same_dice_number=3)
     version: str
     weapon_type: WeaponType
     max_usage_per_round: int = 1
@@ -24,9 +24,11 @@ class FavoniusBase(RoundEffectWeaponBase):
         if self character use elemental skill, charge one more
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTER
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_area=ObjectPositionType.CHARACTER,
         ):
             # not self character or not equipped
             return []
@@ -37,16 +39,18 @@ class FavoniusBase(RoundEffectWeaponBase):
             # no usage
             return []
         self.usage -= 1
-        return [ChargeAction(
-            player_idx = self.position.player_idx,
-            character_idx = self.position.character_idx,
-            charge = 1
-        )]
+        return [
+            ChargeAction(
+                player_idx=self.position.player_idx,
+                character_idx=self.position.character_idx,
+                charge=1,
+            )
+        ]
 
 
 class FavoniusSword_3_7(FavoniusBase):
-    name: Literal['Favonius Sword']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Favonius Sword"]
+    version: Literal["3.7"] = "3.7"
     weapon_type: Literal[WeaponType.SWORD] = WeaponType.SWORD
 
 

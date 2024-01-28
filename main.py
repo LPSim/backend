@@ -7,21 +7,20 @@ from src.lpsim.agents import RandomAgent
 
 
 class Main(BaseModel):
-    """
-    """
+    """ """
 
-    version: str = '1.0.0'
-    name: Literal['GITCG'] = 'GITCG'
+    version: str = "1.0.0"
+    name: Literal["GITCG"] = "GITCG"
     match: Match = Match()
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level = logging.WARNING)
-    agent_0 = RandomAgent(player_idx = 0)
-    agent_1 = RandomAgent(player_idx = 1)
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+    agent_0 = RandomAgent(player_idx=0)
+    agent_1 = RandomAgent(player_idx=1)
     main = Main()
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -33,7 +32,7 @@ if __name__ == '__main__':
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     main.match.set_deck([deck, deck])
     main.match.config.max_same_card_number = 30
@@ -51,11 +50,11 @@ if __name__ == '__main__':
         elif main.match.need_respond(1):
             current_agent = agent_1
         else:
-            raise RuntimeError('no agent need to respond')
+            raise RuntimeError("no agent need to respond")
         resp = current_agent.generate_response(main.match)
         assert resp is not None
         main.match.respond(resp)
         main.match.step()
 
-    main.match.get_history_json(filename = 'logs.txt')
-    print('game end, save to logs.txt')
+    main.match.get_history_json(filename="logs.txt")
+    print("game end, save to logs.txt")

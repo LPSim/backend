@@ -3,4 +3,4 @@ from .base import SummonBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('SummonBase',)
+__all__ = ("SummonBase",)

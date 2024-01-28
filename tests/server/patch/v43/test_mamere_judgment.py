@@ -3,8 +3,13 @@ from typing import Dict
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_random_state, 
-    get_test_id_from_command, make_respond, remove_ids, set_16_omni
+    check_hp,
+    check_usage,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    remove_ids,
+    set_16_omni,
 )
 
 
@@ -51,7 +56,7 @@ def get_mamere_judgment_match():
             "TEST 4 p0 dice 10",
             "card 0 0",
             "TEST 1 10 8 7 9 8 10",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -84,27 +89,21 @@ def get_mamere_judgment_match():
             "skill 1 11 10 9",
             "card 2 0 8",
             "TEST 2 p1 hand 17",
-            "sw_char 0 7"
-        ]
+            "sw_char 0 7",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.3
         character:Baizhu
         character:Nilou
@@ -115,7 +114,7 @@ def get_mamere_judgment_match():
         Liben*3
         Wangshu Inn*3
         Passing of Judgment*1
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -133,7 +132,7 @@ def get_mamere_judgment_match():
 def test_mamere_judgment():
     """
     Mamare: 3 usage, Judgment: 3 usage
-    Judgment can judge arcane, food, and event card. 
+    Judgment can judge arcane, food, and event card.
     """
     agent_0, agent_1, match = get_mamere_judgment_match()
     match.start()
@@ -145,10 +144,10 @@ def test_mamere_judgment():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -171,7 +170,7 @@ def test_mamere_judgment():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].team_status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -183,14 +182,7 @@ def test_mamere_judgment():
 
 def test_judgment_one_round():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 0",
-            "card 0 0 0",
-            "end",
-            "TEST 3 p1 usage",
-            "end"
-        ],
+        ["sw_card", "choose 0", "card 0 0 0", "end", "TEST 3 p1 usage", "end"],
         [
             "sw_card",
             "choose 1",
@@ -198,27 +190,21 @@ def test_judgment_one_round():
             "end",
             "card 1 0 15",
             "TEST 2 p1 hand 8",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.3
         character:Baizhu
         character:Nilou
@@ -229,7 +215,7 @@ def test_judgment_one_round():
         Liben*3
         Wangshu Inn*3
         Passing of Judgment*1
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -250,10 +236,10 @@ def test_judgment_one_round():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -265,7 +251,7 @@ def test_judgment_one_round():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].team_status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -277,15 +263,7 @@ def test_judgment_one_round():
 
 def test_judge_arcane():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 0",
-            "card 0 0 0",
-            "end",
-            "end",
-            "TEST 3 p1 usage",
-            "end"
-        ],
+        ["sw_card", "choose 0", "card 0 0 0", "end", "end", "TEST 3 p1 usage", "end"],
         [
             "sw_card",
             "choose 1",
@@ -293,27 +271,21 @@ def test_judge_arcane():
             "TEST 3 p1 usage 2",
             "TEST 3 p0 usage",
             "end",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.3
         character:Baizhu
         character:Nilou
@@ -324,7 +296,7 @@ def test_judge_arcane():
         Liben*3
         Wangshu Inn*3
         Passing of Judgment*1
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -345,10 +317,10 @@ def test_judge_arcane():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -357,7 +329,7 @@ def test_judge_arcane():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].team_status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -387,26 +359,20 @@ def test_mamere_no_default():
             "sw_card",
             "choose 0",
             "end",
-        ]
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         character:Baizhu
         character:Nilou
         character:Tighnari
@@ -416,7 +382,7 @@ def test_mamere_no_default():
         Liben*3
         Wangshu Inn*3
         Passing of Judgment*1
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -437,10 +403,10 @@ def test_mamere_no_default():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -449,7 +415,7 @@ def test_mamere_no_default():
                 pidx = int(cmd[2][1])
                 assert int(cmd[-1]) == len(match.player_tables[pidx].hands)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -476,7 +442,7 @@ def test_mamere_judgment_2():
             "TEST 1 10 8 10 10 7 10",
             "TEST 2 p0 hand 3",
             "TEST 2 p1 hand 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -488,27 +454,21 @@ def test_mamere_judgment_2():
             "card 0 0",
             "card 0 0",
             "card 0 0 14",
-            "skill 1 13 12 11"
-        ]
+            "skill 1 13 12 11",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.3
         character:Kaedehara Kazuha
         character:Klee
@@ -516,7 +476,7 @@ def test_mamere_judgment_2():
         Passing of Judgment
         Mamere*10
         Sweet Madame*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -537,10 +497,10 @@ def test_mamere_judgment_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -555,7 +515,7 @@ def test_mamere_judgment_2():
                 pidx = int(cmd[2][1])
                 assert int(cmd[-1]) == len(match.player_tables[pidx].hands)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -568,12 +528,12 @@ def test_mamere_judgment_2():
 def remove_ellin_information(match_dict: Dict):
     # remove Ellin information
     h = match_dict
-    eh = h['event_handlers']
+    eh = h["event_handlers"]
     if len(eh) < 3:
         return json.dumps(match_dict)
-    ellin_handler = h['event_handlers'][2]
-    assert ellin_handler['name'] == 'Ellin'
-    ellin_handler['recorded_skill_ids'] = {}
+    ellin_handler = h["event_handlers"][2]
+    assert ellin_handler["name"] == "Ellin"
+    ellin_handler["recorded_skill_ids"] = {}
     return json.dumps(h)
 
 
@@ -588,8 +548,8 @@ def test_mamere_load_and_save():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
-        while agent.commands[0].startswith('TEST'):
+            raise AssertionError("No need respond.")
+        while agent.commands[0].startswith("TEST"):
             agent.commands = agent.commands[1:]
         # respond
         make_respond(agent, match)
@@ -600,9 +560,10 @@ def test_mamere_load_and_save():
     assert match.start()[0]
     match.step()
     for idx, old_match_json in enumerate(histories):  # pragma: no branch
-        match_copy = match.copy(deep = True)
+        match_copy = match.copy(deep=True)
         assert remove_ids(match_copy) == remove_ids(
-            Match(**json.loads(match_copy.json())))
+            Match(**json.loads(match_copy.json()))
+        )
         assert remove_ids(
             Match(**json.loads(remove_ellin_information(match_copy.dict())))
         ) == remove_ids(Match(**json.loads(old_match_json)))
@@ -612,8 +573,8 @@ def test_mamere_load_and_save():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
-        while agent.commands[0].startswith('TEST'):
+            raise AssertionError("No need respond.")
+        while agent.commands[0].startswith("TEST"):
             agent.commands = agent.commands[1:]
         # respond
         make_respond(agent, match)
@@ -622,7 +583,7 @@ def test_mamere_load_and_save():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_mamere_judgment()
     # test_judgment_one_round()
     # test_judge_arcane()

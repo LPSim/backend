@@ -6,25 +6,21 @@ from ....modifiable_values import DamageIncreaseValue
 
 from ....struct import Cost
 
-from ....consts import (
-    ElementalReactionType, ObjectPositionType, ObjectType, 
-    WeaponType
-)
+from ....consts import ElementalReactionType, ObjectPositionType, ObjectType, WeaponType
 from .base import RoundEffectWeaponBase
 
 
 class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
-    name: Literal['A Thousand Floating Dreams']
+    name: Literal["A Thousand Floating Dreams"]
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    version: Literal['3.7'] = '3.7'
+    version: Literal["3.7"] = "3.7"
     weapon_type: WeaponType = WeaponType.CATALYST
 
-    cost: Cost = Cost(same_dice_number = 3)
+    cost: Cost = Cost(same_dice_number=3)
     max_usage_per_round: int = 2
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, 
-        match: Any, mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         First +1 DMG if self character use skill. Then if this damage is
@@ -47,13 +43,15 @@ class AThousandFloatingDreams_3_7(RoundEffectWeaponBase):
             # from elemental reaction
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            target_area = ObjectPositionType.SKILL
+            value.position,
+            match,
+            player_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self player use skill
             return value
         # modify damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         value.damage += 1
         self.usage -= 1
         return value

@@ -5,21 +5,35 @@ from ....utils.class_registry import register_base_class
 from ...struct import Cost
 
 from ...modifiable_values import (
-    DamageDecreaseValue, DamageElementEnhanceValue, DamageValue
+    DamageDecreaseValue,
+    DamageElementEnhanceValue,
+    DamageValue,
 )
 from ...consts import (
-    ELEMENT_TO_ENCHANT_ICON, DamageElementalType, DamageType, ElementType, 
-    IconType, ObjectType, PlayerActionLabels
+    ELEMENT_TO_ENCHANT_ICON,
+    DamageElementalType,
+    DamageType,
+    ElementType,
+    IconType,
+    ObjectType,
+    PlayerActionLabels,
 )
 from ..base import StatusBase
 from ...action import (
-    ActionEndAction, MakeDamageAction, RemoveObjectAction, Actions, 
-    SkipPlayerActionAction, UseSkillAction
+    ActionEndAction,
+    MakeDamageAction,
+    RemoveObjectAction,
+    Actions,
+    SkipPlayerActionAction,
+    UseSkillAction,
 )
 from ...event import (
-    ChooseCharacterEventArguments, MakeDamageEventArguments, 
-    PlayerActionStartEventArguments, RoundEndEventArguments, 
-    RoundPrepareEventArguments, SwitchCharacterEventArguments
+    ChooseCharacterEventArguments,
+    MakeDamageEventArguments,
+    PlayerActionStartEventArguments,
+    RoundEndEventArguments,
+    RoundPrepareEventArguments,
+    SwitchCharacterEventArguments,
 )
 
 
@@ -27,6 +41,7 @@ class CharacterStatusBase(StatusBase):
     """
     Base class of character status.
     """
+
     type: Literal[ObjectType.CHARACTER_STATUS] = ObjectType.CHARACTER_STATUS
     name: str
     version: str
@@ -51,6 +66,7 @@ class UsageCharacterStatus(CharacterStatusBase):
     If it is not a damage related status, check_should_remove should be
     called manually.
     """
+
     name: str
     version: str
     usage: int
@@ -63,9 +79,11 @@ class UsageCharacterStatus(CharacterStatusBase):
         should be removed.
         """
         if self.usage <= 0:
-            return [RemoveObjectAction(
-                object_position = self.position,
-            )]
+            return [
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            ]
         return []
 
     def event_handler_MAKE_DAMAGE(
@@ -79,10 +97,11 @@ class UsageCharacterStatus(CharacterStatusBase):
 
 class RoundCharacterStatus(CharacterStatusBase):
     """
-    Base class of team status that based on rounds.  It will implement the 
+    Base class of team status that based on rounds.  It will implement the
     event trigger on ROUND_PREPARE to check if run out of usages; when run out
     of usages, it will remove itself.
     """
+
     name: str
     version: str
     usage: int
@@ -95,16 +114,18 @@ class RoundCharacterStatus(CharacterStatusBase):
         should be removed.
         """
         if self.usage <= 0:
-            return [RemoveObjectAction(
-                object_position = self.position,
-            )]
+            return [
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            ]
         return []
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[Actions]:
         """
-        When reaching prepare, decrease usage and check whether the team 
+        When reaching prepare, decrease usage and check whether the team
         status should be removed.
         """
         self.usage -= 1
@@ -116,6 +137,7 @@ class DefendCharacterStatus(UsageCharacterStatus):
     Base class of defend status (purple shield), decrease damage with its rule
     when receive damage, and decrease usage by 1.
     """
+
     name: str
     version: str
     usage: int
@@ -127,23 +149,26 @@ class DefendCharacterStatus(UsageCharacterStatus):
     icon_type: Literal[IconType.BARRIER] = IconType.BARRIER
 
     def value_modifier_DAMAGE_DECREASE(
-            self, value: DamageDecreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageDecreaseValue:
+        self, value: DamageDecreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageDecreaseValue:
         """
         Decrease damage with its rule, and decrease 1 usage.
         """
         if not value.is_corresponding_character_receive_damage(
-            self.position, match,
+            self.position,
+            match,
         ):
             # not this character receive damage, not modify
             return value
         if self.usage <= 0:
             return value
         new_usage = value.apply_shield(
-            self.usage, self.min_damage_to_trigger, 
-            self.max_in_one_time, self.decrease_usage_by_damage,
+            self.usage,
+            self.min_damage_to_trigger,
+            self.max_in_one_time,
+            self.decrease_usage_by_damage,
         )
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage = new_usage
         return value
 
@@ -153,6 +178,7 @@ class ShieldCharacterStatus(DefendCharacterStatus):
     Base class of shield status (yellow shield), decrease damage by its usage
     and decrease corresponding usage.
     """
+
     name: str
     version: str
     usage: int
@@ -174,13 +200,13 @@ class ElementalInfusionCharacterStatus(CharacterStatusBase):
     """
 
     name: Literal[
-        'Pyro Elemental Infusion',
-        'Hydro Elemental Infusion',
-        'Electro Elemental Infusion',
-        'Cryo Elemental Infusion',
-        'Anemo Elemental Infusion',
-        'Geo Elemental Infusion',
-        'Dendro Elemental Infusion',
+        "Pyro Elemental Infusion",
+        "Hydro Elemental Infusion",
+        "Electro Elemental Infusion",
+        "Cryo Elemental Infusion",
+        "Anemo Elemental Infusion",
+        "Geo Elemental Infusion",
+        "Dendro Elemental Infusion",
     ]
     infused_elemental_type: DamageElementalType = DamageElementalType.PHYSICAL
 
@@ -199,25 +225,34 @@ class ElementalInfusionCharacterStatus(CharacterStatusBase):
         super().__init__(*args, **kwargs)
         if self.infused_elemental_type == DamageElementalType.PHYSICAL:
             # not set elemental type manually, get it from name
-            element = self.name.split(' ')[0].upper()
+            element = self.name.split(" ")[0].upper()
             assert element in [
-                'PYRO', 'HYDRO', 'ELECTRO', 'CRYO', 'ANEMO', 'GEO', 'DENDRO'
-            ], ('In ElementalInfusion: element not set right value')
-            assert self.name.split(' ')[1:] == ['Elemental', 'Infusion']
+                "PYRO",
+                "HYDRO",
+                "ELECTRO",
+                "CRYO",
+                "ANEMO",
+                "GEO",
+                "DENDRO",
+            ], "In ElementalInfusion: element not set right value"
+            assert self.name.split(" ")[1:] == ["Elemental", "Infusion"]
             self.infused_elemental_type = DamageElementalType(element)
         if self.icon_type == IconType.ATK_UP:
             self.icon_type = ELEMENT_TO_ENCHANT_ICON[
-                ElementType(self.infused_elemental_type.value)]  # type: ignore
+                ElementType(self.infused_elemental_type.value)
+            ]  # type: ignore
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
         """
         When self use skill, change physical to corresponding element.
         NOTE: this function will not change the usage.
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
@@ -238,8 +273,9 @@ class PrepareCharacterStatus(CharacterStatusBase):
     use a specified skill, and skip next player action phase.
     if this character is stunned, it will do nothing.
 
-    When this character is not active character, it will remove itself. 
+    When this character is not active character, it will remove itself.
     """
+
     name: str
     version: str
     character_name: str
@@ -259,9 +295,11 @@ class PrepareCharacterStatus(CharacterStatusBase):
         if event.action.player_idx != self.position.player_idx:
             # not self switch character
             return []
-        return [RemoveObjectAction(
-            object_position = self.position,
-        )]
+        return [
+            RemoveObjectAction(
+                object_position=self.position,
+            )
+        ]
 
     def event_handler_CHOOSE_CHARACTER(
         self, event: ChooseCharacterEventArguments, match: Any
@@ -273,15 +311,18 @@ class PrepareCharacterStatus(CharacterStatusBase):
         if event.action.player_idx != self.position.player_idx:
             # not self choose character
             return []
-        raise NotImplementedError('Should not be called')
-        return [RemoveObjectAction(
-            object_position = self.position,
-        )]
+        raise NotImplementedError("Should not be called")
+        return [
+            RemoveObjectAction(
+                object_position=self.position,
+            )
+        ]
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any
-    ) -> List[RemoveObjectAction | UseSkillAction 
-              | SkipPlayerActionAction | ActionEndAction]:
+    ) -> List[
+        RemoveObjectAction | UseSkillAction | SkipPlayerActionAction | ActionEndAction
+    ]:
         """
         If self player action start, and this character is at front,
         use skill, remove this status, and skip player action.
@@ -299,32 +340,36 @@ class PrepareCharacterStatus(CharacterStatusBase):
             # stunned, do nothing
             return []
         ret: List[
-            RemoveObjectAction | UseSkillAction | SkipPlayerActionAction
+            RemoveObjectAction
+            | UseSkillAction
+            | SkipPlayerActionAction
             | ActionEndAction
         ] = []
-        ret.append(RemoveObjectAction(object_position = self.position))
+        ret.append(RemoveObjectAction(object_position=self.position))
         assert character.name == self.character_name
         # use skill
         for skill in character.skills:
             if skill.name == self.skill_name:
                 # clear, should not remove self first
                 ret.clear()
-                ret.append(UseSkillAction(skill_position = skill.position))
+                ret.append(UseSkillAction(skill_position=skill.position))
                 # skip player action
                 ret.append(SkipPlayerActionAction())
                 # remove self
-                ret.append(RemoveObjectAction(object_position = self.position))
+                ret.append(RemoveObjectAction(object_position=self.position))
                 # action end action to switch player
-                ret.append(ActionEndAction(
-                    action_label = PlayerActionLabels.SKILL,
-                    do_combat_action = True,
-                    position = skill.position,
-                ))
+                ret.append(
+                    ActionEndAction(
+                        action_label=PlayerActionLabels.SKILL,
+                        do_combat_action=True,
+                        position=skill.position,
+                    )
+                )
                 # note based on its description, no skill end action will be
                 # triggered.
                 return ret
         else:
-            raise AssertionError('Skill not found')
+            raise AssertionError("Skill not found")
 
 
 class ReviveCharacterStatus(UsageCharacterStatus):
@@ -347,7 +392,8 @@ class ReviveCharacterStatus(UsageCharacterStatus):
         receiving any other damage, and can be defeated by other damage.
         """
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         if character.hp > 0:
             # hp not 0, do nothing
             return []
@@ -356,18 +402,20 @@ class ReviveCharacterStatus(UsageCharacterStatus):
             return []
         # heal this character by 1
         self.usage -= 1
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = - self.heal,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost()
-                )
-            ],
-        )] + self.check_should_remove()
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-self.heal,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
+                    )
+                ],
+            )
+        ] + self.check_should_remove()
 
 
 class RoundEndAttackCharacterStatus(UsageCharacterStatus):
@@ -375,6 +423,7 @@ class RoundEndAttackCharacterStatus(UsageCharacterStatus):
     Make damage to this character at round end. It can also be heal, e.g.
     Pizza.
     """
+
     name: str
     version: str
     usage: int
@@ -389,19 +438,22 @@ class RoundEndAttackCharacterStatus(UsageCharacterStatus):
         assert self.usage > 0
         self.usage -= 1
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         damage_type = DamageType.DAMAGE
         if self.damage < 0:
             damage_type = DamageType.HEAL
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = damage_type,
-                    target_position = character.position,
-                    damage = self.damage,
-                    damage_elemental_type = self.damage_elemental_type,
-                    cost = Cost()
-                )
-            ]
-        )]
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=damage_type,
+                        target_position=character.position,
+                        damage=self.damage,
+                        damage_elemental_type=self.damage_elemental_type,
+                        cost=Cost(),
+                    )
+                ]
+            )
+        ]

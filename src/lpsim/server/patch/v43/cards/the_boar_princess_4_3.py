@@ -36,18 +36,19 @@ class TheBoarPrincessStatus_4_3(RoundTeamStatus):
         if event.object_type == ObjectType.TALENT:
             # is talent, it should be removed because of character defeated.
             character = match.player_tables[position.player_idx].characters[
-                position.character_idx]
+                position.character_idx
+            ]
             if character.is_alive:
                 # character is still alive, it should be because of
                 # talent overwritten.
                 return []
         assert self.usage > 0
         self.usage -= 1
-        return [CreateDiceAction(
-            player_idx = self.position.player_idx,
-            number = 1,
-            color = DieColor.OMNI
-        )] + self.check_should_remove()
+        return [
+            CreateDiceAction(
+                player_idx=self.position.player_idx, number=1, color=DieColor.OMNI
+            )
+        ] + self.check_should_remove()
 
     def event_handler_ROUND_PREPARE(
         self, event: RoundPrepareEventArguments, match: Match
@@ -69,43 +70,39 @@ class TheBoarPrincess_4_3(EventCardBase):
         self, target: ObjectPosition | None, match: Match
     ) -> List[CreateObjectAction]:
         assert target is None
-        return [CreateObjectAction(
-            object_name = self.name,
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.TEAM_STATUS,
-                id = -1
-            ),
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name=self.name,
+                object_position=ObjectPosition(
+                    player_idx=self.position.player_idx,
+                    area=ObjectPositionType.TEAM_STATUS,
+                    id=-1,
+                ),
+                object_arguments={},
+            )
+        ]
 
 
 desc: Dict[str, DescDictType] = {
     "TEAM_STATUS/The Boar Princess": {
-        "names": {
-            "en-US": "The Boar Princess",
-            "zh-CN": "野猪公主"
-        },
+        "names": {"en-US": "The Boar Princess", "zh-CN": "野猪公主"},
         "descs": {
             "4.3": {
                 "en-US": "Each time you discard an Equipment Card from one of your characters during this Round: Gain 1 Omni Element. (Max 2)\n(This effect can be triggered by the loss of an Equipment Card from a character falling or from having their Weapon or Artifact overwritten.)",  # noqa: E501
-                "zh-CN": "本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）\n（角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）"  # noqa: E501
+                "zh-CN": "本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）\n（角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）",  # noqa: E501
             }
         },
     },
     "CARD/The Boar Princess": {
-        "names": {
-            "en-US": "The Boar Princess",
-            "zh-CN": "野猪公主"
-        },
+        "names": {"en-US": "The Boar Princess", "zh-CN": "野猪公主"},
         "descs": {
             "4.3": {
                 "en-US": "Each time you discard an Equipment Card from one of your characters during this Round: Gain 1 Omni Element. (Max 2)\n(This effect can be triggered by the loss of an Equipment Card from a character falling or from having their Weapon or Artifact overwritten.)",  # noqa: E501
-                "zh-CN": "本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）\n（角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）"  # noqa: E501
+                "zh-CN": "本回合中，我方每有一张装备在角色身上的「装备牌」被弃置时：获得1个万能元素。（最多获得2个）\n（角色被击倒时弃置装备牌，或者覆盖装备「武器」或「圣遗物」，都可以触发此效果）",  # noqa: E501
             }
         },
         "image_path": "cardface/Event_Event_Yezhu.png",  # noqa: E501
-        "id": 332025
+        "id": 332025,
     },
 }
 

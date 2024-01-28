@@ -8,8 +8,8 @@ from ....card.event.arcane_legend import JoyousCelebration_4_2
 
 
 class JoyousCelebration_4_3(JoyousCelebration_4_2):
-    version: Literal['4.3'] = '4.3'
-    cost: Cost = Cost(arcane_legend = True)
+    version: Literal["4.3"] = "4.3"
+    cost: Cost = Cost(arcane_legend=True)
 
 
 desc: Dict[str, DescDictType] = {
@@ -17,7 +17,7 @@ desc: Dict[str, DescDictType] = {
         "descs": {
             "4.3": {
                 "zh-CN": "$ARCANE/Joyous Celebration|descs|4.2|zh-CN",
-                "en-US": "$ARCANE/Joyous Celebration|descs|4.2|en-US"
+                "en-US": "$ARCANE/Joyous Celebration|descs|4.2|en-US",
             }
         },
     },

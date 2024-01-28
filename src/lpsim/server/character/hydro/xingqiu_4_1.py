@@ -7,11 +7,18 @@ from ...action import Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -19,18 +26,15 @@ from ..character_base import (
 
 
 class GuhuaStyle(PhysicalNormalAttackBase):
-    name: Literal['Guhua Style'] = 'Guhua Style'
+    name: Literal["Guhua Style"] = "Guhua Style"
     cost: Cost = PhysicalNormalAttackBase.get_cost(ElementType.HYDRO)
 
 
 class FatalRainscreen(ElementalSkillBase):
-    name: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
+    name: Literal["Fatal Rainscreen"] = "Fatal Rainscreen"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -40,34 +44,36 @@ class FatalRainscreen(ElementalSkillBase):
             self.attack_opposite_active(match, self.damage, self.damage_type),
             self.charge_self(1),
         ]
-        ele_app = self.element_application_self(
-            match, DamageElementalType.HYDRO
-        )
+        ele_app = self.element_application_self(match, DamageElementalType.HYDRO)
         ret[0].damage_value_list += ele_app.damage_value_list
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         talent = character.talent
         if talent is not None:
-            ret[0].create_objects += [self.create_team_status('Rain Sword', {
-                'version': talent.version,
-                'usage': 3,
-                'max_usage': 3,
-            })]
+            ret[0].create_objects += [
+                self.create_team_status(
+                    "Rain Sword",
+                    {
+                        "version": talent.version,
+                        "usage": 3,
+                        "max_usage": 3,
+                    },
+                )
+            ]
         else:
-            ret[0].create_objects += [self.create_team_status('Rain Sword', {
-                'version': '3.3'
-            })]
+            ret[0].create_objects += [
+                self.create_team_status("Rain Sword", {"version": "3.3"})
+            ]
         return ret
 
 
 class Raincutter(ElementalBurstBase):
-    name: Literal['Raincutter'] = 'Raincutter'
+    name: Literal["Raincutter"] = "Raincutter"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -78,13 +84,9 @@ class Raincutter(ElementalBurstBase):
             self.charge_self(-self.cost.charge),
             self.attack_opposite_active(match, self.damage, self.damage_type),
         ]
-        ele_app = self.element_application_self(
-            match, DamageElementalType.HYDRO
-        )
+        ele_app = self.element_application_self(match, DamageElementalType.HYDRO)
         ret[1].damage_value_list += ele_app.damage_value_list
-        ret[1].create_objects += [
-            self.create_team_status('Rainbow Bladework')
-        ]
+        ret[1].create_objects += [self.create_team_status("Rainbow Bladework")]
         return ret
 
 
@@ -92,38 +94,32 @@ class Raincutter(ElementalBurstBase):
 
 
 class TheScentRemained_3_3(SkillTalent):
-    name: Literal['The Scent Remained']
-    version: Literal['3.3'] = '3.3'
-    character_name: Literal['Xingqiu'] = 'Xingqiu'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4
-    )
-    skill: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
+    name: Literal["The Scent Remained"]
+    version: Literal["3.3"] = "3.3"
+    character_name: Literal["Xingqiu"] = "Xingqiu"
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=4)
+    skill: Literal["Fatal Rainscreen"] = "Fatal Rainscreen"
 
 
 class TheScentRemained_4_2(TheScentRemained_3_3):
-    name: Literal['The Scent Remained']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Xingqiu'] = 'Xingqiu'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Fatal Rainscreen'] = 'Fatal Rainscreen'
+    name: Literal["The Scent Remained"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Xingqiu"] = "Xingqiu"
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
+    skill: Literal["Fatal Rainscreen"] = "Fatal Rainscreen"
+
+
 # character base
 
 
 class Xingqiu_4_1(CharacterBase):
-    name: Literal['Xingqiu']
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Xingqiu"]
+    version: Literal["4.1"] = "4.1"
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[GuhuaStyle | FatalRainscreen | Raincutter] = []
-    faction: List[FactionType] = [
-        FactionType.LIYUE
-    ]
+    faction: List[FactionType] = [FactionType.LIYUE]
     weapon_type: WeaponType = WeaponType.SWORD
 
     def _init_skills(self) -> None:

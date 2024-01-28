@@ -1,4 +1,3 @@
-
 from typing import Any, List, Literal
 
 from .....utils.class_registry import register_class
@@ -7,7 +6,9 @@ from ....action import Actions, ChargeAction
 
 from ....action import ChangeObjectUsageAction, CreateObjectAction
 from ....event import (
-    ChargeEventArguments, RoundPrepareEventArguments, SkillEndEventArguments
+    ChargeEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 
 from ....modifiable_values import DamageIncreaseValue
@@ -21,15 +22,14 @@ from .base import RoundEffectWeaponBase, WeaponBase
 
 
 class VortexVanquisher_3_7(RoundEffectWeaponBase):
-    name: Literal['Vortex Vanquisher']
-    cost: Cost = Cost(same_dice_number = 3)
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Vortex Vanquisher"]
+    cost: Cost = Cost(same_dice_number=3)
+    version: Literal["3.7"] = "3.7"
     weapon_type: WeaponType = WeaponType.POLEARM
     max_usage_per_round: int = 1
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If self has shield, +1 damage.
@@ -43,7 +43,7 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
             # not current character using skill
             return value
         # modify damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         value.damage += self.damage_increase
         # if have shield, increase one more
         have_shield = False
@@ -53,9 +53,9 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
                 have_shield = True
         if not have_shield:
             # no shield team status, check character status
-            character = match.player_tables[
-                self.position.player_idx].characters[
-                    self.position.character_idx]
+            character = match.player_tables[self.position.player_idx].characters[
+                self.position.character_idx
+            ]
             for status in character.status:
                 if issubclass(type(status), ShieldCharacterStatus):
                     have_shield = True
@@ -68,7 +68,7 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
     ) -> List[ChangeObjectUsageAction]:
         """
         if self character use elemental skill, check whether have
-        shield team status. If so, add 1 usage. 
+        shield team status. If so, add 1 usage.
         """
         if event.action.skill_type != SkillType.ELEMENTAL_SKILL:
             # not elemental skill
@@ -77,9 +77,12 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
             # no usage
             return []
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTER
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
+            source_area=ObjectPositionType.CHARACTER,
         ):
             # not self character use skill or not equipped
             return []
@@ -88,31 +91,36 @@ class VortexVanquisher_3_7(RoundEffectWeaponBase):
             if issubclass(type(status), ShieldTeamStatus):
                 # find shield status, add 3 usage
                 self.usage -= 1
-                return [ChangeObjectUsageAction(
-                    object_position = status.position,
-                    change_usage = 1,
-                )]
+                return [
+                    ChangeObjectUsageAction(
+                        object_position=status.position,
+                        change_usage=1,
+                    )
+                ]
         return []
 
 
 class LithicSpear_3_7(WeaponBase):
-    name: Literal['Lithic Spear']
-    cost: Cost = Cost(same_dice_number = 3)
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Lithic Spear"]
+    cost: Cost = Cost(same_dice_number=3)
+    version: Literal["3.7"] = "3.7"
     weapon_type: WeaponType = WeaponType.POLEARM
 
     def generate_shield(self, count: int) -> List[Actions]:
         count = min(count, 3)
         if count > 0:
-            return [CreateObjectAction(
-                object_position = self.position.set_area(
-                    ObjectPositionType.CHARACTER_STATUS),
-                object_name = self.name,
-                object_arguments = {
-                    'usage': count,
-                    'max_usage': count,
-                }
-            )]
+            return [
+                CreateObjectAction(
+                    object_position=self.position.set_area(
+                        ObjectPositionType.CHARACTER_STATUS
+                    ),
+                    object_name=self.name,
+                    object_arguments={
+                        "usage": count,
+                        "max_usage": count,
+                    },
+                )
+            ]
         return []
 
     def equip(self, match: Any) -> List[Actions]:
@@ -127,7 +135,7 @@ class LithicSpear_3_7(WeaponBase):
 
 
 class LithicSpear_3_3(LithicSpear_3_7):
-    version: Literal['3.3']
+    version: Literal["3.3"]
 
     def equip(self, match: Any) -> List[Actions]:
         """
@@ -141,9 +149,9 @@ class LithicSpear_3_3(LithicSpear_3_7):
 
 
 class EngulfingLightning_3_7(RoundEffectWeaponBase):
-    name: Literal['Engulfing Lightning']
-    version: Literal['3.7'] = '3.7'
-    cost: Cost = Cost(same_dice_number = 3)
+    name: Literal["Engulfing Lightning"]
+    version: Literal["3.7"] = "3.7"
+    cost: Cost = Cost(same_dice_number=3)
     weapon_type: WeaponType = WeaponType.POLEARM
     max_usage_per_round: int = 1
 
@@ -151,15 +159,18 @@ class EngulfingLightning_3_7(RoundEffectWeaponBase):
         if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
-        character = match.player_tables[
-            self.position.player_idx].characters[self.position.character_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx
+        ]
         if character.charge == 0 and self.usage > 0:
             self.usage -= 1
-            return [ChargeAction(
-                player_idx = self.position.player_idx,
-                character_idx = self.position.character_idx,
-                charge = 1,
-            )]
+            return [
+                ChargeAction(
+                    player_idx=self.position.player_idx,
+                    character_idx=self.position.character_idx,
+                    charge=1,
+                )
+            ]
         return []
 
     def equip(self, match: Any) -> List[Actions]:
@@ -178,6 +189,5 @@ class EngulfingLightning_3_7(RoundEffectWeaponBase):
 
 
 register_class(
-    LithicSpear_3_7 | VortexVanquisher_3_7 | EngulfingLightning_3_7
-    | LithicSpear_3_3
+    LithicSpear_3_7 | VortexVanquisher_3_7 | EngulfingLightning_3_7 | LithicSpear_3_3
 )

@@ -6,17 +6,22 @@ from ...summon.base import SwirlChangeSummonBase
 
 from ...event import RoundEndEventArguments
 
-from ...action import (
-    ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
-)
+from ...action import ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -24,8 +29,8 @@ from ..character_base import (
 
 
 class Stormeye_3_7(SwirlChangeSummonBase):
-    name: Literal['Stormeye'] = 'Stormeye'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Stormeye"] = "Stormeye"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     damage: int = 2
@@ -37,10 +42,8 @@ class Stormeye_3_7(SwirlChangeSummonBase):
         Need to change enemy active
         """
         ret = super().event_handler_ROUND_END(event, match)
-        our_active = match.player_tables[
-            self.position.player_idx].active_character_idx
-        target_characters = match.player_tables[
-            1 - self.position.player_idx].characters
+        our_active = match.player_tables[self.position.player_idx].active_character_idx
+        target_characters = match.player_tables[1 - self.position.player_idx].characters
         target_idx = our_active
         if target_characters[target_idx].is_defeated:
             # need to choose another character
@@ -49,11 +52,10 @@ class Stormeye_3_7(SwirlChangeSummonBase):
                     target_idx = idx
                     break
             else:
-                raise AssertionError('No character alive')
+                raise AssertionError("No character alive")
         attack_action = ret[0]
         assert attack_action.type == ActionTypes.MAKE_DAMAGE
-        attack_action.character_change_idx[
-            1 - self.position.player_idx] = target_idx
+        attack_action.character_change_idx[1 - self.position.player_idx] = target_idx
         return ret
 
 
@@ -61,30 +63,30 @@ class Stormeye_3_7(SwirlChangeSummonBase):
 
 
 class SkywardSonnet(ElementalSkillBase):
-    name: Literal['Skyward Sonnet'] = 'Skyward Sonnet'
+    name: Literal["Skyward Sonnet"] = "Skyward Sonnet"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ANEMO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ANEMO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
-        assert character.name == 'Venti'
+            self.position.character_idx
+        ]
+        assert character.name == "Venti"
         talent_activated = False
         if self.is_talent_equipped(match):
             talent_activated = True
-        return super().get_actions(match, [
-            self.create_team_status(
-                'Stormzone', 
-                {'talent_activated': talent_activated}
-            )
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_team_status(
+                    "Stormzone", {"talent_activated": talent_activated}
+                )
+            ],
+        )
 
 
 class WindsGrandOde(ElementalBurstBase):
@@ -92,9 +94,7 @@ class WindsGrandOde(ElementalBurstBase):
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ANEMO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ANEMO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -102,50 +102,41 @@ class WindsGrandOde(ElementalBurstBase):
         Attack and create object
         """
         # create summon first, so it can change element immediately.
-        return super().get_actions(match, [
-            self.create_summon('Stormeye')
-        ])
+        return super().get_actions(match, [self.create_summon("Stormeye")])
 
 
 # Talents
 
 
 class EmbraceOfWinds_3_7(SkillTalent):
-    name: Literal['Embrace of Winds']
-    version: Literal['3.7'] = '3.7'
-    character_name: Literal['Venti'] = 'Venti'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ANEMO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Skyward Sonnet'] = 'Skyward Sonnet'
+    name: Literal["Embrace of Winds"]
+    version: Literal["3.7"] = "3.7"
+    character_name: Literal["Venti"] = "Venti"
+    cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)
+    skill: Literal["Skyward Sonnet"] = "Skyward Sonnet"
 
 
 # character base
 
 
 class Venti_3_7(CharacterBase):
-    name: Literal['Venti']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Venti"]
+    version: Literal["3.7"] = "3.7"
     element: ElementType = ElementType.ANEMO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        PhysicalNormalAttackBase | SkywardSonnet | WindsGrandOde
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.MONDSTADT
-    ]
+    skills: List[PhysicalNormalAttackBase | SkywardSonnet | WindsGrandOde] = []
+    faction: List[FactionType] = [FactionType.MONDSTADT]
     weapon_type: WeaponType = WeaponType.BOW
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Divine Marksmanship',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Divine Marksmanship",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             SkywardSonnet(),
-            WindsGrandOde()
+            WindsGrandOde(),
         ]
 
 

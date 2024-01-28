@@ -3,20 +3,32 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_class
 
 from ...modifiable_values import (
-    CostValue, DamageElementEnhanceValue, DamageIncreaseValue
+    CostValue,
+    DamageElementEnhanceValue,
+    DamageIncreaseValue,
 )
 from ...action import Actions, RemoveObjectAction
 from ...event import (
-    MakeDamageEventArguments, RoundPrepareEventArguments, 
-    SkillEndEventArguments
+    MakeDamageEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, ELEMENT_TO_ENCHANT_ICON, CostLabels, 
-    DamageElementalType, DieColor, ElementType, ElementalReactionType, 
-    IconType, ObjectPositionType, SkillType
+    ELEMENT_TO_DAMAGE_TYPE,
+    ELEMENT_TO_ENCHANT_ICON,
+    CostLabels,
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    ElementalReactionType,
+    IconType,
+    ObjectPositionType,
+    SkillType,
 )
 from .base import (
-    CharacterStatusBase, ElementalInfusionCharacterStatus, RoundCharacterStatus
+    CharacterStatusBase,
+    ElementalInfusionCharacterStatus,
+    RoundCharacterStatus,
 )
 
 
@@ -24,17 +36,17 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
     name: Literal[
         # newly created ranzan, and will change its element based on kazuha
         # skill.
-        'Midare Ranzan: New',
+        "Midare Ranzan: New",
         # no swirl reaction, anemo element
-        'Midare Ranzan',
+        "Midare Ranzan",
         # swirl, corresponding element
-        'Midare Ranzan: Pyro',
-        'Midare Ranzan: Hydro',
-        'Midare Ranzan: Cryo',
-        'Midare Ranzan: Electro',
-    ] = 'Midare Ranzan'
+        "Midare Ranzan: Pyro",
+        "Midare Ranzan: Hydro",
+        "Midare Ranzan: Cryo",
+        "Midare Ranzan: Electro",
+    ] = "Midare Ranzan"
     element: ElementType = ElementType.NONE
-    version: Literal['3.8'] = '3.8'
+    version: Literal["3.8"] = "3.8"
     usage: int = 1
     max_usage: int = 1
     newly_created: bool = True
@@ -43,7 +55,7 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
         IconType.ELEMENT_ENCHANT_FIRE,
         IconType.ELEMENT_ENCHANT_WATER,
         IconType.ELEMENT_ENCHANT_ICE,
-        IconType.ELEMENT_ENCHANT_WIND
+        IconType.ELEMENT_ENCHANT_WIND,
     ] = IconType.ELEMENT_ENCHANT_WIND
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -54,26 +66,28 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
         super(ElementalInfusionCharacterStatus, self).__init__(*args, **kwargs)
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
         """
         Assert that self.element is correctly set, and if not plunging attack,
         do not modify.
         """
-        assert self.newly_created or self.element != ElementType.NONE, (
-            'not newly created, but element not set'
-        )
+        assert (
+            self.newly_created or self.element != ElementType.NONE
+        ), "not newly created, but element not set"
         if not match.player_tables[self.position.player_idx].plunge_satisfied:
             # not plunging attack, do nothing
             return value
-        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
-            value, match, mode
-        )
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(value, match, mode)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         """
         if plunging attack, +1 DMG.
@@ -99,15 +113,17 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
         it is created and by kazuha's elemental skill, and the element type
         is determined at that time.
         """
-        if self.name != 'Midare Ranzan: New':
+        if self.name != "Midare Ranzan: New":
             # not newly created, do nothing
             return []
         skill_used: bool = False
         for damage in event.damages:
             if not self.position.check_position_valid(
-                damage.final_damage.position, match, 
-                player_idx_same = True, character_idx_same = True, 
-                target_area = ObjectPositionType.SKILL,
+                damage.final_damage.position,
+                match,
+                player_idx_same=True,
+                character_idx_same=True,
+                target_area=ObjectPositionType.SKILL,
             ):  # pragma: no cover
                 # not self character use skill, do nothing
                 continue
@@ -118,20 +134,17 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
                 # not swirl, do nothing
                 continue
             # swirl, change element type
-            assert self.name == 'Midare Ranzan: New'
+            assert self.name == "Midare Ranzan: New"
             for element in damage.reacted_elements:
                 if element != ElementType.ANEMO:
                     self.element = element
-            self.name = (
-                f'Midare Ranzan: {self.element.name.capitalize()}'
-            )  # type: ignore
-            self.icon_type = ELEMENT_TO_ENCHANT_ICON[
-                self.element]  # type: ignore
+            self.name = f"Midare Ranzan: {self.element.name.capitalize()}"  # type: ignore
+            self.icon_type = ELEMENT_TO_ENCHANT_ICON[self.element]  # type: ignore
         else:
-            assert skill_used, 'kazuha elemental skill damage not found'
+            assert skill_used, "kazuha elemental skill damage not found"
             if self.element == ElementType.NONE:
                 # no swirl, change to anemo
-                self.name = 'Midare Ranzan'
+                self.name = "Midare Ranzan"
                 self.element = ElementType.ANEMO
         self.infused_elemental_type = ELEMENT_TO_DAMAGE_TYPE[self.element]
         return []
@@ -140,13 +153,15 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
         """
-        When skill end by this character, if it is newly created, mark False 
+        When skill end by this character, if it is newly created, mark False
         and do nothing. Otherwise, remove itself.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True,
-            target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not this character use skill, do nothing
             return []
@@ -155,14 +170,12 @@ class MidareRanzan_3_8(ElementalInfusionCharacterStatus):
             self.newly_created = False
             return []
         # remove itself
-        return [RemoveObjectAction(
-            object_position = self.position
-        )]
+        return [RemoveObjectAction(object_position=self.position)]
 
 
 class YakshasMask_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
     name: Literal["Yaksha's Mask"] = "Yaksha's Mask"
-    version: Literal['3.7'] = '3.7'
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.ANEMO
@@ -178,14 +191,13 @@ class YakshasMask_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
         self.switch_cost_decrease_usage = self.switch_cost_decrease_max_usage
         return super().event_handler_ROUND_PREPARE(event, match)
 
-    def renew(self, new_status: 'YakshasMask_3_7') -> None:
+    def renew(self, new_status: "YakshasMask_3_7") -> None:
         self.switch_cost_decrease_usage = new_status.switch_cost_decrease_usage
         self.skill_cost_decrease_usage = new_status.skill_cost_decrease_usage
         super().renew(new_status)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
@@ -208,7 +220,7 @@ class YakshasMask_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
         return value
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         if value.cost.label & CostLabels.SWITCH_CHARACTER.value != 0:
             # switch character cost
@@ -221,15 +233,17 @@ class YakshasMask_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
                 return value
             # decrease cost
             if value.cost.decrease_cost(None):  # pragma: no branch
-                if mode == 'REAL':
+                if mode == "REAL":
                     self.switch_cost_decrease_usage -= 1
         elif value.cost.label & CostLabels.ELEMENTAL_SKILL.value != 0:
             # elemental skill
             if not (
                 self.position.check_position_valid(
-                    value.position, match, player_idx_same = True, 
-                    character_idx_same = True, 
-                    target_area = ObjectPositionType.SKILL
+                    value.position,
+                    match,
+                    player_idx_same=True,
+                    character_idx_same=True,
+                    target_area=ObjectPositionType.SKILL,
                 )
                 and self.skill_cost_decrease_usage > 0
             ):
@@ -237,7 +251,7 @@ class YakshasMask_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
                 return value
             # decrease cost
             if value.cost.decrease_cost(DieColor.ANEMO):  # pragma: no branch
-                if mode == 'REAL':
+                if mode == "REAL":
                     self.skill_cost_decrease_usage -= 1
         return value
 
@@ -249,8 +263,9 @@ class Windfavored_4_1(CharacterStatusBase):
     is remove self, when its usage becomes zero in skill end, we will remove
     self.
     """
-    name: Literal['Windfavored'] = 'Windfavored'
-    version: Literal['4.1'] = '4.1'
+
+    name: Literal["Windfavored"] = "Windfavored"
+    version: Literal["4.1"] = "4.1"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
@@ -266,7 +281,7 @@ class Windfavored_4_1(CharacterStatusBase):
         character performs normal attack.
         """
         if self.usage <= 0:
-            return [RemoveObjectAction(object_position = self.position)]
+            return [RemoveObjectAction(object_position=self.position)]
         return []
 
 

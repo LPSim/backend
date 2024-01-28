@@ -12,12 +12,20 @@ from ...action import Actions, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    CostLabels, DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    CostLabels,
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -28,13 +36,10 @@ from ..character_base import (
 
 
 class Tidecaller(ElementalSkillBase):
-    name: Literal['Tidecaller'] = 'Tidecaller'
+    name: Literal["Tidecaller"] = "Tidecaller"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -42,12 +47,12 @@ class Tidecaller(ElementalSkillBase):
         """
         return [
             self.charge_self(1),
-            self.create_character_status('Tidecaller: Surf Embrace'),
+            self.create_character_status("Tidecaller: Surf Embrace"),
         ]
 
 
 class Wavestrider(ElementalSkillBase):
-    name: Literal['Wavestrider'] = 'Wavestrider'
+    name: Literal["Wavestrider"] = "Wavestrider"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost()
@@ -59,39 +64,38 @@ class Wavestrider(ElementalSkillBase):
         return False
 
     def get_actions(self, match: Any) -> List[MakeDamageAction]:
-        return [
-            self.attack_opposite_active(match, self.damage, self.damage_type)
-        ]
+        return [self.attack_opposite_active(match, self.damage, self.damage_type)]
 
 
 class Stormbreaker(ElementalBurstBase):
-    name: Literal['Stormbreaker'] = 'Stormbreaker'
+    name: Literal["Stormbreaker"] = "Stormbreaker"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 3
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3, charge=3
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_team_status("Thunderbeast's Targe"),
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_team_status("Thunderbeast's Targe"),
+            ],
+        )
 
 
 # Talents
 
 
 class LightningStorm_4_2(SkillTalent):
-    name: Literal['Lightning Storm']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Beidou'] = 'Beidou'
+    name: Literal["Lightning Storm"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Beidou"] = "Beidou"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
+        elemental_dice_color=DieColor.ELECTRO,
+        elemental_dice_number=3,
     )
-    skill: Literal['Tidecaller'] = 'Tidecaller'
+    skill: Literal["Tidecaller"] = "Tidecaller"
 
     usage: int = 2
     max_usage: int = 2
@@ -118,20 +122,25 @@ class LightningStorm_4_2(SkillTalent):
             # not equipped
             return []
         if not event.final_damage.is_corresponding_character_receive_damage(
-            self.position, match,
+            self.position,
+            match,
         ):
             # not corresponding character
             return []
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         for status in character.status:
-            if status.name == 'Tidecaller: Surf Embrace':
+            if status.name == "Tidecaller: Surf Embrace":
                 self.activated = True
                 break
         return []
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+        self,
+        value: CostValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> CostValue:
         """
         If activated, decrease self normal attack cost by 1
@@ -140,9 +149,12 @@ class LightningStorm_4_2(SkillTalent):
             # not activated and need to activate
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTER,
+            value.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
+            source_area=ObjectPositionType.CHARACTER,
         ):
             # not self skill
             return value
@@ -154,7 +166,7 @@ class LightningStorm_4_2(SkillTalent):
             return value
         # decrease
         if value.cost.decrease_cost(None):  # pragma: no branch
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
@@ -163,24 +175,22 @@ class LightningStorm_4_2(SkillTalent):
 
 
 class Beidou_3_8(CharacterBase):
-    name: Literal['Beidou']
-    version: Literal['3.8'] = '3.8'
+    name: Literal["Beidou"]
+    version: Literal["3.8"] = "3.8"
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 3
     skills: List[
         PhysicalNormalAttackBase | Tidecaller | Wavestrider | Stormbreaker
     ] = []
-    faction: List[FactionType] = [
-        FactionType.LIYUE
-    ]
+    faction: List[FactionType] = [FactionType.LIYUE]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Oceanborne',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Oceanborne",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             Tidecaller(),
             Wavestrider(),

@@ -6,4 +6,4 @@ from .locations import LocationBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('SupportBase', 'CompanionBase', 'ItemBase', 'LocationBase')
+__all__ = ("SupportBase", "CompanionBase", "ItemBase", "LocationBase")

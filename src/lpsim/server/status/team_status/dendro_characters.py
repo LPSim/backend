@@ -3,19 +3,28 @@ from typing import Any, List, Literal
 from ....utils.class_registry import register_class
 
 from ...action import (
-    Actions, ChangeObjectUsageAction, CreateObjectAction, MakeDamageAction, 
-    RemoveObjectAction
+    Actions,
+    ChangeObjectUsageAction,
+    CreateObjectAction,
+    MakeDamageAction,
+    RemoveObjectAction,
 )
 from ...event import (
-    CreateObjectEventArguments, MakeDamageEventArguments, 
-    ReceiveDamageEventArguments, RoundPrepareEventArguments, 
-    SkillEndEventArguments
+    CreateObjectEventArguments,
+    MakeDamageEventArguments,
+    ReceiveDamageEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 from ...struct import Cost, ObjectPosition
 
 from ...consts import (
-    DamageElementalType, DamageType, ElementType, ElementalReactionType, 
-    IconType, ObjectPositionType
+    DamageElementalType,
+    DamageType,
+    ElementType,
+    ElementalReactionType,
+    IconType,
+    ObjectPositionType,
 )
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
@@ -23,8 +32,8 @@ from .base import RoundTeamStatus, ShieldTeamStatus, SwitchActionTeamStatus
 
 
 class ShrineOfMaya_3_7(RoundTeamStatus):
-    name: Literal['Shrine of Maya'] = 'Shrine of Maya'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Shrine of Maya"] = "Shrine of Maya"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -36,20 +45,17 @@ class ShrineOfMaya_3_7(RoundTeamStatus):
         When self is created, check whether to increase the usage of Seed of
         Skandha.
         """
-        if event.action.object_name != 'Shrine of Maya':
+        if event.action.object_name != "Shrine of Maya":
             # not creating Shrine of Maya, do nothing.
             return []
         active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         assert active_character is not None
-        if (
-            active_character.name == 'Nahida' 
-            and active_character.talent is not None
-        ):
+        if active_character.name == "Nahida" and active_character.talent is not None:
             # talent equipped, check if have electro character.
             has_electro_character = False
-            for character in match.player_tables[
-                    self.position.player_idx].characters:
+            for character in match.player_tables[self.position.player_idx].characters:
                 if character.element == ElementType.ELECTRO:
                     has_electro_character = True
                     break
@@ -58,23 +64,25 @@ class ShrineOfMaya_3_7(RoundTeamStatus):
                 # Seed of Skandha.
                 ret = []
                 for character in match.player_tables[
-                        1 - self.position.player_idx].characters:
+                    1 - self.position.player_idx
+                ].characters:
                     for status in character.status:
-                        if status.name == 'Seed of Skandha':
+                        if status.name == "Seed of Skandha":
                             position = status.position.set_area(
-                                ObjectPositionType.CHARACTER_STATUS)
+                                ObjectPositionType.CHARACTER_STATUS
+                            )
                             ret.append(
                                 ChangeObjectUsageAction(
-                                    object_position = position,
-                                    change_usage = 1,
+                                    object_position=position,
+                                    change_usage=1,
                                 )
                             )
                 return ret
         return []
 
     def value_modifier_DAMAGE_INCREASE(
-            self, value: DamageIncreaseValue, match: Any,
-            mode: Literal['TEST', 'REAL']) -> DamageIncreaseValue:
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
+    ) -> DamageIncreaseValue:
         """
         +1 on self elemental reaction damage.
         """
@@ -97,8 +105,9 @@ class FloralSidewinder_3_3(RoundTeamStatus):
     Damage made on skill end, but need to check whether dendro reaction made
     before.
     """
-    name: Literal['Floral Sidewinder'] = 'Floral Sidewinder'
-    version: Literal['3.3'] = '3.3'
+
+    name: Literal["Floral Sidewinder"] = "Floral Sidewinder"
+    version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1
     dendro_reaction_made: bool = False
@@ -135,27 +144,30 @@ class FloralSidewinder_3_3(RoundTeamStatus):
             return []
         # regardless of the following conditions, reset dendro reaction made
         self.dendro_reaction_made = False
-        character = match.player_tables[
-            self.position.player_idx].get_active_character()
+        character = match.player_tables[self.position.player_idx].get_active_character()
         if not event.action.position.check_position_valid(  # pragma: no cover
-            character.position, match, player_idx_same = True,
-            character_idx_same = True, source_area = ObjectPositionType.SKILL
+            character.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_area=ObjectPositionType.SKILL,
         ):
             # not this character use skill
             return []  # pragma: no cover
         target = match.player_tables[
-            1 - self.position.player_idx].get_active_character()
+            1 - self.position.player_idx
+        ].get_active_character()
         self.usage -= 1
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.DAMAGE,
-                        target_position = target.position,
-                        damage = 1,
-                        damage_elemental_type = DamageElementalType.DENDRO,
-                        cost = Cost()
+                        position=self.position,
+                        damage_type=DamageType.DAMAGE,
+                        target_position=target.position,
+                        damage=1,
+                        damage_elemental_type=DamageElementalType.DENDRO,
+                        cost=Cost(),
                     )
                 ]
             )
@@ -163,8 +175,8 @@ class FloralSidewinder_3_3(RoundTeamStatus):
 
 
 class AdeptalLegacy_4_1(SwitchActionTeamStatus):
-    name: Literal['Adeptal Legacy'] = 'Adeptal Legacy'
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Adeptal Legacy"] = "Adeptal Legacy"
+    version: Literal["4.1"] = "4.1"
     usage: int = 3
     max_usage: int = 3
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -174,31 +186,33 @@ class AdeptalLegacy_4_1(SwitchActionTeamStatus):
         attack enemy active character and heal our active character.
         """
         enemy_active_character = match.player_tables[
-            1 - self.position.player_idx].get_active_character()
+            1 - self.position.player_idx
+        ].get_active_character()
         our_active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         return [
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.DAMAGE,
-                        target_position = enemy_active_character.position,
-                        damage = 1,
-                        damage_elemental_type = DamageElementalType.DENDRO,
-                        cost = Cost()
+                        position=self.position,
+                        damage_type=DamageType.DAMAGE,
+                        target_position=enemy_active_character.position,
+                        damage=1,
+                        damage_elemental_type=DamageElementalType.DENDRO,
+                        cost=Cost(),
                     )
                 ]
             ),
             MakeDamageAction(
-                damage_value_list = [
+                damage_value_list=[
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = our_active_character.position,
-                        damage = -1,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = Cost()
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=our_active_character.position,
+                        damage=-1,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
                     )
                 ]
             ),
@@ -206,8 +220,8 @@ class AdeptalLegacy_4_1(SwitchActionTeamStatus):
 
 
 class PulsingClarity_4_2(RoundTeamStatus):
-    name: Literal['Pulsing Clarity'] = 'Pulsing Clarity'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Pulsing Clarity"] = "Pulsing Clarity"
+    version: Literal["4.2"] = "4.2"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -218,20 +232,20 @@ class PulsingClarity_4_2(RoundTeamStatus):
         ret = super().event_handler_ROUND_PREPARE(event, match)
         return [
             CreateObjectAction(
-                object_name = 'Seamless Shield',
-                object_position = ObjectPosition(
-                    player_idx = self.position.player_idx,
-                    area = ObjectPositionType.TEAM_STATUS,
-                    id = 0
+                object_name="Seamless Shield",
+                object_position=ObjectPosition(
+                    player_idx=self.position.player_idx,
+                    area=ObjectPositionType.TEAM_STATUS,
+                    id=0,
                 ),
-                object_arguments = {}
+                object_arguments={},
             )
         ] + ret
 
 
 class SeamlessShield_4_2(ShieldTeamStatus):
-    name: Literal['Seamless Shield'] = 'Seamless Shield'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Seamless Shield"] = "Seamless Shield"
+    version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 1
     remove_triggered: bool = False
@@ -241,18 +255,20 @@ class SeamlessShield_4_2(ShieldTeamStatus):
         make damage and heal
         """
         our_active_character = match.player_tables[
-            self.position.player_idx].get_active_character()
+            self.position.player_idx
+        ].get_active_character()
         opposite_active_character = match.player_tables[
-            1 - self.position.player_idx].get_active_character()
+            1 - self.position.player_idx
+        ].get_active_character()
         ret = MakeDamageAction(
-            damage_value_list = [
+            damage_value_list=[
                 DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = opposite_active_character.position,
-                    damage = 1,
-                    damage_elemental_type = DamageElementalType.DENDRO,
-                    cost = Cost()
+                    position=self.position,
+                    damage_type=DamageType.DAMAGE,
+                    target_position=opposite_active_character.position,
+                    damage=1,
+                    damage_elemental_type=DamageElementalType.DENDRO,
+                    cost=Cost(),
                 ),
             ],
         )
@@ -260,12 +276,12 @@ class SeamlessShield_4_2(ShieldTeamStatus):
             # when active character has no hp, no need to heal
             ret.damage_value_list.append(
                 DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = our_active_character.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost()
+                    position=self.position,
+                    damage_type=DamageType.HEAL,
+                    target_position=our_active_character.position,
+                    damage=-1,
+                    damage_elemental_type=DamageElementalType.HEAL,
+                    cost=Cost(),
                 ),
             )
         return ret
@@ -274,15 +290,14 @@ class SeamlessShield_4_2(ShieldTeamStatus):
         self, event: CreateObjectEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         if not self.position.check_position_valid(
-            event.action.object_position, match, player_idx_same = True,
-            area_same = True,
+            event.action.object_position,
+            match,
+            player_idx_same=True,
+            area_same=True,
         ):
             # not create on our area
             return []
-        if (
-            event.action.object_name != self.name
-            or event.create_result != 'RENEW'
-        ):
+        if event.action.object_name != self.name or event.create_result != "RENEW":
             # not create ourself, or not renew create
             return []
         # renew, make damage and heal
@@ -303,12 +318,15 @@ class SeamlessShield_4_2(ShieldTeamStatus):
             self.remove_triggered = True
             return [
                 self.effect_action(match),
-                RemoveObjectAction(object_position = self.position),
+                RemoveObjectAction(object_position=self.position),
             ]
         return list(ret)
 
 
 register_class(
-    ShrineOfMaya_3_7 | FloralSidewinder_3_3 | AdeptalLegacy_4_1 
-    | PulsingClarity_4_2 | SeamlessShield_4_2
+    ShrineOfMaya_3_7
+    | FloralSidewinder_3_3
+    | AdeptalLegacy_4_1
+    | PulsingClarity_4_2
+    | SeamlessShield_4_2
 )

@@ -11,12 +11,20 @@ from ...action import Actions, MakeDamageAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, 
-    ElementType, FactionType, ObjectPositionType, WeaponType
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -24,8 +32,8 @@ from ..character_base import (
 
 
 class FierySanctumField_4_1(AttackAndGenerateStatusSummonBase):
-    name: Literal['Fiery Sanctum Field'] = 'Fiery Sanctum Field'
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Fiery Sanctum Field"] = "Fiery Sanctum Field"
+    version: Literal["4.1"] = "4.1"
     usage: int = 3
     max_usage: int = 3
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -36,20 +44,17 @@ class FierySanctumField_4_1(AttackAndGenerateStatusSummonBase):
 
 
 class MoltenInferno(ElementalSkillBase):
-    name: Literal['Molten Inferno'] = 'Molten Inferno'
+    name: Literal["Molten Inferno"] = "Molten Inferno"
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.PYRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
         Attack and create object
         """
         summons = match.player_tables[self.position.player_idx].summons
-        summon_name = 'Fiery Sanctum Field'
+        summon_name = "Fiery Sanctum Field"
         summon_exists = False
         for summon in summons:
             if summon.name == summon_name:
@@ -57,33 +62,34 @@ class MoltenInferno(ElementalSkillBase):
                 break
         if summon_exists:
             # make damage and create summon
-            return super().get_actions(match, [
-                self.create_summon(summon_name),
-            ])
-        return [
-            self.create_summon(summon_name),
-            self.charge_self(1)
-        ]
+            return super().get_actions(
+                match,
+                [
+                    self.create_summon(summon_name),
+                ],
+            )
+        return [self.create_summon(summon_name), self.charge_self(1)]
 
 
 class LeonineBite(ElementalBurstBase):
-    name: Literal['Leonine Bite'] = 'Leonine Bite'
+    name: Literal["Leonine Bite"] = "Leonine Bite"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.PYRO, elemental_dice_number=4, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_character_status('Incineration Drive'),
-        ])
+        return super().get_actions(
+            match,
+            [
+                self.create_character_status("Incineration Drive"),
+            ],
+        )
 
 
 class IncinerationDrive(ElementalBurstBase):
-    name: Literal['Incineration Drive'] = 'Incineration Drive'
+    name: Literal["Incineration Drive"] = "Incineration Drive"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost()
@@ -99,14 +105,14 @@ class IncinerationDrive(ElementalBurstBase):
 
 
 class StalwartAndTrue_4_1(SkillTalent):
-    name: Literal['Stalwart and True']
-    version: Literal['4.1'] = '4.1'
-    character_name: Literal['Dehya'] = 'Dehya'
+    name: Literal["Stalwart and True"]
+    version: Literal["4.1"] = "4.1"
+    character_name: Literal["Dehya"] = "Dehya"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4,
+        elemental_dice_color=DieColor.PYRO,
+        elemental_dice_number=4,
     )
-    skill: Literal['Molten Inferno'] = 'Molten Inferno'
+    skill: Literal["Molten Inferno"] = "Molten Inferno"
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
@@ -117,21 +123,24 @@ class StalwartAndTrue_4_1(SkillTalent):
         if self.position.area != ObjectPositionType.CHARACTER:
             # not equipped
             return []
-        character = match.player_tables[
-            self.position.player_idx].characters[self.position.character_idx]
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx
+        ]
         if character.hp <= 6:
-            return [MakeDamageAction(
-                damage_value_list = [
-                    DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = character.position,
-                        damage = -2,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = self.cost.copy()
-                    )
-                ],
-            )]
+            return [
+                MakeDamageAction(
+                    damage_value_list=[
+                        DamageValue(
+                            position=self.position,
+                            damage_type=DamageType.HEAL,
+                            target_position=character.position,
+                            damage=-2,
+                            damage_elemental_type=DamageElementalType.HEAL,
+                            cost=self.cost.copy(),
+                        )
+                    ],
+                )
+            ]
         return []
 
 
@@ -139,25 +148,22 @@ class StalwartAndTrue_4_1(SkillTalent):
 
 
 class Dehya_4_1(CharacterBase):
-    name: Literal['Dehya']
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Dehya"]
+    version: Literal["4.1"] = "4.1"
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | MoltenInferno | LeonineBite 
-        | IncinerationDrive
+        PhysicalNormalAttackBase | MoltenInferno | LeonineBite | IncinerationDrive
     ] = []
-    faction: List[FactionType] = [
-        FactionType.SUMERU, FactionType.THE_EREMITES
-    ]
+    faction: List[FactionType] = [FactionType.SUMERU, FactionType.THE_EREMITES]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Sandstorm Assault',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Sandstorm Assault",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             MoltenInferno(),
             LeonineBite(),

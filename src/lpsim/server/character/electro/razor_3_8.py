@@ -8,12 +8,20 @@ from ...action import Actions, ChargeAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, SkillType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    SkillType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -21,37 +29,35 @@ from ..character_base import (
 
 
 class ClawAndThunder(ElementalSkillBase):
-    name: Literal['Claw and Thunder'] = 'Claw and Thunder'
+    name: Literal["Claw and Thunder"] = "Claw and Thunder"
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = ElementalSkillBase.get_cost(ElementType.ELECTRO)
 
 
 class LightningFang(ElementalBurstBase):
-    name: Literal['Lightning Fang'] = 'Lightning Fang'
+    name: Literal["Lightning Fang"] = "Lightning Fang"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.ELECTRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_character_status('The Wolf Within')
-        ])
+        return super().get_actions(
+            match, [self.create_character_status("The Wolf Within")]
+        )
 
 
 # Talents
 class Awakening_4_2(SkillTalent):
-    name: Literal['Awakening']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Razor'] = 'Razor'
+    name: Literal["Awakening"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Razor"] = "Razor"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.ELECTRO,
-        elemental_dice_number = 3,
+        elemental_dice_color=DieColor.ELECTRO,
+        elemental_dice_number=3,
     )
-    skill: Literal['Claw and Thunder'] = 'Claw and Thunder'
+    skill: Literal["Claw and Thunder"] = "Claw and Thunder"
     usage: int = 1
     max_usage: int = 1
 
@@ -68,13 +74,16 @@ class Awakening_4_2(SkillTalent):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[ChargeAction]:
         """
-        If equipped and use elemental skill, charge one of our electro 
+        If equipped and use elemental skill, charge one of our electro
         character
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
-            source_area = ObjectPositionType.CHARACTER
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
+            source_area=ObjectPositionType.CHARACTER,
         ):
             # not equipped, or this character use skill
             return []
@@ -86,10 +95,7 @@ class Awakening_4_2(SkillTalent):
         characters = table.characters
         active = characters[table.active_character_idx]
         target_idx = -1
-        if (
-            active.element == ElementType.ELECTRO
-            and active.charge < active.max_charge
-        ):
+        if active.element == ElementType.ELECTRO and active.charge < active.max_charge:
             # active electro and not full charge
             target_idx = table.active_character_idx
         else:
@@ -110,38 +116,34 @@ class Awakening_4_2(SkillTalent):
             return []
         self.usage -= 1
         # charge target
-        return [ChargeAction(
-            player_idx = self.position.player_idx,
-            character_idx = target_idx,
-            charge = 1
-        )]
+        return [
+            ChargeAction(
+                player_idx=self.position.player_idx, character_idx=target_idx, charge=1
+            )
+        ]
 
 
 # character base
 
 
 class Razor_3_8(CharacterBase):
-    name: Literal['Razor']
-    version: Literal['3.8'] = '3.8'
+    name: Literal["Razor"]
+    version: Literal["3.8"] = "3.8"
     element: ElementType = ElementType.ELECTRO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        PhysicalNormalAttackBase | ClawAndThunder | LightningFang
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.MONDSTADT
-    ]
+    skills: List[PhysicalNormalAttackBase | ClawAndThunder | LightningFang] = []
+    faction: List[FactionType] = [FactionType.MONDSTADT]
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Steel Fang',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Steel Fang",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             ClawAndThunder(),
-            LightningFang()
+            LightningFang(),
         ]
 
 

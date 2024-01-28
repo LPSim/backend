@@ -9,11 +9,18 @@ from ...action import ActionTypes, Actions
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -21,8 +28,8 @@ from ..character_base import (
 
 
 class Guoba_3_3(AttackerSummonBase):
-    name: Literal['Guoba'] = 'Guoba'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Guoba"] = "Guoba"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -33,18 +40,15 @@ class Guoba_3_3(AttackerSummonBase):
 
 
 class DoughFu(PhysicalNormalAttackBase):
-    name: Literal['Dough-Fu'] = 'Dough-Fu'
+    name: Literal["Dough-Fu"] = "Dough-Fu"
     cost: Cost = PhysicalNormalAttackBase.get_cost(ElementType.PYRO)
 
 
 class GuobaAttack(ElementalSkillBase):
-    name: Literal['Guoba Attack'] = 'Guoba Attack'
+    name: Literal["Guoba Attack"] = "Guoba Attack"
     damage: int = 1
     damage_type: DamageElementalType = DamageElementalType.PYRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -54,60 +58,46 @@ class GuobaAttack(ElementalSkillBase):
             ret = super().get_actions(match)
             damage_action = ret[0]
             assert damage_action.type == ActionTypes.MAKE_DAMAGE
-            damage_action.create_objects.append(self.create_summon('Guoba'))
+            damage_action.create_objects.append(self.create_summon("Guoba"))
         else:
-            ret: List[Actions] = [
-                self.create_summon('Guoba'),
-                self.charge_self(1)
-            ]
+            ret: List[Actions] = [self.create_summon("Guoba"), self.charge_self(1)]
         return ret
 
 
 class Pyronado(ElementalBurstBase):
-    name: Literal['Pyronado'] = 'Pyronado'
+    name: Literal["Pyronado"] = "Pyronado"
     damage: int = 3
     damage_type: DamageElementalType = DamageElementalType.PYRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4,
-        charge = 2
+        elemental_dice_color=DieColor.PYRO, elemental_dice_number=4, charge=2
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [
-            self.create_team_status('Pyronado')
-        ])
+        return super().get_actions(match, [self.create_team_status("Pyronado")])
 
 
 # Talents
 
 
 class Crossfire_4_2(SkillTalent):
-    version: Literal['4.2'] = '4.2'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
-    name: Literal['Crossfire']
-    character_name: Literal['Xiangling'] = 'Xiangling'
-    skill: Literal['Guoba Attack'] = 'Guoba Attack'
+    version: Literal["4.2"] = "4.2"
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
+    name: Literal["Crossfire"]
+    character_name: Literal["Xiangling"] = "Xiangling"
+    skill: Literal["Guoba Attack"] = "Guoba Attack"
 
 
 # character base
 
 
 class Xiangling_3_8(CharacterBase):
-    name: Literal['Xiangling']
-    version: Literal['3.8'] = '3.8'
+    name: Literal["Xiangling"]
+    version: Literal["3.8"] = "3.8"
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        DoughFu | GuobaAttack | Pyronado
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.LIYUE
-    ]
+    skills: List[DoughFu | GuobaAttack | Pyronado] = []
+    faction: List[FactionType] = [FactionType.LIYUE]
     weapon_type: WeaponType = WeaponType.POLEARM
 
     def _init_skills(self) -> None:

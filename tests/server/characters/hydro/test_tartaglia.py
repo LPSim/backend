@@ -2,8 +2,13 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, 
-    get_test_id_from_command, make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -60,7 +65,7 @@ def test_tartaglia():
             "skill 0 0 1 2",
             "TEST 1 8 8 0 0 10 5 0 0 0 0",
             "card 0 0 0 1 2 3",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -97,27 +102,21 @@ def test_tartaglia():
             "end",
             "choose 0",
             "TEST 1 8 8 0 0 10 1 0 0 0 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Tartaglia
@@ -125,7 +124,7 @@ def test_tartaglia():
         character:ElectroMobMage
         character:CryoMobMage
         Abyssal Mayhem: Hydrospout*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -145,7 +144,7 @@ def test_tartaglia():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -155,7 +154,7 @@ def test_tartaglia():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
@@ -171,12 +170,13 @@ def test_tartaglia():
             elif test_id == 3:
                 status = match.player_tables[1].characters[1].status
                 assert len(status) == 1
-                assert 'Melee' in status[0].name
+                assert "Melee" in status[0].name
             elif test_id == 4:
-                assert match.player_tables[0].characters[
-                    0].element_application == ['HYDRO']
+                assert match.player_tables[0].characters[0].element_application == [
+                    "HYDRO"
+                ]
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -197,7 +197,7 @@ def test_tartaglia_2():
             "TEST 1 10 3 10 10 10 8 7 10 10 10",
             "end",
             "end",
-            "choose 2"
+            "choose 2",
         ],
         [
             "sw_card",
@@ -212,27 +212,21 @@ def test_tartaglia_2():
             "skill 0 12 11 10",
             "skill 2 9 8 7",
             "TEST 2 p0c2 usage 2",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Tartaglia
@@ -240,7 +234,7 @@ def test_tartaglia_2():
         character:ElectroMobMage
         character:CryoMobMage
         Abyssal Mayhem: Hydrospout*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -260,7 +254,7 @@ def test_tartaglia_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -270,7 +264,7 @@ def test_tartaglia_2():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
@@ -280,7 +274,7 @@ def test_tartaglia_2():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -319,7 +313,7 @@ def test_tartaglia_4_1():
             "TEST 1 8 10 8 7 6 10 8 5 8 8",
             "TEST 2 p0c4 usage 2",
             "TEST 2 p1c2 usage 1",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -340,27 +334,21 @@ def test_tartaglia_4_1():
             "sw_char 3 15",
             "sw_char 2 14",
             "sw_char 1 13",
-            "skill 2 12 11 10"
-        ]
+            "skill 2 12 11 10",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Tartaglia
         character:Tartaglia@3.7
@@ -369,7 +357,7 @@ def test_tartaglia_4_1():
         character:CryoMobMage
         Abyssal Mayhem: Hydrospout*15
         Abyssal Mayhem: Hydrospout@3.7*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -389,7 +377,7 @@ def test_tartaglia_4_1():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -399,7 +387,7 @@ def test_tartaglia_4_1():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
@@ -409,7 +397,7 @@ def test_tartaglia_4_1():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -458,7 +446,7 @@ def test_tartaglia_reaction_bug_fix():
             "end",
             "TEST 2 p0c1 status 0",
             "TEST 2 p1c1 status 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -494,33 +482,27 @@ def test_tartaglia_reaction_bug_fix():
             "skill 1 15 14 13",
             "card 2 0 12 11",
             "skill 1 10 9 8",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Tartaglia
         character:Raiden Shogun
         character:Fatui Pyro Agent
         Teyvat Fried Egg*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -540,7 +522,7 @@ def test_tartaglia_reaction_bug_fix():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -550,7 +532,7 @@ def test_tartaglia_reaction_bug_fix():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -560,7 +542,7 @@ def test_tartaglia_reaction_bug_fix():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -570,7 +552,7 @@ def test_tartaglia_reaction_bug_fix():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_tartaglia()
     test_tartaglia_2()
     test_tartaglia_4_1()

@@ -1,23 +1,25 @@
-from src.lpsim.agents.interaction_agent import (
-    InteractionAgent_V1_0, InteractionAgent
-)
+from src.lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
 from src.lpsim.agents.nothing_agent import NothingAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_pidx_cidx, get_test_id_from_command, make_respond, 
-    get_random_state, set_16_omni
+    check_hp,
+    get_pidx_cidx,
+    get_test_id_from_command,
+    make_respond,
+    get_random_state,
+    set_16_omni,
 )
 from src.lpsim.server.interaction import UseSkillRequest
 
 
 def test_small_elemental_artifacts():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent_V1_0(
-        version = '1.0',
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        version="1.0",
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "reroll 1 2 3 4 5 6 7",
@@ -27,14 +29,14 @@ def test_small_elemental_artifacts():
             # check skill cost after first attack (should no cost decrease)
             "tune hydro 1",
             "card 1 0 dendro dendro",
-            # after equip second artifact, can use A but not E 
+            # after equip second artifact, can use A but not E
             # (cost is dendro + any)
             "skill 0 omni omni",
             "end",
             "reroll 0 1 2 3 4 5 6 7",
             "card 0 0 anemo",
             "tune hydro 0",
-            # next run after tune, 3 skills are available but only normal 
+            # next run after tune, 3 skills are available but only normal
             # any decrease
             "skill 1 dendro dendro omni",
             "tune pyro 0",
@@ -50,43 +52,48 @@ def test_small_elemental_artifacts():
             "skill 0 electro dendro dendro",
             "tune pyro 0",
             "skill 0 electro cryo cryo",
-            "end"
+            "end",
             # 85 10 10 99 10 10
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(version = '0.0.1', random_state = get_random_state())
+    match = Match(version="0.0.1", random_state=get_random_state())
     deck = {
-        'name': 'Deck',
-        'characters': [
+        "name": "Deck",
+        "characters": [
             {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
-                'hp': 99,
-                'max_hp': 99,
+                "name": "DendroMobMage",
+                "element": "DENDRO",
+                "hp": 99,
+                "max_hp": 99,
             },
             {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
+                "name": "DendroMobMage",
+                "element": "DENDRO",
             },
             {
-                'name': 'ElectroMobMage',
-                'element': 'ELECTRO',
+                "name": "ElectroMobMage",
+                "element": "ELECTRO",
             },
         ],
-        'cards': [
+        "cards": [
             {
-                'name': 'Wine-Stained Tricorne',
+                "name": "Wine-Stained Tricorne",
             }
-        ] * 10 + [
+        ]
+        * 10
+        + [
             {
-                'name': 'Laurel Coronet',
+                "name": "Laurel Coronet",
             }
-        ] * 10 + [
+        ]
+        * 10
+        + [
             {
-                'name': 'Strategize',
+                "name": "Strategize",
             }
-        ] * 10,
+        ]
+        * 10,
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
@@ -98,12 +105,10 @@ def test_small_elemental_artifacts():
         if match.need_respond(0):
             make_respond(agent_0, match)
         elif match.need_respond(1):
-
             # asserts
             if len(agent_1.commands) == 22:
                 # cost decrease
-                skills = [x for x in match.requests
-                          if x.name == 'UseSkillRequest']
+                skills = [x for x in match.requests if x.name == "UseSkillRequest"]
                 assert len(skills) == 2
                 assert skills[0].cost.elemental_dice_number == 0
                 assert skills[0].cost.any_dice_number == 2
@@ -111,29 +116,26 @@ def test_small_elemental_artifacts():
                 assert skills[1].cost.any_dice_number == 0
             elif len(agent_1.commands) == 21:
                 # check skill cost after first attack (should no cost decrease)
-                skills = [x for x in match.requests
-                          if x.name == 'UseSkillRequest']
+                skills = [x for x in match.requests if x.name == "UseSkillRequest"]
                 assert len(skills) == 2
                 assert skills[0].cost.elemental_dice_number == 1
                 assert skills[0].cost.any_dice_number == 2
                 assert skills[1].cost.elemental_dice_number == 3
                 assert skills[1].cost.any_dice_number == 0
             elif len(agent_1.commands) == 19:
-                # after equip second artifact, can use A but not E 
+                # after equip second artifact, can use A but not E
                 # (cost is dendro + any)
-                skills = [x for x in match.requests
-                          if x.name == 'UseSkillRequest']
+                skills = [x for x in match.requests if x.name == "UseSkillRequest"]
                 assert len(skills) == 1
                 skill: UseSkillRequest = skills[0]
                 assert skill.cost.elemental_dice_number == 1
                 assert skill.cost.any_dice_number == 1
             elif len(agent_1.commands) == 14:
-                # next run after tune, 3 skills are available but only normal 
+                # next run after tune, 3 skills are available but only normal
                 # any decrease
-                skills = [x for x in match.requests 
-                          if x.name == 'UseSkillRequest']
+                skills = [x for x in match.requests if x.name == "UseSkillRequest"]
                 assert len(skills) == 3
-                skills.sort(key = lambda x: x.skill_idx)
+                skills.sort(key=lambda x: x.skill_idx)
                 assert skills[0].cost.elemental_dice_number == 1
                 assert skills[0].cost.any_dice_number == 1
                 assert skills[1].cost.elemental_dice_number == 3
@@ -142,8 +144,7 @@ def test_small_elemental_artifacts():
                 assert skills[2].cost.any_dice_number == 0
             elif len(agent_1.commands) == 12:
                 # after skill 1 and tune, still have 1-1 normal attack
-                skills = [x for x in match.requests 
-                          if x.name == 'UseSkillRequest']
+                skills = [x for x in match.requests if x.name == "UseSkillRequest"]
                 assert len(skills) == 1
                 skill: UseSkillRequest = skills[0]
                 assert skill.cost.elemental_dice_number == 1
@@ -151,7 +152,7 @@ def test_small_elemental_artifacts():
 
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -189,11 +190,11 @@ def test_create_small_element_artifacts():
 
 
 def test_old_version_elemental_artifacts():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "reroll 1 4",
@@ -202,12 +203,12 @@ def test_old_version_elemental_artifacts():
             "TEST 1 all card can use",
             "sw_char 2 0",
             "TEST 2 3 card can use, 0 and 4 cannot",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -217,13 +218,13 @@ def test_old_version_elemental_artifacts():
         Rana*2
         Strategize*2
         # Timmie*22
-        '''
+        """
     )
-    old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
+    old_wine = {"name": "Wine-Stained Tricorne", "version": "3.3"}
     deck_dict = deck.dict()
-    deck_dict['cards'] += [old_wine] * 12
+    deck_dict["cards"] += [old_wine] * 12
     deck = Deck(**deck_dict)
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
     match.start()
@@ -237,13 +238,13 @@ def test_old_version_elemental_artifacts():
                 if test_id == 1:
                     counter = 0
                     for request in match.requests:
-                        if request.name == 'UseCardRequest':
+                        if request.name == "UseCardRequest":
                             counter += 1
                     assert counter == 5
                 elif test_id == 2:
                     counter = []
                     for request in match.requests:
-                        if request.name == 'UseCardRequest':
+                        if request.name == "UseCardRequest":
                             counter.append(request.card_idx)
                     assert len(counter) == 3
                     assert 0 not in counter
@@ -252,7 +253,7 @@ def test_old_version_elemental_artifacts():
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -263,9 +264,9 @@ def test_old_version_elemental_artifacts():
 
 def test_gambler():
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = [
+        player_idx=0,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "end",
@@ -290,14 +291,14 @@ def test_gambler():
             "TEST 1 11 15",
             "end",
             "TEST 2 p0c7 usage2",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 0 1 1",
@@ -327,12 +328,12 @@ def test_gambler():
             "end",
             "choose 5",
             "choose 6",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     deck = Deck.from_str(
-        '''
+        """
         # character:Fischl
         # character:Mona
         # character:Nahida
@@ -345,7 +346,7 @@ def test_gambler():
         # The Bestest Travel Companion!*2
         # Covenant of Rock
         Gambler's Earrings*30
-        '''
+        """
     )
     # old_wine = {'name': 'Wine-Stained Tricorne', 'version': '3.3'}
     # deck_dict = deck.dict()
@@ -354,7 +355,7 @@ def test_gambler():
     for character in deck.characters:
         character.hp = 1
         character.max_hp = 1
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     match.config.max_same_card_number = 30
     match.config.character_number = 10
     match.config.random_first_player = False
@@ -368,7 +369,7 @@ def test_gambler():
                 cmd = agent_0.commands[0]
                 test_id = get_test_id_from_command(agent_0)
                 if test_id == 1:
-                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
+                    number = [int(x) for x in cmd.strip().split(" ")[-2:]]
                     assert number[0] == len(match.player_tables[0].dice.colors)
                     assert number[1] == len(match.player_tables[1].dice.colors)
                 elif test_id == 2:
@@ -383,14 +384,14 @@ def test_gambler():
                 cmd = agent_1.commands[0]
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
-                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
+                    number = [int(x) for x in cmd.strip().split(" ")[-2:]]
                     assert number[0] == len(match.player_tables[0].dice.colors)
                     assert number[1] == len(match.player_tables[1].dice.colors)
                 else:
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -401,9 +402,9 @@ def test_gambler():
 
 def test_old_gambler():
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = [
+        player_idx=0,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "end",
@@ -414,12 +415,12 @@ def test_old_gambler():
             "choose 5",
             "choose 6",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 0 1 1",
@@ -437,10 +438,10 @@ def test_old_gambler():
             "TEST 1 16 6",
             "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     deck = Deck.from_str(
-        '''
+        """
         # character:Fischl
         # character:Mona
         # character:Nahida
@@ -453,16 +454,16 @@ def test_old_gambler():
         # The Bestest Travel Companion!*2
         # Covenant of Rock
         # Gambler's Earrings*30
-        '''
+        """
     )
-    old_gambler = {'name': "Gambler's Earrings", 'version': '3.3'}
+    old_gambler = {"name": "Gambler's Earrings", "version": "3.3"}
     deck_dict = deck.dict()
-    deck_dict['cards'] += [old_gambler] * 30
+    deck_dict["cards"] += [old_gambler] * 30
     deck = Deck(**deck_dict)
     for character in deck.characters:
         character.hp = 1
         character.max_hp = 1
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     match.config.max_same_card_number = 30
     match.config.character_number = 10
     match.config.random_first_player = False
@@ -478,14 +479,14 @@ def test_old_gambler():
                 cmd = agent_1.commands[0]
                 test_id = get_test_id_from_command(agent_1)
                 if test_id == 1:
-                    number = [int(x) for x in cmd.strip().split(' ')[-2:]]
+                    number = [int(x) for x in cmd.strip().split(" ")[-2:]]
                     assert number[0] == len(match.player_tables[0].dice.colors)
                     assert number[1] == len(match.player_tables[1].dice.colors)
                 else:
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -517,7 +518,7 @@ def test_millelith():
             "TEST 4 p0c0 p1c1 status 2 usage",
             "end",
             "TEST 4 p0c0 p1c1 status 2 usage",
-            "end"
+            "end",
         ],
         [
             "sw_card 0 1 2",
@@ -536,34 +537,28 @@ def test_millelith():
             "skill 0 0 1 2",
             "skill 0 0 1 2",
             "end",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:PyroMobMage
         character:ElectroMobMage
         character:Noelle
         Tenacity of the Millelith*15
         General's Ancient Helm*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -583,7 +578,7 @@ def test_millelith():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -605,17 +600,14 @@ def test_millelith():
                 assert len(match.player_tables[0].characters[0].status) == 0
             elif test_id == 4:
                 assert len(match.player_tables[0].characters[0].status) == 1
-                assert match.player_tables[
-                    0].characters[0].status[0].usage == 2
+                assert match.player_tables[0].characters[0].status[0].usage == 2
                 assert len(match.player_tables[1].characters[1].status) == 1
-                assert match.player_tables[
-                    1].characters[1].status[0].usage == 2
+                assert match.player_tables[1].characters[1].status[0].usage == 2
             elif test_id == 5:
                 assert len(match.player_tables[1].characters[1].status) == 1
-                assert match.player_tables[
-                    1].characters[1].status[0].usage == 1
+                assert match.player_tables[1].characters[1].status[0].usage == 1
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -654,7 +646,7 @@ def test_instructor():
             "skill 0 9 8 7",
             "card 0 0 6 5",
             "skill 0 4 3 2",
-            "skill 2 2 1 0"
+            "skill 2 2 1 0",
         ],
         [
             "sw_card 1 2",
@@ -695,33 +687,27 @@ def test_instructor():
             "sw_char 1 10",
             "choose 2",
             "TEST 3 p0 dice 1",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:AnemoMobMage
         character:Barbara
         character:Yae Miko
         Instructor's Cap*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -741,7 +727,7 @@ def test_instructor():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -765,7 +751,7 @@ def test_instructor():
                 num = int(cmd[-1])
                 assert len(match.player_tables[pidx].dice.colors) == num
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -794,7 +780,7 @@ def test_lucky_dog():
             "sw_char 0 10",
             "card 2 0 9 8",
             "skill 1 7 6 5",
-            "skill 1 4 3 2"
+            "skill 1 4 3 2",
         ],
         [
             "sw_card",
@@ -813,33 +799,27 @@ def test_lucky_dog():
             "sw_char 2 11",
             "skill 0 10 9 8",
             "TEST 1 9 3 10 6 5 6",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Ganyu
         character:Yae Miko
         Lucky Dog's Silver Circlet*20
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -859,7 +839,7 @@ def test_lucky_dog():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -873,7 +853,7 @@ def test_lucky_dog():
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -902,7 +882,7 @@ def test_big_elemental_artifacts():
             "end",
             "TEST 1 p0 dendro geo geo",
             "reroll",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -917,31 +897,25 @@ def test_big_elemental_artifacts():
             "end",
             "TEST 1 p1 cryo electro electro",
             "reroll",
-            "end"
-        ]
+            "end",
+        ],
     ]
     repeat_times = 20
     for _ in range(repeat_times):
         cmd_records[0] += cmd_records[0][-2:]
         cmd_records[1] += cmd_records[1][-2:]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Xingqiu
         character:Kamisato Ayaka
@@ -967,7 +941,7 @@ def test_big_elemental_artifacts():
         Viridescent Venerer@3.3*2
         Heart of Depth@3.3*2
         Crimson Witch of Flames@3.3*2
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -986,7 +960,7 @@ def test_big_elemental_artifacts():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -1008,10 +982,10 @@ def test_big_elemental_artifacts():
                 sid = int(cmd[3])
                 cost = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest' and req.skill_idx == sid:
+                    if req.name == "UseSkillRequest" and req.skill_idx == sid:
                         assert req.cost.total_dice_cost == cost
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1055,7 +1029,7 @@ def test_advanturer_traveling_doctor():
             "skill 1 15 14 13",
             "skill 0 12 11 10",
             "TEST 1 25 30 30 0 28 19",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -1086,27 +1060,21 @@ def test_advanturer_traveling_doctor():
             "choose 2",
             "skill 1 15 14 13",
             "skill 1 12 11 10",
-            "skill 2 9 8 7"
-        ]
+            "skill 2 9 8 7",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Xiangling
@@ -1115,7 +1083,7 @@ def test_advanturer_traveling_doctor():
         Adventurer's Bandana*5
         Traveling Doctor's Handkerchief*5
         Calx's Arts*5
-        '''
+        """
     )
     for character in deck.characters:
         character.max_hp = 30
@@ -1140,7 +1108,7 @@ def test_advanturer_traveling_doctor():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -1150,12 +1118,12 @@ def test_advanturer_traveling_doctor():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1189,7 +1157,7 @@ def test_emblem_of_severed_fate():
             "TEST 1 19 21 30 30 15 21",
             "sw_char 2 6",
             "TEST 1 19 21 29 30 15 21",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -1218,27 +1186,21 @@ def test_emblem_of_severed_fate():
             "TEST 1 19 26 30 30 15 21",
             "skill 2 14 13 12",
             "card 3 0 11",
-            "skill 2 10 9 8"
-        ]
+            "skill 2 10 9 8",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Venti
         character:Xiangling
@@ -1250,7 +1212,7 @@ def test_emblem_of_severed_fate():
         Emblem of Severed Fate@4.0*5
         Emblem of Severed Fate@3.7*5
         Calx's Arts*5
-        '''
+        """
     )
     for character in deck.characters:
         character.max_hp = 30
@@ -1275,7 +1237,7 @@ def test_emblem_of_severed_fate():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -1285,7 +1247,7 @@ def test_emblem_of_severed_fate():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -1293,10 +1255,9 @@ def test_emblem_of_severed_fate():
                 cmd = cmd.split()
                 pidx, cidx = get_pidx_cidx(cmd)
                 charge = int(cmd[-1])
-                assert match.player_tables[pidx].characters[
-                    cidx].charge == charge
+                assert match.player_tables[pidx].characters[cidx].charge == charge
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1325,7 +1286,7 @@ def test_shadow_of_chiwang():
             "end",
             "sw_char 2 15",
             "skill 1 14 13 12",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -1345,33 +1306,27 @@ def test_shadow_of_chiwang():
             "sw_char 1 8",
             "skill 1 7 6 5",
             "TEST 1 hand 8 9",
-            "sw_char 2 4"
-        ]
+            "sw_char 2 4",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Xingqiu
         character:Fischl
         character:Mona
         Shadow of the Sand King*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1391,10 +1346,10 @@ def test_shadow_of_chiwang():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -1404,7 +1359,7 @@ def test_shadow_of_chiwang():
                 assert len(match.player_tables[0].hands) == hlen[0]
                 assert len(match.player_tables[1].hands) == hlen[1]
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1424,7 +1379,7 @@ def test_millelith_2():
             "skill 1 9 8 7",
             "card 4 2 6 5 4",
             "end",
-            "choose 1"
+            "choose 1",
         ],
         [
             "sw_card",
@@ -1434,31 +1389,25 @@ def test_millelith_2():
             "skill 1 9 8 7",
             "skill 0 6 5 4",
             "TEST 1 p0 dice 4",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Keqing@4.2*3
         Tenacity of the Millelith*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1478,7 +1427,7 @@ def test_millelith_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -1488,7 +1437,7 @@ def test_millelith_2():
             elif test_id == 1:
                 assert len(match.player_tables[0].dice.colors) == 4
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1498,7 +1447,7 @@ def test_millelith_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # from tests.utils_for_test import enable_logging
     # enable_logging()
     # test_small_elemental_artifacts()

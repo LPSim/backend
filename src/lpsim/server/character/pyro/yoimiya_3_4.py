@@ -11,22 +11,16 @@ from .yoimiya_3_8 import FireworkFlareUp, NiwabiFireDance
 class RyuukinSaxifrage(RS_3_8):
     damage: int = 4
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 4,
-        charge = 3
+        elemental_dice_color=DieColor.PYRO, elemental_dice_number=4, charge=3
     )
 
 
 class Yoimiya_3_4(Y_3_8):
-    version: Literal['3.4']
+    version: Literal["3.4"]
     skills: List[FireworkFlareUp | NiwabiFireDance | RyuukinSaxifrage] = []
 
     def _init_skills(self) -> None:
-        self.skills = [
-            FireworkFlareUp(),
-            NiwabiFireDance(),
-            RyuukinSaxifrage()
-        ]
+        self.skills = [FireworkFlareUp(), NiwabiFireDance(), RyuukinSaxifrage()]
 
 
 register_class(Yoimiya_3_4)

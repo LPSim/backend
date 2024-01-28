@@ -19,9 +19,12 @@ class BlusteringBlade(BB_3_4):
         """
         gather two actions
         """
-        return super(BB_3_4, self).get_actions(match, [
-            self.create_summon('Shadowsword: Lone Gale'),
-        ])
+        return super(BB_3_4, self).get_actions(
+            match,
+            [
+                self.create_summon("Shadowsword: Lone Gale"),
+            ],
+        )
 
 
 class FrostyAssault(FA_3_4):
@@ -31,27 +34,29 @@ class FrostyAssault(FA_3_4):
         """
         gather two actions
         """
-        return super(FA_3_4, self).get_actions(match, [
-            self.create_summon('Shadowsword: Galloping Frost'),
-        ])
+        return super(FA_3_4, self).get_actions(
+            match,
+            [
+                self.create_summon("Shadowsword: Galloping Frost"),
+            ],
+        )
 
 
 class MaguuKenki_3_3(MK_3_4):
-    version: Literal['3.3']
+    version: Literal["3.3"]
     skills: List[
-        PhysicalNormalAttackBase
-        | BlusteringBlade | FrostyAssault | PseudoTenguSweeper
+        PhysicalNormalAttackBase | BlusteringBlade | FrostyAssault | PseudoTenguSweeper
     ] = []
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Ichimonji',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Ichimonji",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             BlusteringBlade(),
             FrostyAssault(),
-            PseudoTenguSweeper()
+            PseudoTenguSweeper(),
         ]
 
 

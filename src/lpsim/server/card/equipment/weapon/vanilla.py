@@ -9,29 +9,29 @@ from ....struct import Cost
 
 class VanillaWeapon_3_3(WeaponBase):
     name: Literal[
-        'Magic Guide',
-        'Raven Bow',
+        "Magic Guide",
+        "Raven Bow",
         "Traveler's Handy Sword",
-        'White Iron Greatsword',
-        'White Tassel'
+        "White Iron Greatsword",
+        "White Tassel",
     ]
-    version: Literal['3.3'] = '3.3'
+    version: Literal["3.3"] = "3.3"
     weapon_type: WeaponType = WeaponType.OTHER
 
-    cost: Cost = Cost(same_dice_number = 2)
+    cost: Cost = Cost(same_dice_number=2)
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        if self.name == 'Magic Guide':
+        if self.name == "Magic Guide":
             self.weapon_type = WeaponType.CATALYST
-        elif self.name == 'Raven Bow':
+        elif self.name == "Raven Bow":
             self.weapon_type = WeaponType.BOW
         elif self.name == "Traveler's Handy Sword":
             self.weapon_type = WeaponType.SWORD
-        elif self.name == 'White Iron Greatsword':
+        elif self.name == "White Iron Greatsword":
             self.weapon_type = WeaponType.CLAYMORE
         else:
-            assert self.name == 'White Tassel'
+            assert self.name == "White Tassel"
             self.weapon_type = WeaponType.POLEARM
 
 

@@ -3,8 +3,11 @@ from src.lpsim.server.consts import DamageElementalType
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -51,7 +54,7 @@ def test_kaedehara_kazuha():
             "end",
             "skill 0 0 1 2",
             "skill 2 0 1 2",
-            "skill 1 0 1 2"
+            "skill 1 0 1 2",
         ],
         [
             "sw_card 0 1 2",
@@ -88,27 +91,21 @@ def test_kaedehara_kazuha():
             "TEST 7 p0 summon hydro",
             "TEST 8 p0 status electro hydro",
             "sw_char 3 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Kaedehara Kazuha
@@ -117,7 +114,7 @@ def test_kaedehara_kazuha():
         character:CryoMobMage
         Plunging Strike*15
         Poetics of Fuubutsu*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -137,7 +134,7 @@ def test_kaedehara_kazuha():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -147,33 +144,34 @@ def test_kaedehara_kazuha():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 assert match.player_tables[1].active_character_idx == 2
             elif test_id == 3:
-                assert match.player_tables[1].characters[1].status[
-                    0].name == 'Midare Ranzan'
+                assert (
+                    match.player_tables[1].characters[1].status[0].name
+                    == "Midare Ranzan"
+                )
             elif test_id == 4:
                 for character in match.player_tables[0].characters:
-                    assert character.element_application == ['HYDRO']
+                    assert character.element_application == ["HYDRO"]
             elif test_id == 5:
                 assert len(match.player_tables[1].characters[1].status) == 0
             elif test_id == 6:
-                assert match.player_tables[1].team_status[
-                    0].name[-5:] == 'Hydro'
+                assert match.player_tables[1].team_status[0].name[-5:] == "Hydro"
             elif test_id == 7:
-                assert match.player_tables[0].summons[
-                    0].damage_elemental_type == DamageElementalType.HYDRO
+                assert (
+                    match.player_tables[0].summons[0].damage_elemental_type
+                    == DamageElementalType.HYDRO
+                )
             elif test_id == 8:
-                assert match.player_tables[0].team_status[
-                    0].name[-7:] == 'Electro'
-                assert match.player_tables[0].team_status[
-                    1].name[-5:] == 'Hydro'
+                assert match.player_tables[0].team_status[0].name[-7:] == "Electro"
+                assert match.player_tables[0].team_status[1].name[-5:] == "Hydro"
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -193,7 +191,7 @@ def test_kaedehara_klee():
             "skill 0 0 1 2",
             "skill 2 0 1 2",
             "end",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -205,27 +203,21 @@ def test_kaedehara_klee():
             "TEST 1 6 9 9 9 9 4 10 8 10 10",
             "card 0 1 0 1 2",
             "TEST 1 3 9 9 9 9 4 8 8 10 10",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Kaedehara Kazuha
@@ -234,7 +226,7 @@ def test_kaedehara_klee():
         character:CryoMobMage
         Plunging Strike*15
         Poetics of Fuubutsu*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -254,7 +246,7 @@ def test_kaedehara_klee():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -264,12 +256,12 @@ def test_kaedehara_klee():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -281,12 +273,7 @@ def test_kaedehara_klee():
 
 def test_kaedehara_pyro_cryo():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 3",
-            "end",
-            "end"
-        ],
+        ["sw_card", "choose 3", "end", "end"],
         [
             "sw_card",
             "choose 0",
@@ -298,26 +285,20 @@ def test_kaedehara_pyro_cryo():
             "skill 1 0 1 2",
             "TEST 1 6 6 6 2 6 10 10 10 10 10",
             "end",
-        ]
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Klee
         character:Kaedehara Kazuha
@@ -325,7 +306,7 @@ def test_kaedehara_pyro_cryo():
         character:ElectroMobMage
         character:Xingqiu
         Poetics of Fuubutsu*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -345,7 +326,7 @@ def test_kaedehara_pyro_cryo():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -355,12 +336,12 @@ def test_kaedehara_pyro_cryo():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -370,5 +351,5 @@ def test_kaedehara_pyro_cryo():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_kaedehara_pyro_cryo()

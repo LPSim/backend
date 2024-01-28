@@ -12,11 +12,12 @@ class Dice(ObjectBase):
     Attributes:
         colors: list of colors of dice.
     """
-    name: Literal['Dice'] = 'Dice'
+
+    name: Literal["Dice"] = "Dice"
     position: ObjectPosition = ObjectPosition(
-        player_idx = -1,
-        area = ObjectPositionType.INVALID,
-        id = -1,
+        player_idx=-1,
+        area=ObjectPositionType.INVALID,
+        id=-1,
     )
     type: Literal[ObjectType.DICE] = ObjectType.DICE
     colors: List[DieColor] = []

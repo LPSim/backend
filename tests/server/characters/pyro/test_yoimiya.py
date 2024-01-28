@@ -2,8 +2,11 @@ from src.lpsim.agents.interaction_agent import InteractionAgent
 from src.lpsim.server.match import Match, MatchState
 from src.lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -33,7 +36,7 @@ def test_yoimiya_3_3():
             "TEST 1 8 10 10 0 6 2",
             "TEST 3 p0 status usage 2",
             "end",
-            "skill 1 0 1 2"
+            "skill 1 0 1 2",
         ],
         [
             "sw_card",
@@ -53,33 +56,27 @@ def test_yoimiya_3_3():
             "skill 1 0 1 2",
             "choose 1",
             "TEST 1 8 9 10 0 5 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Yoimiya@3.3
         character:Nahida@3.7
         character:Mona@3.3
         Naganohara Meteor Swarm*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -99,7 +96,7 @@ def test_yoimiya_3_3():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -109,18 +106,18 @@ def test_yoimiya_3_3():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 for character in match.player_tables[1].characters:
-                    assert character.element_application == ['PYRO']
+                    assert character.element_application == ["PYRO"]
             elif test_id == 3:
                 assert len(match.player_tables[0].team_status) == 1
                 assert match.player_tables[0].team_status[0].usage == 2
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -131,40 +128,26 @@ def test_yoimiya_3_3():
 
 
 def test_yoimiya_different_version_generate():
-    cmd_records = [
-        [
-            "TEST 1 3.3 3.4 3.8 Yoimiya",
-            "sw_card"
-        ],
-        [
-            "sw_card"
-        ]
-    ]
+    cmd_records = [["TEST 1 3.3 3.4 3.8 Yoimiya", "sw_card"], ["sw_card"]]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Yoimiya@3.3
         character:Yoimiya@3.4
         character:Yoimiya
         Send Off@3.3*15
         Send Off*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -184,7 +167,7 @@ def test_yoimiya_different_version_generate():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -193,9 +176,9 @@ def test_yoimiya_different_version_generate():
                 break
             elif test_id == 1:
                 characters = match.player_tables[0].characters
-                assert characters[0].version == '3.3'
-                assert characters[1].version == '3.4'
-                assert characters[2].version == '3.8'
+                assert characters[0].version == "3.3"
+                assert characters[1].version == "3.4"
+                assert characters[2].version == "3.8"
                 assert characters[0].skills[2].cost.charge == 2
                 assert characters[1].skills[2].cost.charge == 3
                 assert characters[2].skills[2].cost.charge == 3
@@ -203,7 +186,7 @@ def test_yoimiya_different_version_generate():
                 assert characters[1].skills[2].cost.elemental_dice_number == 4
                 assert characters[2].skills[2].cost.elemental_dice_number == 3
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -213,6 +196,6 @@ def test_yoimiya_different_version_generate():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_yoimiya_3_3()
     test_yoimiya_different_version_generate()

@@ -1,60 +1,47 @@
 from src.lpsim.agents import InteractionAgent
 from src.lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
 def test_nilou_e_element():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 1",
-            "skill 1 15 14 13",
-            "TEST 1 p1 team usage 0",
-            "end"
-        ],
-        [
-            "sw_card",
-            "choose 1",
-            "TEST 1 p0 team usage",
-            "card 1 0 15 14 13"
-        ]
+        ["sw_card", "choose 1", "skill 1 15 14 13", "TEST 1 p1 team usage 0", "end"],
+        ["sw_card", "choose 1", "TEST 1 p0 team usage", "card 1 0 15 14 13"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck1 = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Xingqiu
         character:Nilou
         character:Dori
         The Starry Skies Their Flowers Rain*30
-        '''
+        """
     )
     deck2 = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Xingqiu
         character:Nilou
         character:Mona
         The Starry Skies Their Flowers Rain*30
-        '''
+        """
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
@@ -74,10 +61,10 @@ def test_nilou_e_element():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -86,7 +73,7 @@ def test_nilou_e_element():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].team_status, cmd[5:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -123,7 +110,7 @@ def test_nilou_2():
             "card 2 1 5",
             "skill 2 4 3 2",
             "TEST 1 38 34 32 38 35 23",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -146,34 +133,28 @@ def test_nilou_2():
             "TEST 3 p0 summon 1 3",
             "end",
             "TEST 1 38 32 32 38 35 12",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Xingqiu
         character:Nilou
         character:Tighnari
         The Starry Skies Their Flowers Rain*15
         Quick Knit*15
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 40
@@ -196,10 +177,10 @@ def test_nilou_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -217,7 +198,7 @@ def test_nilou_2():
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].summons, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -246,7 +227,7 @@ def test_nilou_3():
             "end",
             "sw_char 0 15",
             "skill 0 14 13 12",
-            "skill 2 11 10 9"
+            "skill 2 11 10 9",
         ],
         [
             "sw_card",
@@ -264,33 +245,27 @@ def test_nilou_3():
             "sw_char 2 13",
             "choose 0",
             "TEST 1 10 10 7 7 3 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Nilou
         character:Yaoyao
         character:Barbara
         The Starry Skies Their Flowers Rain*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -310,10 +285,10 @@ def test_nilou_3():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -325,7 +300,7 @@ def test_nilou_3():
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -335,7 +310,7 @@ def test_nilou_3():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_nilou_e_element()
     test_nilou_2()
     test_nilou_3()
