@@ -1,7 +1,7 @@
-from src.lpsim.server.character.anemo.venti_3_7 import Stormeye_3_7
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.character.anemo.venti_3_7 import Stormeye_3_7
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     get_random_state,

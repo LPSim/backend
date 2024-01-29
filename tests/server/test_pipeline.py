@@ -4,19 +4,19 @@ from typing import Literal
 import dictdiffer
 import pytest
 
-from src.lpsim.server.struct import Cost, ObjectPosition
-from src.lpsim.server.event import UseCardEventArguments
-from src.lpsim.server.action import ActionTypes, UseCardAction
-from src.lpsim.utils.class_registry import get_instance
-from src.lpsim.server.summon.base import SummonBase
-from src.lpsim.server.consts import ObjectPositionType, ObjectType
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
-from src.lpsim.agents.random_agent import RandomAgent
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.character.electro.fischl_3_3 import Oz_3_3
+from lpsim.server.struct import Cost, ObjectPosition
+from lpsim.server.event import UseCardEventArguments
+from lpsim.server.action import ActionTypes, UseCardAction
+from lpsim.utils.class_registry import get_instance
+from lpsim.server.summon.base import SummonBase
+from lpsim.server.consts import ObjectPositionType, ObjectType
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
+from lpsim.agents.random_agent import RandomAgent
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.character.electro.fischl_3_3 import Oz_3_3
 from tests.utils_for_test import (
     get_test_id_from_command,
     set_16_omni,

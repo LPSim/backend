@@ -1,5 +1,5 @@
 import os
-from src.lpsim import MatchState
+from lpsim import MatchState
 from tests.utils_for_test import (
     check_hp,
     check_usage,

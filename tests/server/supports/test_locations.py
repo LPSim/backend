@@ -1,12 +1,12 @@
 from typing import Any, List
-from src.lpsim.server.event import RoundEndEventArguments
-from src.lpsim.server.struct import ObjectPosition
-from src.lpsim.server.consts import DieColor, ObjectPositionType
-from src.lpsim.server.card.support.companions import Liben_3_3
-from src.lpsim.server.card.support.locations import Vanarana_3_7
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.event import RoundEndEventArguments
+from lpsim.server.struct import ObjectPosition
+from lpsim.server.consts import DieColor, ObjectPositionType
+from lpsim.server.card.support.companions import Liben_3_3
+from lpsim.server.card.support.locations import Vanarana_3_7
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     check_usage,

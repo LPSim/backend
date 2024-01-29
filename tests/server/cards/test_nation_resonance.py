@@ -1,7 +1,7 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.deck import Deck
-from src.lpsim.server.match import Match, MatchState
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.deck import Deck
+from lpsim.server.match import Match, MatchState
 from tests.utils_for_test import (
     check_hp,
     get_random_state,

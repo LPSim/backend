@@ -1,13 +1,13 @@
 import json
 import numpy as np
 from typing import List, Any, Tuple
-from src.lpsim.agents.interaction_agent import InteractionAgent, InteractionAgent_V1_0
-from src.lpsim.server.match import Match, MatchConfig
-from src.lpsim.server.deck import Deck
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
-from src.lpsim.agents.agent_base import AgentBase
-from src.lpsim.server.struct import ObjectPosition
-from src.lpsim.utils import BaseModel
+from lpsim.agents.interaction_agent import InteractionAgent, InteractionAgent_V1_0
+from lpsim.server.match import Match, MatchConfig
+from lpsim.server.deck import Deck
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
+from lpsim.agents.agent_base import AgentBase
+from lpsim.server.struct import ObjectPosition
+from lpsim.utils import BaseModel
 from tests.default_random_state import get_default_random_state
 
 

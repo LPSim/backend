@@ -1,7 +1,7 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     get_pidx_cidx,
@@ -10,7 +10,7 @@ from tests.utils_for_test import (
     get_random_state,
     set_16_omni,
 )
-from src.lpsim.server.interaction import UseSkillRequest
+from lpsim.server.interaction import UseSkillRequest
 
 
 def test_small_elemental_artifacts():
