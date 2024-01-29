@@ -65,7 +65,16 @@ def get_instance(base_class: Type[Any], args: Dict):
     Get instance from registry. If the base class is a union type, we will try
     each type sequentially.
     """
-    return instance_factory.get_instance(base_class, args)
+    base_class_list = [base_class]
+    if _is_union_type(base_class):
+        base_class_list = base_class.__args__
+    for cls in base_class_list:
+        try:
+            return instance_factory.get_instance(cls, args)
+        except Exception:
+            continue
+
+    raise Exception("Instance %s not found in instance factory" % (base_class_list))
 
 
 def get_class_list_by_base_class(
@@ -84,7 +93,19 @@ def get_class_list_by_base_class(
     Return:
         List of class names.
     """
-    pass
+    result_set: Set[str] = set()
+    base_class_list = [base_class]
+    if _is_union_type(base_class):
+        # is union type, try each class sequentially
+        base_class_list = base_class.__args__  # type: ignore
+    for type in base_class_list:
+        for key in instance_factory.instance_register.keys():
+            name = key.split("+")[1]
+            if name in exclude:
+                continue
+            if issubclass(instance_factory.instance_register[key], type):
+                result_set.add(name)
+    return sorted(list(result_set))
 
 
 __all__ = (
