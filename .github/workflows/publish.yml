@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    uses: ./.github/workflows/pytest.yaml
+    uses: ./.github/workflows/pytest.yml
 
   upload-to-pypi:
     needs: test
