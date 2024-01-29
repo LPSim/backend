@@ -38,7 +38,7 @@ class InstanceFactory:
         raise Exception("Instane %s+%s not found in instance factory" % (name, version))
     
     @staticmethod
-    def _is_same_instance(self, key1, key2):
+    def _is_same_instance(key1, key2):
         info1 = key1.split("+")
         info2 = key2.split("+")
         if info1[0] == info2[0] and info1[1] == info2[1]:
