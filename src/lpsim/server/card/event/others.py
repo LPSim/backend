@@ -257,7 +257,7 @@ class LeaveItToMe_3_3(EventCardBase):
 
 
 class WhenTheCraneReturned_3_3(EventCardBase):
-    name: Literal["When the Crane Returned"]
+    name: Literal["When the Crane Returned"] = "When the Crane Returned"
     version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(same_dice_number=1)
 
@@ -297,7 +297,7 @@ class WhenTheCraneReturned_3_3(EventCardBase):
 
 
 class Starsigns_3_3(EventCardBase):
-    name: Literal["Starsigns"]
+    name: Literal["Starsigns"] = "Starsigns"
     version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(any_dice_number=2)
 
@@ -332,7 +332,7 @@ class Starsigns_3_3(EventCardBase):
 
 
 class ClaxsArts_3_3(EventCardBase):
-    name: Literal["Calx's Arts"]
+    name: Literal["Calx's Arts"] = "Calx's Arts"
     version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(same_dice_number=1)
 
@@ -385,7 +385,7 @@ class ClaxsArts_3_3(EventCardBase):
 
 
 class MasterOfWeaponry_4_1(MultiTargetEventCardBase):
-    name: Literal["Master of Weaponry"]
+    name: Literal["Master of Weaponry"] = "Master of Weaponry"
     version: Literal["4.1"] = "4.1"
     cost: Cost = Cost()
     move_type: Literal[ObjectType.WEAPON, ObjectType.ARTIFACT] = ObjectType.WEAPON
