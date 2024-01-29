@@ -1,25 +1,25 @@
 from typing import Dict, Literal
 
 import pytest
-from src.lpsim.server.card.support.companions import CompanionBase
-from src.lpsim.server.card.event.foods import FoodCardBase
-from src.lpsim.server.card.support.base import SupportBase
-from src.lpsim.server.summon.base import SummonBase
-from src.lpsim.server.character.character_base import CharacterBase
-from src.lpsim.utils.desc_registry import (
+from lpsim.server.card.support.companions import CompanionBase
+from lpsim.server.card.event.foods import FoodCardBase
+from lpsim.server.card.support.base import SupportBase
+from lpsim.server.summon.base import SummonBase
+from lpsim.server.character.character_base import CharacterBase
+from lpsim.utils.desc_registry import (
     DescDictType,
     desc_exist,
     get_desc_patch,
     update_cost,
     update_desc,
 )
-from src.lpsim.utils.class_registry import (
+from lpsim.utils.class_registry import (
     get_class_list_by_base_class,
     get_instance,
     register_class,
 )
-from src.lpsim.server.struct import Cost
-from src.lpsim.server.object_base import EventCardBase
+from lpsim.server.struct import Cost
+from lpsim.server.object_base import EventCardBase
 
 
 def test_class_registry():

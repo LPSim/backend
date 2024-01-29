@@ -1,22 +1,22 @@
 from typing import Dict, Literal
 import pytest
-from src.lpsim.utils.desc_registry import DescDictType
+from lpsim.utils.desc_registry import DescDictType
 
-from src.lpsim.server.status.team_status.base import (
+from lpsim.server.status.team_status.base import (
     ElementalInfusionTeamStatus,
     TeamStatusBase,
 )
-from src.lpsim.utils.class_registry import get_instance, register_class
+from lpsim.utils.class_registry import get_instance, register_class
 
-from src.lpsim.agents.random_agent import RandomAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.action import CreateDiceAction, DrawCardAction, MoveObjectAction
-from src.lpsim.server.consts import DamageElementalType, ObjectPositionType
-from src.lpsim.server.deck import Deck
-from src.lpsim.server.interaction import SwitchCardResponse
-from src.lpsim.server.object_base import ObjectBase
-from src.lpsim.server.struct import ObjectPosition
-from src.lpsim.server.match import Match, MatchConfig
+from lpsim.agents.random_agent import RandomAgent
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.action import CreateDiceAction, DrawCardAction, MoveObjectAction
+from lpsim.server.consts import DamageElementalType, ObjectPositionType
+from lpsim.server.deck import Deck
+from lpsim.server.interaction import SwitchCardResponse
+from lpsim.server.object_base import ObjectBase
+from lpsim.server.struct import ObjectPosition
+from lpsim.server.match import Match, MatchConfig
 
 
 def test_object_position_validation():

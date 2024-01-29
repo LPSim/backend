@@ -1,5 +1,5 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim import Match, MatchState, Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim import Match, MatchState, Deck
 from tests.utils_for_test import (
     check_hp,
     get_random_state,

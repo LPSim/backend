@@ -1,10 +1,10 @@
 import os
 
-from src.lpsim.server.deck import Deck
+from lpsim.server.deck import Deck
 
-from src.lpsim.server.match import Match
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim import MatchState
+from lpsim.server.match import Match
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim import MatchState
 from tests.utils_for_test import (
     check_hp,
     check_usage,

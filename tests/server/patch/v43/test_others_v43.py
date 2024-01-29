@@ -1,7 +1,7 @@
 # tests that test corner cases to improve coverage
 
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
     check_hp,
     check_usage,

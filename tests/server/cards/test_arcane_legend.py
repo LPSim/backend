@@ -1,6 +1,6 @@
-from src.lpsim.server.deck import Deck
-from src.lpsim.server.interaction import UseCardResponse
-from src.lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
+from lpsim.server.interaction import UseCardResponse
+from lpsim.server.match import Match, MatchState
 
 from tests.utils_for_test import (
     check_hp,
@@ -9,8 +9,8 @@ from tests.utils_for_test import (
     make_respond,
     set_16_omni,
 )
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.agents.nothing_agent import NothingAgent
 
 
 def test_covenant_of_rock():

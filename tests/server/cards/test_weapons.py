@@ -1,7 +1,7 @@
-from src.lpsim.server.struct import ObjectPosition
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.struct import ObjectPosition
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_hp,
     check_usage,
