@@ -173,5 +173,5 @@ a.run()
 开发这个项目花费了大量(本来用来打牌和打模拟宇宙的)时间。如果你觉得这个项目有帮助，您可以通过微信支持作者。
 
 <p align="center">
-    <img src="docs/wechat.png" alt="wechat" width="150">
+    <img src="docs/donate.png" alt="wechat" width="150">
 </p>

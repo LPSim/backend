@@ -6,9 +6,9 @@
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
+Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation
 TCG, written with Python 3.10 using Pydantic and FastAPI. This project has
-another [frontend repository](https://github.com/LPSim/frontend) which contains 
+another [frontend repository](https://github.com/LPSim/frontend) which contains
 a frontend page to interact with this backend.
 
 This project is under AGPL-3.0 license. If you have any secondary development
@@ -17,7 +17,7 @@ and distribution based on this project, please comply with this license.
 ## Disclaimer
 
 This project is for learning and communication only. The frontend is only used
-for displaying game states and debugging, and you should delete all related 
+for displaying game states and debugging, and you should delete all related
 files in 24 hours after downloading. All related codes are open source
 under AGPLv3 license. This project is not related to miHoYo, and all game
 materials are owned by miHoYo. This project and its code repository do not
@@ -28,8 +28,8 @@ related to miHoYo products.
 
 All characters and cards with their balance changes until 4.3 are done.
 
-:sparkles: NEW: 4.3 characters and cards, as well as balance changes are 
-implemented. 
+:sparkles: NEW: 4.3 characters and cards, as well as balance changes are
+implemented.
 
 ## Feature
 
@@ -50,15 +50,15 @@ To install the newest release version, use `pip install lpsim`. You can find
 the newest release version on [PyPI](https://pypi.org/project/lpsim/), and
 you can find the change log on [CHANGELOG.md](CHANGELOG.md).
 
-To install the newest development version, use 
+To install the newest development version, use
 `pip install lpsim -i https://test.pypi.org/simple/`. When new commits are
-pushed to `master` branch and pass all tests, a new version will be released 
+pushed to `master` branch and pass all tests, a new version will be released
 on test PyPI. When new tag is pushed to `master` branch, a new version will be
 released on PyPI.
 
 ### Installation by source
 
-Clone this repository and install the package by `pip install .`. 
+Clone this repository and install the package by `pip install .`.
 
 ### HTTP Server
 
@@ -74,9 +74,9 @@ It will open a FastAPI server on `localhost:8000`, and accept connections
 from localhost. When initialize HTTPServer, you can set decks and match configs
 to create a match with specified rules.
 
-To start the match, open a 
+To start the match, open a
 [frontend web page](https://lpsim.github.io/frontend), change server
-URL on top right (default is `http://localhost:8000`), and follow the 
+URL on top right (default is `http://localhost:8000`), and follow the
 instructions on the page to set Deck and start match between two players.
 
 Currently exception
@@ -99,10 +99,10 @@ will be closed automatically. Refer to `lpsim/network/http_room_server.py` and
 
 #### Define the deck
 
-To start a match, you should firstly 
-define decks for both players. Supports text-based or json-based deck 
+To start a match, you should firstly
+define decks for both players. Supports text-based or json-based deck
 definition. Usually, `Deck.from_str` is enough to define a deck, which contains
-characters and cards definition, and can control their versions. The deck 
+characters and cards definition, and can control their versions. The deck
 string in the following sample code shows the syntax of deck definition,
 all cards are based on 4.1 version, except Wind and Freedom, which is based on
 4.0 version (As it has not changed after 3.7, when specify version 4.0, deck
@@ -114,18 +114,18 @@ Refer to `server/deck.py` for details.
 1. Initialize a fresh `server.Match` instance.
 2. Use the `set_deck` function to assign decks for players.
 3. Modify the `Match.config` if specific configurations are necessary.
-4. Once the decks are set, initiate the match using the `Match.start` function. 
+4. Once the decks are set, initiate the match using the `Match.start` function.
    This initializes the match according to the configurations and decks.
-   If error occurred (e.g. deck is not valid), it will return False and detailed 
+   If error occurred (e.g. deck is not valid), it will return False and detailed
    error message.
-5. Progress through the match by employing the `Match.step` function. 
-   By default, the step function will continually execute until the match 
+5. Progress through the match by employing the `Match.step` function.
+   By default, the step function will continually execute until the match
    either ends or generates requests requiring responses.
 
-In order to manage responses, the project includes a selection of simple 
-agents within the `agents` module. These agents can generate 
-responses to various requests. Notably, the `InteractionAgent` is equipped 
-to interpret command lines and formulate responses. This is useful both 
+In order to manage responses, the project includes a selection of simple
+agents within the `agents` module. These agents can generate
+responses to various requests. Notably, the `InteractionAgent` is equipped
+to interpret command lines and formulate responses. This is useful both
 in console environments and within frontend interfaces.
 
 #### Sample code
@@ -183,27 +183,27 @@ To customize cards and characters, you need to understand the actions,
 event handlers and value modifiers. All interaction are done by actions, and
 all actions are triggered by events. Value modifiers are for modifying values
 such as dice cost and damage. The easiest way to implement a new object is to
-copy an existing card/character/skill/status... and modify it. 
+copy an existing card/character/skill/status... and modify it.
 
 `templates/character.py` is a template for characters. You can copy it
 and modify it to implement a new character. You can define any object that is
-related to the character, e.g. skills, talents, summons, status. Then, you 
+related to the character, e.g. skills, talents, summons, status. Then, you
 should create the description for these objects, which is used in the frontend,
 and class registry will reject objects without description. Finally, register
-all objects as well as their descriptions to class registry with 
+all objects as well as their descriptions to class registry with
 `register_class` function. Note the template uses relative imports, as it is
 used for creating new official characters. You need to change them to absolute
 imports if you want to create a new character outside this project.
 
 Define a new card is relatively simple, you can refer to `templates/card.py`,
-it defined a new card "Big Strategize" which costs 2 any dice and draws 3 
+it defined a new card "Big Strategize" which costs 2 any dice and draws 3
 cards. As a sample of custom card, it uses absolute import, so you can use it
 outside this project.
 
 You can manually register new objects and use them in the match.
 Take "Big Strategize" for example, install `lpsim` first, then type
 `import templates.card` after `import lpsim`. Then you can create a HTTP
-server by `a = HTTPServer(); a.run()` to see that a new card is added to the 
+server by `a = HTTPServer(); a.run()` to see that a new card is added to the
 candidate card list.
 
 ## Details
@@ -213,7 +213,7 @@ from certain state and continue running, and also easy for frontend to render
 the game states.
 
 High compatible with different version of characters or cards. You can start a
-match between version 3.8 Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu 
+match between version 3.8 Itto-Barbara-Noelle and version 3.3 dual-Geo Maguu
 Kenki.
 
 Interact by request and response. When request list is not empty, agents need
@@ -221,15 +221,15 @@ to response to one of the request. When multiple players need to response,
 (e.g. switch card and choose character at startup),
 their requests will be generated simultaneously.
 
-All modifications to the match table are orchestrated through actions. 
-Each action triggers an event and has the potential to activate subsequent 
-actions. These newly activated actions are appended to the top of the existing 
-action list, akin to a stacked-lists structure. Refer to definition of 
+All modifications to the match table are orchestrated through actions.
+Each action triggers an event and has the potential to activate subsequent
+actions. These newly activated actions are appended to the top of the existing
+action list, akin to a stacked-lists structure. Refer to definition of
 `EventFrame`.
 
-Objects integrated into this system introduce two types of triggers: event 
-handlers and value modifiers. Event handlers function to monitor events and 
-produce lists of actions in response. Value modifiers is used on edit 
+Objects integrated into this system introduce two types of triggers: event
+handlers and value modifiers. Event handlers function to monitor events and
+produce lists of actions in response. Value modifiers is used on edit
 mutable values and updating internal states if is necessary. Modifiable values
 applies to attributes like initial dice color, damage, and cost.
 
@@ -244,13 +244,13 @@ Contributions are welcomed, however, currently there is no detailed guide for
 contribution. To add new character related objects (Character, Skill, Talent,
 Summon, Status), please refer to `templates/character.py` and implemented
 characters.
-To add a new card, please refer to existing card implementations in 
+To add a new card, please refer to existing card implementations in
 `server/card`.
 
-Developing this project takes the author a lot of time (which should be used to 
+Developing this project takes the author a lot of time (which should be used to
 play GITCG and Simulated Universe). If you think this project is helpful, you
 can support the author by WeChat.
 
 <p align="center">
-    <img src="docs/wechat.png" alt="wechat" width="150">
+    <img src="docs/donate.png" alt="wechat" width="150">
 </p>
