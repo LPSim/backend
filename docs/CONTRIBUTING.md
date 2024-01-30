@@ -6,7 +6,7 @@ Thanks for you interest in contributing to _lpsim_!
 
 _lpsim_ is written in [Python](https://www.python.org/), requires Python>=3.10 to run, so please make sure you have Python>=3.10 installed.
 
-To confirm your Python version, simply run `python --version` or `python3 --verion` in terminal ("Terminal" app on macOS or "Windows Terminal" on Windows).
+To confirm your Python version, simply run `python --version` or `python3 --version` in terminal ("Terminal" app on macOS or "Windows Terminal" on Windows).
 
 To develop _lpsim_, you'll need to install [git](https://git-scm.com/) for version control, and run:
 
@@ -33,7 +33,7 @@ Each time you open a new terminal, you should run `source venv/bin/activate` to 
 
 Activate venv, enter the `backend` folder you have cloned before, and run `pip install ".[dev]"`. This command will install pytest and its plugins.
 
-Optionally, you can also run `pip install pre-commit` or `pipx install pre-commit` to install pre-commit for linting and formating, and run `pre-commit install` to install a pre-commit hook in your **local** repository. After that, each time you commit your changes, pre-commit will run hooks to find typos, do lints and format your codes.
+Optionally, you can also run `pip install pre-commit` or `pipx install pre-commit` to install pre-commit for linting and formatting, and run `pre-commit install` to install a pre-commit hook in your **local** repository. After that, each time you commit your changes, pre-commit will run hooks to find typos, do lints and format your codes.
 
 ## Running tests
 
