@@ -102,11 +102,13 @@ def get_class_list_by_base_class(
         base_class_list = base_class.__args__  # type: ignore
     for type in base_class_list:
         for key in instance_factory.instance_register.keys():
-            name = key.split("+")[1]
-            if name in exclude:
+            card_name = key.split("+")[1]
+            card_version = key.split("+")[2]
+            if card_name in exclude:
                 continue
             if issubclass(instance_factory.instance_register[key], type):
-                result_set.add(name)
+                if card_version <= version:
+                    result_set.add(card_name)
     return sorted(list(result_set))
 
 
