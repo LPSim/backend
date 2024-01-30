@@ -71,10 +71,12 @@ def get_instance(base_class: Type[Any], args: Dict):
     for cls in base_class_list:
         try:
             return instance_factory.get_instance(cls, args)
-        except Exception:
+        except Exception as e:
+            print(e)
             continue
 
-    raise Exception("Instance %s not found in instance factory" % (base_class_list))
+    names = [x.__name__ for x in base_class_list]
+    raise AssertionError("Instance %s not found in instance factory with args %s" % (names, args))
 
 
 def get_class_list_by_base_class(

@@ -1,4 +1,3 @@
-
 from typing import Any, Dict, Type, get_type_hints
 
 
@@ -29,14 +28,19 @@ class InstanceFactory:
         instance_list = [x for x in self.instance_register.keys()]
         instance_list.sort()
         for key in keys:
-            for i in range(len(instance_list)-1):
+            for i in range(len(instance_list) - 1):
                 if key < instance_list[i + 1]:
                     if self._is_same_instance(key, instance_list[i]):
                         cls = self.instance_register[instance_list[i]]
                         return cls(**args)
+                    else:
+                        break
+            if self._is_same_instance(key, instance_list[-1]):
+                cls = self.instance_register[instance_list[-1]]
+                return cls(**args)
 
-        raise Exception("Instane %s+%s not found in instance factory" % (name, version))
-    
+        raise Exception("Instance %s+%s not found in instance factory" % (name, version))
+
     @staticmethod
     def _is_same_instance(key1, key2):
         info1 = key1.split("+")
@@ -45,4 +49,3 @@ class InstanceFactory:
             return True
         else:
             return False
-
