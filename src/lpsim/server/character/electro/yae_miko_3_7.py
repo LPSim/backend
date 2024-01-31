@@ -93,7 +93,7 @@ class GreatSecretArtTenkoKenshin(ElementalBurstBase):
 
 
 class TheShrinesSacredShade_3_7(SkillTalent):
-    name: Literal["The Shrine's Sacred Shade"] = "The Shrine's Sacred Shade"
+    name: Literal["The Shrine's Sacred Shade"]
     version: Literal["3.7"] = "3.7"
     character_name: Literal["Yae Miko"] = "Yae Miko"
     cost: Cost = Cost(

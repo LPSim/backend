@@ -16,7 +16,7 @@ from ....consts import ObjectPositionType, ObjectType, WeaponType
 
 
 class WolfsGravestone_3_3(WeaponBase):
-    name: Literal["Wolf's Gravestone"] = "Wolf's Gravestone"
+    name: Literal["Wolf's Gravestone"]
     cost: Cost = Cost(same_dice_number=3)
     version: Literal["3.3"] = "3.3"
     weapon_type: WeaponType = WeaponType.CLAYMORE

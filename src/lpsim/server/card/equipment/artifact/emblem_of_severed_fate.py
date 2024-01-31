@@ -15,7 +15,7 @@ from .base import ArtifactBase, RoundEffectArtifactBase
 
 
 class OrnateKabuto_4_0(ArtifactBase):
-    name: Literal["Ornate Kabuto"] = "Ornate Kabuto"
+    name: Literal["Ornate Kabuto"]
     version: Literal["4.0"] = "4.0"
     cost: Cost = Cost(same_dice_number=1)
     usage: int = 0
@@ -47,7 +47,7 @@ class OrnateKabuto_3_5(OrnateKabuto_4_0):
 
 
 class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
-    name: Literal["Emblem of Severed Fate"] = "Emblem of Severed Fate"
+    name: Literal["Emblem of Severed Fate"]
     version: Literal["4.1"] = "4.1"
     cost: Cost = Cost(same_dice_number=2)
     max_usage_per_round: int = 1

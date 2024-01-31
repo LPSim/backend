@@ -75,7 +75,7 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
 
 
 class AdventurersBandana_3_3(HealBySkillArtifactBase):
-    name: Literal["Adventurer's Bandana"] = "Adventurer's Bandana"
+    name: Literal["Adventurer's Bandana"]
     version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 3

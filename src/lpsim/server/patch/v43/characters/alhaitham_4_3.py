@@ -163,7 +163,7 @@ class ParticularFieldFettersOfPhenomena(ElementalBurstBase):
 
 
 class Structuration_4_3(SkillTalent):
-    name: Literal["Structuration"] = "Structuration"
+    name: Literal["Structuration"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal["Alhaitham"] = "Alhaitham"
     skill: Literal[

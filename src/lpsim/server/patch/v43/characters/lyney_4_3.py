@@ -160,7 +160,7 @@ class WondrousTrickMiracleParade(ElementalBurstBase):
 
 
 class ConclusiveOvation_4_3(SkillTalent):
-    name: Literal["Conclusive Ovation"] = "Conclusive Ovation"
+    name: Literal["Conclusive Ovation"]
     character_name: Literal["Lyney"] = "Lyney"
     version: Literal["4.3"] = "4.3"
     skill: Literal["Prop Arrow"] = "Prop Arrow"

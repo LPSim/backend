@@ -209,7 +209,7 @@ class CaelestinumFinaleTermini(ElementalBurstBase):
 
 
 class RendingVortex_4_3(SkillTalent):
-    name: Literal["Rending Vortex"] = "Rending Vortex"
+    name: Literal["Rending Vortex"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal["Dvalin"] = "Dvalin"
     cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)

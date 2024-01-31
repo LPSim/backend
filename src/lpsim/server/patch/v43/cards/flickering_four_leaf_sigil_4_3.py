@@ -40,7 +40,7 @@ class FlickeringFourLeafSigilStatus_4_3(CharacterStatusBase):
 
 
 class FlickeringFourLeafSigil_4_3(EventCardBase):
-    name: Literal["Flickering Four-Leaf Sigil"] = "Flickering Four-Leaf Sigil"
+    name: Literal["Flickering Four-Leaf Sigil"]
     version: Literal["4.3"] = "4.3"
     cost: Cost = Cost()
 

@@ -117,7 +117,7 @@ class DivineMaidensDeliverance(ElementalBurstBase):
 
 
 class MysticalAbandon_3_7(SkillTalent):
-    name: Literal["Mystical Abandon"] = "Mystical Abandon"
+    name: Literal["Mystical Abandon"]
     version: Literal["3.7"] = "3.7"
     character_name: Literal["Shenhe"] = "Shenhe"
     cost: Cost = Cost(elemental_dice_color=DieColor.CRYO, elemental_dice_number=3)
