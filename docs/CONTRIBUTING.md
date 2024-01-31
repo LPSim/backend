@@ -31,7 +31,7 @@ Each time you open a new terminal, you should run `source venv/bin/activate` to 
 > [!WARNING]
 > Running `pip install lpsim` or `pip install .` in `backend` folder does not install development dependencies.
 
-Activate venv, enter the `backend` folder you have cloned before, and run `pip install ".[dev]"`. This command will install pytest and its plugins.
+Activate venv, enter the `backend` folder you have cloned before, and run `pip install -e ".[dev]"`. This command will install pytest and its plugins. The option `-e` helps you to install an editable version of `lpsim` so that you can import `lpsim` from the `backend` folder locally.
 
 Optionally, you can also run `pip install pre-commit` or `pipx install pre-commit` to install pre-commit for linting and formatting, and run `pre-commit install` to install a pre-commit hook in your **local** repository. After that, each time you commit your changes, pre-commit will run hooks to find typos, do lints and format your codes.
 
