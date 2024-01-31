@@ -6,27 +6,13 @@ corresponding class and version, and instantiate it.
 """
 
 
-import logging
 import types
-from typing import Any, Dict, List, Optional, Set, Type, Union, get_type_hints, get_args
+from typing import Any, Dict, List, Optional, Set, Type, Union
 
 from .instance_factory import InstanceFactory
-from ..server.consts import ObjectType
-from .desc_registry import DescDictType, desc_exist, update_cost, update_desc
-instance_factory = InstanceFactory()
+from .desc_registry import DescDictType, update_desc
 
-"""
-The dict to save all registered classes. Key is the base class, value is a dict
-with key as name, value is a dict with version as name, and value as class.
-In class version dict, it saves all available version of a card, and is sorted
-descendingly.
-"""
-_class_dict: Dict[Type[Any], Dict[str, Dict[int, Type[Any]]]] = {}
-_class_version_dict: Dict[Type[Any], Dict[str, List[int]]] = {}
-"""
-The set that contains all registered base classes.
-"""
-_class_set = set()
+instance_factory = InstanceFactory()
 
 
 def _is_union_type(t) -> bool:
@@ -40,6 +26,8 @@ def _is_union_type(t) -> bool:
 def register_base_class(base_class: Type[Any]):
     """
     Register a base class.
+    TODO: after refactor, we should remove this function. Currently remain here for
+    compatibility.
     """
     return
 
@@ -59,7 +47,6 @@ def register_class(classes: Type[Any], descs: Dict[str, DescDictType] | None = N
         instance_factory.register_instance(classes)
 
 
-# def get_instance_from_type_unions(types, args, key = 'name'):
 def get_instance(base_class: Type[Any], args: Dict):
     """
     Get instance from registry. If the base class is a union type, we will try
@@ -67,16 +54,17 @@ def get_instance(base_class: Type[Any], args: Dict):
     """
     base_class_list = [base_class]
     if _is_union_type(base_class):
-        base_class_list = base_class.__args__
+        base_class_list = base_class.__args__  # type: ignore
     for cls in base_class_list:
         try:
             return instance_factory.get_instance(cls, args)
-        except Exception as e:
-            print(e)
+        except KeyError:
             continue
 
     names = [x.__name__ for x in base_class_list]
-    raise AssertionError("Instance %s not found in instance factory with args %s" % (names, args))
+    raise AssertionError(
+        "Instance %s not found in instance factory with args %s" % (names, args)
+    )
 
 
 def get_class_list_by_base_class(

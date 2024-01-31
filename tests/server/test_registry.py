@@ -4,6 +4,7 @@ import pytest
 from lpsim.server.card.support.companions import CompanionBase
 from lpsim.server.card.event.foods import FoodCardBase
 from lpsim.server.card.support.base import SupportBase
+from lpsim.server.consts import DieColor
 from lpsim.server.summon.base import SummonBase
 from lpsim.server.character.character_base import CharacterBase
 from lpsim.utils.desc_registry import (
@@ -24,7 +25,7 @@ from lpsim.server.object_base import EventCardBase
 
 def test_class_registry():
     class Sleep_1_0(EventCardBase):
-        name: Literal["Sleep"] = "Sleep"
+        name: Literal["Sleep"]
         version: Literal["1.0"] = "1.0"
         cost: Cost = Cost()
 
@@ -61,6 +62,14 @@ def test_class_registry():
     register_class(Sleep_1_0, sleep_desc)
     # duplicate, should print warning
     register_class(Sleep_1_0)
+    with pytest.raises(AssertionError):
+        # duplicate and not same, raise error
+        class Sleep2_1_0(EventCardBase):
+            name: Literal["Sleep"]
+            version: Literal["1.0"] = "1.0"
+            cost: Cost = Cost()
+
+        register_class(Sleep2_1_0)
     with pytest.raises(AssertionError):
         # wrong base class, get error
         get_instance(CharacterBase, {"name": "Sleep", "version": "1.0"})
@@ -210,6 +219,56 @@ def test_get_class_list():
     assert len(nlist) == 12
 
 
+def test_existing_cost():
+    """
+    request existing cost for mobs, Starsigns, and Strategize.
+    """
+    pyro_skill_cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
+    hydro_normal_cost = Cost(
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=1, any_dice_number=2
+    )
+    dendro_burst_cost = Cost(
+        elemental_dice_color=DieColor.DENDRO,
+        elemental_dice_number=3,
+        charge=2,
+    )
+    starsigns_cost = Cost(any_dice_number=2)
+    strategize_cost = Cost(same_dice_number=1)
+    p = get_desc_patch()
+    assert "cost" in p["SKILL_PyroMob_ELEMENTAL_SKILL/Pyro Elemental Skill"]
+    desc_cost = Cost(
+        **p["SKILL_PyroMob_ELEMENTAL_SKILL/Pyro Elemental Skill"]["cost"]["1.0"]
+    )
+    desc_cost.label = 0
+    assert pyro_skill_cost == desc_cost
+    assert "cost" in p["SKILL_HydroMobMage_NORMAL_ATTACK/Hydro Normal Attack"]
+    desc_cost = Cost(
+        **p["SKILL_HydroMobMage_NORMAL_ATTACK/Hydro Normal Attack"]["cost"]["1.0"]
+    )
+    desc_cost.label = 0
+    assert hydro_normal_cost == desc_cost
+    assert "cost" in p["SKILL_HydroMob_NORMAL_ATTACK/Physical Normal Attack"]
+    desc_cost = Cost(
+        **p["SKILL_HydroMob_NORMAL_ATTACK/Physical Normal Attack"]["cost"]["1.0"]
+    )
+    desc_cost.label = 0
+    assert hydro_normal_cost == desc_cost
+    assert "cost" in p["SKILL_DendroMob_ELEMENTAL_BURST/Dendro Elemental Burst"]
+    desc_cost = Cost(
+        **p["SKILL_DendroMob_ELEMENTAL_BURST/Dendro Elemental Burst"]["cost"]["1.0"]
+    )
+    desc_cost.label = 0
+    assert dendro_burst_cost == desc_cost
+    assert "cost" in p["CARD/Starsigns"]
+    desc_cost = Cost(**p["CARD/Starsigns"]["cost"]["3.3"])
+    desc_cost.label = 0
+    assert starsigns_cost == desc_cost
+    assert "cost" in p["CARD/Strategize"]
+    desc_cost = Cost(**p["CARD/Strategize"]["cost"]["3.3"])
+    desc_cost.label = 0
+    assert strategize_cost == desc_cost
+
+
 def test_register_cost():
     dd_desc: Dict[str, DescDictType] = {
         "CARD/DD": {
@@ -288,5 +347,6 @@ if __name__ == "__main__":
     test_class_registry()
     test_desc_registry()
     test_get_class_list()
+    test_existing_cost()
     test_register_cost()
     test_wrong_id()
