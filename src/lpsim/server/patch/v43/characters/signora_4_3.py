@@ -284,9 +284,7 @@ class CarmineChrysalis(SignoraSkillValidCheck, ElementalBurstBase):
         )
         target_status = None
         for s in status_list:
-            if (
-                s.name == "Ice-Sealed Crimson Witch of Embers"
-            ):  # pragma: no branch  # noqa: E501
+            if s.name == "Ice-Sealed Crimson Witch of Embers":  # pragma: no branch
                 target_status = s
                 break
         else:
