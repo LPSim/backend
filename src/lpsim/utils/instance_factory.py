@@ -31,7 +31,13 @@ class InstanceFactory:
             for i in range(len(instance_list) - 1):
                 if key < instance_list[i + 1]:
                     if self._is_same_instance(key, instance_list[i]):
+                        """
+                        Type and name same and version is lower than the next, should
+                        be current object.
+                        """
                         cls = self.instance_register[instance_list[i]]
+                        exact_version = instance_list[i].split("+")[2]
+                        args["version"] = exact_version
                         return cls(**args)
                     else:
                         break
@@ -39,10 +45,13 @@ class InstanceFactory:
                 cls = self.instance_register[instance_list[-1]]
                 return cls(**args)
 
-        raise Exception("Instance %s+%s not found in instance factory" % (name, version))
+        raise KeyError("Instance %s+%s not found in instance factory" % (name, version))
 
     @staticmethod
     def _is_same_instance(key1, key2):
+        """
+        Check whether type and name are the same.
+        """
         info1 = key1.split("+")
         info2 = key2.split("+")
         if info1[0] == info2[0] and info1[1] == info2[1]:
