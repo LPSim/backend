@@ -54,7 +54,7 @@ class Timaeus_4_3(Timaeus_3_3):
 
 
 class Wagner_4_3(Timaeus_4_3):
-    name: Literal["Wagner"] = "Wagner"
+    name: Literal["Wagner"]
     decrease_target: int = CostLabels.WEAPON.value
     _check_type: Literal["TYPE", "NUMBER"] = PrivateAttr("TYPE")
     _check_number: int = PrivateAttr(3)

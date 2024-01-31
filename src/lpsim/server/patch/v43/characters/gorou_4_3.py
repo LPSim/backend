@@ -140,9 +140,7 @@ class JuugaForwardUntoVictory(ElementalBurstBase):
 
 
 class RushingHoundSwiftAsTheWind_4_3(SkillTalent):
-    name: Literal[
-        "Rushing Hound: Swift as the Wind"
-    ] = "Rushing Hound: Swift as the Wind"
+    name: Literal["Rushing Hound: Swift as the Wind"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal["Gorou"] = "Gorou"
     skill: Literal["Inuzaka All-Round Defense"] = "Inuzaka All-Round Defense"

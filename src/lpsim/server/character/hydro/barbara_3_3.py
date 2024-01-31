@@ -116,7 +116,7 @@ class ShiningMiracle(ElementalBurstBase):
 
 
 class GloriousSeason_3_3(SkillTalent):
-    name: Literal["Glorious Season"] = "Glorious Season"
+    name: Literal["Glorious Season"]
     version: Literal["3.3"] = "3.3"
     character_name: Literal["Barbara"] = "Barbara"
     cost: Cost = Cost(

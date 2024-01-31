@@ -187,7 +187,7 @@ class SpiritOfOmensPower(PassiveSkillBase):
 
 
 class Scorpocalypse_4_3(SkillTalent):
-    name: Literal["Scorpocalypse"] = "Scorpocalypse"
+    name: Literal["Scorpocalypse"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal[
         "Eremite Scorching Loremaster"
@@ -201,7 +201,7 @@ class Scorpocalypse_4_3(SkillTalent):
 
 
 class EremiteScorchingLoremaster_4_3(CharacterBase):
-    name: Literal["Eremite Scorching Loremaster"] = "Eremite Scorching Loremaster"
+    name: Literal["Eremite Scorching Loremaster"]
     version: Literal["4.3"] = "4.3"
     element: ElementType = ElementType.PYRO
     max_hp: int = 10

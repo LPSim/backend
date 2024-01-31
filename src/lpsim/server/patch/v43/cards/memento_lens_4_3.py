@@ -23,7 +23,7 @@ class MementoLensEventHandler_4_3(SystemEventHandlerBase):
     Record used cards that matches type for both players.
     """
 
-    name: Literal["Memento Lens"] = "Memento Lens"
+    name: Literal["Memento Lens"]
     version: Literal["4.3"] = "4.3"
     _accept_card_types: Type = PrivateAttr(
         WeaponBase | ArtifactBase | LocationBase | CompanionBase

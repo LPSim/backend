@@ -143,7 +143,7 @@ class FreshWindOfFreedom_4_1(RoundTeamStatus):
 
 
 class LeaveItToMe_3_3(UsageTeamStatus):
-    name: Literal["Leave It to Me!"]
+    name: Literal["Leave It to Me!"] = "Leave It to Me!"
     version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1
@@ -369,7 +369,7 @@ class StoneAndContracts_3_7(TeamStatusBase):
 
 
 class AncientCourtyard_3_8(RoundTeamStatus):
-    name: Literal["Ancient Courtyard"]
+    name: Literal["Ancient Courtyard"] = "Ancient Courtyard"
     version: Literal["3.8"] = "3.8"
     usage: int = 1
     max_usage: int = 1
@@ -486,7 +486,7 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
 
 
 class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
-    name: Literal["Rhythm of the Great Dream"]
+    name: Literal["Rhythm of the Great Dream"] = "Rhythm of the Great Dream"
     version: Literal["3.8"] = "3.8"
     usage: int = 1
     max_usage: int = 1
@@ -525,7 +525,7 @@ class RhythmOfTheGreatDream_3_8(UsageTeamStatus):
 
 
 class WhenTheCraneReturned_3_3(UsageTeamStatus):
-    name: Literal["When the Crane Returned"]
+    name: Literal["When the Crane Returned"] = "When the Crane Returned"
     version: Literal["3.3"] = "3.3"
     usage: int = 1
     max_usage: int = 1

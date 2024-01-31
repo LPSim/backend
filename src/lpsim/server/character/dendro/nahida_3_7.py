@@ -131,7 +131,7 @@ class TheSeedOfStoredKnowledge_3_7(SkillTalent):
             to add one usage if is equipped.
     """
 
-    name: Literal["The Seed of Stored Knowledge"] = "The Seed of Stored Knowledge"
+    name: Literal["The Seed of Stored Knowledge"]
     character_name: Literal["Nahida"] = "Nahida"
     version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(

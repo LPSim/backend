@@ -251,9 +251,7 @@ class AzhdahaOtherElementalSkill(ElementalSkillBase):
         ]
         status = character.status
         for s in status:
-            if (
-                s.name == "Stone Facets: Elemental Absorption"
-            ):  # pragma: no branch  # noqa: E501
+            if s.name == "Stone Facets: Elemental Absorption":  # pragma: no branch
                 # find the status, check whether it has absorbed right element
                 return (
                     s.current_damage_element  # type: ignore
@@ -380,9 +378,7 @@ class Azhdaha_4_3(CharacterBase):
         )
         target: StoneFacetsElementalAbsorption_4_3 | None = None
         for s in status:  # pragma: no branch
-            if (
-                s.name == "Stone Facets: Elemental Absorption"
-            ):  # pragma: no branch  # noqa: E501
+            if s.name == "Stone Facets: Elemental Absorption":  # pragma: no branch
                 target = s  # type: ignore
                 break
         assert target is not None

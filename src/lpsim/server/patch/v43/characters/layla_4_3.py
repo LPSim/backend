@@ -183,7 +183,7 @@ class DreamOfTheStarStreamShaker(ElementalBurstBase):
 
 
 class LightsRemit_4_3(SkillTalent):
-    name: Literal["Light's Remit"] = "Light's Remit"
+    name: Literal["Light's Remit"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal["Layla"] = "Layla"
     skill: Literal["Nights of Formal Focus"] = "Nights of Formal Focus"

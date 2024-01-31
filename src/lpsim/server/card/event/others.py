@@ -757,7 +757,7 @@ class RhythmOfTheGreatDream_3_8(EventCardBase):
 
 
 class WhereIstheUnseenRazor_4_0(EventCardBase):
-    name: Literal["Where Is the Unseen Razor?"] = "Where Is the Unseen Razor?"
+    name: Literal["Where Is the Unseen Razor?"]
     version: Literal["4.0"] = "4.0"
     cost: Cost = Cost()
 
@@ -835,7 +835,7 @@ class Pankration_4_1(EventCardBase):
 
 
 class Lyresong_4_2(EventCardBase):
-    name: Literal["Lyresong"] = "Lyresong"
+    name: Literal["Lyresong"]
     version: Literal["4.2"] = "4.2"
     cost: Cost = Cost()
 

@@ -163,7 +163,7 @@ class MagicTrickAstonishingShift(ElementalBurstBase):
 
 
 class AColdBladeLikeAShadow_4_3(SkillTalent):
-    name: Literal["A Cold Blade Like a Shadow"] = "A Cold Blade Like a Shadow"
+    name: Literal["A Cold Blade Like a Shadow"]
     version: Literal["4.3"] = "4.3"
     character_name: Literal["Lynette"] = "Lynette"
     cost: Cost = Cost(
