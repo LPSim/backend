@@ -103,6 +103,10 @@ def check_cls_valid_and_update_cost(cls: Type[Any], obj_type: ObjectType):
 class InstanceFactory:
     instance_register = {}
 
+    def __init__(self):
+        self._instance_list = []
+        self._instance_list_sorted = False
+
     def register_instance(self, cls: Type[Any]):
         """
         Register one class. If the class is registered, print a warning. If same
@@ -126,6 +130,8 @@ class InstanceFactory:
                         "same version and name"
                     )
             self.instance_register[key] = cls
+            self._instance_list.append(key)
+            self._instance_list_sorted = False
 
     def get_instance(self, base_class: Type[Any], args: Dict):
         cls_type_hints = get_type_hints(base_class)
@@ -135,8 +141,10 @@ class InstanceFactory:
         keys = []
         for obj_type in obj_types:
             keys.append("%s+%s+%s" % (obj_type, name, version))
-        instance_list = [x for x in self.instance_register.keys()]
-        instance_list.sort()
+        if not self._instance_list_sorted:
+            self._instance_list.sort()
+            self._instance_list_sorted = True
+        instance_list = self._instance_list
         for key in keys:
             cls_key_idx = bisect.bisect_right(instance_list, key)
             if cls_key_idx == len(instance_list):
