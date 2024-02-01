@@ -41,8 +41,8 @@ def register_class(classes: Type[Any], descs: Dict[str, DescDictType] | None = N
     if descs is not None:
         update_desc(descs)
     if _is_union_type(classes):
-        for type in classes.__args__:  # type: ignore
-            instance_factory.register_instance(type)
+        for class_type in classes.__args__:  # type: ignore
+            instance_factory.register_instance(class_type)
     else:
         instance_factory.register_instance(classes)
 
