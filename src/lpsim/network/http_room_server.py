@@ -18,10 +18,16 @@ from .. import __version_tuple__, __version__  # type: ignore
 
 
 class OneRoomWorker(Process):
-    def __init__(self, cmd_queue, resp_queue, post_queue):
+    def __init__(self, cmd_queue: Queue, resp_queue: Queue, post_queue: Queue):
         """
-        run_queue is used to send arguments and messages about running server,
-        post_queue is used to send timestamps that a post request is received.
+        Initializes the OneRoomWorker class.
+
+        Args:
+            cmd_queue (Queue): The queue used to send arguments and messages about
+                running the server.
+            resp_queue (Queue): The queue used to send responses.
+            post_queue (Queue): The queue used to send timestamps when a POST request
+                is received.
         """
         super().__init__()
         self.cmd_queue = cmd_queue
@@ -30,10 +36,13 @@ class OneRoomWorker(Process):
 
     def run(self):
         """
-        When receive init_args, run_args and room_port_range from queue,
-        create a HTTP server and run it with given args until receives SIGINT,
-        then send message to queue and waiting for next args. If receive None,
-        exit.
+        Receives init_args, run_args and room_port_range from `self.cmd_queue`,
+        creates an `HTTPServer` and runs it with the given args until a SIGINT is
+        received, then sends a message to the queue and waits for the next args. If
+        None is received, it exits.
+
+        Raises:
+            Exception: Describes any exceptions that might be thrown.
         """
         while True:
             try:
@@ -174,6 +183,14 @@ class HTTPRoomServer:
             """
             Create a new room with given name. If room is already created,
             return its port.
+
+            Args:
+                room_name (str): The name of the room.
+
+            Returns:
+                JSONResponse: The response containing the port (if success) and status
+                of the room. When status is exist or created, the corresponding port
+                will be returned. Otherwise, only status will be returned.
             """
             if room_name in self.room_names:
                 idx = self.room_names.index(room_name)
@@ -215,6 +232,14 @@ class HTTPRoomServer:
             """
             Delete a room with given name. If room is not created, return
             error.
+
+            Args:
+                room_name (str): The name of the room.
+                password (str): The password for the admin.
+
+            Returns:
+                JSONResponse: The response containing the action status (not exist or
+                deleted).
             """
             if password != self.admin_password:
                 return JSONResponse(status_code=403, content="wrong password")
@@ -229,6 +254,12 @@ class HTTPRoomServer:
         def get_rooms(password: str = ""):
             """
             Get all rooms' name and port.
+
+            Args:
+                password (str): The password for the admin.
+
+            Returns:
+                JSONResponse: The response containing the rooms' name, port and timeout.
             """
             if password != self.admin_password:
                 return JSONResponse(status_code=403, content="wrong password")
@@ -252,6 +283,12 @@ class HTTPRoomServer:
         def get_decks(password: str = ""):
             """
             Get all decks used in rooms.
+
+            Args:
+                - password (str): The password for the admin.
+
+            Returns:
+                - JSONResponse: The response containing the decks used in rooms.
             """
             if password != self.admin_password:
                 return JSONResponse(status_code=403, content="wrong password")
@@ -277,7 +314,8 @@ class HTTPRoomServer:
     def run(self, *argv, **kwargs):
         """
         Create room workers, start them and run room server.
-        When server stopped, stop all workers and check interval.
+        When HTTPRoomServer stopped, stop all workers and stop check interval.
+        All args will be passed to uvicorn.run, except port, which is not allowed.
         """
         if len(argv):
             raise ValueError("positional arguments not supported")
@@ -378,3 +416,6 @@ class HTTPRoomServer:
             self._stop_interval_success = True
             return
         threading.Timer(self._check_time_interval, self._check_interval_func).start()
+
+
+__all__ = ["HTTPRoomServer"]
