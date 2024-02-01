@@ -166,12 +166,14 @@ a.run()
 
 ## 贡献
 
-欢迎合作开发项目代码，但是目前没有详细的贡献指南。如果你想添加新的角色相关的对象（角色、技能、天赋、召唤、状态），请参考`server/character/template.py`和已经实现的角色。如果你想添加新的卡牌，请参考`server/card`中已经实现的卡牌。
+欢迎合作开发项目代码，但是目前没有详细的文档。在贡献代码前，您可以首先阅读[CONTRIBUTING.md](CONTRIBUTING.md)(英文)，它包含了如何安装开发环境和如何运行测试的信息。
+
+如果你想添加新的角色相关的对象（角色、技能、天赋、召唤、状态），请参考`server/character/template.py`和已经实现的角色。如果你想添加新的卡牌，请参考`server/card`中已经实现的卡牌。完成代码编写后使用`register_class`函数注册新的对象到模拟器中即可使用。
 
 你可以通过QQ群945778865联系作者，咨询开发和使用上的问题，进群问题的答案是模拟器的中文名。
 
 开发这个项目花费了大量(本来用来打牌和打模拟宇宙的)时间。如果你觉得这个项目有帮助，您可以通过微信支持作者。
 
 <p align="center">
-    <img src="docs/wechat.png" alt="wechat" width="150">
+    <img src="docs/images/wechat.png" alt="wechat" width="150">
 </p>
