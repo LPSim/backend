@@ -1,3 +1,4 @@
+import bisect
 import logging
 from typing import Any, Dict, Type, get_args, get_type_hints
 
@@ -137,22 +138,19 @@ class InstanceFactory:
         instance_list = [x for x in self.instance_register.keys()]
         instance_list.sort()
         for key in keys:
-            for i in range(len(instance_list) - 1):
-                if key < instance_list[i + 1]:
-                    if self._is_same_instance(key, instance_list[i]):
-                        """
-                        Type and name same and version is lower than the next, should
-                        be current object.
-                        """
-                        cls = self.instance_register[instance_list[i]]
-                        exact_version = instance_list[i].split("+")[2]
-                        args["version"] = exact_version
-                        return cls(**args)
-                    else:
-                        break
-            if self._is_same_instance(key, instance_list[-1]):
-                cls = self.instance_register[instance_list[-1]]
+            cls_key_idx = bisect.bisect_right(instance_list, key)
+            if cls_key_idx == len(instance_list):
+                cls_key_idx -= 1
+            if instance_list[cls_key_idx] > key:
+                cls_key_idx -= 1
+            cls_key = instance_list[cls_key_idx]
+            if self._is_same_instance(key, cls_key):
+                cls = self.instance_register[cls_key]
+                exact_version = cls_key.split("+")[2]
+                args["version"] = exact_version
                 return cls(**args)
+            else:
+                continue
 
         raise KeyError("Instance %s+%s not found in instance factory" % (name, version))
 
