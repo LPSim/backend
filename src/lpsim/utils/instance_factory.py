@@ -1,3 +1,4 @@
+import bisect
 import logging
 from typing import Any, Dict, Type, get_args, get_type_hints
 
@@ -102,6 +103,10 @@ def check_cls_valid_and_update_cost(cls: Type[Any], obj_type: ObjectType):
 class InstanceFactory:
     instance_register = {}
 
+    def __init__(self):
+        self._instance_list = []
+        self._instance_list_sorted = False
+
     def register_instance(self, cls: Type[Any]):
         """
         Register one class. If the class is registered, print a warning. If same
@@ -125,6 +130,8 @@ class InstanceFactory:
                         "same version and name"
                     )
             self.instance_register[key] = cls
+            self._instance_list.append(key)
+            self._instance_list_sorted = False
 
     def get_instance(self, base_class: Type[Any], args: Dict):
         cls_type_hints = get_type_hints(base_class)
@@ -134,25 +141,24 @@ class InstanceFactory:
         keys = []
         for obj_type in obj_types:
             keys.append("%s+%s+%s" % (obj_type, name, version))
-        instance_list = [x for x in self.instance_register.keys()]
-        instance_list.sort()
+        if not self._instance_list_sorted:
+            self._instance_list.sort()
+            self._instance_list_sorted = True
+        instance_list = self._instance_list
         for key in keys:
-            for i in range(len(instance_list) - 1):
-                if key < instance_list[i + 1]:
-                    if self._is_same_instance(key, instance_list[i]):
-                        """
-                        Type and name same and version is lower than the next, should
-                        be current object.
-                        """
-                        cls = self.instance_register[instance_list[i]]
-                        exact_version = instance_list[i].split("+")[2]
-                        args["version"] = exact_version
-                        return cls(**args)
-                    else:
-                        break
-            if self._is_same_instance(key, instance_list[-1]):
-                cls = self.instance_register[instance_list[-1]]
+            cls_key_idx = bisect.bisect_right(instance_list, key)
+            if cls_key_idx == len(instance_list):
+                cls_key_idx -= 1
+            if instance_list[cls_key_idx] > key:
+                cls_key_idx -= 1
+            cls_key = instance_list[cls_key_idx]
+            if self._is_same_instance(key, cls_key):
+                cls = self.instance_register[cls_key]
+                exact_version = cls_key.split("+")[2]
+                args["version"] = exact_version
                 return cls(**args)
+            else:
+                continue
 
         raise KeyError("Instance %s+%s not found in instance factory" % (name, version))
 
