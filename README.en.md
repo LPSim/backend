@@ -4,6 +4,7 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/LPSim/backend/badge.svg?branch=master)](https://coveralls.io/github/LPSim/backend?branch=master)
 [![PyPI version](https://img.shields.io/pypi/v/lpsim.svg?color=blue)](https://pypi.org/project/lpsim/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 Backend of Lochfolk Prinzessin Simulator, which simulates Genius Invokation 
 TCG, written with Python 3.10 using Pydantic and FastAPI. This project has
@@ -239,17 +240,23 @@ should be passed without modification.
 
 ## Contribution
 
-Contributions are welcomed, however, currently there is no detailed guide for
-contribution. To add new character related objects (Character, Skill, Talent,
+Contributions are welcomed, however, currently there is no detailed documentation. 
+Before contributing, you can read [CONTRIBUTING.md](CONTRIBUTING.md),
+which contains information on how to install the development environment and
+how to run tests.
+
+To add new character related objects (Character, Skill, Talent,
 Summon, Status), please refer to `templates/character.py` and implemented
 characters.
 To add a new card, please refer to existing card implementations in 
 `server/card`.
+After coding, use `register_class` function to register new objects to the
+simulator, and you can use them in the match.
 
 Developing this project takes the author a lot of time (which should be used to 
 play GITCG and Simulated Universe). If you think this project is helpful, you
 can support the author by WeChat.
 
 <p align="center">
-    <img src="docs/wechat.png" alt="wechat" width="150">
+    <img src="docs/images/wechat.png" alt="wechat" width="150">
 </p>

@@ -1,18 +1,21 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.deck import Deck
-from src.lpsim.server.match import Match, MatchState
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.deck import Deck
+from lpsim.server.match import Match, MatchState
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
 def test_wind_and_freedom():
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = [
+        player_idx=0,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "sw_char 1 0",
@@ -27,14 +30,14 @@ def test_wind_and_freedom():
             "skill 1 0 1 2",
             "TEST 2 number -3",
             "sw_char 3 0",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 0 0 0",
@@ -50,13 +53,13 @@ def test_wind_and_freedom():
             "TEST 3 number changed",
             "choose 1",
             "choose 3",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         # character:Fischl
         # character:Mona
@@ -71,7 +74,7 @@ def test_wind_and_freedom():
         # The Bestest Travel Companion!*2
         # Strategize*2
         Wind and Freedom*30
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 2
@@ -98,9 +101,8 @@ def test_wind_and_freedom():
                 elif test_id == 11:
                     cmd_record_1 = len(agent_1.commands)
                 elif test_id == 2:
-                    assert (
-                        cmd_record_1 + int(cmd.strip().split()[-1])
-                        == len(agent_1.commands)
+                    assert cmd_record_1 + int(cmd.strip().split()[-1]) == len(
+                        agent_1.commands
                     )
                 else:
                     break
@@ -116,9 +118,8 @@ def test_wind_and_freedom():
                     cmd_record_0 = len(agent_0.commands)
                 elif test_id == 2:
                     assert len(match.player_tables[1].team_status) == 0
-                    assert (
-                        cmd_record_0 + int(cmd.strip().split()[-1])
-                        == len(agent_0.commands)
+                    assert cmd_record_0 + int(cmd.strip().split()[-1]) == len(
+                        agent_0.commands
                     )
                 elif test_id == 3:
                     assert cmd_record_0 != len(agent_0.commands) + 1
@@ -126,7 +127,7 @@ def test_wind_and_freedom():
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -134,11 +135,11 @@ def test_wind_and_freedom():
 
 
 def test_wind_and_freedom_one_round():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 0 0 0",
@@ -146,13 +147,13 @@ def test_wind_and_freedom_one_round():
             "TEST 1 one team status",
             "end",
             "TEST 2 no status",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         # character:Fischl
         # character:Mona
@@ -167,7 +168,7 @@ def test_wind_and_freedom_one_round():
         # The Bestest Travel Companion!*2
         # Strategize*2
         Wind and Freedom*30
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 2
@@ -196,7 +197,7 @@ def test_wind_and_freedom_one_round():
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -230,7 +231,7 @@ def test_stone_thunder_nature():
             "reroll",
             "TEST 2 p0 11 dice",
             "TEST 2 p1 8 dice",
-            "end"
+            "end",
         ],
         [
             "sw_card 0 2 3 4",
@@ -248,27 +249,21 @@ def test_stone_thunder_nature():
             "TEST 4 p1 no team status",
             "sw_char 1 10",
             "end",
-            "reroll"
-        ]
+            "reroll",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Ganyu
         character:Fischl
@@ -277,7 +272,7 @@ def test_stone_thunder_nature():
         Thunder and Eternity*7
         Thunder and Eternity@3.7*7
         Nature and Wisdom*7
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -295,7 +290,7 @@ def test_stone_thunder_nature():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -324,7 +319,7 @@ def test_stone_thunder_nature():
             elif test_id == 4:
                 assert len(match.player_tables[1].team_status) == 0
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -361,7 +356,7 @@ def test_fatui_monster():
             "skill 0 15 14 13",
             "sw_char 1 12",
             "skill 0 11 10 9",
-            "skill 0 8 7 6"
+            "skill 0 8 7 6",
         ],
         [
             "sw_card",
@@ -393,27 +388,21 @@ def test_fatui_monster():
             "TEST 1 2 6 7 3 4 0",
             "TEST 3 p0c2 status 1",
             "TEST 2 card 1 cannot use",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Mona
         character:Nahida
@@ -421,7 +410,7 @@ def test_fatui_monster():
         Fatui Conspiracy*10
         Abyssal Summons*10
         Guardian's Oath*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -441,7 +430,7 @@ def test_fatui_monster():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -451,7 +440,7 @@ def test_fatui_monster():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -459,7 +448,7 @@ def test_fatui_monster():
                 cmd = cmd.split()
                 card_num = int(cmd[3])
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert req.card_idx != card_num
             elif test_id == 3:
                 cmd = cmd.split()
@@ -482,7 +471,7 @@ def test_fatui_monster():
                 for s, u in zip(status, usages):
                     assert s.usage == u
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -492,7 +481,7 @@ def test_fatui_monster():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_wind_and_freedom()
     test_stone_thunder_nature()
     test_fatui_monster()

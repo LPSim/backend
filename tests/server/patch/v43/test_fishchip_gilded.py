@@ -1,8 +1,10 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -29,7 +31,7 @@ def test_fishchip_gilded():
             "card 4 1",
             "card 4 0",
             "skill 1 11 10 9",
-            "end"
+            "end",
         ],
         [
             "sw_card 2",
@@ -53,26 +55,20 @@ def test_fishchip_gilded():
             "TEST 3 p1 omni*12 dendro*1",
             "end",
             "TEST 2 p0 hand 9",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
-    deck_str_1 = '''
+    deck_str_1 = """
         default_version:4.3
         character:Fischl
         character:Mona
@@ -80,8 +76,8 @@ def test_fishchip_gilded():
         Fish and Chips*10
         Sweet Madame*10
         Gilded Dreams*10
-    '''
-    deck_str_2 = '''
+    """
+    deck_str_2 = """
         default_version:4.3
         character:Barbara
         character:Mona
@@ -89,7 +85,7 @@ def test_fishchip_gilded():
         Fish and Chips*10
         Sweet Madame*10
         Gilded Dreams*10
-    '''
+    """
     match.set_deck([Deck.from_str(deck_str_1), Deck.from_str(deck_str_2)])
     match.config.max_same_card_number = None
     match.config.character_number = None
@@ -108,18 +104,17 @@ def test_fishchip_gilded():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 1:
                 pidx = int(cmd[2][1])
-                assert len(match.player_tables[
-                    pidx].dice.colors) == int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == int(cmd[4])
             elif test_id == 2:
                 pidx = int(cmd[2][1])
                 assert len(match.player_tables[pidx].hands) == int(cmd[4])
@@ -127,7 +122,7 @@ def test_fishchip_gilded():
                 pidx = int(cmd[2][1])
                 colors = {}
                 for c in cmd[3:]:
-                    c, n = c.strip().split('*')
+                    c, n = c.strip().split("*")
                     colors[c] = int(n)
                 for c in match.player_tables[pidx].dice.colors:
                     c = c.value.lower()
@@ -136,7 +131,7 @@ def test_fishchip_gilded():
                     if colors[c] == 0:
                         del colors[c]
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -146,5 +141,5 @@ def test_fishchip_gilded():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_fishchip_gilded()

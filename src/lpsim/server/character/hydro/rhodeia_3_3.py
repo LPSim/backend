@@ -6,18 +6,26 @@ from ...summon.base import DefendSummonBase, AttackerSummonBase
 
 from ...event import SkillEndEventArguments
 
-from ...action import (
-    Actions, ChangeObjectUsageAction, ChargeAction, CreateObjectAction
-)
+from ...action import Actions, ChangeObjectUsageAction, ChargeAction, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, DieColor, ElementType, 
-    FactionType, ObjectPositionType, SkillType, WeaponType
+    ELEMENT_TO_DAMAGE_TYPE,
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    SkillType,
+    WeaponType,
 )
 from ..character_base import (
-    ElementalBurstBase, ElementalNormalAttackBase, ElementalSkillBase, 
-    CharacterBase, SkillBase, SkillTalent
+    ElementalBurstBase,
+    ElementalNormalAttackBase,
+    ElementalSkillBase,
+    CharacterBase,
+    SkillBase,
+    SkillTalent,
 )
 
 
@@ -25,8 +33,8 @@ from ..character_base import (
 
 
 class Squirrel_3_3(AttackerSummonBase):
-    name: Literal['Oceanic Mimic: Squirrel'] = 'Oceanic Mimic: Squirrel'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Oceanic Mimic: Squirrel"] = "Oceanic Mimic: Squirrel"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -34,8 +42,8 @@ class Squirrel_3_3(AttackerSummonBase):
 
 
 class Raptor_3_3(AttackerSummonBase):
-    name: Literal['Oceanic Mimic: Raptor'] = 'Oceanic Mimic: Raptor'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Oceanic Mimic: Raptor"] = "Oceanic Mimic: Raptor"
+    version: Literal["3.3"] = "3.3"
     usage: int = 3
     max_usage: int = 3
     damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -43,8 +51,8 @@ class Raptor_3_3(AttackerSummonBase):
 
 
 class Frog_3_3(DefendSummonBase):
-    name: Literal['Oceanic Mimic: Frog'] = 'Oceanic Mimic: Frog'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Oceanic Mimic: Frog"] = "Oceanic Mimic: Frog"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     damage_elemental_type: DamageElementalType = DamageElementalType.HYDRO
@@ -58,36 +66,30 @@ class Frog_3_3(DefendSummonBase):
 
 
 mimic_names = [
-    'Oceanic Mimic: Squirrel',
-    'Oceanic Mimic: Frog',
-    'Oceanic Mimic: Raptor'
+    "Oceanic Mimic: Squirrel",
+    "Oceanic Mimic: Frog",
+    "Oceanic Mimic: Raptor",
 ]
 
 
 class RhodeiaElementSkill(ElementalSkillBase):
-    name: Literal['Oceanid Mimic Summoning',
-                  'The Myriad Wilds']
+    name: Literal["Oceanid Mimic Summoning", "The Myriad Wilds"]
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.HYDRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
     summon_number: int = 1
-    version: Literal['3.3'] = '3.3'
+    version: Literal["3.3"] = "3.3"
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
-        if self.name == 'Oceanid Mimic Summoning':
+        if self.name == "Oceanid Mimic Summoning":
             pass
         else:
-            assert self.name == 'The Myriad Wilds'
+            assert self.name == "The Myriad Wilds"
             self.summon_number = 2
             self.cost.elemental_dice_number = 5
 
-    def get_next_summon_names(
-        self, match: Any, occupied: List[int]
-    ) -> int:
+    def get_next_summon_names(self, match: Any, occupied: List[int]) -> int:
         """
         Get next summon names randomly, but fit the rule that try to avoid
         summoning the same type.
@@ -109,20 +111,19 @@ class RhodeiaElementSkill(ElementalSkillBase):
             the key in information is `rhodeia`, name can be one of three
             summons, and can use short names (i.e. frog, raptor, squirrel).
             """
-            sname = match.config.random_object_information['rhodeia'].pop(0)
+            sname = match.config.random_object_information["rhodeia"].pop(0)
             s_idx = -1
             for idx, name in enumerate(mimic_names):
                 if sname.lower() in name.lower():
                     s_idx = idx
                     break
             else:
-                raise AssertionError(f'Unknown summon name {sname}')
+                raise AssertionError(f"Unknown summon name {sname}")
             assert s_idx in select_idx
             return s_idx
         return select_idx[int(match._random() * len(select_idx))]
 
-    def get_actions(
-            self, match: Any) -> List[ChargeAction | CreateObjectAction]:
+    def get_actions(self, match: Any) -> List[ChargeAction | CreateObjectAction]:
         """
         create object
         """
@@ -131,22 +132,18 @@ class RhodeiaElementSkill(ElementalSkillBase):
             name_idxs.append(self.get_next_summon_names(match, name_idxs))
         ret: List[ChargeAction | CreateObjectAction] = []
         for idx in name_idxs:
-            ret.append(self.create_summon(
-                mimic_names[idx], { 'version': self.version }
-            ))
+            ret.append(self.create_summon(mimic_names[idx], {"version": self.version}))
         ret.append(self.charge_self(1))
         return ret
 
 
 class TideAndTorrent(ElementalBurstBase):
-    name: Literal['Tide and Torrent'] = 'Tide and Torrent'
+    name: Literal["Tide and Torrent"] = "Tide and Torrent"
     damage: int = 2
     damage_per_summon: int = 2
     damage_type: DamageElementalType = DamageElementalType.HYDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 3
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=3
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -161,29 +158,28 @@ class TideAndTorrent(ElementalBurstBase):
 
 
 class StreamingSurge_3_3(SkillTalent):
-    name: Literal['Streaming Surge']
-    version: Literal['3.3'] = '3.3'
-    character_name: Literal['Rhodeia of Loch'] = 'Rhodeia of Loch'
+    name: Literal["Streaming Surge"]
+    version: Literal["3.3"] = "3.3"
+    character_name: Literal["Rhodeia of Loch"] = "Rhodeia of Loch"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 4,
-        charge = 3
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=4, charge=3
     )
-    skill: Literal['Tide and Torrent'] = 'Tide and Torrent'
+    skill: Literal["Tide and Torrent"] = "Tide and Torrent"
 
     def event_handler_SKILL_END(
-        self, event: SkillEndEventArguments,
-        match: Any
+        self, event: SkillEndEventArguments, match: Any
     ) -> List[ChangeObjectUsageAction]:
         """
         When equipped and this character use burst, change all summons' usage
         by 1.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, 
-            source_area = ObjectPositionType.CHARACTER,
-            target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            source_area=ObjectPositionType.CHARACTER,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not equipped, or not self use skill, or not skill
             return []
@@ -194,10 +190,9 @@ class StreamingSurge_3_3(SkillTalent):
         summons = match.player_tables[self.position.player_idx].summons
         ret = []
         for summon in summons:
-            ret.append(ChangeObjectUsageAction(
-                object_position = summon.position,
-                change_usage = 1
-            ))
+            ret.append(
+                ChangeObjectUsageAction(object_position=summon.position, change_usage=1)
+            )
         return ret
 
 
@@ -205,38 +200,32 @@ class StreamingSurge_3_3(SkillTalent):
 
 
 class RhodeiaOfLoch_3_3(CharacterBase):
-    name: Literal['Rhodeia of Loch']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Rhodeia of Loch"]
+    version: Literal["3.3"] = "3.3"
     element: ElementType = ElementType.HYDRO
     max_hp: int = 10
     max_charge: int = 3
-    skills: List[
-        ElementalNormalAttackBase
-        | RhodeiaElementSkill | TideAndTorrent
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.MONSTER
-    ]
+    skills: List[ElementalNormalAttackBase | RhodeiaElementSkill | TideAndTorrent] = []
+    faction: List[FactionType] = [FactionType.MONSTER]
     weapon_type: WeaponType = WeaponType.OTHER
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'Surge',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="Surge",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             RhodeiaElementSkill(
-                name = 'Oceanid Mimic Summoning',
+                name="Oceanid Mimic Summoning",
             ),
             RhodeiaElementSkill(
-                name = 'The Myriad Wilds',
+                name="The Myriad Wilds",
             ),
             TideAndTorrent(),
         ]
 
 
 register_class(
-    RhodeiaOfLoch_3_3 | Squirrel_3_3 | Raptor_3_3 | Frog_3_3
-    | StreamingSurge_3_3
+    RhodeiaOfLoch_3_3 | Squirrel_3_3 | Raptor_3_3 | Frog_3_3 | StreamingSurge_3_3
 )

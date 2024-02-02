@@ -1,8 +1,13 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, 
-    get_test_id_from_command, make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -63,7 +68,7 @@ def test_wanderer():
             "skill 0 8 7 6",
             "end",
             "TEST 1 0 4 0 15 17 26",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -126,27 +131,21 @@ def test_wanderer():
             "skill 0 4 3 2",
             "end",
             "skill 0 15 14 13",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Wanderer
         character:Mona
@@ -155,7 +154,7 @@ def test_wanderer():
         # Beneficent*10
         Sweet Madame*10
         Mondstadt Hash Brown*10
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 30
@@ -178,10 +177,10 @@ def test_wanderer():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -199,16 +198,15 @@ def test_wanderer():
             elif test_id == 3:
                 find = 0
                 for req in match.requests:
-                    if req.name == 'SwitchCharacterRequest':
+                    if req.name == "SwitchCharacterRequest":
                         find += 1
                         assert req.cost.total_dice_cost == int(cmd[-1])
                 assert find > 0
             elif test_id == 4:
                 pidx = int(cmd[2][1])
-                assert len(match.player_tables[
-                    pidx].dice.colors) == int(cmd[-1])
+                assert len(match.player_tables[pidx].dice.colors) == int(cmd[-1])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -218,5 +216,5 @@ def test_wanderer():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_wanderer()

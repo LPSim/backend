@@ -10,6 +10,7 @@ class StatusBase(ObjectBase):
     """
     Base class of status.
     """
+
     name: str
     strict_version_validation: bool = False  # default accept higher versions
     version: str
@@ -17,19 +18,19 @@ class StatusBase(ObjectBase):
     usage: int
     max_usage: int
     type: Literal[ObjectType.CHARACTER_STATUS, ObjectType.TEAM_STATUS]
-    renew_type: Literal['ADD', 'RESET', 'RESET_WITH_MAX'] = 'ADD'
+    renew_type: Literal["ADD", "RESET", "RESET_WITH_MAX"] = "ADD"
 
     icon_type: IconType
 
-    @validator('version', pre = True)
+    @validator("version", pre=True)
     def accept_same_or_higher_version(cls, v: str, values):
         return accept_same_or_higher_version(cls, v, values)
 
-    def renew(self, new_status: 'StatusBase') -> None:
+    def renew(self, new_status: "StatusBase") -> None:
         """
-        Renew the status. 
+        Renew the status.
         """
-        assert self.renew_type == 'ADD', 'Other types not tested'
+        assert self.renew_type == "ADD", "Other types not tested"
         if self.max_usage < new_status.max_usage:
             self.max_usage = new_status.max_usage
         if self.max_usage <= self.usage:

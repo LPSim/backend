@@ -13,15 +13,15 @@ from .base import RoundCharacterStatus, ShieldCharacterStatus
 
 
 class LithicSpear_3_3(ShieldCharacterStatus):
-    name: Literal['Lithic Spear'] = 'Lithic Spear'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Lithic Spear"] = "Lithic Spear"
+    version: Literal["3.3"] = "3.3"
     usage: int
     max_usage: int
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def renew(self, object: 'LithicSpear_3_3') -> None:
+    def renew(self, object: "LithicSpear_3_3") -> None:
         self.max_usage = object.max_usage
         self.usage = max(object.usage, self.usage)
         self.usage = min(self.max_usage, self.usage)
@@ -29,21 +29,21 @@ class LithicSpear_3_3(ShieldCharacterStatus):
 
 class KingsSquire_4_0(RoundCharacterStatus):
     name: Literal["King's Squire"] = "King's Squire"
-    version: Literal['4.0'] = '4.0'
+    version: Literal["4.0"] = "4.0"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
         If self use elemental skill, or equip talent, cost -2.
         """
         label = value.cost.label
-        if label & (
-            CostLabels.ELEMENTAL_SKILL.value | CostLabels.TALENT.value
-        ) == 0:  # no label match
+        if (
+            label & (CostLabels.ELEMENTAL_SKILL.value | CostLabels.TALENT.value) == 0
+        ):  # no label match
             return value
         position = value.position
         if position.player_idx != self.position.player_idx:
@@ -57,11 +57,10 @@ class KingsSquire_4_0(RoundCharacterStatus):
                 return value
         else:
             # cost from hand card, is a talent card
-            character = match.player_tables[
-                self.position.player_idx
-            ].characters[self.position.character_idx]
-            for card in match.player_tables[
-                    self.position.player_idx].hands:
+            character = match.player_tables[self.position.player_idx].characters[
+                self.position.character_idx
+            ]
+            for card in match.player_tables[self.position.player_idx].hands:
                 if card.id == value.position.id:
                     if card.character_name != character.name:
                         # talent card not for this character
@@ -74,7 +73,7 @@ class KingsSquire_4_0(RoundCharacterStatus):
         ]
         if True in decrease_result:  # pragma: no branch
             # decrease cost success
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.usage -= 1
         return value
 
@@ -90,8 +89,8 @@ class KingsSquire_4_0(RoundCharacterStatus):
 
 
 class Moonpiercer_4_1(KingsSquire_4_0):
-    name: Literal['Moonpiercer'] = 'Moonpiercer'
-    version: Literal['4.1'] = '4.1'
+    name: Literal["Moonpiercer"] = "Moonpiercer"
+    version: Literal["4.1"] = "4.1"
 
 
 register_class(LithicSpear_3_3 | KingsSquire_4_0 | Moonpiercer_4_1)

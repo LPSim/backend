@@ -5,9 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lpsim"
 dynamic = ["version"]
-authors = [
-    { name="Zyr17", email="jzjqz17@gmail.com" },
-]
+authors = [{ name = "Zyr17", email = "jzjqz17@gmail.com" }]
 description = "Lochfolk Prinzessin Simulator, which simulates Genius Invokation TCG"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,8 +21,11 @@ dependencies = [
     "typing_extensions",
     "dictdiffer",
     "fastapi",
-    "uvicorn[standard]"
+    "uvicorn[standard]",
 ]
+
+[project.optional-dependencies]
+dev = ["setuptools-scm", "pytest", "pytest-cov", "pytest-xdist"]
 
 [project.urls]
 "Homepage" = "https://github.com/LPSim/backend"
@@ -40,3 +41,6 @@ files.extend-exclude = ["/src/lpsim/utils/deck_code_data.json"]
 
 [tool.typos.default.extend-words]
 Invokation = "Invokation"
+
+[tool.ruff]
+exclude = ["templates"]

@@ -10,7 +10,7 @@ from .xingqiu_4_1 import GuhuaStyle, FatalRainscreen
 
 
 class Raincutter(R_3_6):
-    name: Literal['Raincutter'] = 'Raincutter'
+    name: Literal["Raincutter"] = "Raincutter"
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -18,25 +18,22 @@ class Raincutter(R_3_6):
         """
         return [
             self.charge_self(-2),
-            self.attack_opposite_active(match, self.damage, self.damage_type, [
-                self.create_team_status('Rainbow Bladework', {
-                    'version': '3.3'
-                })
-            ]),
-            self.element_application_self(match, DamageElementalType.HYDRO)
+            self.attack_opposite_active(
+                match,
+                self.damage,
+                self.damage_type,
+                [self.create_team_status("Rainbow Bladework", {"version": "3.3"})],
+            ),
+            self.element_application_self(match, DamageElementalType.HYDRO),
         ]
 
 
 class Xingqiu_3_3(X_3_6):
-    version: Literal['3.3']
+    version: Literal["3.3"]
     skills: List[GuhuaStyle | FatalRainscreen | Raincutter] = []
 
     def _init_skills(self) -> None:
-        self.skills = [
-            GuhuaStyle(),
-            FatalRainscreen(),
-            Raincutter()
-        ]
+        self.skills = [GuhuaStyle(), FatalRainscreen(), Raincutter()]
 
 
 register_class(Xingqiu_3_3)

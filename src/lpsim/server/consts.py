@@ -5,14 +5,15 @@ class ElementType(str, Enum):
     """
     Enum representing the type of an element.
     """
-    NONE = 'NONE'
-    CRYO = 'CRYO'
-    HYDRO = 'HYDRO'
-    PYRO = 'PYRO'
-    ELECTRO = 'ELECTRO'
-    GEO = 'GEO'
-    DENDRO = 'DENDRO'
-    ANEMO = 'ANEMO'
+
+    NONE = "NONE"
+    CRYO = "CRYO"
+    HYDRO = "HYDRO"
+    PYRO = "PYRO"
+    ELECTRO = "ELECTRO"
+    GEO = "GEO"
+    DENDRO = "DENDRO"
+    ANEMO = "ANEMO"
 
     def __str__(self):
         return self.value
@@ -48,14 +49,15 @@ class DieColor(str, Enum):
         ANEMO (str): The die color is anemo.
         OMNI (str): The die color is omni.
     """
-    CRYO = 'CRYO'
-    HYDRO = 'HYDRO'
-    PYRO = 'PYRO'
-    ELECTRO = 'ELECTRO'
-    GEO = 'GEO'
-    DENDRO = 'DENDRO'
-    ANEMO = 'ANEMO'
-    OMNI = 'OMNI'
+
+    CRYO = "CRYO"
+    HYDRO = "HYDRO"
+    PYRO = "PYRO"
+    ELECTRO = "ELECTRO"
+    GEO = "GEO"
+    DENDRO = "DENDRO"
+    ANEMO = "ANEMO"
+    OMNI = "OMNI"
 
     def __str__(self):
         return self.value
@@ -88,19 +90,20 @@ class DamageElementalType(str, Enum):
     """
     Enum representing the type of a damage.
     """
+
     # elemental damage
-    CRYO = 'CRYO'
-    HYDRO = 'HYDRO'
-    PYRO = 'PYRO'
-    ELECTRO = 'ELECTRO'
-    GEO = 'GEO'
-    DENDRO = 'DENDRO'
-    ANEMO = 'ANEMO'
+    CRYO = "CRYO"
+    HYDRO = "HYDRO"
+    PYRO = "PYRO"
+    ELECTRO = "ELECTRO"
+    GEO = "GEO"
+    DENDRO = "DENDRO"
+    ANEMO = "ANEMO"
 
     # other damage
-    PHYSICAL = 'PHYSICAL'
-    PIERCING = 'PIERCING'
-    HEAL = 'HEAL'
+    PHYSICAL = "PHYSICAL"
+    PIERCING = "PIERCING"
+    HEAL = "HEAL"
 
     def __str__(self):
         return self.value
@@ -137,9 +140,10 @@ class DamageType(str, Enum):
     """
     Enum representing the type of a damage.
     """
-    DAMAGE = 'DAMAGE'
-    HEAL = 'HEAL'
-    ELEMENT_APPLICATION = 'ELEMENT_APPLICATION'
+
+    DAMAGE = "DAMAGE"
+    HEAL = "HEAL"
+    ELEMENT_APPLICATION = "ELEMENT_APPLICATION"
 
     def __str__(self):
         return self.value
@@ -152,20 +156,21 @@ class ObjectType(str, Enum):
     """
     Enum representing the type of an object.
     """
-    EMPTY = 'EMPTY'
-    CHARACTER = 'CHARACTER'
-    DICE = 'DICE'
-    CARD = 'CARD'
-    SUMMON = 'SUMMON'
-    SUPPORT = 'SUPPORT'
-    SKILL = 'SKILL'
-    WEAPON = 'WEAPON'
-    ARTIFACT = 'ARTIFACT'
-    TALENT = 'TALENT'
-    CHARACTER_STATUS = 'CHARACTER_STATUS'
-    TEAM_STATUS = 'TEAM_STATUS'
-    ARCANE = 'ARCANE'
-    SYSTEM = 'SYSTEM'
+
+    EMPTY = "EMPTY"
+    CHARACTER = "CHARACTER"
+    DICE = "DICE"
+    CARD = "CARD"
+    SUMMON = "SUMMON"
+    SUPPORT = "SUPPORT"
+    SKILL = "SKILL"
+    WEAPON = "WEAPON"
+    ARTIFACT = "ARTIFACT"
+    TALENT = "TALENT"
+    CHARACTER_STATUS = "CHARACTER_STATUS"
+    TEAM_STATUS = "TEAM_STATUS"
+    ARCANE = "ARCANE"
+    SYSTEM = "SYSTEM"
 
     def __str__(self) -> str:
         return self.value
@@ -178,17 +183,18 @@ class ObjectPositionType(str, Enum):
     """
     Enum representing the position of an object.
     """
-    DECK = 'DECK'
-    HAND = 'HAND'
-    SUMMON = 'SUMMON'
-    SUPPORT = 'SUPPORT'
-    DICE = 'DICE'
-    CHARACTER = 'CHARACTER'
-    CHARACTER_STATUS = 'CHARACTER_STATUS'
-    SKILL = 'SKILL'
-    TEAM_STATUS = 'TEAM_STATUS'
-    SYSTEM = 'SYSTEM'
-    INVALID = 'INVALID'
+
+    DECK = "DECK"
+    HAND = "HAND"
+    SUMMON = "SUMMON"
+    SUPPORT = "SUPPORT"
+    DICE = "DICE"
+    CHARACTER = "CHARACTER"
+    CHARACTER_STATUS = "CHARACTER_STATUS"
+    SKILL = "SKILL"
+    TEAM_STATUS = "TEAM_STATUS"
+    SYSTEM = "SYSTEM"
+    INVALID = "INVALID"
 
     def __str__(self) -> str:
         return self.value
@@ -202,22 +208,22 @@ class FactionType(str, Enum):
     Factions of characters.
     """
 
-    MONDSTADT = 'MONDSTADT'
-    LIYUE = 'LIYUE'
-    INAZUMA = 'INAZUMA'
-    SUMERU = 'SUMERU'
-    FONTAINE = 'FONTAINE'
-    NATLAN = 'NATLAN'
-    SNEZHNAYA = 'SNEZHNAYA'
+    MONDSTADT = "MONDSTADT"
+    LIYUE = "LIYUE"
+    INAZUMA = "INAZUMA"
+    SUMERU = "SUMERU"
+    FONTAINE = "FONTAINE"
+    NATLAN = "NATLAN"
+    SNEZHNAYA = "SNEZHNAYA"
 
-    FATUI = 'FATUI'
-    MONSTER = 'MONSTER'
-    HILICHURL = 'HILICHURL'
+    FATUI = "FATUI"
+    MONSTER = "MONSTER"
+    HILICHURL = "HILICHURL"
 
-    ARKHE_PNEUMA = 'ARKHE_PNEUMA'
-    ARKHE_OUSIA = 'ARKHE_OUSIA'
+    ARKHE_PNEUMA = "ARKHE_PNEUMA"
+    ARKHE_OUSIA = "ARKHE_OUSIA"
 
-    THE_EREMITES = 'THE_EREMITES'
+    THE_EREMITES = "THE_EREMITES"
 
     def __str__(self):
         return self.value
@@ -231,12 +237,12 @@ class WeaponType(str, Enum):
     Types of weapons.
     """
 
-    SWORD = 'SWORD'
-    CLAYMORE = 'CLAYMORE'
-    POLEARM = 'POLEARM'
-    CATALYST = 'CATALYST'
-    BOW = 'BOW'
-    OTHER = 'OTHER'
+    SWORD = "SWORD"
+    CLAYMORE = "CLAYMORE"
+    POLEARM = "POLEARM"
+    CATALYST = "CATALYST"
+    BOW = "BOW"
+    OTHER = "OTHER"
 
     def __str__(self):
         return self.value
@@ -250,10 +256,10 @@ class SkillType(str, Enum):
     Types of skills.
     """
 
-    NORMAL_ATTACK = 'NORMAL_ATTACK'
-    ELEMENTAL_SKILL = 'ELEMENTAL_SKILL'
-    ELEMENTAL_BURST = 'ELEMENTAL_BURST'
-    PASSIVE = 'PASSIVE'
+    NORMAL_ATTACK = "NORMAL_ATTACK"
+    ELEMENTAL_SKILL = "ELEMENTAL_SKILL"
+    ELEMENTAL_BURST = "ELEMENTAL_BURST"
+    PASSIVE = "PASSIVE"
 
     def __str__(self):
         return self.value
@@ -267,18 +273,18 @@ class ElementalReactionType(str, Enum):
     Types of elemental reactions.
     """
 
-    NONE = 'NONE'
-    MELT = 'MELT'
-    VAPORIZE = 'VAPORIZE'
-    OVERLOADED = 'OVERLOADED'
-    SUPERCONDUCT = 'SUPERCONDUCT'
-    ELECTROCHARGED = 'ELECTROCHARGED'
-    FROZEN = 'FROZEN'
-    SWIRL = 'SWIRL'
-    CRYSTALLIZE = 'CRYSTALLIZE'
-    BURNING = 'BURNING'
-    BLOOM = 'BLOOM'
-    QUICKEN = 'QUICKEN'
+    NONE = "NONE"
+    MELT = "MELT"
+    VAPORIZE = "VAPORIZE"
+    OVERLOADED = "OVERLOADED"
+    SUPERCONDUCT = "SUPERCONDUCT"
+    ELECTROCHARGED = "ELECTROCHARGED"
+    FROZEN = "FROZEN"
+    SWIRL = "SWIRL"
+    CRYSTALLIZE = "CRYSTALLIZE"
+    BURNING = "BURNING"
+    BLOOM = "BLOOM"
+    QUICKEN = "QUICKEN"
 
     def __str__(self):
         return self.value
@@ -308,8 +314,8 @@ class CostLabels(int, Enum):
     # event is some action cards, and some talents
     EVENT = 0x10000
 
-    SKILLS = 0x1c00
-    SUPPORTS = 0x1c
+    SKILLS = 0x1C00
+    SUPPORTS = 0x1C
 
     def __str__(self):
         return self.name
@@ -325,69 +331,69 @@ class IconType(str, Enum):
     """
 
     # e.g. ???
-    BUFF = 'BUFF'
+    BUFF = "BUFF"
     # e.g. I Haven't lost yet used
-    DEBUFF = 'DEBUFF'
+    DEBUFF = "DEBUFF"
     # e.g. Changing Shifts
-    SPECIAL = 'SPECIAL'
+    SPECIAL = "SPECIAL"
     # e.g. enemy hydro abyss mage
-    DAZE = 'DAZE'
+    DAZE = "DAZE"
     # e.g. enemy dog
-    DOT = 'DOT'
+    DOT = "DOT"
     # Frozen
-    FROZEN = 'FROZEN'
+    FROZEN = "FROZEN"
 
     # e.g. Collei talent
-    ATK_SELF = 'ATK_SELF'
+    ATK_SELF = "ATK_SELF"
     # e.g. Tandoori Chicken
-    ATK_UP = 'ATK_UP'
+    ATK_UP = "ATK_UP"
     # e.g. kazuha talent
-    ATK_UP_FIRE = 'ELEMENT_ATK_UP_FIRE'
-    ATK_UP_ELEC = 'ELEMENT_ATK_UP_ELEC'
-    ATK_UP_ICE = 'ELEMENT_ATK_UP_ICE'
-    ATK_UP_WATER = 'ELEMENT_ATK_UP_WATER'
-    ATK_UP_WIND = 'ELEMENT_ATK_UP_WIND'
-    ATK_UP_ROCK = 'ELEMENT_ATK_UP_ROCK'
-    ATK_UP_GRASS = 'ELEMENT_ATK_UP_GRASS'
+    ATK_UP_FIRE = "ELEMENT_ATK_UP_FIRE"
+    ATK_UP_ELEC = "ELEMENT_ATK_UP_ELEC"
+    ATK_UP_ICE = "ELEMENT_ATK_UP_ICE"
+    ATK_UP_WATER = "ELEMENT_ATK_UP_WATER"
+    ATK_UP_WIND = "ELEMENT_ATK_UP_WIND"
+    ATK_UP_ROCK = "ELEMENT_ATK_UP_ROCK"
+    ATK_UP_GRASS = "ELEMENT_ATK_UP_GRASS"
     # e.g. keqing, ayaka
-    ELEMENT_ENCHANT_FIRE = 'ELEMENT_ENCHANT_FIRE'
-    ELEMENT_ENCHANT_ELEC = 'ELEMENT_ENCHANT_ELEC'
-    ELEMENT_ENCHANT_ICE = 'ELEMENT_ENCHANT_ICE'
-    ELEMENT_ENCHANT_WATER = 'ELEMENT_ENCHANT_WATER'
-    ELEMENT_ENCHANT_WIND = 'ELEMENT_ENCHANT_WIND'
-    ELEMENT_ENCHANT_ROCK = 'ELEMENT_ENCHANT_ROCK'
-    ELEMENT_ENCHANT_GRASS = 'ELEMENT_ENCHANT_GRASS'
+    ELEMENT_ENCHANT_FIRE = "ELEMENT_ENCHANT_FIRE"
+    ELEMENT_ENCHANT_ELEC = "ELEMENT_ENCHANT_ELEC"
+    ELEMENT_ENCHANT_ICE = "ELEMENT_ENCHANT_ICE"
+    ELEMENT_ENCHANT_WATER = "ELEMENT_ENCHANT_WATER"
+    ELEMENT_ENCHANT_WIND = "ELEMENT_ENCHANT_WIND"
+    ELEMENT_ENCHANT_ROCK = "ELEMENT_ENCHANT_ROCK"
+    ELEMENT_ENCHANT_GRASS = "ELEMENT_ENCHANT_GRASS"
     # debuffs
-    DEBUFF_ELEMENT_FIRE = 'DEBUFF_ELEMENT_FIRE'
-    DEBUFF_ELEMENT_ELEC = 'DEBUFF_ELEMENT_ELEC'
-    DEBUFF_ELEMENT_ICE = 'DEBUFF_ELEMENT_ICE'
-    DEBUFF_ELEMENT_WATER = 'DEBUFF_ELEMENT_WATER'
-    DEBUFF_ELEMENT_WIND = 'DEBUFF_ELEMENT_WIND'
-    DEBUFF_ELEMENT_ROCK = 'DEBUFF_ELEMENT_ROCK'
-    DEBUFF_ELEMENT_GRASS = 'DEBUFF_ELEMENT_GRASS'
-    DEBUFF_ELEMENT_PHYSICS = 'DEBUFF_ELEMENT_PHYSICS'
+    DEBUFF_ELEMENT_FIRE = "DEBUFF_ELEMENT_FIRE"
+    DEBUFF_ELEMENT_ELEC = "DEBUFF_ELEMENT_ELEC"
+    DEBUFF_ELEMENT_ICE = "DEBUFF_ELEMENT_ICE"
+    DEBUFF_ELEMENT_WATER = "DEBUFF_ELEMENT_WATER"
+    DEBUFF_ELEMENT_WIND = "DEBUFF_ELEMENT_WIND"
+    DEBUFF_ELEMENT_ROCK = "DEBUFF_ELEMENT_ROCK"
+    DEBUFF_ELEMENT_GRASS = "DEBUFF_ELEMENT_GRASS"
+    DEBUFF_ELEMENT_PHYSICS = "DEBUFF_ELEMENT_PHYSICS"
     # e.g. Lotus Flower Crisp, Ushi
-    BARRIER = 'BARRIER'
+    BARRIER = "BARRIER"
     # e.g. Crystallize, Unmovable Mountain
-    SHIELD = 'SHIELD'
+    SHIELD = "SHIELD"
     # e.g. pizza
-    HEAL = 'HEAL'
+    HEAL = "HEAL"
     # e.g. Electro Hypostasis
-    REVIVE = 'REVIVE'
+    REVIVE = "REVIVE"
 
     # food card used for character, or egg used for team.
-    FOOD = 'FOOD'
+    FOOD = "FOOD"
 
     # e.g. most of summons
-    TIMESTATE = 'TIMESTATE'
+    TIMESTATE = "TIMESTATE"
     # e.g. Timmie, Liben
-    COUNTER = 'COUNTER'
+    COUNTER = "COUNTER"
 
     # e.g. Jade Chamber, Traveler's Handy Sword
-    NONE = 'NONE'
+    NONE = "NONE"
 
     # with others, the status has its special icon based on its name
-    OTHERS = 'OTHERS'
+    OTHERS = "OTHERS"
 
 
 ELEMENT_TO_ATK_UP_ICON = {

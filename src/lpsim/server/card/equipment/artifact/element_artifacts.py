@@ -5,9 +5,7 @@ from .....utils.class_registry import register_class
 from .base import RoundEffectArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue, InitialDiceColorValue
-from ....consts import (
-    ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, CostLabels
-)
+from ....consts import ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, CostLabels
 
 
 class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
@@ -27,7 +25,7 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
 
     version: Literal["4.0"] = "4.0"
     usage: int = 1
-    cost: Cost = Cost(any_dice_number = 2)
+    cost: Cost = Cost(any_dice_number=2)
     element: ElementType = ElementType.NONE
     max_usage_per_round: int = 1
 
@@ -46,36 +44,41 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
         elif self.name == "Wine-Stained Tricorne":
             self.element = ElementType.HYDRO
         else:
-            assert self.name == "Witch's Scorching Hat", 'Unknown name'
+            assert self.name == "Witch's Scorching Hat", "Unknown name"
             self.element = ElementType.PYRO
 
     def value_modifier_COST(
-        self, 
-        value: CostValue, 
+        self,
+        value: CostValue,
         match: Any,
-        mode: Literal['TEST', 'REAL'],
+        mode: Literal["TEST", "REAL"],
     ) -> CostValue:
         """
         When character equipped with this artifact and used skill, decrease
         the elemental cost by 1. If element not match, decrease any dice cost
         by 1.
         """
-        if self.usage > 0:  
+        if self.usage > 0:
             # has usage
             if not self.position.check_position_valid(
-                value.position, match,
-                player_idx_same = True, 
-                source_area = ObjectPositionType.CHARACTER,
+                value.position,
+                match,
+                player_idx_same=True,
+                source_area=ObjectPositionType.CHARACTER,
             ):
                 # not from self position or not equipped
                 return value
             label = value.cost.label
-            if label & (
-                CostLabels.NORMAL_ATTACK.value
-                | CostLabels.ELEMENTAL_SKILL.value
-                | CostLabels.ELEMENTAL_BURST.value
-                | CostLabels.TALENT.value
-            ) == 0:  # no label match
+            if (
+                label
+                & (
+                    CostLabels.NORMAL_ATTACK.value
+                    | CostLabels.ELEMENTAL_SKILL.value
+                    | CostLabels.ELEMENTAL_BURST.value
+                    | CostLabels.TALENT.value
+                )
+                == 0
+            ):  # no label match
                 return value
             position = value.position
             assert self.position.character_idx != -1
@@ -90,8 +93,7 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
                 equipped_character = match.player_tables[
                     self.position.player_idx
                 ].characters[self.position.character_idx]
-                for card in match.player_tables[
-                        self.position.player_idx].hands:
+                for card in match.player_tables[self.position.player_idx].hands:
                     if card.id == value.position.id:
                         if card.character_name != equipped_character.name:
                             # talent card not for this character
@@ -99,7 +101,7 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
             # can decrease cost
             if value.cost.decrease_cost(ELEMENT_TO_DIE_COLOR[self.element]):
                 # decrease cost success
-                if mode == 'REAL':
+                if mode == "REAL":
                     self.usage -= 1
         return value
 
@@ -120,7 +122,7 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
     ]
     version: Literal["4.0"] = "4.0"
     usage: int = 1
-    cost: Cost = Cost(same_dice_number = 2)
+    cost: Cost = Cost(same_dice_number=2)
     element: ElementType = ElementType.NONE
     max_usage_per_round: int = 1
 
@@ -139,13 +141,12 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
         elif self.name == "Heart of Depth":
             self.element = ElementType.HYDRO
         else:
-            assert self.name == "Crimson Witch of Flames", 'Unknown name'
+            assert self.name == "Crimson Witch of Flames", "Unknown name"
             self.element = ElementType.PYRO
 
     def value_modifier_INITIAL_DICE_COLOR(
-            self, value: InitialDiceColorValue, 
-            match: Any,
-            mode: Literal['REAL', 'TEST']) -> InitialDiceColorValue:
+        self, value: InitialDiceColorValue, match: Any, mode: Literal["REAL", "TEST"]
+    ) -> InitialDiceColorValue:
         """
         If self equipped with this artifact, fix two dice colors to self
         """
@@ -160,22 +161,24 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
 
 
 class SmallElementalArtifact_3_3(SmallElementalArtifact_4_0):
-    version: Literal['3.3']
-    cost: Cost = Cost(same_dice_number = 2)
+    version: Literal["3.3"]
+    cost: Cost = Cost(same_dice_number=2)
 
 
 class BigElementalArtifact_3_6(BigElementalArtifact_4_0):
-    version: Literal['3.6']
-    cost: Cost = Cost(any_dice_number = 3)
+    version: Literal["3.6"]
+    cost: Cost = Cost(any_dice_number=3)
 
 
 class BigElementalArtifact_3_3(BigElementalArtifact_4_0):
-    version: Literal['3.3']
-    cost: Cost = Cost(same_dice_number = 3)
+    version: Literal["3.3"]
+    cost: Cost = Cost(same_dice_number=3)
 
 
 register_class(
-    SmallElementalArtifact_4_0 | BigElementalArtifact_4_0
-    | BigElementalArtifact_3_6 | BigElementalArtifact_3_3
+    SmallElementalArtifact_4_0
+    | BigElementalArtifact_4_0
+    | BigElementalArtifact_3_6
+    | BigElementalArtifact_3_3
     | SmallElementalArtifact_3_3
 )

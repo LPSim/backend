@@ -1,8 +1,13 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, 
-    get_test_id_from_command, make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -39,7 +44,7 @@ def test_cyno():
             "sw_char 1 9",
             "end",
             "TEST 1 10 5 6 1 2 7 10 10 10 10",
-            "skill 1 15 14 13"
+            "skill 1 15 14 13",
         ],
         [
             "sw_card 2 1",
@@ -64,27 +69,21 @@ def test_cyno():
             "end",
             "skill 1 15 14 13",
             "TEST 1 10 5 6 1 2 2 10 10 10 10",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Cyno
         character:Cyno
@@ -93,7 +92,7 @@ def test_cyno():
         character:Noelle
         Featherfall Judgment*15
         Sweet Madame*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -113,7 +112,7 @@ def test_cyno():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -123,7 +122,7 @@ def test_cyno():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:5], hps[5:]]
                 check_hp(match, hps)
@@ -138,7 +137,7 @@ def test_cyno():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -148,5 +147,5 @@ def test_cyno():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_cyno()

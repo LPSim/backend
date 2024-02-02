@@ -1,8 +1,12 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -32,7 +36,7 @@ def test_yaoyao():
             "end",
             "TEST 1 6 8 5 0 8 9",
             "TEST 2 p1 status 1 2",
-            "end"
+            "end",
         ],
         [
             "sw_card 2 3",
@@ -49,27 +53,21 @@ def test_yaoyao():
             "skill 2 15 14 13 12",
             "end",
             "choose 2",
-            "card 5 0 15 14 13"
-        ]
+            "card 5 0 15 14 13",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Yaoyao
         character:Keqing
@@ -77,7 +75,7 @@ def test_yaoyao():
         Beneficent*10
         Sweet Madame*10
         Mondstadt Hash Brown*10
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -97,10 +95,10 @@ def test_yaoyao():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -116,7 +114,7 @@ def test_yaoyao():
                 status = match.player_tables[pidx].team_status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -126,5 +124,5 @@ def test_yaoyao():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_yaoyao()

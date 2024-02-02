@@ -1,9 +1,13 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, check_usage, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -27,7 +31,7 @@ def test_xingqiu():
             "sw_char 0 0",
             "sw_char 1 0",
             "skill 1 0 1 2",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -47,33 +51,27 @@ def test_xingqiu():
             "sw_char 0 0",
             "skill 1 0 1 2",
             "TEST 1 4 8 8 10 1 4",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Xingqiu@3.3
         character:Xingqiu
         character:Yoimiya
         The Scent Remained*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -93,7 +91,7 @@ def test_xingqiu():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -103,7 +101,7 @@ def test_xingqiu():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -111,10 +109,9 @@ def test_xingqiu():
                 assert len(match.player_tables[1].team_status) == 1
                 assert match.player_tables[1].team_status[0].usage == 3
             elif test_id == 3:
-                assert match.player_tables[0].characters[
-                    0].element_application == []
+                assert match.player_tables[0].characters[0].element_application == []
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -134,40 +131,29 @@ def test_xingqiu_4_2():
             "TEST 1 8 10 10 10 6 10",
             "TEST 2 p0 team 2",
             "TEST 2 p1 team 3",
-            "end"
+            "end",
         ],
-        [
-            "sw_card 1 2 3",
-            "choose 1",
-            "skill 1 15 14 13",
-            "card 2 0 12 11 10 9"
-        ]
+        ["sw_card 1 2 3", "choose 1", "skill 1 15 14 13", "card 2 0 12 11 10 9"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Xingqiu
         character:Xingqiu@3.6
         character:Xingqiu@3.3
         The Scent Remained*15
         The Scent Remained@3.3*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -187,7 +173,7 @@ def test_xingqiu_4_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -197,16 +183,16 @@ def test_xingqiu_4_2():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
-                cmd = cmd.strip().split(' ')
+                cmd = cmd.strip().split(" ")
                 pidx = int(cmd[2][1])
                 check_usage(match.player_tables[pidx].team_status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -216,6 +202,6 @@ def test_xingqiu_4_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_xingqiu()
     test_xingqiu_4_2()

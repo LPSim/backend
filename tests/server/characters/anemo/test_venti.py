@@ -1,10 +1,13 @@
-from src.lpsim.server.character.anemo.venti_3_7 import Stormeye_3_7
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.character.anemo.venti_3_7 import Stormeye_3_7
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -83,7 +86,7 @@ def test_venti():
             "sw_char 2",
             "end",
             "sw_char 2",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -123,34 +126,28 @@ def test_venti():
             "end",
             "end",
             "choose 1",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Barbara
         character:Fischl
         Changing Shifts*15
         Embrace of Winds*15
-        '''
+        """
     )
     deck.characters[2].hp = 8
     deck.characters[2].max_hp = 8
@@ -176,7 +173,7 @@ def test_venti():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -186,7 +183,7 @@ def test_venti():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -203,7 +200,7 @@ def test_venti():
                 sid = int(cmd[3])
                 c = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         if req.skill_idx == sid:
                             assert req.cost.total_dice_cost == c
             elif test_id == 4:
@@ -219,7 +216,7 @@ def test_venti():
                 active = int(cmd[4])
                 assert match.player_tables[pidx].active_character_idx == active
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -245,42 +242,29 @@ def test_venti_2():
             "TEST 3 skill 0 cost 1",
             "skill 0 0",
             "TEST 2 p0 team usage 1 1",
-            "end"
-        ],
-        [
-            "sw_card",
-            "choose 0",
-            "sw_char 1 0",
-            "skill 1 0 1 2",
             "end",
-            "end"
-        ]
+        ],
+        ["sw_card", "choose 0", "sw_char 1 0", "skill 1 0 1 2", "end", "end"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Arataki Itto
         character:Venti
         character:Nahida
         Northern Smoked Chicken*15
         Embrace of Winds*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -300,7 +284,7 @@ def test_venti_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -321,11 +305,11 @@ def test_venti_2():
                 sid = int(cmd[3])
                 c = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         if req.skill_idx == sid:
                             assert req.cost.total_dice_cost == c
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -335,5 +319,5 @@ def test_venti_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_venti_2()

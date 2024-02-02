@@ -1,10 +1,13 @@
-from src.lpsim.server.struct import ObjectPosition
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.server.struct import ObjectPosition
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -30,7 +33,7 @@ def test_adeptus_temptation():
             "skill 0 0 1 2",
             "skill 3 0 1 2",
             "TEST 2 1 8 8 6 2 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -49,24 +52,18 @@ def test_adeptus_temptation():
             "end",
             "sw_char 1 0",
             "card 0 1 0 1",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -87,7 +84,7 @@ def test_adeptus_temptation():
         # Calx's Arts*2
         # Adeptus' Temptation*2
         Adeptus' Temptation*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -105,7 +102,7 @@ def test_adeptus_temptation():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -113,7 +110,7 @@ def test_adeptus_temptation():
             if test_id == 1:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                         assert len(req.targets) == 3
                 assert count > 0
@@ -125,9 +122,9 @@ def test_adeptus_temptation():
                 check_hp(match, [[10, 10, 10], [8, 8, 0]])
                 table = match.player_tables[0]
                 assert len(table.characters[0].status) == 1
-                assert table.characters[0].status[0].name == 'Satiated'
+                assert table.characters[0].status[0].name == "Satiated"
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
@@ -137,13 +134,13 @@ def test_adeptus_temptation():
                 assert len(match.player_tables[0].characters[0].status) == 0
                 cards = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert len(req.targets) == 3
                         cards += 1
                 assert cards > 0
             elif test_id == 5:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             else:
                 break
         # respond
@@ -175,7 +172,7 @@ def test_lotus_flower_crisp():
             "skill 1 0 1 2",
             "TEST 2 5 6 10 8 9 7",
             "sw_char 0 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -195,24 +192,18 @@ def test_lotus_flower_crisp():
             "end",
             "TEST 2 4 6 10 7 8 5",
             "TEST 7 p1 no c status",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -234,7 +225,7 @@ def test_lotus_flower_crisp():
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         Lotus Flower Crisp*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -252,7 +243,7 @@ def test_lotus_flower_crisp():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -260,7 +251,7 @@ def test_lotus_flower_crisp():
             if test_id == 1:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                         assert len(req.targets) == 3
                 assert count > 0
@@ -271,11 +262,11 @@ def test_lotus_flower_crisp():
             elif test_id == 3:
                 table = match.player_tables[0]
                 assert len(table.characters[0].status) == 1
-                assert table.characters[0].status[0].name == 'Satiated'
+                assert table.characters[0].status[0].name == "Satiated"
             elif test_id == 4:
                 cards = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
@@ -288,7 +279,7 @@ def test_lotus_flower_crisp():
                 assert len(table.characters[0].status) == 2
             elif test_id == 6:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             elif test_id == 7:
                 table = match.player_tables[1]
                 for character in table.characters:
@@ -336,24 +327,18 @@ def test_lotus_flower_crisp_and_reflection():
             "skill 1 0 1 2",
             "skill 0 0 1 2",
             "TEST 6 5 7 10 8 9 7 and reflection remain usage",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -375,7 +360,7 @@ def test_lotus_flower_crisp_and_reflection():
         # Adeptus' Temptation*2
         # Lotus Flower Crisp*2
         Lotus Flower Crisp*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -393,7 +378,7 @@ def test_lotus_flower_crisp_and_reflection():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -401,7 +386,7 @@ def test_lotus_flower_crisp_and_reflection():
             if test_id == 1:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                         assert len(req.targets) == 3
                 assert count > 0
@@ -412,11 +397,11 @@ def test_lotus_flower_crisp_and_reflection():
             elif test_id == 3:
                 table = match.player_tables[0]
                 assert len(table.characters[0].status) == 1
-                assert table.characters[0].status[0].name == 'Satiated'
+                assert table.characters[0].status[0].name == "Satiated"
             elif test_id == 4:
                 cards = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert len(req.targets) == 2
                         assert isinstance(req.targets[0], ObjectPosition)
                         assert isinstance(req.targets[1], ObjectPosition)
@@ -432,7 +417,7 @@ def test_lotus_flower_crisp_and_reflection():
                 check_hp(match, [[5, 7, 10], [8, 9, 7]])
                 table = match.player_tables[0]
                 assert len(table.summons) == 2
-                assert table.summons[1].name == 'Reflection'
+                assert table.summons[1].name == "Reflection"
                 assert table.summons[1].usage == 1
             else:
                 break
@@ -457,28 +442,17 @@ def test_mond_hash():
             "TEST 3 10 10 10 10 10 10",
             "end",
         ],
-        [
-            "sw_card",
-            "choose 0",
-            "TEST 1 no card can use",
-            "skill 1 0 1 2"
-        ]
+        ["sw_card", "choose 0", "TEST 1 no card can use", "skill 1 0 1 2"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -501,7 +475,7 @@ def test_mond_hash():
         # Lotus Flower Crisp*2
         # Mondstadt Hash Brown*2
         Mondstadt Hash Brown*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -519,18 +493,18 @@ def test_mond_hash():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
             test_id = get_test_id_from_command(agent)
             if test_id == 1:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             elif test_id == 2:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                         assert len(req.targets) == 1
                 assert count > 0
@@ -570,7 +544,7 @@ def test_tandoori():
             "TEST 5 10 8 10 7 10 5",
             "end",
             "TEST 6 p0 only c1 status seed",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -581,24 +555,18 @@ def test_tandoori():
             "sw_char 2 0",
             "skill 1 0 1 2",
             "end",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Mona
@@ -623,7 +591,7 @@ def test_tandoori():
         # Tandoori Roast Chicken
         Tandoori Roast Chicken*15
         Mondstadt Hash Brown*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -641,7 +609,7 @@ def test_tandoori():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -649,14 +617,14 @@ def test_tandoori():
             if test_id == 1:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                         assert len(req.targets) == 0
                 assert count == 2
             elif test_id == 2:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                 assert count == 5
             elif test_id == 3:
@@ -665,7 +633,7 @@ def test_tandoori():
                 assert len(characters[1].status) == 2
                 assert len(characters[2].status) == 1
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             elif test_id == 4:
                 characters = match.player_tables[0].characters
                 assert len(characters[0].status) == 2
@@ -702,7 +670,7 @@ def test_pizza():
             "TEST 3 p1c0 status 2 1",
             "skill 1 0 1 2",
             "end",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -715,33 +683,27 @@ def test_pizza():
             "end",
             "end",
             "TEST 1 10 10 10 9 10 10",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:ElectroMobMage
         character:CryoMobMage
         character:Noelle
         Mushroom Pizza*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -761,7 +723,7 @@ def test_pizza():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -771,13 +733,13 @@ def test_pizza():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             elif test_id == 3:
                 cmd = cmd.split()
                 status = match.player_tables[1].characters[0].status
@@ -788,11 +750,11 @@ def test_pizza():
             elif test_id == 4:
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                 assert count == 5
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -818,7 +780,7 @@ def test_full_and_tandoori():
             "skill 1 0 1 2",
             "TEST 1 10 10 10 7 7 10",
             "end",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -835,34 +797,28 @@ def test_full_and_tandoori():
             "sw_char 0 0",
             "skill 1 0 1 2",
             "TEST 1 9 7 9 8 6 10",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Rhodeia of Loch
         character:Nahida
         Mushroom Pizza*15
         Tandoori Roast Chicken*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -882,7 +838,7 @@ def test_full_and_tandoori():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -892,12 +848,12 @@ def test_full_and_tandoori():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -925,7 +881,7 @@ def test_north_chicken():
             "TEST 3 p0c0 status 1",
             "end",
             "card 0 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -934,33 +890,27 @@ def test_north_chicken():
             "sw_char 1 0",
             "sw_char 0 0",
             "TEST 2 skill 0 cost 3",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Arataki Itto
         character:Mona
         character:Nahida
         Northern Smoked Chicken*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -980,7 +930,7 @@ def test_north_chicken():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -992,7 +942,7 @@ def test_north_chicken():
                 # a sample of HP check based on the command string.
                 count = 0
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         count += 1
                 assert count > 0
             elif test_id == 2:
@@ -1000,13 +950,13 @@ def test_north_chicken():
                 sidx = int(cmd[3])
                 c = int(cmd[5])
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         if req.skill_idx == sidx:
                             assert req.cost.total_dice_cost == c
             elif test_id == 3:
                 assert len(match.player_tables[0].characters[0].status) == 1
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1032,41 +982,29 @@ def test_north_chicken_2():
             "sw_char 0 0",
             "TEST 1 p0c0 status 3",
             "skill 0 1",
-            "end"
-        ],
-        [
-            "sw_card",
-            "choose 0",
-            "skill 1 0 1 2",
             "end",
-            "end"
-        ]
+        ],
+        ["sw_card", "choose 0", "skill 1 0 1 2", "end", "end"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Arataki Itto
         character:Mona
         character:Nahida
         Northern Smoked Chicken*15
         Laurel Coronet*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1086,7 +1024,7 @@ def test_north_chicken_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -1096,7 +1034,7 @@ def test_north_chicken_2():
             elif test_id == 1:
                 assert len(match.player_tables[0].characters[0].status) == 3
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1150,7 +1088,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
             "TEST 3 card 6 cannot use",
             "sw_char 0 12",
             "choose 2",
-            "end"
+            "end",
         ],
         [
             "sw_card 4 2",
@@ -1181,27 +1119,21 @@ def test_guoba_meatroll_egg_sashimi_crab():
             "skill 0 10 9",
             "TEST 5 skill 0 cost 3",
             "TEST 2 p1c2 usage 1 1",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Ganyu
         character:Fischl
@@ -1212,7 +1144,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
         Teyvat Fried Egg*5
         Sashimi Platter*5
         Butter Crab*5
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1232,7 +1164,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -1242,7 +1174,7 @@ def test_guoba_meatroll_egg_sashimi_crab():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -1258,17 +1190,17 @@ def test_guoba_meatroll_egg_sashimi_crab():
             elif test_id == 3:
                 cmd = cmd.split()
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert req.card_idx != int(cmd[3])
             elif test_id == 4:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             elif test_id == 5:
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest' and req.skill_idx == 0:
+                    if req.name == "UseSkillRequest" and req.skill_idx == 0:
                         assert req.cost.total_dice_cost == 3
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1295,41 +1227,29 @@ def test_meatroll():
             "sw_char 0 0",
             "TEST 1 p0c0 status 3",
             "skill 0 1",
-            "end"
-        ],
-        [
-            "sw_card",
-            "choose 0",
-            "skill 1 0 1 2",
             "end",
-            "end"
-        ]
+        ],
+        ["sw_card", "choose 0", "skill 1 0 1 2", "end", "end"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Arataki Itto
         character:Mona
         character:Nahida
         Minty Meat Rolls*15
         Laurel Coronet*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1349,7 +1269,7 @@ def test_meatroll():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             test_id = get_test_id_from_command(agent)
@@ -1359,7 +1279,7 @@ def test_meatroll():
             elif test_id == 1:
                 assert len(match.player_tables[0].characters[0].status) == 3
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1392,7 +1312,7 @@ def test_guoba_egg():
             "choose 1",
             "TEST 2 card 2 cannot use",
             "TEST 1 0 7 7 9 9 1",
-            "end"
+            "end",
         ],
         [
             "sw_card 2 3 4 0",
@@ -1407,27 +1327,21 @@ def test_guoba_egg():
             "skill 1 15 14 13",
             "sw_char 1 12",
             "sw_char 2 11",
-            "skill 0 10 9 8"
-        ]
+            "skill 0 10 9 8",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Ganyu
         character:Fischl
@@ -1438,7 +1352,7 @@ def test_guoba_egg():
         Teyvat Fried Egg*5
         Sashimi Platter*5
         Butter Crab*5
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1458,7 +1372,7 @@ def test_guoba_egg():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -1468,17 +1382,17 @@ def test_guoba_egg():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 cmd = cmd.split()
                 for req in match.requests:
-                    if req.name == 'UseCardRequest':
+                    if req.name == "UseCardRequest":
                         assert req.card_idx != int(cmd[3])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1488,7 +1402,7 @@ def test_guoba_egg():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_adeptus_temptation()
     # test_lotus_flower_crisp()
     # test_lotus_flower_crisp_and_reflection()

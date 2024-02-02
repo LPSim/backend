@@ -17,6 +17,7 @@ class SupportBase(CardBase):
     card that have costs, is_valid, and get_actions. When on the table, its
     event triggers will work and do supports.
     """
+
     name: str
     version: str
     cost: Cost
@@ -24,10 +25,13 @@ class SupportBase(CardBase):
     type: Literal[ObjectType.SUPPORT] = ObjectType.SUPPORT
     remove_when_used: bool = False
 
-    # icon type is used to show the icon on the summon top right. 
+    # icon type is used to show the icon on the summon top right.
     icon_type: Literal[
-        IconType.SHIELD, IconType.BARRIER, IconType.TIMESTATE, 
-        IconType.COUNTER, IconType.NONE
+        IconType.SHIELD,
+        IconType.BARRIER,
+        IconType.TIMESTATE,
+        IconType.COUNTER,
+        IconType.NONE,
     ]
     # when status icon type is not none, it will show in team status area
     status_icon_type: Literal[IconType.NONE] = IconType.NONE
@@ -38,14 +42,14 @@ class SupportBase(CardBase):
         when usage has changed, call this function to check if the support
         should be removed.
         """
-        if (
-            self.position.area != ObjectPositionType.SUPPORT
-        ):  # pragma: no cover
+        if self.position.area != ObjectPositionType.SUPPORT:  # pragma: no cover
             return []
         if self.usage <= 0:
-            return [RemoveObjectAction(
-                object_position = self.position,
-            )]
+            return [
+                RemoveObjectAction(
+                    object_position=self.position,
+                )
+            ]
         return []
 
     def play(self, match: Any) -> List[Actions]:
@@ -66,9 +70,7 @@ class SupportBase(CardBase):
         Otherwise, return empty.
         """
         max_support_number = match.config.max_support_number
-        supports = (
-            match.player_tables[self.position.player_idx].supports
-        )
+        supports = match.player_tables[self.position.player_idx].supports
         assert max_support_number >= len(supports)
         if len(supports) == max_support_number:
             # choose one support to remove
@@ -86,23 +88,21 @@ class SupportBase(CardBase):
         """
         ret: List[RemoveObjectAction | MoveObjectAction] = []
         max_support_number = match.config.max_support_number
-        supports = (
-            match.player_tables[self.position.player_idx].supports
-        )
+        supports = match.player_tables[self.position.player_idx].supports
         assert max_support_number >= len(supports)
         if len(supports) == max_support_number:
             assert target is not None
-            ret.append(RemoveObjectAction(
-                object_position = target
-            ))
-        ret.append(MoveObjectAction(
-            object_position = self.position,
-            target_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.SUPPORT,
-                id = self.position.id
-            ),
-        ))
+            ret.append(RemoveObjectAction(object_position=target))
+        ret.append(
+            MoveObjectAction(
+                object_position=self.position,
+                target_position=ObjectPosition(
+                    player_idx=self.position.player_idx,
+                    area=ObjectPositionType.SUPPORT,
+                    id=self.position.id,
+                ),
+            )
+        )
         return ret
 
     def event_handler_MOVE_OBJECT(
@@ -115,8 +115,7 @@ class SupportBase(CardBase):
         if (
             event.action.object_position.id == self.id
             and event.action.object_position.area == ObjectPositionType.HAND
-            and event.action.target_position.area 
-            == ObjectPositionType.SUPPORT
+            and event.action.target_position.area == ObjectPositionType.SUPPORT
         ):
             # this artifact equipped from hand to character
             return self.play(match)
@@ -132,10 +131,11 @@ class RoundEffectSupportBase(SupportBase):
     at round preparing stage.
     Instead of setting usage, set max_usage_per_round.
     """
+
     name: str
     version: str
     cost: Cost
-    max_usage_per_round: int 
+    max_usage_per_round: int
 
     usage: int = 0
 
@@ -157,6 +157,7 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     Supports that restricts maximum usage per round, and also has total
     maximum usage. e.g. Liu Su has 1 usage per round and 2 total usage.
     """
+
     name: str
     version: str
     cost: Cost
@@ -188,7 +189,7 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
 class LimitedEffectSupportBase(SupportBase):
     """
     Supports that has limited effect during the game. e.g. Chef Mao in 4.1
-    will draw 1 food card when triggered only once. 
+    will draw 1 food card when triggered only once.
 
     Overwrite the _limited_action function to do the limited action, and call
     do_limited_action when the condition is satisfied.
@@ -209,10 +210,7 @@ class LimitedEffectSupportBase(SupportBase):
         """
         do the limited action when has usage and is in support area.
         """
-        if (
-            self.limited_usage <= 0 
-            or self.position.area != ObjectPositionType.SUPPORT
-        ):
+        if self.limited_usage <= 0 or self.position.area != ObjectPositionType.SUPPORT:
             return []
         self.limited_usage -= 1
         return self._limited_action(match)

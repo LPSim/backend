@@ -1,4 +1,4 @@
 from ....utils import import_all_modules
 
 
-import_all_modules(__file__, __name__, set(['tests']))
+import_all_modules(__file__, __name__, set(["tests"]))

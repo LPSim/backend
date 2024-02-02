@@ -1,10 +1,5 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    },
-    "python.formatting.provider": "none",
-    "flake8.ignorePatterns": [
-        "frontend",
-        "build"
-    ]
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
 }

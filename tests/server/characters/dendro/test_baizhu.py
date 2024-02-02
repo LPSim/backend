@@ -1,8 +1,11 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -33,7 +36,7 @@ def test_baizhu():
             "skill 0 12 11 10",
             "skill 2 9 8 7 6",
             "TEST 1 40 40 40 39 40 27",
-            "end"
+            "end",
         ],
         [
             "sw_card 1 2 3",
@@ -48,34 +51,28 @@ def test_baizhu():
             "end",
             "end",
             "TEST 1 40 40 40 39 40 30",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Baizhu
         character:Nilou
         character:Tighnari
         All Things Are of the Earth*15
         Lotus Flower Crisp*15
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 40
@@ -98,10 +95,10 @@ def test_baizhu():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -114,10 +111,9 @@ def test_baizhu():
                 check_hp(match, hps)
             elif test_id == 2:
                 pidx = int(cmd[2][1])
-                assert len(match.player_tables[
-                    pidx].dice.colors) == int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == int(cmd[4])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -143,7 +139,7 @@ def test_baizhu_2():
             "skill 2 14 13 12 11",
             "skill 0 10 9 8",
             "skill 1 7 6 5",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -162,34 +158,28 @@ def test_baizhu_2():
             "sw_char 0 7",
             "skill 0 6 5 4",
             "TEST 2 p1 dice 4",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Baizhu
         character:Nilou
         character:Xingqiu
         All Things Are of the Earth*15
         Lotus Flower Crisp*15
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = 40
@@ -212,20 +202,19 @@ def test_baizhu_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
                 break
             elif test_id == 2:
                 pidx = int(cmd[2][1])
-                assert len(match.player_tables[
-                    pidx].dice.colors) == int(cmd[4])
+                assert len(match.player_tables[pidx].dice.colors) == int(cmd[4])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -249,7 +238,7 @@ def test_baizhu_3():
             "sw_char 0 15",
             "choose 1",
             "TEST 1 0 8 10 10 7 8",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -261,34 +250,28 @@ def test_baizhu_3():
             "skill 1 5 4 3",
             "skill 1 2 1 0",
             "end",
-            "skill 0 15 14 13"
-        ]
+            "skill 0 15 14 13",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Baizhu
         character:Nilou
         character:Tighnari
         All Things Are of the Earth*15
         Lotus Flower Crisp*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -308,10 +291,10 @@ def test_baizhu_3():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -323,7 +306,7 @@ def test_baizhu_3():
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -333,7 +316,7 @@ def test_baizhu_3():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_baizhu()
     test_baizhu_2()
     test_baizhu_3()

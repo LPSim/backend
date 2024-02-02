@@ -4,43 +4,55 @@ from ....utils.class_registry import register_class
 from ...modifiable_values import CostValue, DamageIncreaseValue, DamageValue
 from ...struct import Cost, ObjectPosition
 from ...consts import (
-    CostLabels, DamageElementalType, DamageType, IconType, ObjectPositionType, 
-    SkillType
+    CostLabels,
+    DamageElementalType,
+    DamageType,
+    IconType,
+    ObjectPositionType,
+    SkillType,
 )
 from ...action import (
-    ActionTypes, Actions, CreateObjectAction, MakeDamageAction, 
-    RemoveObjectAction
+    ActionTypes,
+    Actions,
+    CreateObjectAction,
+    MakeDamageAction,
+    RemoveObjectAction,
 )
 from ...event import (
-    CharacterDefeatedEventArguments, CreateObjectEventArguments, 
-    MakeDamageEventArguments, RoundPrepareEventArguments, 
-    SkillEndEventArguments
+    CharacterDefeatedEventArguments,
+    CreateObjectEventArguments,
+    MakeDamageEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 from .base import (
-    CharacterStatusBase, ElementalInfusionCharacterStatus, 
-    PrepareCharacterStatus, RoundCharacterStatus, 
-    RoundEndAttackCharacterStatus, ShieldCharacterStatus, UsageCharacterStatus
+    CharacterStatusBase,
+    ElementalInfusionCharacterStatus,
+    PrepareCharacterStatus,
+    RoundCharacterStatus,
+    RoundEndAttackCharacterStatus,
+    ShieldCharacterStatus,
+    UsageCharacterStatus,
 )
 
 
 class Riptide_4_1(CharacterStatusBase):
     """
-    This status will not deal damages directly, and defeat-regenerate is 
+    This status will not deal damages directly, and defeat-regenerate is
     handled by system handler, which is created by Tartaglia'is passive skill
     when game starts.
     """
-    name: Literal['Riptide'] = 'Riptide'
+
+    name: Literal["Riptide"] = "Riptide"
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
-    version: Literal['4.1']
+    version: Literal["4.1"]
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
-    available_handler_in_trashbin: List[ActionTypes] = [
-        ActionTypes.CHARACTER_DEFEATED
-    ]
+    available_handler_in_trashbin: List[ActionTypes] = [ActionTypes.CHARACTER_DEFEATED]
 
     def event_handler_CHARACTER_DEFEATED(
         self, event: CharacterDefeatedEventArguments, match: Any
@@ -52,30 +64,29 @@ class Riptide_4_1(CharacterStatusBase):
         """
         pidx = event.action.player_idx
         cidx = event.action.character_idx
-        if (
-            pidx != self.position.player_idx 
-            or cidx != self.position.character_idx
-        ):
+        if pidx != self.position.player_idx or cidx != self.position.character_idx:
             # defeated character not self character
             return []
-        return [CreateObjectAction(
-            object_name = 'Riptide',
-            object_position = ObjectPosition(
-                player_idx = pidx,
-                area = ObjectPositionType.CHARACTER_STATUS,
-                character_idx = match.player_tables[pidx].active_character_idx,
-                id = 0
-            ),
-            object_arguments = { 'version': self.version }
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Riptide",
+                object_position=ObjectPosition(
+                    player_idx=pidx,
+                    area=ObjectPositionType.CHARACTER_STATUS,
+                    character_idx=match.player_tables[pidx].active_character_idx,
+                    id=0,
+                ),
+                object_arguments={"version": self.version},
+            )
+        ]
 
 
 class RangedStance_4_1(CharacterStatusBase):
-    name: Literal['Ranged Stance'] = 'Ranged Stance'
+    name: Literal["Ranged Stance"] = "Ranged Stance"
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
-    version: Literal['4.1']
+    version: Literal["4.1"]
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
     usage: int = 1
     max_usage: int = 1
@@ -84,12 +95,15 @@ class RangedStance_4_1(CharacterStatusBase):
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateObjectAction]:
         """
-        When self character use charged attack, apply Riptide to target 
+        When self character use charged attack, apply Riptide to target
         character.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self character use skill
             return []
@@ -101,17 +115,20 @@ class RangedStance_4_1(CharacterStatusBase):
             # not charged attack
             return []
         character = match.player_tables[
-            event.action.target_position.player_idx].characters[
-                event.action.target_position.character_idx]
+            event.action.target_position.player_idx
+        ].characters[event.action.target_position.character_idx]
         if character.is_defeated:
             # defeated character cannot attach Riptide
             return []
-        return [CreateObjectAction(
-            object_name = 'Riptide',
-            object_position = event.action.target_position.set_area(
-                ObjectPositionType.CHARACTER_STATUS),
-            object_arguments = { 'version': self.version }
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Riptide",
+                object_position=event.action.target_position.set_area(
+                    ObjectPositionType.CHARACTER_STATUS
+                ),
+                object_arguments={"version": self.version},
+            )
+        ]
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any
@@ -120,27 +137,26 @@ class RangedStance_4_1(CharacterStatusBase):
         If self character gain Melee Stance, remove this status.
         """
         if (
-            event.action.object_name == 'Melee Stance'
+            event.action.object_name == "Melee Stance"
             and self.position.check_position_valid(
-                event.action.object_position, match, player_idx_same = True,
-                character_idx_same = True, 
-                target_area = ObjectPositionType.CHARACTER_STATUS,
+                event.action.object_position,
+                match,
+                player_idx_same=True,
+                character_idx_same=True,
+                target_area=ObjectPositionType.CHARACTER_STATUS,
             )
         ):
             # self character gain melee stance, remove this status
-            return [RemoveObjectAction(
-                object_position = self.position
-            )]
+            return [RemoveObjectAction(object_position=self.position)]
         return []
 
 
-class MeleeStance_4_1(ElementalInfusionCharacterStatus,
-                      RoundCharacterStatus):
-    name: Literal['Melee Stance'] = 'Melee Stance'
+class MeleeStance_4_1(ElementalInfusionCharacterStatus, RoundCharacterStatus):
+    name: Literal["Melee Stance"] = "Melee Stance"
     # As Riptide has changed, all status it related to should have different
     # version. To avoid using wrong version of status, related status have
     # not default value.
-    version: Literal['4.1']
+    version: Literal["4.1"]
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
     usage: int = 2
     max_usage: int = 2
@@ -154,12 +170,14 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
         Whether position is self skill
         """
         return self.position.check_position_valid(
-            position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         )
 
-    def charge_attack(self, skill_position: ObjectPosition, 
-                      match: Any) -> bool:
+    def charge_attack(self, skill_position: ObjectPosition, match: Any) -> bool:
         """
         Whether position is charged attack
         """
@@ -174,20 +192,20 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
         Whether opposite active character has Riptide
         """
         active = match.player_tables[
-            1 - self.position.player_idx].get_active_character()
+            1 - self.position.player_idx
+        ].get_active_character()
         for status in active.status:
-            if status.name == 'Riptide':
+            if status.name == "Riptide":
                 return True
         return False
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If target has Riptide, increase damage by 1
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
@@ -217,33 +235,35 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
         if self.opposite_active_has_riptide(match):
             # opposite have Riptide, deal 1 piercing damage to next character
             next_idx = match.player_tables[
-                1 - self.position.player_idx].next_character_idx(
-                    target_position.character_idx)
+                1 - self.position.player_idx
+            ].next_character_idx(target_position.character_idx)
             if next_idx is not None and self.extra_attack_usage > 0:
                 # has next character and has usage:
                 character = match.player_tables[
-                    1 - self.position.player_idx].characters[next_idx]
+                    1 - self.position.player_idx
+                ].characters[next_idx]
                 self.extra_attack_usage -= 1
-                return [MakeDamageAction(
-                    damage_value_list = [
-                        DamageValue(
-                            position = self.position,
-                            damage_type = DamageType.DAMAGE,
-                            target_position = character.position,
-                            damage = 1,
-                            damage_elemental_type 
-                            = DamageElementalType.PIERCING,
-                            cost = Cost(),
-                        )
-                    ]
-                )]
+                return [
+                    MakeDamageAction(
+                        damage_value_list=[
+                            DamageValue(
+                                position=self.position,
+                                damage_type=DamageType.DAMAGE,
+                                target_position=character.position,
+                                damage=1,
+                                damage_elemental_type=DamageElementalType.PIERCING,
+                                cost=Cost(),
+                            )
+                        ]
+                    )
+                ]
         return []
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[CreateObjectAction | MakeDamageAction]:
         """
-        When self character use charged attack, apply Riptide to target 
+        When self character use charged attack, apply Riptide to target
         character.
         """
         ret: List[CreateObjectAction | MakeDamageAction] = []
@@ -255,15 +275,18 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
         if self.charge_attack(event.action.position, match):
             # charged attack
             character = match.player_tables[
-                event.action.target_position.player_idx].characters[
-                    event.action.target_position.character_idx]
+                event.action.target_position.player_idx
+            ].characters[event.action.target_position.character_idx]
             if character.is_alive:
-                ret += [CreateObjectAction(
-                    object_name = 'Riptide',
-                    object_position = event.action.target_position.set_area(
-                        ObjectPositionType.CHARACTER_STATUS),
-                    object_arguments = { 'version': self.version }
-                )]
+                ret += [
+                    CreateObjectAction(
+                        object_name="Riptide",
+                        object_position=event.action.target_position.set_area(
+                            ObjectPositionType.CHARACTER_STATUS
+                        ),
+                        object_arguments={"version": self.version},
+                    )
+                ]
 
         return ret
 
@@ -271,7 +294,7 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
         self, event: RoundPrepareEventArguments, match: Any
     ) -> List[Actions]:
         """
-        Reset extra attack usage, and when this status is removed, 
+        Reset extra attack usage, and when this status is removed,
         attach Ranged Stance.
         """
         self.extra_attack_usage = self.extra_attack_max_usage
@@ -281,9 +304,9 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
             assert ret[0].type == ActionTypes.REMOVE_OBJECT
             ret.append(
                 CreateObjectAction(
-                    object_name = 'Ranged Stance',
-                    object_position = self.position,
-                    object_arguments = { 'version': self.version }
+                    object_name="Ranged Stance",
+                    object_position=self.position,
+                    object_arguments={"version": self.version},
                 )
             )
         return ret
@@ -291,35 +314,38 @@ class MeleeStance_4_1(ElementalInfusionCharacterStatus,
 
 class Riptide_3_7(Riptide_4_1, RoundCharacterStatus):
     """
-    This status will not deal damages directly, and defeat-regenerate is 
+    This status will not deal damages directly, and defeat-regenerate is
     handled by system handler, which is created by Tartaglia'is passive skill
     when game starts.
     """
-    name: Literal['Riptide'] = 'Riptide'
-    version: Literal['3.7']
+
+    name: Literal["Riptide"] = "Riptide"
+    version: Literal["3.7"]
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
 
 class RangedStance_3_7(RangedStance_4_1):
-    version: Literal['3.7']
+    version: Literal["3.7"]
 
 
 class MeleeStance_3_7(MeleeStance_4_1):
-    version: Literal['3.7']
+    version: Literal["3.7"]
 
 
 class CeremonialGarment_3_5(RoundCharacterStatus):
-    name: Literal['Ceremonial Garment'] = 'Ceremonial Garment'
-    version: Literal['3.5'] = '3.5'
+    name: Literal["Ceremonial Garment"] = "Ceremonial Garment"
+    version: Literal["3.5"] = "3.5"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         """
         If self use normal attack, increase damage by 1.
@@ -340,8 +366,11 @@ class CeremonialGarment_3_5(RoundCharacterStatus):
         If self use normal attack, heal all our characters for 1 HP.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self use skill
             return []
@@ -349,28 +378,28 @@ class CeremonialGarment_3_5(RoundCharacterStatus):
         if skill.skill_type != SkillType.NORMAL_ATTACK:
             # not normal attack
             return []
-        action = MakeDamageAction(
-            damage_value_list = []
-        )
+        action = MakeDamageAction(damage_value_list=[])
         characters = match.player_tables[self.position.player_idx].characters
         for character in characters:
             if character.is_alive:
-                action.damage_value_list.append(DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = Cost(),
-                ))
+                action.damage_value_list.append(
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-1,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=Cost(),
+                    )
+                )
         return [action]
 
 
 class HeronShield_3_8(ShieldCharacterStatus, PrepareCharacterStatus):
-    name: Literal['Heron Shield'] = 'Heron Shield'
-    version: Literal['3.8'] = '3.8'
-    character_name: Literal['Candace'] = 'Candace'
-    skill_name: Literal['Heron Strike'] = 'Heron Strike'
+    name: Literal["Heron Shield"] = "Heron Shield"
+    version: Literal["3.8"] = "3.8"
+    character_name: Literal["Candace"] = "Candace"
+    skill_name: Literal["Heron Strike"] = "Heron Strike"
 
     usage: int = 2
     max_usage: int = 2
@@ -385,9 +414,9 @@ class HeronShield_3_8(ShieldCharacterStatus, PrepareCharacterStatus):
 
 
 class Refraction_3_3(RoundCharacterStatus):
-    name: Literal['Refraction'] = 'Refraction'
-    desc: Literal['', 'talent'] = ''
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Refraction"] = "Refraction"
+    desc: Literal["", "talent"] = ""
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
 
@@ -399,11 +428,11 @@ class Refraction_3_3(RoundCharacterStatus):
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)
         if self.is_talent_activated:
-            self.desc = 'talent'
+            self.desc = "talent"
 
-    def renew(self, new_status: 'Refraction_3_3') -> None:
+    def renew(self, new_status: "Refraction_3_3") -> None:
         if new_status.is_talent_activated:
-            self.desc = 'talent'
+            self.desc = "talent"
             self.is_talent_activated = True
         return super().renew(new_status)
 
@@ -414,7 +443,10 @@ class Refraction_3_3(RoundCharacterStatus):
         return super().event_handler_ROUND_PREPARE(event, match)
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+        self,
+        value: CostValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> CostValue:
         """
         if talent activated, increase switch cost
@@ -429,61 +461,59 @@ class Refraction_3_3(RoundCharacterStatus):
             # talent activated, switch cost, and this character switch to
             # other, increase cost
             value.cost.any_dice_number += 1
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.cost_increase_usage -= 1
         return value
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         if value.damage_elemental_type != DamageElementalType.HYDRO:
             # not hydro damage
             return value
-        if value.is_corresponding_character_receive_damage(
-            self.position, match
-        ):
+        if value.is_corresponding_character_receive_damage(self.position, match):
             # this character receive damage
             value.damage += 1
         return value
 
 
-class TakimeguriKanka_4_1(ElementalInfusionCharacterStatus, 
-                          UsageCharacterStatus):
-    name: Literal['Takimeguri Kanka'] = 'Takimeguri Kanka'
-    version: Literal['4.1'] = '4.1'
+class TakimeguriKanka_4_1(ElementalInfusionCharacterStatus, UsageCharacterStatus):
+    name: Literal["Takimeguri Kanka"] = "Takimeguri Kanka"
+    version: Literal["4.1"] = "4.1"
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.HYDRO
     icon_type: Literal[IconType.ATK_UP_WATER] = IconType.ATK_UP_WATER
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         if value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
-            assert mode == 'REAL'
+            assert mode == "REAL"
             self.usage -= 1
             value.damage += 1
-            character = match.player_tables[
-                self.position.player_idx].characters[
-                    self.position.character_idx]
-            target = match.player_tables[
-                value.target_position.player_idx].characters[
-                    value.target_position.character_idx]
-            if (
-                character.talent is not None
-                and target.hp <= 6
-            ):
+            character = match.player_tables[self.position.player_idx].characters[
+                self.position.character_idx
+            ]
+            target = match.player_tables[value.target_position.player_idx].characters[
+                value.target_position.character_idx
+            ]
+            if character.talent is not None and target.hp <= 6:
                 value.damage += 1
         return value
 
 
 class LingeringAeon_4_2(RoundEndAttackCharacterStatus):
-    name: Literal['Lingering Aeon'] = 'Lingering Aeon'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Lingering Aeon"] = "Lingering Aeon"
+    version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 1
     damage: int = 3
@@ -492,8 +522,15 @@ class LingeringAeon_4_2(RoundEndAttackCharacterStatus):
 
 
 register_class(
-    Riptide_4_1 | RangedStance_4_1 | MeleeStance_4_1 
-    | Riptide_3_7 | RangedStance_3_7 | MeleeStance_3_7 
-    | CeremonialGarment_3_5 | HeronShield_3_8
-    | Refraction_3_3 | TakimeguriKanka_4_1 | LingeringAeon_4_2
+    Riptide_4_1
+    | RangedStance_4_1
+    | MeleeStance_4_1
+    | Riptide_3_7
+    | RangedStance_3_7
+    | MeleeStance_3_7
+    | CeremonialGarment_3_5
+    | HeronShield_3_8
+    | Refraction_3_3
+    | TakimeguriKanka_4_1
+    | LingeringAeon_4_2
 )

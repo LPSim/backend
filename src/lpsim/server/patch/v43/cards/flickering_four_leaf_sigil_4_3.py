@@ -26,18 +26,21 @@ class FlickeringFourLeafSigilStatus_4_3(CharacterStatusBase):
         At the end of every round, switch to this character.
         """
         current_active = match.player_tables[
-            self.position.player_idx].active_character_idx
+            self.position.player_idx
+        ].active_character_idx
         if current_active == self.position.character_idx:
             # already active, do nothing
             return []
-        return [SwitchCharacterAction(
-            player_idx = self.position.player_idx,
-            character_idx = self.position.character_idx
-        )]
+        return [
+            SwitchCharacterAction(
+                player_idx=self.position.player_idx,
+                character_idx=self.position.character_idx,
+            )
+        ]
 
 
 class FlickeringFourLeafSigil_4_3(EventCardBase):
-    name: Literal["Flickering Four-Leaf Sigil"] = "Flickering Four-Leaf Sigil"
+    name: Literal["Flickering Four-Leaf Sigil"]
     version: Literal["4.3"] = "4.3"
     cost: Cost = Cost()
 
@@ -54,44 +57,37 @@ class FlickeringFourLeafSigil_4_3(EventCardBase):
         self, target: ObjectPosition | None, match: Match
     ) -> List[CreateObjectAction]:
         assert target is not None
-        return [CreateObjectAction(
-            object_name = self.name,
-            object_position = target.set_area(
-                ObjectPositionType.CHARACTER_STATUS),
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name=self.name,
+                object_position=target.set_area(ObjectPositionType.CHARACTER_STATUS),
+                object_arguments={},
+            )
+        ]
 
 
 desc: Dict[str, DescDictType] = {
     "CHARACTER_STATUS/Flickering Four-Leaf Sigil": {
-        "names": {
-            "en-US": "Flickering Four-Leaf Sigil",
-            "zh-CN": "浮烁的四叶印"
-        },
+        "names": {"en-US": "Flickering Four-Leaf Sigil", "zh-CN": "浮烁的四叶印"},
         "descs": {
             "4.3": {
                 "en-US": "At the End Phase of Every Round, you will switch to this character.",  # noqa: E501
-                "zh-CN": "每个回合的结束阶段，我方都切换到此角色。"
+                "zh-CN": "每个回合的结束阶段，我方都切换到此角色。",
             }
         },
     },
     "CARD/Flickering Four-Leaf Sigil": {
-        "names": {
-            "en-US": "Flickering Four-Leaf Sigil",
-            "zh-CN": "浮烁的四叶印"
-        },
+        "names": {"en-US": "Flickering Four-Leaf Sigil", "zh-CN": "浮烁的四叶印"},
         "descs": {
             "4.3": {
                 "en-US": "Attached Four-Leaf Sigil to target character: At the End Phase of Every Round, you will switch to this character.",  # noqa: E501
-                "zh-CN": "目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。"
+                "zh-CN": "目标角色附属四叶印：每个回合的结束阶段，我方都切换到此角色。",
             }
         },
         "image_path": "cardface/Event_Event_Siyeyin.png",  # noqa: E501
-        "id": 332027
+        "id": 332027,
     },
 }
 
 
-register_class(
-    FlickeringFourLeafSigil_4_3 | FlickeringFourLeafSigilStatus_4_3, desc
-)
+register_class(FlickeringFourLeafSigil_4_3 | FlickeringFourLeafSigilStatus_4_3, desc)

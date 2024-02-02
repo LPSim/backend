@@ -1,9 +1,13 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, check_name, get_random_state, get_test_id_from_command, 
-    make_respond, set_16_omni
+    check_hp,
+    check_name,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -36,7 +40,7 @@ def test_barbara():
             "end",
             "TEST 1 7 10 10 0 10 10",
             "TEST 5 team status 1 field",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -68,24 +72,18 @@ def test_barbara():
             "end",
             "choose 1",
             "TEST 1 7 10 10 0 6 9",
-            "skill 2 0 1 2"
-        ]
+            "skill 2 0 1 2",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Barbara
@@ -109,7 +107,7 @@ def test_barbara():
         # Mondstadt Hash Brown*2
         # Tandoori Roast Chicken
         Glorious Season*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -127,7 +125,7 @@ def test_barbara():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -140,33 +138,34 @@ def test_barbara():
                 parts = cmd.strip().split()
                 found_part = set()
                 for part in parts:
-                    if len(part) == 4 and part[0] == 'p' and part[2] == 'c':
+                    if len(part) == 4 and part[0] == "p" and part[2] == "c":
                         found_part.add(part)
                 for player_idx in range(2):
                     for character_idx in range(3):
-                        character = match.player_tables[
-                            player_idx].characters[character_idx]
-                        part = f'p{player_idx}c{character_idx}'
+                        character = match.player_tables[player_idx].characters[
+                            character_idx
+                        ]
+                        part = f"p{player_idx}c{character_idx}"
                         if part in found_part:
-                            assert character.element_application == ['HYDRO']
+                            assert character.element_application == ["HYDRO"]
                         else:
                             assert character.element_application == []
             elif test_id == 3:
                 cost = int(cmd.strip().split()[3])
                 for req in match.requests:
-                    if req.name == 'SwitchCharacterRequest':
+                    if req.name == "SwitchCharacterRequest":
                         assert req.cost.any_dice_number == cost
             elif test_id == 4:
                 summons = match.player_tables[0].summons
                 assert len(summons) == 2
-                check_name('Melody Loop', summons)
-                check_name('Oz', summons)
+                check_name("Melody Loop", summons)
+                check_name("Oz", summons)
                 for summon in summons:
                     assert summon.usage == 2
             elif test_id == 5:
                 team_status = match.player_tables[0].team_status
                 assert len(team_status) == 1
-                assert team_status[0].name == 'Catalyzing Field'
+                assert team_status[0].name == "Catalyzing Field"
                 assert team_status[0].usage == 1
             else:
                 break
@@ -203,7 +202,7 @@ def test_barbara_2():
             "TEST 3 sw_char 0 cost",
             "sw_char 0",
             "TEST 3 sw_char 1 cost",
-            "sw_char 1 0"
+            "sw_char 1 0",
         ],
         [
             "sw_card",
@@ -233,32 +232,26 @@ def test_barbara_2():
             "sw_char 1 0",
             "TEST 1 4 10 10 8 5 0",
             "skill 2 0 1 2",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Fischl
         character:Barbara*2
         Glorious Season*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -278,7 +271,7 @@ def test_barbara_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -293,15 +286,15 @@ def test_barbara_2():
             elif test_id == 2:
                 summons = match.player_tables[1].summons
                 assert len(summons) == 1
-                assert summons[0].name == 'Melody Loop'
+                assert summons[0].name == "Melody Loop"
                 assert summons[0].usage == 2
             elif test_id == 3:
                 cost = int(cmd.strip().split()[3])
                 for req in match.requests:
-                    if req.name == 'SwitchCharacterRequest':
+                    if req.name == "SwitchCharacterRequest":
                         assert req.cost.any_dice_number == cost
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -311,6 +304,6 @@ def test_barbara_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_barbara()
     test_barbara_2()

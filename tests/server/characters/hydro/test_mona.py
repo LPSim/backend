@@ -1,24 +1,27 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_test_id_from_command, make_respond, get_random_state, 
-    set_16_omni
+    check_hp,
+    get_test_id_from_command,
+    make_respond,
+    get_random_state,
+    set_16_omni,
 )
 
 
 def test_mona():
     """
     first: quick switch two times and slow switch one time. equip artifact
-    and check card can cost less. multiple summon will renew old one. 
+    and check card can cost less. multiple summon will renew old one.
     Double damage will affect after elemental reaction, and only affect once.
     """
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "reroll",
@@ -66,11 +69,11 @@ def test_mona():
             "tune 2 2",
             "tune 2 2",
             "skill 1 0 1 2",
-            "end"
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(version = '0.0.1', random_state = get_random_state())
+    match = Match(version="0.0.1", random_state=get_random_state())
     deck = Deck.from_str(
         """
         character:Mona*2
@@ -95,18 +98,22 @@ def test_mona():
                     check_hp(match, [[0, 9, 10], [10, 10, 10]])
                 elif test_id == 2:
                     hands = match.player_tables[1].hands
-                    requests = [x for x in match.requests 
-                                if x.name == 'UseCardRequest'
-                                and hands[x.card_idx].name 
-                                == 'Prophecy of Submersion']
+                    requests = [
+                        x
+                        for x in match.requests
+                        if x.name == "UseCardRequest"
+                        and hands[x.card_idx].name == "Prophecy of Submersion"
+                    ]
                     assert len(requests) == 0
                     # assert requests[0].cost.elemental_dice_number == 3
                 elif test_id == 3:
                     hands = match.player_tables[1].hands
-                    requests = [x for x in match.requests 
-                                if x.name == 'UseCardRequest'
-                                and hands[x.card_idx].name 
-                                == 'Prophecy of Submersion']
+                    requests = [
+                        x
+                        for x in match.requests
+                        if x.name == "UseCardRequest"
+                        and hands[x.card_idx].name == "Prophecy of Submersion"
+                    ]
                     assert len(requests) > 0
                     assert requests[0].cost.elemental_dice_number == 2
                 elif test_id == 4:
@@ -123,7 +130,7 @@ def test_mona():
                     break
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -137,14 +144,14 @@ def test_mona():
 def test_mona_2():
     """
     when shield of Reflection becomes 0, will not disappear; summon twice
-    will recover shield; artifact can effect talent card; attack that 
-    equip talent will trigger talent; Bubble and talent can work 
+    will recover shield; artifact can effect talent card; attack that
+    equip talent will trigger talent; Bubble and talent can work
     simultaneously, with damage: (1 + 1electrocharge + 2) * 2 = 8.
     """
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = [
+        player_idx=0,
+        verbose_level=0,
+        commands=[
             "sw_card 1 3 4",
             "choose 0",
             "reroll",
@@ -169,14 +176,14 @@ def test_mona_2():
             "skill 1 0 1 2",
             "end",
             "reroll",
-            "skill 0 0 6 7"
+            "skill 0 0 6 7",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "reroll 2 3 4 5 6 7",
@@ -208,11 +215,11 @@ def test_mona_2():
             "tune 2 6",
             "tune 2 6",
             "card 0 2 5 6",
-            "skill 1 0 1 2"
+            "skill 1 0 1 2",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(version = '0.0.1', random_state = get_random_state())
+    match = Match(version="0.0.1", random_state=get_random_state())
     deck = Deck.from_str(
         """
         character:Mona*2
@@ -239,7 +246,7 @@ def test_mona_2():
         elif match.need_respond(1):
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
@@ -252,21 +259,21 @@ def test_mona_2():
 
 def test_mona_q_enemy_attack():
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = [
+        player_idx=0,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "skill 1 0 1 2",
             "end",
             "skill 1 0 1 2",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card 0 1 2",
             "choose 0",
             "skill 1 0 1 2",
@@ -276,9 +283,9 @@ def test_mona_q_enemy_attack():
             "card 0 0",
             "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
         """
         character:Mona*2
@@ -300,19 +307,19 @@ def test_mona_q_enemy_attack():
         elif match.need_respond(1):
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
             break
 
     assert len(agent_0.commands) == 0 and len(agent_1.commands) == 0
     assert match.round_number == 2
     assert len(match.player_tables[1].team_status) == 1
-    assert match.player_tables[1].team_status[0].name == 'Illusory Bubble'
+    assert match.player_tables[1].team_status[0].name == "Illusory Bubble"
     check_hp(match, [[3, 10, 10], [9, 10, 10]])
 
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_mona()
     test_mona_q_enemy_attack()

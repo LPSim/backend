@@ -1,9 +1,12 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -41,7 +44,7 @@ def test_maguu_kenki():
             "skill 1 0 1 2",
             "skill 2 0 1 2",
             "skill 0 0 1 2",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -68,33 +71,27 @@ def test_maguu_kenki():
             "sw_char 1 0",
             "skill 1 0 1 2",
             "end",
-            "choose 0"
-        ]
+            "choose 0",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Maguu Kenki
         character:Nahida
         character:Fischl
         Transcendent Automaton*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -114,7 +111,7 @@ def test_maguu_kenki():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -124,7 +121,7 @@ def test_maguu_kenki():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
@@ -134,12 +131,12 @@ def test_maguu_kenki():
                 for s in summon:
                     assert s.usage == 2
             elif test_id == 3:
-                cmd = cmd.strip().split(' ')
+                cmd = cmd.strip().split(" ")
                 pidx = int(cmd[2][1])
                 aidx = int(cmd[4])
                 assert match.player_tables[pidx].active_character_idx == aidx
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -167,7 +164,7 @@ def test_maguu_kenki_old():
             "TEST 1 6 0 0 9 8 5",
             "end",
             "TEST 1 2 0 0 9 8 5",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -185,36 +182,30 @@ def test_maguu_kenki_old():
             "end",
             "sw_char 2 0",
             "skill 3 0 1 2",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Nahida
         character:Fischl
         Transcendent Automaton*30
-        '''
+        """
     )
-    old = {'name': 'Maguu Kenki', 'version': '3.3'}
+    old = {"name": "Maguu Kenki", "version": "3.3"}
     deck_dict = deck.dict()
-    deck_dict['characters'] += [old]
+    deck_dict["characters"] += [old]
     deck = Deck(**deck_dict)
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -234,7 +225,7 @@ def test_maguu_kenki_old():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -244,12 +235,12 @@ def test_maguu_kenki_old():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -259,6 +250,6 @@ def test_maguu_kenki_old():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_maguu_kenki_old()
     test_maguu_kenki()

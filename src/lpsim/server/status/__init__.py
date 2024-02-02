@@ -5,4 +5,4 @@ from .team_status.base import TeamStatusBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('StatusBase', 'CharacterStatusBase', 'TeamStatusBase')
+__all__ = ("StatusBase", "CharacterStatusBase", "TeamStatusBase")

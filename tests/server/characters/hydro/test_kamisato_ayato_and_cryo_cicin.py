@@ -1,8 +1,13 @@
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_random_state, 
-    get_test_id_from_command, make_respond, set_16_omni
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -56,7 +61,7 @@ def test_ayato_fatui_cryo_cicin():
             "card 6 1",
             "card 8 0",
             "end",
-            "skill 1 15 14 13"
+            "skill 1 15 14 13",
         ],
         [
             "sw_card 2 3",
@@ -98,27 +103,21 @@ def test_ayato_fatui_cryo_cicin():
             "card 4 0",
             "end",
             "TEST 1 0 0 2 6 2 0 0 8",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Kamisato Ayato
         character:Kamisato Ayato@3.6
@@ -127,10 +126,10 @@ def test_ayato_fatui_cryo_cicin():
         Sweet Madame*10
         Cicin's Cold Glare*10
         Kyouka Fuushi*10
-        '''
+        """
     )
     # bug in usage, so modify deck p1c1 max hp.
-    deck2 = deck.copy(deep = True)
+    deck2 = deck.copy(deep=True)
     deck2.characters[1].max_hp = deck2.characters[1].hp = 11
     match.set_deck([deck, deck2])
     match.config.max_same_card_number = None
@@ -150,7 +149,7 @@ def test_ayato_fatui_cryo_cicin():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -160,7 +159,7 @@ def test_ayato_fatui_cryo_cicin():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:4], hps[4:]]
                 check_hp(match, hps)
@@ -170,15 +169,14 @@ def test_ayato_fatui_cryo_cicin():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             elif test_id == 3:
-                assert match.player_tables[0].characters[
-                    0].element_application == []
+                assert match.player_tables[0].characters[0].element_application == []
             elif test_id == 4:
                 cmd = cmd.split()
                 pidx = int(cmd[2][1])
                 status = match.player_tables[pidx].summons
                 check_usage(status, cmd[5:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -196,38 +194,28 @@ def test_ayato_skill_patch():
             "skill 1 15 14 13",
             "TEST 1 p0c0 status 3",
             "TEST 1 p1c1 status 2",
-            "end"
+            "end",
         ],
-        [
-            "sw_card",
-            "choose 1",
-            "skill 1 15 14 13"
-        ]
+        ["sw_card", "choose 1", "skill 1 15 14 13"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Kamisato Ayato
         character:Kamisato Ayato@3.6
         character:Tighnari
         Lotus Flower Crisp*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -247,7 +235,7 @@ def test_ayato_skill_patch():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -261,7 +249,7 @@ def test_ayato_skill_patch():
                 status = match.player_tables[pidx].characters[cidx].status
                 check_usage(status, cmd[4:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -271,6 +259,6 @@ def test_ayato_skill_patch():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_ayato_fatui_cryo_cicin()
     test_ayato_skill_patch()

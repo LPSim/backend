@@ -3,4 +3,4 @@ from .base import CharacterStatusBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('CharacterStatusBase',)
+__all__ = ("CharacterStatusBase",)

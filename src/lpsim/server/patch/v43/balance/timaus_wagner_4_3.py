@@ -27,10 +27,10 @@ class Timaeus_4_3(Timaeus_3_3):
             if counter >= self._check_number:
                 return [
                     DrawCardAction(
-                        player_idx = self.position.player_idx,
-                        number = 1,
-                        whitelist_cost_labels = self.decrease_target,
-                        draw_if_filtered_not_enough = False,
+                        player_idx=self.position.player_idx,
+                        number=1,
+                        whitelist_cost_labels=self.decrease_target,
+                        draw_if_filtered_not_enough=False,
                     )
                 ]
         else:
@@ -44,17 +44,17 @@ class Timaeus_4_3(Timaeus_3_3):
             if len(names) >= self._check_number:
                 return [
                     DrawCardAction(
-                        player_idx = self.position.player_idx,
-                        number = 1,
-                        whitelist_cost_labels = self.decrease_target,
-                        draw_if_filtered_not_enough = False,
+                        player_idx=self.position.player_idx,
+                        number=1,
+                        whitelist_cost_labels=self.decrease_target,
+                        draw_if_filtered_not_enough=False,
                     )
                 ]
         return []
 
 
 class Wagner_4_3(Timaeus_4_3):
-    name: Literal["Wagner"] = "Wagner"
+    name: Literal["Wagner"]
     decrease_target: int = CostLabels.WEAPON.value
     _check_type: Literal["TYPE", "NUMBER"] = PrivateAttr("TYPE")
     _check_number: int = PrivateAttr(3)

@@ -1,9 +1,12 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -38,7 +41,7 @@ def test_maguu_kenki_10_10_10():
             "end",
             "card 0 0 0",
             "card 0 0 0",
-            "skill 1 0 1 2"
+            "skill 1 0 1 2",
         ],
         [
             "sw_card",
@@ -67,42 +70,36 @@ def test_maguu_kenki_10_10_10():
             "card 0 0 0 1 2",
             "sw_char 1 0",
             "TEST 1 10 10 10 6 6 4",
-            "skill 3 0 1 2"
-        ]
+            "skill 3 0 1 2",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck1 = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Xingqiu
         character:Noelle
         Mondstadt Hash Brown*30
-        '''
+        """
     )
     deck2 = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Nahida
         character:Maguu Kenki
         character:Yoimiya
         A Thousand Floating Dreams*30
-        '''
+        """
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
@@ -122,7 +119,7 @@ def test_maguu_kenki_10_10_10():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -132,12 +129,12 @@ def test_maguu_kenki_10_10_10():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -180,7 +177,7 @@ def test_maguu_kenki_10_10_10_2():
             "card 0 0 0",
             "skill 1 0 1 2",
             "TEST 1 10 10 10 6 6 4",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -209,44 +206,38 @@ def test_maguu_kenki_10_10_10_2():
             "card 0 0 0 1 2",
             "sw_char 1 0",
             "TEST 1 20 20 20 6 6 4",
-            "skill 3 0 1 2"
-        ]
+            "skill 3 0 1 2",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck1 = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Venti
         character:Xingqiu
         character:Noelle
         Mondstadt Hash Brown*30
-        '''
+        """
     )
     for c in deck1.characters:
         c.hp = c.max_hp = 20
     deck2 = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Nahida
         character:Maguu Kenki
         character:Yoimiya
         A Thousand Floating Dreams*30
-        '''
+        """
     )
     match.set_deck([deck1, deck2])
     match.config.max_same_card_number = None
@@ -266,7 +257,7 @@ def test_maguu_kenki_10_10_10_2():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -276,12 +267,12 @@ def test_maguu_kenki_10_10_10_2():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -291,5 +282,5 @@ def test_maguu_kenki_10_10_10_2():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_maguu_kenki_10_10_10_2()

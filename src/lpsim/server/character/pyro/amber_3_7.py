@@ -10,12 +10,20 @@ from ...action import Actions, MakeDamageAction, RemoveObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, ElementType, FactionType, 
-    WeaponType
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    ElementType,
+    FactionType,
+    WeaponType,
 )
 from ..character_base import (
-    AOESkillBase, ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    AOESkillBase,
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -23,8 +31,8 @@ from ..character_base import (
 
 
 class BaronBunny_3_7(DefendSummonBase):
-    name: Literal['Baron Bunny'] = 'Baron Bunny'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Baron Bunny"] = "Baron Bunny"
+    version: Literal["3.7"] = "3.7"
     usage: int = 1
     max_usage: int = 1
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -38,52 +46,50 @@ class BaronBunny_3_7(DefendSummonBase):
 
 
 class Sharpshooter(PhysicalNormalAttackBase):
-    name: Literal['Sharpshooter'] = 'Sharpshooter'
+    name: Literal["Sharpshooter"] = "Sharpshooter"
     cost: Cost = PhysicalNormalAttackBase.get_cost(ElementType.PYRO)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
-        If has talent, and Baron Bunny in area, do extra 3 pyro damage and 
+        If has talent, and Baron Bunny in area, do extra 3 pyro damage and
         remove Baron Bunny.
         """
         ret = super().get_actions(match)
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         talent = character.talent
         if talent is not None:
             summons = match.player_tables[self.position.player_idx].summons
             for summon in summons:
-                if summon.name == 'Baron Bunny':
+                if summon.name == "Baron Bunny":
                     target = match.player_tables[
-                        1 - self.position.player_idx].get_active_character()
-                    ret.append(MakeDamageAction(
-                        damage_value_list = [
-                            DamageValue(
-                                position = summon.position,
-                                damage_type = DamageType.DAMAGE,
-                                target_position = target.position,
-                                damage = talent.damage,
-                                damage_elemental_type
-                                = DamageElementalType.PYRO,
-                                cost = Cost(),
-                            )
-                        ]
-                    ))
-                    ret.append(RemoveObjectAction(
-                        object_position = summon.position
-                    ))
+                        1 - self.position.player_idx
+                    ].get_active_character()
+                    ret.append(
+                        MakeDamageAction(
+                            damage_value_list=[
+                                DamageValue(
+                                    position=summon.position,
+                                    damage_type=DamageType.DAMAGE,
+                                    target_position=target.position,
+                                    damage=talent.damage,
+                                    damage_elemental_type=DamageElementalType.PYRO,
+                                    cost=Cost(),
+                                )
+                            ]
+                        )
+                    )
+                    ret.append(RemoveObjectAction(object_position=summon.position))
                     return ret
         return ret
 
 
 class ExplosivePuppet(ElementalSkillBase):
-    name: Literal['Explosive Puppet'] = 'Explosive Puppet'
+    name: Literal["Explosive Puppet"] = "Explosive Puppet"
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -91,19 +97,17 @@ class ExplosivePuppet(ElementalSkillBase):
         """
         return [
             self.charge_self(1),
-            self.create_summon('Baron Bunny'),
+            self.create_summon("Baron Bunny"),
         ]
 
 
 class FieryRain(ElementalBurstBase, AOESkillBase):
-    name: Literal['Fiery Rain'] = 'Fiery Rain'
+    name: Literal["Fiery Rain"] = "Fiery Rain"
     damage: int = 2
     damage_type: DamageElementalType = DamageElementalType.PYRO
     back_damage: int = 2
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.PYRO, elemental_dice_number=3, charge=2
     )
 
 
@@ -111,52 +115,38 @@ class FieryRain(ElementalBurstBase, AOESkillBase):
 
 
 class BunnyTriggered_4_2(SkillTalent):
-    name: Literal['Bunny Triggered']
-    version: Literal['4.2'] = '4.2'
-    character_name: Literal['Amber'] = 'Amber'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Explosive Puppet'] = 'Explosive Puppet'
+    name: Literal["Bunny Triggered"]
+    version: Literal["4.2"] = "4.2"
+    character_name: Literal["Amber"] = "Amber"
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
+    skill: Literal["Explosive Puppet"] = "Explosive Puppet"
     damage: int = 4
 
 
 class BunnyTriggered_3_7(SkillTalent):
-    name: Literal['Bunny Triggered']
-    version: Literal['3.7'] = '3.7'
-    character_name: Literal['Amber'] = 'Amber'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.PYRO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Explosive Puppet'] = 'Explosive Puppet'
+    name: Literal["Bunny Triggered"]
+    version: Literal["3.7"] = "3.7"
+    character_name: Literal["Amber"] = "Amber"
+    cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
+    skill: Literal["Explosive Puppet"] = "Explosive Puppet"
     damage: int = 3
+
+
 # character base
 
 
 class Amber_3_7(CharacterBase):
-    name: Literal['Amber']
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Amber"]
+    version: Literal["3.7"] = "3.7"
     element: ElementType = ElementType.PYRO
     max_hp: int = 10
     max_charge: int = 2
-    skills: List[
-        Sharpshooter | ExplosivePuppet | FieryRain
-    ] = []
-    faction: List[FactionType] = [
-        FactionType.MONDSTADT
-    ]
+    skills: List[Sharpshooter | ExplosivePuppet | FieryRain] = []
+    faction: List[FactionType] = [FactionType.MONDSTADT]
     weapon_type: WeaponType = WeaponType.BOW
 
     def _init_skills(self) -> None:
-        self.skills = [
-            Sharpshooter(),
-            ExplosivePuppet(),
-            FieryRain()
-        ]
+        self.skills = [Sharpshooter(), ExplosivePuppet(), FieryRain()]
 
 
-register_class(
-    Amber_3_7 | BunnyTriggered_3_7 | BunnyTriggered_4_2 | BaronBunny_3_7
-)
+register_class(Amber_3_7 | BunnyTriggered_3_7 | BunnyTriggered_4_2 | BaronBunny_3_7)

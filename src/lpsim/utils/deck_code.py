@@ -8,13 +8,14 @@ import json
 
 
 # load name map and forbid list
-deck_code_data = json.load(open(__file__.replace('deck_code.py', 
-                                                 'deck_code_data.json')))
-name_map = deck_code_data['name_map'][:]
-forbid_list = deck_code_data['forbid_list'][:]
+deck_code_data = json.load(
+    open(__file__.replace("deck_code.py", "deck_code_data.json"))
+)
+name_map = deck_code_data["name_map"][:]
+forbid_list = deck_code_data["forbid_list"][:]
 characters_idx = []
 for i in range(len(name_map)):
-    if name_map[i].startswith('character:'):
+    if name_map[i].startswith("character:"):
         characters_idx.append(i)
         name_map[i] = name_map[i][10:]
 
@@ -77,48 +78,48 @@ def deck_code_to_deck_str(deck_code: str, version: str | None = None) -> str:
         bb.append((256 + b - binary[-1]) % 256)
     bb = bb[:-1]
     binary = bb[::2] + bb[1::2]
-    res = ''
+    res = ""
     for i in binary:
-        res += '{:08b} '.format(i)
+        res += "{:08b} ".format(i)
     # print(res)
-    res = res.replace(' ', '')
+    res = res.replace(" ", "")
     decode = []
     for i in range(0, len(res), 12):
         # print(res[i:i + 12], end = ' ')
-        decode.append(int(res[i:i + 12], 2))
+        decode.append(int(res[i : i + 12], 2))
     decode = decode[:-1]
     results = []
     if version is not None:
-        results.append(f'default_version:{version}')
+        results.append(f"default_version:{version}")
     for x in decode:
         if x > 0 and x <= len(name_map):
             if x - 1 in characters_idx:
-                results.append(f'character:{name_map[x - 1]}')
+                results.append(f"character:{name_map[x - 1]}")
             else:
                 results.append(name_map[x - 1])
-    return '\n'.join(results)
+    return "\n".join(results)
 
 
 def _deck_str_to_deck_code_one(name_list: List[str], checksum: int) -> str:
     """
     Convert deck str to deck code. Versions about deck_str will be ignored.
     """
-    binary = ''
+    binary = ""
     for i in name_list:
         if i not in name_map:
             # not found, use 0
-            binary += '{:012b} '.format(0)
+            binary += "{:012b} ".format(0)
         else:
             idx = name_map.index(i)
-            binary += '{:012b} '.format(idx + 1)
-    binary = binary.replace(' ', '')
+            binary += "{:012b} ".format(idx + 1)
+    binary = binary.replace(" ", "")
     b8 = []
     for i in range(0, len(binary), 8):
-        b8.append(int(binary[i:i + 8], 2))
+        b8.append(int(binary[i : i + 8], 2))
     b8[-1] = b8[-1] * 16  # 4 zeros
     uint = list(zip(b8[:25], b8[25:]))
     uint = [list(x) for x in uint]
-    uint = sum(uint, start = [])
+    uint = sum(uint, start=[])
     uint.append(0)
     uint = [(x + checksum) % 256 for x in uint]
     res = base64.b64encode(bytes(uint)).decode()
@@ -131,34 +132,32 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
     As generated deck code may illegal, retry for max_retry_time times.
     If retry_time exceeded, raise ValueError.
     """
-    deck_str_list = deck_str.strip().split('\n')
+    deck_str_list = deck_str.strip().split("\n")
     deck_str_list = [x.strip() for x in deck_str_list]
     # remove empty line and comment
-    deck_str_list = [x for x in deck_str_list if x != '' and x[0] != '#']
+    deck_str_list = [x for x in deck_str_list if x != "" and x[0] != "#"]
     # remove default version
-    deck_str_list = [x for x in deck_str_list 
-                     if not x.startswith('default_version:')]
+    deck_str_list = [x for x in deck_str_list if not x.startswith("default_version:")]
     # remove version mark
-    deck_str_list = [x.split('@')[0] for x in deck_str_list]
-    character_str_l = [x[10:] for x in deck_str_list 
-                       if x.startswith('character:')]
-    card_str_l = [x for x in deck_str_list if not x.startswith('character:')]
+    deck_str_list = [x.split("@")[0] for x in deck_str_list]
+    character_str_l = [x[10:] for x in deck_str_list if x.startswith("character:")]
+    card_str_l = [x for x in deck_str_list if not x.startswith("character:")]
     character_str: List[str] = []
     card_str: List[str] = []
     for i in character_str_l:
         number = 1
-        if '*' in i:
-            i, number_str = i.split('*')
+        if "*" in i:
+            i, number_str = i.split("*")
             number = int(number_str)
         character_str += [i] * number
     for i in card_str_l:
         number = 1
-        if '*' in i:
-            i, number_str = i.split('*')
+        if "*" in i:
+            i, number_str = i.split("*")
             number = int(number_str)
         card_str += [i] * number
     if len(character_str) > 3 or len(card_str) > 30:
-        raise ValueError('too many characters or cards')
+        raise ValueError("too many characters or cards")
     rand_checksum = list(range(256))
     random.shuffle(rand_checksum)
     for i in range(max_retry_time):
@@ -170,21 +169,23 @@ def deck_str_to_deck_code(deck_str: str, max_retry_time: int = 10000) -> str:
             checksum = rand_checksum[i]
         # fill empty with ''
         name_list = (
-            character_str + [''] * (3 - len(character_str))
-            + card_str + [''] * (30 - len(card_str))
+            character_str
+            + [""] * (3 - len(character_str))
+            + card_str
+            + [""] * (30 - len(card_str))
         )
         deck_code = _deck_str_to_deck_code_one(name_list, checksum)
-        code_lower = deck_code.lower().replace('+', '')
+        code_lower = deck_code.lower().replace("+", "")
         if not forbidden_trie.search(code_lower):
             return deck_code
-    raise ValueError('in generating deck code: retry time exceeded')
+    raise ValueError("in generating deck code: retry time exceeded")
 
 
-__all__ = ['deck_code_to_deck_str', 'deck_str_to_deck_code', 'deck_code_data']
+__all__ = ["deck_code_to_deck_str", "deck_str_to_deck_code", "deck_code_data"]
 
 
-if __name__ == '__main__':
-    # descs = json.load(open(__file__.replace('deck_code.py', 
+if __name__ == "__main__":
+    # descs = json.load(open(__file__.replace('deck_code.py',
     #                                         'default_desc.json'),
     #                        encoding = 'utf8'))
     # map_eng = [''] * len(map_chinese)

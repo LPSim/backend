@@ -8,18 +8,16 @@ from ....action import MakeDamageAction
 
 from ....event import SkillEndEventArguments
 
-from ....consts import (
-    DamageElementalType, DamageType, ObjectPositionType, WeaponType
-)
+from ....consts import DamageElementalType, DamageType, ObjectPositionType, WeaponType
 
 from ....struct import Cost
 from .base import RoundEffectWeaponBase
 
 
 class AquilaFavonia_3_3(RoundEffectWeaponBase):
-    name: Literal['Aquila Favonia']
-    cost: Cost = Cost(same_dice_number = 3)
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Aquila Favonia"]
+    cost: Cost = Cost(same_dice_number=3)
+    version: Literal["3.3"] = "3.3"
     weapon_type: WeaponType = WeaponType.SWORD
     max_usage_per_round: int = 2
 
@@ -30,15 +28,17 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
         If self is active and opposite use skill and has usage, heal 1 HP
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = False,
-            source_area = ObjectPositionType.CHARACTER,
-            target_area = ObjectPositionType.SKILL
+            event.action.position,
+            match,
+            player_idx_same=False,
+            source_area=ObjectPositionType.CHARACTER,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not equipped or not opponent use skill
             return []
         if (
-            self.position.character_idx != match.player_tables[
-                self.position.player_idx].active_character_idx
+            self.position.character_idx
+            != match.player_tables[self.position.player_idx].active_character_idx
         ):
             # not active
             return []
@@ -47,19 +47,22 @@ class AquilaFavonia_3_3(RoundEffectWeaponBase):
             return []
         self.usage -= 1
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -1,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = self.cost.copy()
-                )
-            ],
-        )]
+            self.position.character_idx
+        ]
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-1,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=self.cost.copy(),
+                    )
+                ],
+            )
+        ]
 
 
 register_class(AquilaFavonia_3_3)

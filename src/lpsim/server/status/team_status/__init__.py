@@ -3,4 +3,4 @@ from .base import TeamStatusBase
 
 
 import_all_modules(__file__, __name__)
-__all__ = ('TeamStatusBase',)
+__all__ = ("TeamStatusBase",)

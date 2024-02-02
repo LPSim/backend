@@ -2,18 +2,25 @@ from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
 
-from ...event import GameStartEventArguments
 
 from ...action import Actions, ChangeObjectUsageAction, CreateObjectAction
 from ...struct import Cost
 
 from ...consts import (
-    DamageElementalType, DieColor, ElementType, FactionType, 
-    ObjectPositionType, WeaponType
+    DamageElementalType,
+    DieColor,
+    ElementType,
+    FactionType,
+    ObjectPositionType,
+    WeaponType,
 )
 from ..character_base import (
-    CreateStatusPassiveSkill, ElementalBurstBase, ElementalSkillBase, 
-    PhysicalNormalAttackBase, CharacterBase, SkillTalent
+    CreateStatusPassiveSkill,
+    ElementalBurstBase,
+    ElementalSkillBase,
+    PhysicalNormalAttackBase,
+    CharacterBase,
+    SkillTalent,
 )
 
 
@@ -21,22 +28,19 @@ from ..character_base import (
 
 
 class VolatileSporeCloud(ElementalSkillBase):
-    name: Literal['Volatile Spore Cloud'] = 'Volatile Spore Cloud'
+    name: Literal["Volatile Spore Cloud"] = "Volatile Spore Cloud"
     damage_type: DamageElementalType = DamageElementalType.DENDRO
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3
-    )
+    cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
 
 
 class FeatherSpreading(ElementalBurstBase):
-    name: Literal['Feather Spreading'] = 'Feather Spreading'
+    name: Literal["Feather Spreading"] = "Feather Spreading"
     damage: int = 4
     damage_type: DamageElementalType = DamageElementalType.DENDRO
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3,
-        charge = 2,
+        elemental_dice_color=DieColor.DENDRO,
+        elemental_dice_number=3,
+        charge=2,
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
@@ -44,14 +48,15 @@ class FeatherSpreading(ElementalBurstBase):
         Base on usage, increase damage and reset usage
         """
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         found_status: Any = None
         for status in character.status:
-            if status.name == 'Radical Vitality':  # pragma: no branch
+            if status.name == "Radical Vitality":  # pragma: no branch
                 found_status = status
                 break
         else:
-            raise AssertionError('Radical Vitality not found')
+            raise AssertionError("Radical Vitality not found")
         if found_status.usage == 0:
             # no usage, do nothing
             return super().get_actions(match)
@@ -59,31 +64,28 @@ class FeatherSpreading(ElementalBurstBase):
         self.damage += found_status.usage
         ret = super().get_actions(match)
         self.damage = 4
-        ret.append(ChangeObjectUsageAction(
-            object_position = found_status.position,
-            change_usage = - found_status.usage
-        ))
+        ret.append(
+            ChangeObjectUsageAction(
+                object_position=found_status.position, change_usage=-found_status.usage
+            )
+        )
         return ret
 
 
 class RadicalVitality(CreateStatusPassiveSkill):
-    name: Literal['Radical Vitality'] = 'Radical Vitality'
-    status_name: Literal['Radical Vitality'] = 'Radical Vitality'
+    name: Literal["Radical Vitality"] = "Radical Vitality"
+    status_name: Literal["Radical Vitality"] = "Radical Vitality"
 
 
 # Talents
 
 
 class ProliferatingSpores_3_3(SkillTalent):
-    name: Literal['Proliferating Spores']
-    version: Literal['3.3'] = '3.3'
-    character_name: Literal[
-        'Jadeplume Terrorshroom'] = 'Jadeplume Terrorshroom'
-    cost: Cost = Cost(
-        elemental_dice_color = DieColor.DENDRO,
-        elemental_dice_number = 3
-    )
-    skill: Literal['Volatile Spore Cloud'] = 'Volatile Spore Cloud'
+    name: Literal["Proliferating Spores"]
+    version: Literal["3.3"] = "3.3"
+    character_name: Literal["Jadeplume Terrorshroom"] = "Jadeplume Terrorshroom"
+    cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
+    skill: Literal["Volatile Spore Cloud"] = "Volatile Spore Cloud"
 
     def equip(self, match: Any) -> List[CreateObjectAction]:
         """
@@ -91,11 +93,11 @@ class ProliferatingSpores_3_3(SkillTalent):
         """
         return [
             CreateObjectAction(
-                object_name = 'Radical Vitality',
-                object_position = self.position.set_area(
+                object_name="Radical Vitality",
+                object_position=self.position.set_area(
                     ObjectPositionType.CHARACTER_STATUS
                 ),
-                object_arguments = { 'max_usage': 4 }
+                object_arguments={"max_usage": 4},
             )
         ]
 
@@ -104,29 +106,29 @@ class ProliferatingSpores_3_3(SkillTalent):
 
 
 class JadeplumeTerrorshroom_3_3(CharacterBase):
-    name: Literal['Jadeplume Terrorshroom']
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Jadeplume Terrorshroom"]
+    version: Literal["3.3"] = "3.3"
     element: ElementType = ElementType.DENDRO
     max_hp: int = 10
     max_charge: int = 2
     skills: List[
-        PhysicalNormalAttackBase | VolatileSporeCloud | FeatherSpreading 
+        PhysicalNormalAttackBase
+        | VolatileSporeCloud
+        | FeatherSpreading
         | RadicalVitality
     ] = []
-    faction: List[FactionType] = [
-        FactionType.MONSTER
-    ]
+    faction: List[FactionType] = [FactionType.MONSTER]
     weapon_type: WeaponType = WeaponType.OTHER
 
     def _init_skills(self) -> None:
         self.skills = [
             PhysicalNormalAttackBase(
-                name = 'Majestic Dance',
-                cost = PhysicalNormalAttackBase.get_cost(self.element),
+                name="Majestic Dance",
+                cost=PhysicalNormalAttackBase.get_cost(self.element),
             ),
             VolatileSporeCloud(),
             FeatherSpreading(),
-            RadicalVitality()
+            RadicalVitality(),
         ]
 
 

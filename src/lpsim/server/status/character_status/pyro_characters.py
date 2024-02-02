@@ -4,33 +4,51 @@ from ....utils.class_registry import register_class
 from ...struct import Cost
 
 from ...action import (
-    ActionTypes, Actions, CreateObjectAction, DrawCardAction, MakeDamageAction,
-    RemoveObjectAction
+    ActionTypes,
+    Actions,
+    CreateObjectAction,
+    DrawCardAction,
+    MakeDamageAction,
+    RemoveObjectAction,
 )
 
 from ...event import (
-    MakeDamageEventArguments, RoundEndEventArguments, 
-    RoundPrepareEventArguments, SkillEndEventArguments
+    MakeDamageEventArguments,
+    RoundEndEventArguments,
+    RoundPrepareEventArguments,
+    SkillEndEventArguments,
 )
 
 from ...consts import (
-    DamageElementalType, DamageType, DieColor, IconType, ObjectPositionType, 
-    SkillType
+    DamageElementalType,
+    DamageType,
+    DieColor,
+    IconType,
+    ObjectPositionType,
+    SkillType,
 )
 
 from ...modifiable_values import (
-    CostValue, DamageElementEnhanceValue, DamageIncreaseValue, DamageValue
+    CostValue,
+    DamageElementEnhanceValue,
+    DamageIncreaseValue,
+    DamageValue,
 )
 from .base import (
-    DefendCharacterStatus, ElementalInfusionCharacterStatus, 
-    PrepareCharacterStatus, ReviveCharacterStatus, RoundCharacterStatus, 
-    RoundEndAttackCharacterStatus, ShieldCharacterStatus, UsageCharacterStatus
+    DefendCharacterStatus,
+    ElementalInfusionCharacterStatus,
+    PrepareCharacterStatus,
+    ReviveCharacterStatus,
+    RoundCharacterStatus,
+    RoundEndAttackCharacterStatus,
+    ShieldCharacterStatus,
+    UsageCharacterStatus,
 )
 
 
 class Stealth_3_3(DefendCharacterStatus, ElementalInfusionCharacterStatus):
-    name: Literal['Stealth'] = 'Stealth'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Stealth"] = "Stealth"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     min_damage_to_trigger: int = 1
@@ -38,30 +56,30 @@ class Stealth_3_3(DefendCharacterStatus, ElementalInfusionCharacterStatus):
     infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
     def value_modifier_DAMAGE_ELEMENT_ENHANCE(
-        self, value: DamageElementEnhanceValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self,
+        value: DamageElementEnhanceValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageElementEnhanceValue:
         """
         When self use skill, and has talent, change physical to pyro
         """
-        assert mode == 'REAL'
-        character = match.player_tables[
-            self.position.player_idx].characters[self.position.character_idx]
+        assert mode == "REAL"
+        character = match.player_tables[self.position.player_idx].characters[
+            self.position.character_idx
+        ]
         if character.talent is None:
             # no talent, do nothing
             return value
-        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(
-            value, match, mode
-        )
+        return super().value_modifier_DAMAGE_ELEMENT_ENHANCE(value, match, mode)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         When self use skill, increase damage by 1
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
@@ -77,8 +95,8 @@ class Stealth_3_3(DefendCharacterStatus, ElementalInfusionCharacterStatus):
 
 
 class ExplosiveSpark_3_4(UsageCharacterStatus):
-    name: Literal['Explosive Spark'] = 'Explosive Spark'
-    version: Literal['3.4'] = '3.4'
+    name: Literal["Explosive Spark"] = "Explosive Spark"
+    version: Literal["3.4"] = "3.4"
     usage: int
     max_usage: int
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
@@ -87,10 +105,9 @@ class ExplosiveSpark_3_4(UsageCharacterStatus):
         super().__init__(*args, **kwargs)
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -106,15 +123,18 @@ class ExplosiveSpark_3_4(UsageCharacterStatus):
         return value
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL']
+        self, value: CostValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CostValue:
         """
-        If self use charged attack, decrease one 
+        If self use charged attack, decrease one
         unaligned die cost.
         """
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True, 
-            character_idx_same = True, target_area = ObjectPositionType.SKILL,
+            value.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not this character use skill, not modify
             return value
@@ -132,8 +152,8 @@ class ExplosiveSpark_3_4(UsageCharacterStatus):
 
 
 class NiwabiEnshou_3_3(ElementalInfusionCharacterStatus, UsageCharacterStatus):
-    name: Literal['Niwabi Enshou'] = 'Niwabi Enshou'
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Niwabi Enshou"] = "Niwabi Enshou"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
     infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
@@ -142,14 +162,13 @@ class NiwabiEnshou_3_3(ElementalInfusionCharacterStatus, UsageCharacterStatus):
     effect_triggered: bool = False
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         """
         If corresponding character use normal attack, increase damage by 1,
         and mark effect triggered.
         """
-        assert mode == 'REAL'
+        assert mode == "REAL"
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
         ):
@@ -183,9 +202,10 @@ class NiwabiEnshou_3_3(ElementalInfusionCharacterStatus, UsageCharacterStatus):
             self.effect_triggered = False
             return list(self.check_should_remove())
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         if (
-            character.name == 'Yoimiya'
+            character.name == "Yoimiya"
             and event.action.skill_type == SkillType.NORMAL_ATTACK
             and self.effect_triggered
             and character.talent is not None
@@ -193,27 +213,30 @@ class NiwabiEnshou_3_3(ElementalInfusionCharacterStatus, UsageCharacterStatus):
             # yoimiya use normal attack and self effect triggered
             # and has talent, attack 1 pyro damage
             target = match.player_tables[
-                1 - self.position.player_idx].get_active_character()
-            ret.append(MakeDamageAction(
-                damage_value_list = [
-                    DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.DAMAGE,
-                        target_position = target.position,
-                        damage = 1,
-                        damage_elemental_type = DamageElementalType.PYRO,
-                        cost = Cost(),
-                    )
-                ]
-            ))
+                1 - self.position.player_idx
+            ].get_active_character()
+            ret.append(
+                MakeDamageAction(
+                    damage_value_list=[
+                        DamageValue(
+                            position=self.position,
+                            damage_type=DamageType.DAMAGE,
+                            target_position=target.position,
+                            damage=1,
+                            damage_elemental_type=DamageElementalType.PYRO,
+                            cost=Cost(),
+                        )
+                    ]
+                )
+            )
         # reset mark
         self.effect_triggered = False
         return ret + self.check_should_remove()
 
 
 class Brilliance_3_8(RoundCharacterStatus):
-    name: Literal['Brilliance'] = 'Brilliance'
-    version: Literal['3.8'] = '3.8'
+    name: Literal["Brilliance"] = "Brilliance"
+    version: Literal["3.8"] = "3.8"
     usage: int = 2
     max_usage: int = 2
 
@@ -221,11 +244,13 @@ class Brilliance_3_8(RoundCharacterStatus):
     decrease_cost_max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
 
-    def renew(self, new_status: 'Brilliance_3_8') -> None:
-        self.decrease_cost_usage = max(new_status.decrease_cost_usage, 
-                                       self.decrease_cost_usage)
-        self.decrease_cost_max_usage = max(new_status.decrease_cost_max_usage, 
-                                           self.decrease_cost_max_usage)
+    def renew(self, new_status: "Brilliance_3_8") -> None:
+        self.decrease_cost_usage = max(
+            new_status.decrease_cost_usage, self.decrease_cost_usage
+        )
+        self.decrease_cost_max_usage = max(
+            new_status.decrease_cost_max_usage, self.decrease_cost_max_usage
+        )
         return super().renew(new_status)
 
     def event_handler_ROUND_PREPARE(
@@ -235,7 +260,10 @@ class Brilliance_3_8(RoundCharacterStatus):
         return super().event_handler_ROUND_PREPARE(event, match)
 
     def value_modifier_COST(
-        self, value: CostValue, match: Any, mode: Literal['TEST', 'REAL'],
+        self,
+        value: CostValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> CostValue:
         if self.decrease_cost_usage <= 0:
             # no usage left
@@ -244,8 +272,11 @@ class Brilliance_3_8(RoundCharacterStatus):
             # not charge attack
             return value
         if not self.position.check_position_valid(
-            value.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL
+            value.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self use skill
             return value
@@ -255,35 +286,37 @@ class Brilliance_3_8(RoundCharacterStatus):
             return value
         # decrease cost
         if value.cost.decrease_cost(DieColor.PYRO):  # pragma: no branch
-            if mode == 'REAL':
+            if mode == "REAL":
                 self.decrease_cost_usage -= 1
         return value
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
     ) -> List[CreateObjectAction]:
-        return [CreateObjectAction(
-            object_name = 'Scarlet Seal',
-            object_position = self.position,
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Scarlet Seal",
+                object_position=self.position,
+                object_arguments={},
+            )
+        ]
 
 
 class ScarletSeal_4_2(UsageCharacterStatus):
-    name: Literal['Scarlet Seal'] = 'Scarlet Seal'
-    version: Literal['4.2'] = '4.2'
+    name: Literal["Scarlet Seal"] = "Scarlet Seal"
+    version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 2
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
     triggered: bool = False
 
-    available_handler_in_trashbin: List[ActionTypes] = [
-        ActionTypes.SKILL_END
-    ]
+    available_handler_in_trashbin: List[ActionTypes] = [ActionTypes.SKILL_END]
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, SkillType.NORMAL_ATTACK
@@ -294,7 +327,7 @@ class ScarletSeal_4_2(UsageCharacterStatus):
             # not charge attack
             return value
         # increase damage
-        assert mode == 'REAL'
+        assert mode == "REAL"
         self.usage -= 1
         self.triggered = True
         value.damage += 2
@@ -312,21 +345,23 @@ class ScarletSeal_4_2(UsageCharacterStatus):
             return []
         self.triggered = False
         character = match.player_tables[self.position.player_idx].characters[
-            self.position.character_idx]
+            self.position.character_idx
+        ]
         if character.talent is not None and character.talent.draw_card:
             # have talent and need draw
-            return [DrawCardAction(
-                player_idx = self.position.player_idx,
-                number = 1,
-                draw_if_filtered_not_enough = True
-            )]
+            return [
+                DrawCardAction(
+                    player_idx=self.position.player_idx,
+                    number=1,
+                    draw_if_filtered_not_enough=True,
+                )
+            ]
         return []
 
 
-class ParamitaPapilio_3_7(ElementalInfusionCharacterStatus, 
-                          RoundCharacterStatus):
-    name: Literal['Paramita Papilio'] = 'Paramita Papilio'
-    version: Literal['3.7'] = '3.7'
+class ParamitaPapilio_3_7(ElementalInfusionCharacterStatus, RoundCharacterStatus):
+    name: Literal["Paramita Papilio"] = "Paramita Papilio"
+    version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.ATK_UP] = IconType.ATK_UP
@@ -334,17 +369,17 @@ class ParamitaPapilio_3_7(ElementalInfusionCharacterStatus,
     infused_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageIncreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageIncreaseValue:
         if not value.is_corresponding_character_use_damage_skill(
             self.position, match, None
         ):
             # not self use damage skill
             return value
-        if (
-            value.damage_elemental_type != DamageElementalType.PYRO
-        ):  # pragma: no cover
+        if value.damage_elemental_type != DamageElementalType.PYRO:  # pragma: no cover
             # not pyro damage
             return value
         # increase damage
@@ -358,8 +393,11 @@ class ParamitaPapilio_3_7(ElementalInfusionCharacterStatus,
         If self use charged attack, create blood blossom on target
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self use skill
             return []
@@ -369,17 +407,20 @@ class ParamitaPapilio_3_7(ElementalInfusionCharacterStatus,
         ):
             # not charged attack
             return []
-        return [CreateObjectAction(
-            object_position = event.action.target_position.set_area(
-                ObjectPositionType.CHARACTER_STATUS),
-            object_name = 'Blood Blossom',
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_position=event.action.target_position.set_area(
+                    ObjectPositionType.CHARACTER_STATUS
+                ),
+                object_name="Blood Blossom",
+                object_arguments={},
+            )
+        ]
 
 
 class BloodBlossom_3_7(RoundEndAttackCharacterStatus):
-    name: Literal['Blood Blossom'] = 'Blood Blossom'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Blood Blossom"] = "Blood Blossom"
+    version: Literal["3.7"] = "3.7"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.DOT] = IconType.DOT
@@ -387,30 +428,28 @@ class BloodBlossom_3_7(RoundEndAttackCharacterStatus):
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
 
 
-class DilucInfusion_3_3(ElementalInfusionCharacterStatus, 
-                        RoundCharacterStatus):
-    name: Literal['Pyro Elemental Infusion'] = 'Pyro Elemental Infusion'
-    mark: Literal['Diluc'] = 'Diluc'
-    version: Literal['3.3'] = '3.3'
+class DilucInfusion_3_3(ElementalInfusionCharacterStatus, RoundCharacterStatus):
+    name: Literal["Pyro Elemental Infusion"] = "Pyro Elemental Infusion"
+    mark: Literal["Diluc"] = "Diluc"
+    version: Literal["3.3"] = "3.3"
     usage: int = 2
     max_usage: int = 2
 
 
 class FieryRebirth_3_7(ReviveCharacterStatus):
-    name: Literal['Fiery Rebirth'] = 'Fiery Rebirth'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Fiery Rebirth"] = "Fiery Rebirth"
+    version: Literal["3.7"] = "3.7"
     heal: int = 3
 
 
 class AegisOfAbyssalFlame_3_7(ShieldCharacterStatus):
-    name: Literal['Aegis of Abyssal Flame'] = 'Aegis of Abyssal Flame'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Aegis of Abyssal Flame"] = "Aegis of Abyssal Flame"
+    version: Literal["3.7"] = "3.7"
     usage: int = 3
     max_usage: int = 3
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         if (
             value.is_corresponding_character_use_damage_skill(
@@ -419,27 +458,35 @@ class AegisOfAbyssalFlame_3_7(ShieldCharacterStatus):
             and value.damage_elemental_type == DamageElementalType.PYRO
         ):
             # self attack and pyro damage, increase 1 damage
-            assert mode == 'REAL'
+            assert mode == "REAL"
             value.damage += 1
         return value
 
 
 class IncinerationDrive_4_1(PrepareCharacterStatus):
-    name: Literal['Incineration Drive'] = 'Incineration Drive'
-    version: Literal['4.1'] = '4.1'
-    character_name: Literal['Dehya'] = 'Dehya'
-    skill_name: Literal['Incineration Drive'] = 'Incineration Drive'
+    name: Literal["Incineration Drive"] = "Incineration Drive"
+    version: Literal["4.1"] = "4.1"
+    character_name: Literal["Dehya"] = "Dehya"
+    skill_name: Literal["Incineration Drive"] = "Incineration Drive"
 
 
 class ScarletSeal_3_8(ScarletSeal_4_2):
-    version: Literal['3.8']
+    version: Literal["3.8"]
     usage: int = 1
     max_usage: int = 1
 
 
 register_class(
-    Stealth_3_3 | ExplosiveSpark_3_4 | NiwabiEnshou_3_3 | Brilliance_3_8 
-    | ScarletSeal_4_2 | ParamitaPapilio_3_7 | BloodBlossom_3_7 
-    | DilucInfusion_3_3 | FieryRebirth_3_7 | AegisOfAbyssalFlame_3_7 
-    | IncinerationDrive_4_1 | ScarletSeal_3_8
+    Stealth_3_3
+    | ExplosiveSpark_3_4
+    | NiwabiEnshou_3_3
+    | Brilliance_3_8
+    | ScarletSeal_4_2
+    | ParamitaPapilio_3_7
+    | BloodBlossom_3_7
+    | DilucInfusion_3_3
+    | FieryRebirth_3_7
+    | AegisOfAbyssalFlame_3_7
+    | IncinerationDrive_4_1
+    | ScarletSeal_3_8
 )

@@ -4,9 +4,7 @@ from .....utils.class_registry import register_class
 
 from ....modifiable_values import DamageValue
 
-from ....consts import (
-    DamageElementalType, DamageType, ObjectPositionType, SkillType
-)
+from ....consts import DamageElementalType, DamageType, ObjectPositionType, SkillType
 
 from ....action import MakeDamageAction
 
@@ -23,7 +21,7 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
     max_usage_per_round: int
     heal: int
     heal_skill_type: SkillType
-    heal_target: Literal['SELF', 'TEAM']
+    heal_target: Literal["SELF", "TEAM"]
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
@@ -33,9 +31,8 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
         """
         if not (
             self.position.area == ObjectPositionType.CHARACTER
-            and event.action.position.player_idx == self.position.player_idx 
-            and event.action.position.character_idx 
-            == self.position.character_idx
+            and event.action.position.player_idx == self.position.player_idx
+            and event.action.position.character_idx == self.position.character_idx
             and event.action.skill_type == self.heal_skill_type
             and self.usage > 0
         ):
@@ -43,72 +40,72 @@ class HealBySkillArtifactBase(RoundEffectArtifactBase):
             return []
         self.usage -= 1
         action = MakeDamageAction(
-            damage_value_list = [],
+            damage_value_list=[],
         )
-        if self.heal_target == 'SELF':
-            character = match.player_tables[
-                self.position.player_idx].characters[
-                    self.position.character_idx]
+        if self.heal_target == "SELF":
+            character = match.player_tables[self.position.player_idx].characters[
+                self.position.character_idx
+            ]
             action.damage_value_list.append(
                 DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.HEAL,
-                    target_position = character.position,
-                    damage = -self.heal,
-                    damage_elemental_type = DamageElementalType.HEAL,
-                    cost = self.cost.copy()
+                    position=self.position,
+                    damage_type=DamageType.HEAL,
+                    target_position=character.position,
+                    damage=-self.heal,
+                    damage_elemental_type=DamageElementalType.HEAL,
+                    cost=self.cost.copy(),
                 )
             )
         else:
-            characters = match.player_tables[
-                self.position.player_idx].characters
+            characters = match.player_tables[self.position.player_idx].characters
             for character in characters:
                 if character.is_defeated:
                     continue
                 action.damage_value_list.append(
                     DamageValue(
-                        position = self.position,
-                        damage_type = DamageType.HEAL,
-                        target_position = character.position,
-                        damage = -self.heal,
-                        damage_elemental_type = DamageElementalType.HEAL,
-                        cost = self.cost.copy()
+                        position=self.position,
+                        damage_type=DamageType.HEAL,
+                        target_position=character.position,
+                        damage=-self.heal,
+                        damage_elemental_type=DamageElementalType.HEAL,
+                        cost=self.cost.copy(),
                     )
                 )
         return [action]
 
 
 class AdventurersBandana_3_3(HealBySkillArtifactBase):
-    name: Literal["Adventurer's Bandana"] = "Adventurer's Bandana"
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 1)
+    name: Literal["Adventurer's Bandana"]
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 3
     heal_skill_type: SkillType = SkillType.NORMAL_ATTACK
     heal: int = 1
-    heal_target: Literal['SELF', 'TEAM'] = 'SELF'
+    heal_target: Literal["SELF", "TEAM"] = "SELF"
 
 
 class LuckyDogsSilverCirclet_3_3(HealBySkillArtifactBase):
     name: Literal["Lucky Dog's Silver Circlet"]
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(any_dice_number = 2)
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(any_dice_number=2)
     max_usage_per_round: int = 1
     heal_skill_type: SkillType = SkillType.ELEMENTAL_SKILL
     heal: int = 2
-    heal_target: Literal['SELF', 'TEAM'] = 'SELF'
+    heal_target: Literal["SELF", "TEAM"] = "SELF"
 
 
 class TravelingDoctorsHandkerchief_3_3(HealBySkillArtifactBase):
     name: Literal["Traveling Doctor's Handkerchief"]
-    version: Literal['3.3'] = '3.3'
-    cost: Cost = Cost(same_dice_number = 1)
+    version: Literal["3.3"] = "3.3"
+    cost: Cost = Cost(same_dice_number=1)
     max_usage_per_round: int = 1
     heal_skill_type: SkillType = SkillType.ELEMENTAL_BURST
     heal: int = 1
-    heal_target: Literal['SELF', 'TEAM'] = 'TEAM'
+    heal_target: Literal["SELF", "TEAM"] = "TEAM"
 
 
 register_class(
-    AdventurersBandana_3_3 | LuckyDogsSilverCirclet_3_3 
+    AdventurersBandana_3_3
+    | LuckyDogsSilverCirclet_3_3
     | TravelingDoctorsHandkerchief_3_3
 )

@@ -15,6 +15,7 @@ class ArtifactBase(CardBase):
     """
     Base class of artifacts.
     """
+
     name: str
     version: str
     cost: Cost
@@ -22,8 +23,7 @@ class ArtifactBase(CardBase):
 
     type: Literal[ObjectType.ARTIFACT] = ObjectType.ARTIFACT
     cost_label: int = (
-        CostLabels.CARD.value | CostLabels.ARTIFACT.value 
-        | CostLabels.EQUIPMENT.value
+        CostLabels.CARD.value | CostLabels.ARTIFACT.value | CostLabels.EQUIPMENT.value
     )
     remove_when_used: bool = False
 
@@ -38,8 +38,7 @@ class ArtifactBase(CardBase):
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         # can quip on all self alive characters
         ret: List[ObjectPosition] = []
-        for character in match.player_tables[
-                self.position.player_idx].characters:
+        for character in match.player_tables[self.position.player_idx].characters:
             if character.is_alive:
                 ret.append(character.position)
         return ret
@@ -66,13 +65,17 @@ class ArtifactBase(CardBase):
             if character.id == character_id:
                 # check if need to remove current artifact
                 if character.artifact is not None:
-                    ret.append(RemoveObjectAction(
-                        object_position = character.artifact.position,
-                    ))
-        ret.append(MoveObjectAction(
-            object_position = self.position,
-            target_position = position,
-        ))
+                    ret.append(
+                        RemoveObjectAction(
+                            object_position=character.artifact.position,
+                        )
+                    )
+        ret.append(
+            MoveObjectAction(
+                object_position=self.position,
+                target_position=position,
+            )
+        )
         return ret
 
     def event_handler_MOVE_OBJECT(
@@ -85,8 +88,7 @@ class ArtifactBase(CardBase):
         if (
             event.action.object_position.id == self.id
             and event.action.object_position.area == ObjectPositionType.HAND
-            and event.action.target_position.area 
-            == ObjectPositionType.CHARACTER
+            and event.action.target_position.area == ObjectPositionType.CHARACTER
         ):
             # this artifact equipped from hand to character
             return self.equip(match)
@@ -102,10 +104,11 @@ class RoundEffectArtifactBase(ArtifactBase):
     at round preparing stage.
     Instead of setting usage, set max_usage_per_round.
     """
+
     name: str
     version: str
     cost: Cost
-    max_usage_per_round: int 
+    max_usage_per_round: int
 
     usage: int = 0
 
@@ -128,10 +131,8 @@ class RoundEffectArtifactBase(ArtifactBase):
         """
         if (
             event.action.object_position.id == self.id
-            and event.action.object_position.area 
-            == ObjectPositionType.CHARACTER
-            and event.action.target_position.area 
-            == ObjectPositionType.CHARACTER
+            and event.action.object_position.area == ObjectPositionType.CHARACTER
+            and event.action.target_position.area == ObjectPositionType.CHARACTER
             and event.action.reset_usage
         ):
             # this weapon equipped from character to character

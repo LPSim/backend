@@ -1,10 +1,10 @@
 import pytest
-from src.lpsim.utils import deck_code_to_deck_str, deck_str_to_deck_code
-from src.lpsim import Deck
+from lpsim.utils import deck_code_to_deck_str, deck_str_to_deck_code
+from lpsim import Deck
 
 
 def test_deck_code():
-    deck_str = '''
+    deck_str = """
     # nahida mona fischl, with 4.0 wind and freedom
     default_version:4.1
     character:Fischl@3.3
@@ -28,12 +28,12 @@ def test_deck_code():
     Lotus Flower Crisp*2
     Mondstadt Hash Brown*2
     Tandoori Roast Chicken
-    '''
-    deck_str_over_1 = deck_str + 'character:Beidou'
-    deck_str_over_2 = deck_str + 'Strategize'
-    deck_str_miss_1 = deck_str.replace('character:Mona', '')
-    deck_str_miss_2 = deck_str.replace('Tanodoori Roast Chicken', '')
-    deck_str_over_3 = deck_str.replace('character:Mona', 'character:Mona*2')
+    """
+    deck_str_over_1 = deck_str + "character:Beidou"
+    deck_str_over_2 = deck_str + "Strategize"
+    deck_str_miss_1 = deck_str.replace("character:Mona", "")
+    deck_str_miss_2 = deck_str.replace("Tanodoori Roast Chicken", "")
+    deck_str_over_3 = deck_str.replace("character:Mona", "character:Mona*2")
     # check deck str to deck code
     deck_code = deck_str_to_deck_code(deck_str)
     with pytest.raises(ValueError):
@@ -49,7 +49,7 @@ def test_deck_code():
     with pytest.raises(ValueError):
         for i in range(10000):  # pragma: no branch
             # it is nearly impossible to generate a legal deck code 10000 times
-            deck_str_to_deck_code(deck_str, max_retry_time = 1)
+            deck_str_to_deck_code(deck_str, max_retry_time=1)
 
     # check deck code to deck str is same
     def check_deck_str_same(str1: str, str2: str) -> bool:
@@ -79,8 +79,8 @@ def test_deck_code():
         deck_code_miss_2 = deck_str_to_deck_code(deck_str_miss_2)
 
     # when version hint is added, output should contain version
-    deck_str_rev_version = deck_code_to_deck_str(deck_code, version = '4.0')
-    assert 'default_version:4.0' in deck_str_rev_version
+    deck_str_rev_version = deck_code_to_deck_str(deck_code, version="4.0")
+    assert "default_version:4.0" in deck_str_rev_version
 
     deck_instance = Deck.from_deck_code(deck_code)
     deck_code_rev = deck_instance.to_deck_code()
@@ -88,7 +88,7 @@ def test_deck_code():
 
 
 def test_deck_doce_shuffle():
-    deck_str = '''
+    deck_str = """
         character:Yelan
         character:Chongyun
         character:Kamisato Ayaka
@@ -122,22 +122,23 @@ def test_deck_doce_shuffle():
         Northern Smoked Chicken
         Minty Meat Rolls
         Minty Meat Rolls
-    '''
-    deck_str = '\n'.join([x.strip() for x in deck_str.strip().split('\n')])
+    """
+    deck_str = "\n".join([x.strip() for x in deck_str.strip().split("\n")])
     # deck_code = 'tqYl1KmzpYX2a7GxsjWVbiixtvWlPGu0rgUWdqizsqa23LG3s5am3KiysZX1JHi1tsWl'  # noqa: E501
     # deck_str = deck_code_to_deck_str(deck_code)
-    deck_str_sorted = sorted(deck_str.strip().split('\n'))
+    deck_str_sorted = sorted(deck_str.strip().split("\n"))
     for _ in range(100):  # pragma: no branch
         deck_code_2 = deck_str_to_deck_code(deck_str)
         deck_str_2 = deck_code_to_deck_str(deck_code_2)
-        deck_str_2_sorted = sorted(deck_str_2.strip().split('\n'))
+        deck_str_2_sorted = sorted(deck_str_2.strip().split("\n"))
         assert deck_str_sorted == deck_str_2_sorted
         if deck_str != deck_str_2:  # pragma: no branch
             break
     else:
         raise AssertionError(
-            'this deck code should shuffle to generate valid code, '
-            'but with 100 times no different code is generated!')
+            "this deck code should shuffle to generate valid code, "
+            "but with 100 times no different code is generated!"
+        )
 
 
 if __name__ == "__main__":

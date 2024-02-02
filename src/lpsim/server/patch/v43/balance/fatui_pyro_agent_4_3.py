@@ -47,7 +47,7 @@ desc: Dict[str, DescDictType] = {
                 "en-US": "$SKILL_Fatui Pyro Agent_PASSIVE/Stealth Master|descs|3.3|en-US",  # noqa: E501
             }
         }
-    }
+    },
 }
 
 

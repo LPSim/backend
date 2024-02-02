@@ -1,9 +1,12 @@
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
 from tests.utils_for_test import (
-    check_hp, get_random_state, get_test_id_from_command, make_respond, 
-    set_16_omni
+    check_hp,
+    get_random_state,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
 )
 
 
@@ -48,7 +51,7 @@ def test_noelle():
             "TEST 5 p0c0 no character status",
             "TEST 4 skill 0 cost 3",
             "sw_char 1 0",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -82,33 +85,27 @@ def test_noelle():
             "skill 0 0 1",
             "skill 0 0 1 2",
             "TEST 1 2 1 10 7 10 0",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Noelle
         character:PhysicalMob
         character:Mona
         I Got Your Back*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -128,7 +125,7 @@ def test_noelle():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -138,27 +135,27 @@ def test_noelle():
                 break
             elif test_id == 1:
                 # a sample of HP check based on the command string.
-                hps = cmd.strip().split(' ')[2:]
+                hps = cmd.strip().split(" ")[2:]
                 hps = [int(x) for x in hps]
                 hps = [hps[:3], hps[3:]]
                 check_hp(match, hps)
             elif test_id == 2:
                 status = match.player_tables[0].team_status
                 assert len(status) == 1
-                assert status[0].name == 'Full Plate'
+                assert status[0].name == "Full Plate"
                 assert status[0].usage == 1
             elif test_id == 3:
                 status = match.player_tables[0].team_status
                 assert len(status) == 1
-                assert status[0].name == 'Crystallize'
+                assert status[0].name == "Crystallize"
                 assert status[0].usage == 1
             elif test_id == 4:
-                cmd = cmd.strip().split(' ')
+                cmd = cmd.strip().split(" ")
                 snum = int(cmd[3])
                 cnum = int(cmd[5])
                 compared = False
                 for req in match.requests:
-                    if req.name == 'UseSkillRequest':
+                    if req.name == "UseSkillRequest":
                         if req.skill_idx == snum:
                             assert req.cost.total_dice_cost == cnum
                             compared = True
@@ -167,10 +164,9 @@ def test_noelle():
                 status = match.player_tables[0].characters[0].status
                 assert len(status) == 0
             elif test_id == 6:
-                assert match.player_tables[1].characters[
-                    1].element_application == []
+                assert match.player_tables[1].characters[1].element_application == []
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -180,5 +176,5 @@ def test_noelle():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_noelle()

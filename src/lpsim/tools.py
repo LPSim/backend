@@ -18,31 +18,31 @@ def read_log(
     Read log and return agents and a match.
 
     Args:
-        log_str (str): log string with JSON format. It must contain 
-            `start_deck`, `match_random_state` and `command_history`, and 
+        log_str (str): log string with JSON format. It must contain
+            `start_deck`, `match_random_state` and `command_history`, and
             optionally `match_config`.
         use_16_omni (bool | None, optional): If True, use OmnipotentGuide.
             If False, not use it. If None, determined by dice number from
-            match_config, if config exists and is 16 then True, otherwise 
+            match_config, if config exists and is 16 then True, otherwise
             False.
     """
     data = json.loads(log_str)
-    if 'version' not in data:
-        data['version'] = '1.0'
-    if data['version'] == '1.0':
+    if "version" not in data:
+        data["version"] = "1.0"
+    if data["version"] == "1.0":
         decks = []
-        for d in data['start_deck']:
+        for d in data["start_deck"]:
             if isinstance(d, str):
                 decks.append(Deck.from_str(d))
             else:
                 decks.append(Deck(**d))
-        match = Match(random_state = data['match_random_state'])
-        if 'match_config' in data:
-            match.config = MatchConfig(**data['match_config'])
+        match = Match(random_state=data["match_random_state"])
+        if "match_config" in data:
+            match.config = MatchConfig(**data["match_config"])
         if use_16_omni is None:
             if (
-                'match_config' in data
-                and data['match_config']['initial_dice_number'] == 16
+                "match_config" in data
+                and data["match_config"]["initial_dice_number"] == 16
             ):
                 use_16_omni = True
             else:
@@ -50,20 +50,14 @@ def read_log(
         if use_16_omni:
             match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
         match.set_deck(decks)
-        commands = data['command_history']
+        commands = data["command_history"]
         agents: List[InteractionAgent] = []
         if isinstance(commands[0][0], (list, tuple)):  # pragma: no cover
             # new version, extract only string
-            commands = [
-                [
-                    y[1] for y in x
-                ] for x in commands
-            ]
+            commands = [[y[1] for y in x] for x in commands]
         for cnum, command in enumerate(commands):
             agent = InteractionAgent(
-                player_idx = cnum, 
-                commands = command,
-                only_use_command = True
+                player_idx=cnum, commands=command, only_use_command=True
             )
             agents.append(agent)
         return agents, match
@@ -86,7 +80,7 @@ def interact_match_with_agents(
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # respond
         resp = agent.generate_response(match)
         assert resp is not None

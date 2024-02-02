@@ -1,5 +1,3 @@
-
-
 from typing import Any, List, Literal
 
 from .....utils.class_registry import register_class
@@ -18,14 +16,13 @@ from ....consts import ObjectPositionType, ObjectType, WeaponType
 
 
 class WolfsGravestone_3_3(WeaponBase):
-    name: Literal["Wolf's Gravestone"] = "Wolf's Gravestone"
-    cost: Cost = Cost(same_dice_number = 3)
-    version: Literal['3.3'] = '3.3'
+    name: Literal["Wolf's Gravestone"]
+    cost: Cost = Cost(same_dice_number=3)
+    version: Literal["3.3"] = "3.3"
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
     def value_modifier_DAMAGE_INCREASE(
-        self, value: DamageIncreaseValue, match: Any, 
-        mode: Literal['TEST', 'REAL']
+        self, value: DamageIncreaseValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> DamageIncreaseValue:
         assert value.target_position.area == ObjectPositionType.CHARACTER
         character = match.get_object(value.target_position)
@@ -37,12 +34,12 @@ class WolfsGravestone_3_3(WeaponBase):
 
 
 class TheBell_3_7(RoundEffectWeaponBase):
-    name: Literal['The Bell']
+    name: Literal["The Bell"]
     type: Literal[ObjectType.WEAPON] = ObjectType.WEAPON
-    version: Literal['3.7'] = '3.7'
+    version: Literal["3.7"] = "3.7"
     weapon_type: WeaponType = WeaponType.CLAYMORE
 
-    cost: Cost = Cost(same_dice_number = 3)
+    cost: Cost = Cost(same_dice_number=3)
     max_usage_per_round: int = 1
 
     def event_handler_SKILL_END(
@@ -53,8 +50,11 @@ class TheBell_3_7(RoundEffectWeaponBase):
         Shield.
         """
         if not self.position.check_position_valid(
-            event.action.position, match, player_idx_same = True,
-            character_idx_same = True, target_area = ObjectPositionType.SKILL
+            event.action.position,
+            match,
+            player_idx_same=True,
+            character_idx_same=True,
+            target_area=ObjectPositionType.SKILL,
         ):
             # not self character use skill
             return []
@@ -62,15 +62,17 @@ class TheBell_3_7(RoundEffectWeaponBase):
             # no usage
             return []
         self.usage -= 1
-        return [CreateObjectAction(
-            object_name = 'Rebellious Shield',
-            object_position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.TEAM_STATUS,
-                id = -1
-            ),
-            object_arguments = {}
-        )]
+        return [
+            CreateObjectAction(
+                object_name="Rebellious Shield",
+                object_position=ObjectPosition(
+                    player_idx=self.position.player_idx,
+                    area=ObjectPositionType.TEAM_STATUS,
+                    id=-1,
+                ),
+                object_arguments={},
+            )
+        ]
 
 
 register_class(WolfsGravestone_3_3 | TheBell_3_7)

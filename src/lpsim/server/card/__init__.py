@@ -5,6 +5,10 @@ from .support import SupportBase, LocationBase, ItemBase, CompanionBase
 
 import_all_modules(__file__, __name__)
 __all__ = (
-    'WeaponBase', 'ArtifactBase', 'SupportBase', 'LocationBase', 
-    'ItemBase', 'CompanionBase'
+    "WeaponBase",
+    "ArtifactBase",
+    "SupportBase",
+    "LocationBase",
+    "ItemBase",
+    "CompanionBase",
 )

@@ -19,35 +19,34 @@ class NereidsAscension(NA_3_6):
         """
         No healing
         """
-        return super(NA_3_6, self).get_actions(match, [
-            self.create_character_status('Ceremonial Garment'),
-        ])
+        return super(NA_3_6, self).get_actions(
+            match,
+            [
+                self.create_character_status("Ceremonial Garment"),
+            ],
+        )
 
 
 class TamakushiCasket_3_5(SkillTalent):
-    name: Literal['Tamakushi Casket']
-    version: Literal['3.5'] = '3.5'
-    character_name: Literal['Sangonomiya Kokomi'] = 'Sangonomiya Kokomi'
+    name: Literal["Tamakushi Casket"]
+    version: Literal["3.5"] = "3.5"
+    character_name: Literal["Sangonomiya Kokomi"] = "Sangonomiya Kokomi"
     cost: Cost = Cost(
-        elemental_dice_color = DieColor.HYDRO,
-        elemental_dice_number = 3,
-        charge = 2
+        elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3, charge=2
     )
     skill: Literal["Nereid's Ascension"] = "Nereid's Ascension"
 
 
 class SangonomiyaKokomi_3_5(SK_3_6):
-    version: Literal['3.5']
-    skills: List[
-        ElementalNormalAttackBase | KuragesOath | NereidsAscension
-    ] = []
+    version: Literal["3.5"]
+    skills: List[ElementalNormalAttackBase | KuragesOath | NereidsAscension] = []
 
     def _init_skills(self) -> None:
         self.skills = [
             ElementalNormalAttackBase(
-                name = 'The Shape of Water',
-                damage_type = ELEMENT_TO_DAMAGE_TYPE[self.element],
-                cost = ElementalNormalAttackBase.get_cost(self.element),
+                name="The Shape of Water",
+                damage_type=ELEMENT_TO_DAMAGE_TYPE[self.element],
+                cost=ElementalNormalAttackBase.get_cost(self.element),
             ),
             KuragesOath(),
             NereidsAscension(),

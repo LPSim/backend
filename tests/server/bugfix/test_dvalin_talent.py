@@ -1,14 +1,19 @@
 import os
-from src.lpsim import MatchState
+from lpsim import MatchState
 from tests.utils_for_test import (
-    check_hp, check_usage, get_pidx_cidx, get_test_id_from_command, 
-    make_respond, set_16_omni, read_from_log_json
+    check_hp,
+    check_usage,
+    get_pidx_cidx,
+    get_test_id_from_command,
+    make_respond,
+    set_16_omni,
+    read_from_log_json,
 )
 
 
 def test_dvalin_talent():
     match, agent_0, agent_1 = read_from_log_json(
-        os.path.join(os.path.dirname(__file__), 'jsons', 'test_dvalin_talent.json')  # noqa: E501
+        os.path.join(os.path.dirname(__file__), "jsons", "test_dvalin_talent.json")  # noqa: E501
     )
     match.config.history_level = 0
     # modify hp
@@ -29,11 +34,11 @@ def test_dvalin_talent():
             agent = agent_1
             nc = new_commands[1]
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             nc.append(agent.commands[0])
-            cmd = agent.commands[0].strip().split(' ')
+            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
@@ -45,10 +50,9 @@ def test_dvalin_talent():
                 check_hp(match, hps)
             elif test_id == 5:
                 pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].characters[cidx].status, 
-                            cmd[3:])
+                check_usage(match.player_tables[pidx].characters[cidx].status, cmd[3:])
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -58,5 +62,5 @@ def test_dvalin_talent():
     assert match.state != MatchState.ERROR
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_dvalin_talent()

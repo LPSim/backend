@@ -5,7 +5,9 @@ from pydantic import PrivateAttr
 from ....action import ActionTypes, Actions, CreateObjectAction
 from .....utils.desc_registry import DescDictType
 from .....utils.class_registry import (
-    get_class_list_by_base_class, get_instance, register_class
+    get_class_list_by_base_class,
+    get_instance,
+    register_class,
 )
 from ....card.support.locations import LocationBase
 from ....match import Match
@@ -19,8 +21,8 @@ from ....card.support.companions import CompanionBase
 
 
 class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
-    name: Literal['Mamere']
-    version: Literal['4.3'] = '4.3'
+    name: Literal["Mamere"]
+    version: Literal["4.3"] = "4.3"
     cost: Cost = Cost()
     max_usage_one_round: int = 1
     usage: int = 3
@@ -39,17 +41,14 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
     def _get_candidate_list(self, match: Match) -> List[str]:
         if self._accept_class_list is not None:
             return self._accept_class_list
-        kwargs: Dict[str, Any] = { 'exclude': set([self.name]) }
+        kwargs: Dict[str, Any] = {"exclude": set([self.name])}
         default_version = match.player_tables[
             self.position.player_idx
         ].player_deck_information.default_version
         if default_version is not None:
-            kwargs['version'] = default_version
+            kwargs["version"] = default_version
         self._accept_version = default_version
-        candidate_list = get_class_list_by_base_class(
-            self._accept_card_types, 
-            **kwargs
-        )
+        candidate_list = get_class_list_by_base_class(self._accept_card_types, **kwargs)
         self._accept_class_list = candidate_list
         self._accept_class_name_set = set(candidate_list)
         return candidate_list
@@ -64,11 +63,10 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         candidate_list = self._get_candidate_list(match)
         args = {}
         if self._accept_version is not None:
-            args['version'] = self._accept_version
+            args["version"] = self._accept_version
         candidate_instance = [
-            get_instance(self._accept_card_types, {
-                'name': name, **args
-            }) for name in candidate_list
+            get_instance(self._accept_card_types, {"name": name, **args})
+            for name in candidate_list
         ]
         res: List[Actions] = []
         for i in candidate_instance:
@@ -89,7 +87,7 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
             # not self use card, return
             return []
         card_name = event.card_name
-        if card_name == 'Mamere':
+        if card_name == "Mamere":
             # using Mamere, return
             return []
         # recall _get_candidate_list to create data
@@ -97,25 +95,23 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         if card_name in self._accept_class_name_set:
             # using target type, generate new card
             # get candidate list for target type, except self
-            random_target = candidate_list[
-                int(match._random() * len(candidate_list))
-            ]
+            random_target = candidate_list[int(match._random() * len(candidate_list))]
             # use, and generate new card
             self.use()
             res: List[Actions] = []
             position = ObjectPosition(
-                player_idx = self.position.player_idx,
-                area = ObjectPositionType.HAND,
-                id = -1
+                player_idx=self.position.player_idx, area=ObjectPositionType.HAND, id=-1
             )
             args = {}
             if self._accept_version is not None:
-                args['version'] = self._accept_version
-            res.append(CreateObjectAction(
-                object_name = random_target,
-                object_position = position,
-                object_arguments = args
-            ))
+                args["version"] = self._accept_version
+            res.append(
+                CreateObjectAction(
+                    object_name=random_target,
+                    object_position=position,
+                    object_arguments=args,
+                )
+            )
             res += self.check_should_remove()
             return res
         return []
@@ -123,18 +119,15 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
 
 desc: Dict[str, DescDictType] = {
     "SUPPORT/Mamere": {
-        "names": {
-            "en-US": "Mamere",
-            "zh-CN": "玛梅赫"
-        },
+        "names": {"en-US": "Mamere", "zh-CN": "玛梅赫"},
         "descs": {
             "4.3": {
                 "en-US": "After you play a Food/Location/Companion/Item Action Card other than Mamere: Randomly create 1 Food/Location/Companion/Item Action Card other than Mamere, and add it to your hand. (Once per Round).\nUsage(s): 3",  # noqa: E501
-                "zh-CN": "我方打出「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌后：随机生成1张「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌，将其加入手牌。（每回合1次）\n可用次数：3"  # noqa: E501
+                "zh-CN": "我方打出「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌后：随机生成1张「玛梅赫」以外的「料理」/「场地」/「伙伴」/「道具」行动牌，将其加入手牌。（每回合1次）\n可用次数：3",  # noqa: E501
             }
         },
         "image_path": "cardface/Assist_NPC_Mamere.png",  # noqa: E501
-        "id": 322021
+        "id": 322021,
     },
 }
 

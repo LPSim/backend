@@ -4,54 +4,59 @@ from typing import Literal
 import dictdiffer
 import pytest
 
-from src.lpsim.server.struct import Cost, ObjectPosition
-from src.lpsim.server.event import UseCardEventArguments
-from src.lpsim.server.action import ActionTypes, UseCardAction
-from src.lpsim.utils.class_registry import get_instance
-from src.lpsim.server.summon.base import SummonBase
-from src.lpsim.server.consts import ObjectPositionType, ObjectType
-from src.lpsim.agents.nothing_agent import NothingAgent
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
-from src.lpsim.server.match import Match, MatchState
-from src.lpsim.server.deck import Deck
-from src.lpsim.agents.random_agent import RandomAgent
-from src.lpsim.agents.interaction_agent import InteractionAgent
-from src.lpsim.server.character.electro.fischl_3_3 import Oz_3_3
+from lpsim.server.struct import Cost, ObjectPosition
+from lpsim.server.event import UseCardEventArguments
+from lpsim.server.action import ActionTypes, UseCardAction
+from lpsim.utils.class_registry import get_instance
+from lpsim.server.summon.base import SummonBase
+from lpsim.server.consts import ObjectPositionType, ObjectType
+from lpsim.agents.nothing_agent import NothingAgent
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
+from lpsim.server.match import Match, MatchState
+from lpsim.server.deck import Deck
+from lpsim.agents.random_agent import RandomAgent
+from lpsim.agents.interaction_agent import InteractionAgent
+from lpsim.server.character.electro.fischl_3_3 import Oz_3_3
 from tests.utils_for_test import (
-    get_test_id_from_command, set_16_omni, make_respond, remove_ids, 
-    get_random_state, check_hp
+    get_test_id_from_command,
+    set_16_omni,
+    make_respond,
+    remove_ids,
+    get_random_state,
+    check_hp,
 )
 
 
 TEST_DECK = {
-    'name': 'Deck',
-    'characters': [
+    "name": "Deck",
+    "characters": [
         {
-            'name': 'DendroMobMage',
-            'element': 'DENDRO',
-            'hp': 99,
-            'max_hp': 99,
+            "name": "DendroMobMage",
+            "element": "DENDRO",
+            "hp": 99,
+            "max_hp": 99,
         },
         {
-            'name': 'DendroMobMage',
-            'element': 'DENDRO',
+            "name": "DendroMobMage",
+            "element": "DENDRO",
         },
         {
-            'name': 'ElectroMobMage',
-            'element': 'ELECTRO',
+            "name": "ElectroMobMage",
+            "element": "ELECTRO",
         },
     ],
-    'cards': [
+    "cards": [
         {
-            'name': 'Strategize',
+            "name": "Strategize",
         }
-    ] * 30,
+    ]
+    * 30,
 }
 
 
 def test_match_pipeline():
-    agent_0 = RandomAgent(player_idx = 0)
-    agent_1 = NothingAgent(player_idx = 1)
+    agent_0 = RandomAgent(player_idx=0)
+    agent_1 = NothingAgent(player_idx=1)
     match = Match()
     deck = TEST_DECK
     deck = Deck(**deck)
@@ -63,8 +68,8 @@ def test_match_pipeline():
     match.step()  # switch card
 
     while match.round_number < 100 and not match.is_game_end():
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
 
     assert match.state != MatchState.ERROR
 
@@ -75,26 +80,26 @@ def test_save_load():
     when save on field generated, load should be same. otherwise, load should
     be different only on id.
     """
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
-            'sw_card',
-            'choose 2',
+        player_idx=1,
+        verbose_level=0,
+        commands=[
+            "sw_card",
+            "choose 2",
             # 'reroll',
-            'skill 0 omni omni omni',
-            'sw_char 0 omni',
-            'skill 0 omni omni omni',  # quiken activated
-            'skill 0 omni omni omni',
-            'sw_char 2 omni',
-            'skill 0 omni omni omni',  # quiken activated, renew in v3.3
-            'end',
-            'skill 0 omni omni omni',
-            'skill 0 omni omni omni',
-            'skill 0 omni omni omni',  # run out of field
+            "skill 0 omni omni omni",
+            "sw_char 0 omni",
+            "skill 0 omni omni omni",  # quiken activated
+            "skill 0 omni omni omni",
+            "sw_char 2 omni",
+            "skill 0 omni omni omni",  # quiken activated, renew in v3.3
+            "end",
+            "skill 0 omni omni omni",
+            "skill 0 omni omni omni",
+            "skill 0 omni omni omni",  # run out of field
         ],
-        only_use_command = True
+        only_use_command=True,
     )
     match = Match()
     deck = TEST_DECK
@@ -102,7 +107,7 @@ def test_save_load():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     set_16_omni(match)
-    match.event_handlers[0].version = '3.3'  # type: ignore
+    match.event_handlers[0].version = "3.3"  # type: ignore
     assert match.start()[0]
     match.step()  # switch card
 
@@ -110,34 +115,33 @@ def test_save_load():
     agent_saves = {}
 
     while True:
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
         if len(agent_1.commands) not in saves:
             length = len(agent_1.commands)
-            saves[length] = match.copy(deep = True)
-            agent_saves[length] = agent_1.copy(deep = True)
+            saves[length] = match.copy(deep=True)
+            agent_saves[length] = agent_1.copy(deep=True)
         else:
             raise AssertionError()
         if len(agent_1.commands) == 0:
             break
 
-    def check_range(saves, agent_saves, start, end, 
-                    same = True, ignore_id = False):
+    def check_range(saves, agent_saves, start, end, same=True, ignore_id=False):
         """
         load start and run until end, then check if they are same.
         if ignore_id, before compare will remove ids from objects.
         """
-        match = saves[start].copy(deep = True)
-        agent_1 = agent_saves[start].copy(deep = True)
+        match = saves[start].copy(deep=True)
+        agent_1 = agent_saves[start].copy(deep=True)
         while True:
-            make_respond(agent_0, match, assertion = False)
-            make_respond(agent_1, match, assertion = False)
+            make_respond(agent_0, match, assertion=False)
+            make_respond(agent_1, match, assertion=False)
             if len(agent_1.commands) == end:
                 break
         saves_end = saves[end]
         if ignore_id:
-            match = match.copy(deep = True)
-            saves_end = saves_end.copy(deep = True)
+            match = match.copy(deep=True)
+            saves_end = saves_end.copy(deep=True)
             remove_ids(match)
             remove_ids(saves_end)
         is_same = match == saves_end
@@ -145,13 +149,13 @@ def test_save_load():
 
     # from any position, run reuslts should same
     for _ in range(1, 11):
-        check_range(saves, agent_saves, _, 0, same = True, ignore_id = True)
+        check_range(saves, agent_saves, _, 0, same=True, ignore_id=True)
     # generate status, id should not change
-    check_range(saves, agent_saves, 8, 7, same = False, ignore_id = False)
+    check_range(saves, agent_saves, 8, 7, same=False, ignore_id=False)
     # ignore id, should same
-    check_range(saves, agent_saves, 8, 7, same = True, ignore_id = True)
+    check_range(saves, agent_saves, 8, 7, same=True, ignore_id=True)
     # renew status, id should not change
-    check_range(saves, agent_saves, 6, 4, same = True, ignore_id = False)
+    check_range(saves, agent_saves, 6, 4, same=True, ignore_id=False)
 
     assert len(agent_1.commands) == 0
 
@@ -159,11 +163,11 @@ def test_save_load():
 
 
 def test_copy_speed():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 1 0 0 1",
@@ -176,11 +180,11 @@ def test_copy_speed():
             "skill 2 omni omni dendro omni omni",
             "end",
             "skill 1 0 1 2",
-            "card 0 0 0 1 2"
+            "card 0 0 0 1 2",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
         """
         character:Fischl
@@ -203,7 +207,7 @@ def test_copy_speed():
         elif match.need_respond(1):
             make_respond(agent_1, match)
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -218,9 +222,9 @@ def test_copy_speed():
     assert match.start()[0]
     starttime = time.time()
     for i in range(run_time):
-        _ = match.copy(deep = True)
+        _ = match.copy(deep=True)
     endtime = time.time()
-    print('not json speed', (endtime - starttime) / run_time)
+    print("not json speed", (endtime - starttime) / run_time)
 
     match = Match()
     match.config.max_same_card_number = 30
@@ -232,16 +236,16 @@ def test_copy_speed():
         mainjson = match.json()
         _ = Match(**json.loads(mainjson))
     endtime = time.time()
-    print('json speed', (endtime - starttime) / run_time)
+    print("json speed", (endtime - starttime) / run_time)
     assert True
 
 
 def test_random_same_after_load():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state())
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -251,7 +255,7 @@ def test_random_same_after_load():
         Sweet Madame*5
         Abyssal Summons*5
         Fatui Conspiracy*5
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 99
@@ -262,32 +266,32 @@ def test_random_same_after_load():
     match.config.card_number = None
     match.config.character_number = None
     match.config.check_deck_restriction = False
-    initial_match = match.copy(deep = True)
-    initial_agent_0 = agent_0.copy(deep = True)
-    initial_agent_1 = agent_1.copy(deep = True)
+    initial_match = match.copy(deep=True)
+    initial_agent_0 = agent_0.copy(deep=True)
+    initial_agent_1 = agent_1.copy(deep=True)
     results_1 = []
     test_step = 100
     assert match.start()[0]
     match.step()
     for _ in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
-        results_1.append(match.copy(deep = True))
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
+        results_1.append(match.copy(deep=True))
     assert match.state != MatchState.ERROR
 
     # use deepcopy to rerun
-    match = initial_match.copy(deep = True)
-    agent_0 = initial_agent_0.copy(deep = True)
-    agent_1 = initial_agent_1.copy(deep = True)
+    match = initial_match.copy(deep=True)
+    agent_0 = initial_agent_0.copy(deep=True)
+    agent_1 = initial_agent_1.copy(deep=True)
     assert match.start()[0]
     match.step()
     for i in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
         remove_ids(results_1[i])
-        now = match.copy(deep = True)
+        now = match.copy(deep=True)
         remove_ids(now)
-        assert now == results_1[i], f'deepcopy error at {i}'
+        assert now == results_1[i], f"deepcopy error at {i}"
     assert match.state != MatchState.ERROR
 
     match = Match(**json.loads(initial_match.json()))
@@ -301,21 +305,21 @@ def test_random_same_after_load():
     assert match.start()[0]
     match.step()
     for i in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
         remove_ids(results_1[i])
-        now = match.copy(deep = True)
+        now = match.copy(deep=True)
         remove_ids(now)
-        assert now == results_1[i], f'json error at {i}'
+        assert now == results_1[i], f"json error at {i}"
     assert match.state != MatchState.ERROR
 
 
 def test_save_load_same():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -326,7 +330,7 @@ def test_save_load_same():
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 99
@@ -341,32 +345,33 @@ def test_save_load_same():
     assert match.start()[0]
     match.step()
     for _ in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
-        match_copy = match.copy(deep = True)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
+        match_copy = match.copy(deep=True)
         assert remove_ids(match_copy) == remove_ids(
-            Match(**json.loads(match_copy.json())))
+            Match(**json.loads(match_copy.json()))
+        )
         match = Match(**json.loads(match.json()))
     assert match.state != MatchState.ERROR
 
 
 def test_use_card():
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        commands = [
-            'sw_card',
-            'choose 2',
-            'card 0 0 omni',
-            'card 0 0 omni',
-            'card 0 0 omni',
-            'card 0 0 omni',
-            'end',
-            'card 0 0 omni',
-            'card 0 0 omni',
-            'card 0 0 omni',
-            'card 0 0 omni',
-        ]
+        player_idx=1,
+        commands=[
+            "sw_card",
+            "choose 2",
+            "card 0 0 omni",
+            "card 0 0 omni",
+            "card 0 0 omni",
+            "card 0 0 omni",
+            "end",
+            "card 0 0 omni",
+            "card 0 0 omni",
+            "card 0 0 omni",
+            "card 0 0 omni",
+        ],
     )
     match = Match()
     deck = TEST_DECK
@@ -374,9 +379,7 @@ def test_use_card():
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     match.config.initial_dice_number = 16
-    match.event_handlers = (
-        [OmnipotentGuideEventHandler_3_3()] + match.event_handlers
-    )
+    match.event_handlers = [OmnipotentGuideEventHandler_3_3()] + match.event_handlers
     assert match.start()[0]
     match.step()
 
@@ -388,12 +391,15 @@ def test_use_card():
             current_agent = agent_0
         elif match.need_respond(1):
             current_agent = agent_1
-            assert len(match.player_tables[1].hands) == hand_numbers[
-                len(agent_1.commands)]
-            assert len(match.player_tables[1].table_deck) == deck_numbers[
-                len(agent_1.commands)]
+            assert (
+                len(match.player_tables[1].hands) == hand_numbers[len(agent_1.commands)]
+            )
+            assert (
+                len(match.player_tables[1].table_deck)
+                == deck_numbers[len(agent_1.commands)]
+            )
         else:
-            raise AssertionError('no need respond')
+            raise AssertionError("no need respond")
         make_respond(current_agent, match)
 
     assert match.state != MatchState.ERROR
@@ -403,60 +409,61 @@ def test_support_over_maximum_and_error_tests():
     """
     put 6 Ranas and check usages and order.
     """
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
-            'sw_card',
-            'choose 1',
-            'card 0 0 omni omni',
-            'card 0 0 omni omni',
-            'card 0 0 omni omni',
-            'end',
-            'end',
-            'skill 1 omni omni omni',
-            'card 0 0 omni electro',
-            'card 0 3 electro electro',
+        player_idx=1,
+        verbose_level=0,
+        commands=[
+            "sw_card",
+            "choose 1",
+            "card 0 0 omni omni",
+            "card 0 0 omni omni",
+            "card 0 0 omni omni",
+            "end",
+            "end",
+            "skill 1 omni omni omni",
+            "card 0 0 omni electro",
+            "card 0 3 electro electro",
             # 4 rana, usage 0 0 0 1
-            'card 0 0 omni omni',
+            "card 0 0 omni omni",
             # 4 rana, usage 0 0 1 1
-            'skill 1 omni omni omni',
+            "skill 1 omni omni omni",
             # dice 7 omni + 2 electro
-            'end',
-            'skill 1 omni omni omni',
+            "end",
+            "skill 1 omni omni omni",
             # 13 omni and 3 electro and 0 usage
-            'end',
-            'skill 2 omni omni omni',
+            "end",
+            "skill 2 omni omni omni",
             # 13 omni, all 1 usage
-            'end',
+            "end",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = {
-        'name': 'Deck',
-        'characters': [
+        "name": "Deck",
+        "characters": [
             {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
-                'hp': 99,
-                'max_hp': 99,
+                "name": "DendroMobMage",
+                "element": "DENDRO",
+                "hp": 99,
+                "max_hp": 99,
             },
             {
-                'name': 'DendroMobMage',
-                'element': 'DENDRO',
+                "name": "DendroMobMage",
+                "element": "DENDRO",
             },
             {
-                'name': 'ElectroMobMage',
-                'element': 'ELECTRO',
+                "name": "ElectroMobMage",
+                "element": "ELECTRO",
             },
         ],
-        'cards': [
+        "cards": [
             {
-                'name': 'Rana',
+                "name": "Rana",
             }
-        ] * 30,
+        ]
+        * 30,
     }
     deck = Deck(**deck)
     match.set_deck([deck, deck])
@@ -469,21 +476,22 @@ def test_support_over_maximum_and_error_tests():
         if match.need_respond(0):
             make_respond(agent_0, match)
         elif match.need_respond(1):
-
             # asserts
             if len(agent_1.commands) == 7:
                 # 4 rana, usage 0 0 0 1
                 assert len(match.player_tables[1].supports) == 4
                 for support, usage in zip(
-                        match.player_tables[1].supports, [0, 0, 0, 1]):
-                    assert support.name == 'Rana'
+                    match.player_tables[1].supports, [0, 0, 0, 1]
+                ):
+                    assert support.name == "Rana"
                     assert support.usage == usage
             elif len(agent_1.commands) == 6:
                 # 4 rana, usage 0 0 1 1
                 assert len(match.player_tables[1].supports) == 4
                 for support, usage in zip(
-                        match.player_tables[1].supports, [0, 0, 1, 1]):
-                    assert support.name == 'Rana'
+                    match.player_tables[1].supports, [0, 0, 1, 1]
+                ):
+                    assert support.name == "Rana"
                     assert support.usage == usage
             elif len(agent_1.commands) == 5:
                 # dice 7 omni + 2 electro
@@ -491,10 +499,10 @@ def test_support_over_maximum_and_error_tests():
                 omni_counter = 0
                 electro_counter = 0
                 for d in match.player_tables[1].dice.colors:
-                    if d == 'OMNI':
+                    if d == "OMNI":
                         omni_counter += 1
                     else:
-                        assert d == 'ELECTRO'
+                        assert d == "ELECTRO"
                         electro_counter += 1
                 assert omni_counter == 7
                 assert electro_counter == 2
@@ -504,28 +512,28 @@ def test_support_over_maximum_and_error_tests():
                 omni_counter = 0
                 electro_counter = 0
                 for d in match.player_tables[1].dice.colors:
-                    if d == 'OMNI':
+                    if d == "OMNI":
                         omni_counter += 1
                     else:
-                        assert d == 'ELECTRO'
+                        assert d == "ELECTRO"
                         electro_counter += 1
                 assert omni_counter == 13
                 assert electro_counter == 3
                 for support in match.player_tables[1].supports:
-                    assert support.name == 'Rana'
+                    assert support.name == "Rana"
                     assert support.usage == 0
             elif len(agent_1.commands) == 1:
                 # 13 omni, all 1 usage
                 assert len(match.player_tables[1].dice.colors) == 13
                 for d in match.player_tables[1].dice.colors:
-                    assert d == 'OMNI'
+                    assert d == "OMNI"
                 for support in match.player_tables[1].supports:
-                    assert support.name == 'Rana'
+                    assert support.name == "Rana"
                     assert support.usage == 1
 
             make_respond(agent_1, match)
         else:
-            raise AssertionError('no need respond')
+            raise AssertionError("no need respond")
         if len(agent_1.commands) == 0:
             break
 
@@ -534,7 +542,7 @@ def test_support_over_maximum_and_error_tests():
     check_hp(match, [[85, 10, 10], [99, 10, 10]])
     assert len(match.player_tables[1].supports) == 4
     for support in match.player_tables[1].supports:
-        assert support.name == 'Rana'
+        assert support.name == "Rana"
 
     assert match.state != MatchState.ERROR
 
@@ -556,7 +564,7 @@ def test_summon_over_maximum():
             "end",
             "sw_char 0 0",
             "skill 1 0 1 2",
-            "end"
+            "end",
         ],
         [
             "sw_card",
@@ -574,33 +582,27 @@ def test_summon_over_maximum():
             "skill 1 0 1 2",
             "skill 2 0 1 2 3 4",
             "TEST 1 frog squi rap oz rap squi oz ref",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Mona
         character:Fischl
         character:Rhodeia of Loch
         Send Off*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -620,7 +622,7 @@ def test_summon_over_maximum():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -637,7 +639,7 @@ def test_summon_over_maximum():
                     for s, n in zip(table.summons, name):
                         assert n in s.name.lower()
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -660,7 +662,7 @@ def test_plunge_mark():
             "TEST 1 p1 false",
             "card 0 0 0 1",
             "TEST 1 p0 true",
-            "skill 0 0 1 2"
+            "skill 0 0 1 2",
         ],
         [
             "sw_card",
@@ -670,33 +672,27 @@ def test_plunge_mark():
             "TEST 1 p0 true",
             "skill 1 0 1 2",
             "TEST 1 p0 false",
-            "end"
-        ]
+            "end",
+        ],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Nahida
         character:Fischl
         character:Rhodeia of Loch
         Send Off*30
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -716,7 +712,7 @@ def test_plunge_mark():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         # do tests
         while True:
             cmd = agent.commands[0]
@@ -727,11 +723,11 @@ def test_plunge_mark():
             elif test_id == 1:
                 # a sample of HP check based on the command string.
                 cmd = cmd.split()
-                b = bool(['false', 'true'].index(cmd[-1].lower()))
+                b = bool(["false", "true"].index(cmd[-1].lower()))
                 pid = int(cmd[2][1])
                 assert match.player_tables[pid].plunge_satisfied == b
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -743,7 +739,7 @@ def test_plunge_mark():
 
 def test_higher_version_compatible():
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Yoimiya@3.3
         character:Yoimiya@3.4
@@ -761,10 +757,10 @@ def test_higher_version_compatible():
         Send Off@3.8*1
         Send Off@4.0*1
         Send Off*1
-        '''
+        """
     )
-    res = ['3.3', '3.4', '3.4', '3.4', '3.4', '3.8', '3.8', '3.8']
-    res2 = ['3.3', '3.3', '3.3', '3.3', '3.7', '3.7', '3.7', '3.7']
+    res = ["3.3", "3.4", "3.4", "3.4", "3.4", "3.8", "3.8", "3.8"]
+    res2 = ["3.3", "3.3", "3.3", "3.3", "3.7", "3.7", "3.7", "3.7"]
     for c, r in zip(deck.characters, res):
         assert c.version == r
     for c, r in zip(deck.cards, res2):
@@ -772,11 +768,11 @@ def test_higher_version_compatible():
 
 
 def test_save_history():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -787,7 +783,7 @@ def test_save_history():
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 99
@@ -804,22 +800,21 @@ def test_save_history():
     assert match.start()[0]
     match.step()
     for _ in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     assert len(match._history) > test_step  # should record history
-    match_dict = match._history[0].copy(deep = True).dict()
+    match_dict = match._history[0].copy(deep=True).dict()
     starttime = time.time()
     for patch in match._history_diff[1:]:
         match_dict = dictdiffer.patch(patch, match_dict)
-    print('patch speed', (time.time() - starttime) / len(match._history_diff))
+    print("patch speed", (time.time() - starttime) / len(match._history_diff))
     assert match._history[-1].dict() == match_dict
 
-    match_dict = match._history[0].copy(deep = True).dict()
+    match_dict = match._history[0].copy(deep=True).dict()
     starttime = time.time()
     for patch in match._history_diff[1:]:
-        dictdiffer.patch(patch, match_dict, in_place = True)
-    print('patch speed in-place', 
-          (time.time() - starttime) / len(match._history_diff))
+        dictdiffer.patch(patch, match_dict, in_place=True)
+    print("patch speed in-place", (time.time() - starttime) / len(match._history_diff))
     assert match._history[-1].dict() == match_dict
 
     # for prev, next, diff in zip(match._history[:-1], match._history[1:],
@@ -831,17 +826,17 @@ def test_save_history():
 
 
 def test_save_history_2():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
         Toss-Up*10
         Nature and Wisdom*10
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 1
@@ -858,18 +853,18 @@ def test_save_history_2():
     assert match.start()[0]
     match.step()
     for _ in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     assert len(match._history) > test_step  # should record history
     assert match.state != MatchState.ERROR
 
 
 def test_generate_unused_cards():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:AnemoMob
         character:PyroMob
@@ -880,7 +875,7 @@ def test_generate_unused_cards():
         character:GeoMob
         Elemental Resonance: Woven Stone
         Skyward Harp
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 1
@@ -896,8 +891,8 @@ def test_generate_unused_cards():
     assert match.start()[0]
     match.step()
     for _ in range(test_step):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     assert len(match._history_diff) > test_step  # should record history
     assert match.state != MatchState.ERROR
 
@@ -906,11 +901,11 @@ def test_prediction():
     """
     3335 + E + talent
     """
-    agent_0 = NothingAgent(player_idx = 0)
+    agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = [
+        player_idx=1,
+        verbose_level=0,
+        commands=[
             "sw_card",
             "choose 0",
             "card 1 0 0 1",
@@ -926,11 +921,11 @@ def test_prediction():
             "end",
             "TEST 3 hp 0 1 5",
             "skill 1 0 1 2",
-            "card 0 0 0 1 2"
+            "card 0 0 0 1 2",
         ],
-        only_use_command = True
+        only_use_command=True,
     )
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     deck = Deck.from_str(
         """
         character:Fischl
@@ -962,8 +957,7 @@ def test_prediction():
                     for character in match.player_tables[0].characters:
                         if character.is_alive:
                             assert len(character.status) == 1
-                            assert character.status[
-                                0].name == "Seed of Skandha"
+                            assert character.status[0].name == "Seed of Skandha"
                         else:
                             assert len(character.status) == 0
                 elif test_id == 3:
@@ -972,30 +966,28 @@ def test_prediction():
                     break
             prediction_found = None
             prediction_all = None
-            if (
-                len(agent_1.commands) > 0 
-                and agent_1.commands[0][:5] == 'skill'
-            ):
+            if len(agent_1.commands) > 0 and agent_1.commands[0][:5] == "skill":
                 # is skill, check prediction
                 prediction_all = match.skill_predictions
                 for p in prediction_all:
-                    assert p['player_idx'] == 1
-                    assert (p['character_idx'] 
-                            == match.player_tables[1].active_character_idx)
+                    assert p["player_idx"] == 1
+                    assert (
+                        p["character_idx"]
+                        == match.player_tables[1].active_character_idx
+                    )
                     skill_idx = int(agent_1.commands[0].split()[1])
-                    if skill_idx == p['skill_idx']:
+                    if skill_idx == p["skill_idx"]:
                         prediction_found = p
             if prediction_all is not None:
                 assert prediction_found is not None
-                prediction_found['current_dict'] = match.dict(
-                    exclude = {'skill_predictions'}
+                prediction_found["current_dict"] = match.dict(
+                    exclude={"skill_predictions"}
                 )
             make_respond(agent_1, match)
-            after_dict = match.dict(exclude = {'skill_predictions'})
+            after_dict = match.dict(exclude={"skill_predictions"})
             if prediction_found is not None:
                 patch_dict = dictdiffer.patch(
-                    prediction_found['diff'],
-                    prediction_found['current_dict']
+                    prediction_found["diff"], prediction_found["current_dict"]
                 )
                 # remove ids, as newly created ids may differ
                 patch_match = Match(**patch_dict)
@@ -1016,7 +1008,7 @@ def test_prediction():
                     d.event_frames = []
                 assert after_match == patch_match
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         if len(agent_1.commands) == 0:
             break
 
@@ -1024,26 +1016,26 @@ def test_prediction():
     assert match.round_number == 3
     check_hp(match, [[0, 0, 1], [10, 10, 10]])
     assert len(match.player_tables[1].team_status) == 1
-    assert match.player_tables[1].team_status[0].name == 'Shrine of Maya'
+    assert match.player_tables[1].team_status[0].name == "Shrine of Maya"
     assert match.player_tables[1].team_status[0].usage == 3
 
     assert match.state != MatchState.ERROR
 
 
 def test_player_table_character_order():
-    deck_str = '''
+    deck_str = """
     default_version:4.0
     character:Fischl
     character:Mona
     character:Nahida
     Strategize*30
-    '''
+    """
     deck = Deck.from_str(deck_str)
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     match.set_deck([deck, deck])
     match.config.max_same_card_number = 30
     assert match.start()[0]
-    table = match.player_tables[0].copy(deep = True)
+    table = match.player_tables[0].copy(deep=True)
     for active_idx in range(3):
         table.active_character_idx = active_idx
         objs = table.get_object_lists()
@@ -1063,45 +1055,27 @@ def test_player_table_character_order():
 
 def test_frozen_cannot_use_skill_talent():
     cmd_records = [
-        [
-            "sw_card",
-            "choose 2",
-            "skill 1 15 14 13",
-            "sw_char 1 12",
-            "skill 1 11 10 9"
-        ],
-        [
-            "sw_card",
-            "choose 1",
-            "skill 1 15 14 13",
-            "TEST 1 no card can use",
-            "end"
-        ]
+        ["sw_card", "choose 2", "skill 1 15 14 13", "sw_char 1 12", "skill 1 11 10 9"],
+        ["sw_card", "choose 1", "skill 1 15 14 13", "TEST 1 no card can use", "end"],
     ]
     agent_0 = InteractionAgent(
-        player_idx = 0,
-        verbose_level = 0,
-        commands = cmd_records[0],
-        only_use_command = True
+        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
     )
     agent_1 = InteractionAgent(
-        player_idx = 1,
-        verbose_level = 0,
-        commands = cmd_records[1],
-        only_use_command = True
+        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state = get_random_state())
+    match = Match(random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.2
         character:Electro Hypostasis
         character:Kaeya
         character:Mona
         Cold-Blooded Strike*15
-        '''
+        """
     )
     match.set_deck([deck, deck])
     match.config.max_same_card_number = None
@@ -1121,7 +1095,7 @@ def test_frozen_cannot_use_skill_talent():
         elif match.need_respond(1):
             agent = agent_1
         else:
-            raise AssertionError('No need respond.')
+            raise AssertionError("No need respond.")
         while True:
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
@@ -1129,9 +1103,9 @@ def test_frozen_cannot_use_skill_talent():
                 break
             elif test_id == 1:
                 for req in match.requests:
-                    assert req.name != 'UseCardRequest'
+                    assert req.name != "UseCardRequest"
             else:
-                raise AssertionError(f'Unknown test id {test_id}')
+                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -1142,11 +1116,11 @@ def test_frozen_cannot_use_skill_talent():
 
 
 def test_new_match_from_history():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -1157,7 +1131,7 @@ def test_new_match_from_history():
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 99
@@ -1173,38 +1147,38 @@ def test_new_match_from_history():
     assert match.start()[0]
     match.step()
     for _ in range(10):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     idx_10 = len(match._history) - 1
     for _ in range(10):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     assert len(match._history) > 20  # should record history
     initial_match = match.new_match_from_history(0)
     match_10 = match.new_match_from_history(idx_10)
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
     initial_match.step()
     for _ in range(10):
-        make_respond(agent_0, initial_match, assertion = False)
-        make_respond(agent_1, initial_match, assertion = False)
+        make_respond(agent_0, initial_match, assertion=False)
+        make_respond(agent_1, initial_match, assertion=False)
     assert len(initial_match._history) == len(match_10._history)
     assert len(initial_match._history_diff) == len(match_10._history_diff)
-    assert remove_ids(initial_match.copy(deep = True)) == remove_ids(match_10)
+    assert remove_ids(initial_match.copy(deep=True)) == remove_ids(match_10)
     for _ in range(10):
-        make_respond(agent_0, initial_match, assertion = False)
-        make_respond(agent_1, initial_match, assertion = False)
+        make_respond(agent_0, initial_match, assertion=False)
+        make_respond(agent_1, initial_match, assertion=False)
     assert len(initial_match._history) == len(match._history)
     assert len(initial_match._history_diff) == len(match._history_diff)
     assert remove_ids(initial_match) == remove_ids(match)
 
 
 def test_new_match_from_history_compressed():
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
-    match = Match(random_state = get_random_state(100))
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
+    match = Match(random_state=get_random_state(100))
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -1215,7 +1189,7 @@ def test_new_match_from_history_compressed():
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     for character in deck.characters:
         character.hp = character.max_hp = 99
@@ -1230,27 +1204,27 @@ def test_new_match_from_history_compressed():
     assert match.start()[0]
     match.step()
     for _ in range(10):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     idx_10 = len(match._history_diff) - 1
     for _ in range(10):
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
     assert len(match._history_diff) > 20  # should record history
     initial_match = match.new_match_from_history(0)
     match_10 = match.new_match_from_history(idx_10)
-    agent_0 = RandomAgent(player_idx = 0, random_seed = 42)
-    agent_1 = RandomAgent(player_idx = 1, random_seed = 19260817)
+    agent_0 = RandomAgent(player_idx=0, random_seed=42)
+    agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
     initial_match.step()
     for _ in range(10):
-        make_respond(agent_0, initial_match, assertion = False)
-        make_respond(agent_1, initial_match, assertion = False)
+        make_respond(agent_0, initial_match, assertion=False)
+        make_respond(agent_1, initial_match, assertion=False)
     assert len(initial_match._history) == len(match_10._history)
     assert len(initial_match._history_diff) == len(match_10._history_diff)
-    assert remove_ids(initial_match.copy(deep = True)) == remove_ids(match_10)
+    assert remove_ids(initial_match.copy(deep=True)) == remove_ids(match_10)
     for _ in range(10):
-        make_respond(agent_0, initial_match, assertion = False)
-        make_respond(agent_1, initial_match, assertion = False)
+        make_respond(agent_0, initial_match, assertion=False)
+        make_respond(agent_1, initial_match, assertion=False)
     assert remove_ids(initial_match) == remove_ids(match)
     assert len(initial_match._history) == len(match._history)
     assert len(initial_match._history_diff) == len(match._history_diff)
@@ -1258,73 +1232,75 @@ def test_new_match_from_history_compressed():
 
 def test_version_validation():
     with pytest.raises(ValueError):
-        _ = get_instance(SummonBase, {
-            'name': 'Oz',
-            'version': 3.7
-        })
+        _ = get_instance(SummonBase, {"name": "Oz", "version": 3.7})
     with pytest.raises(AssertionError):
-        _ = get_instance(SummonBase, {
-            'name': 'Oz',
-            'version': '2.5'
-        })
+        _ = get_instance(SummonBase, {"name": "Oz", "version": "2.5"})
     with pytest.raises(ValueError):
-        _ = get_instance(SummonBase, {
-            'name': 'Oz',
-            'strict_version_validation': True,
-            'version': '3.5'
-        })
-    default_pos = {
-        'player_idx': 0,
-        'id': -1,
-        'area': 'SUMMON'
-    }
-    _ = get_instance(SummonBase, {
-        'name': 'Oz',
-        'version': '3.5',
-        'position': default_pos,
-    })
+        _ = get_instance(
+            SummonBase,
+            {"name": "Oz", "strict_version_validation": True, "version": "3.5"},
+        )
+    default_pos = {"player_idx": 0, "id": -1, "area": "SUMMON"}
+    _ = get_instance(
+        SummonBase,
+        {
+            "name": "Oz",
+            "version": "3.5",
+            "position": default_pos,
+        },
+    )
     with pytest.raises(ValueError):
-        _ = Oz_3_3(**{
-            'name': 'Oz',
-            'version': 3.7,
-        })
+        _ = Oz_3_3(
+            **{
+                "name": "Oz",
+                "version": 3.7,
+            }
+        )
     with pytest.raises(ValueError):
-        _ = Oz_3_3(**{
-            'name': 'Oz',
-            'version': '2.5',
-            'position': default_pos,
-        })
+        _ = Oz_3_3(
+            **{
+                "name": "Oz",
+                "version": "2.5",
+                "position": default_pos,
+            }
+        )
     with pytest.raises(ValueError):
-        _ = Oz_3_3(**{
-            'name': 'Oz',
-            'strict_version_validation': True,
-            'version': '3.5',
-            'position': default_pos,
-        })
-    _ = Oz_3_3(**{
-        'name': 'Oz',
-        'version': '3.5',
-        'position': default_pos,
-    })
+        _ = Oz_3_3(
+            **{
+                "name": "Oz",
+                "strict_version_validation": True,
+                "version": "3.5",
+                "position": default_pos,
+            }
+        )
+    _ = Oz_3_3(
+        **{
+            "name": "Oz",
+            "version": "3.5",
+            "position": default_pos,
+        }
+    )
 
     # multiple version hints
     class OOZZ(Oz_3_3):
-        version: Literal['3.4', '3.5']
+        version: Literal["3.4", "3.5"]
 
     with pytest.raises(ValueError):
-        _ = OOZZ(**{
-            'name': 'Oz',
-            'version': '3.5',
-            'position': default_pos,
-        })
+        _ = OOZZ(
+            **{
+                "name": "Oz",
+                "version": "3.5",
+                "position": default_pos,
+            }
+        )
 
 
 def test_round_end_all_lose():
-    agent_0 = NothingAgent(player_idx = 0)
-    agent_1 = NothingAgent(player_idx = 1)
+    agent_0 = NothingAgent(player_idx=0)
+    agent_1 = NothingAgent(player_idx=1)
     match = Match()
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.0
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -1335,7 +1311,7 @@ def test_round_end_all_lose():
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     round_number = 5
     match.set_deck([deck, deck])
@@ -1352,12 +1328,9 @@ def test_round_end_all_lose():
     assert match.start()[0]
     match.step()
     for i in range(round_number + 1):  # +1 to perform sw_card and choose
-        assert match.state not in [
-            MatchState.ENDED,
-            MatchState.ERROR
-        ]
-        make_respond(agent_0, match, assertion = False)
-        make_respond(agent_1, match, assertion = False)
+        assert match.state not in [MatchState.ENDED, MatchState.ERROR]
+        make_respond(agent_0, match, assertion=False)
+        make_respond(agent_1, match, assertion=False)
         target_round_number = max(i, 0)
         assert match.round_number == target_round_number
     assert match.state == MatchState.ENDED
@@ -1365,17 +1338,15 @@ def test_round_end_all_lose():
 
 def test_use_card_event_serialize():
     card_event = UseCardEventArguments(
-        action = UseCardAction(
-            card_position = ObjectPosition(
-                player_idx = 0,
-                area = ObjectPositionType.HAND,
-                id = 0
+        action=UseCardAction(
+            card_position=ObjectPosition(
+                player_idx=0, area=ObjectPositionType.HAND, id=0
             ),
-            target = None
+            target=None,
         ),
-        card_cost = Cost(),
-        card_name = 'Test',
-        use_card_success = True
+        card_cost=Cost(),
+        card_name="Test",
+        use_card_success=True,
     )
     assert card_event.card_cost.original_value is None
     card_event = UseCardEventArguments(**json.loads(card_event.json()))
@@ -1384,7 +1355,7 @@ def test_use_card_event_serialize():
     assert card_event.action.card_position.area == ObjectPositionType.HAND
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # test_match_pipeline()
     # test_save_load()
     # test_random_same_after_load()

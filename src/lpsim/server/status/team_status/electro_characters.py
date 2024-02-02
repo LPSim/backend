@@ -1,4 +1,3 @@
-
 from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
@@ -16,8 +15,8 @@ from .base import ExtraAttackTeamStatus, RoundTeamStatus, UsageTeamStatus
 
 
 class TenkoThunderbolts_3_7(UsageTeamStatus):
-    name: Literal['Tenko Thunderbolts'] = 'Tenko Thunderbolts'
-    version: Literal['3.7'] = '3.7'
+    name: Literal["Tenko Thunderbolts"] = "Tenko Thunderbolts"
+    version: Literal["3.7"] = "3.7"
     usage: int = 1
     max_usage: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -35,23 +34,25 @@ class TenkoThunderbolts_3_7(UsageTeamStatus):
         target_character_idx = target_table.active_character_idx
         target_character = target_table.characters[target_character_idx]
         self.usage -= 1
-        return [MakeDamageAction(
-            damage_value_list = [
-                DamageValue(
-                    position = self.position,
-                    damage_type = DamageType.DAMAGE,
-                    target_position = target_character.position,
-                    damage = 3,
-                    damage_elemental_type = DamageElementalType.ELECTRO,
-                    cost = Cost()
-                )
-            ],
-        )]
+        return [
+            MakeDamageAction(
+                damage_value_list=[
+                    DamageValue(
+                        position=self.position,
+                        damage_type=DamageType.DAMAGE,
+                        target_position=target_character.position,
+                        damage=3,
+                        damage_elemental_type=DamageElementalType.ELECTRO,
+                        cost=Cost(),
+                    )
+                ],
+            )
+        ]
 
 
 class ThunderbeastsTarge_3_4(RoundTeamStatus, ExtraAttackTeamStatus):
     name: Literal["Thunderbeast's Targe"] = "Thunderbeast's Targe"
-    version: Literal['3.4'] = '3.4'
+    version: Literal["3.4"] = "3.4"
     usage: int = 2
     max_usage: int = 2
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
@@ -62,8 +63,10 @@ class ThunderbeastsTarge_3_4(RoundTeamStatus, ExtraAttackTeamStatus):
     decrease_usage: bool = False
 
     def value_modifier_DAMAGE_DECREASE(
-        self, value: DamageDecreaseValue, match: Any,
-        mode: Literal['TEST', 'REAL'],
+        self,
+        value: DamageDecreaseValue,
+        match: Any,
+        mode: Literal["TEST", "REAL"],
     ) -> DamageDecreaseValue:
         """
         If this character receives damage, and not piercing, and greater than
@@ -71,8 +74,9 @@ class ThunderbeastsTarge_3_4(RoundTeamStatus, ExtraAttackTeamStatus):
         """
         if (
             value.is_corresponding_character_receive_damage(
-                self.position, match,
-            ) 
+                self.position,
+                match,
+            )
             and value.damage >= 3
         ):
             value.damage -= 1
