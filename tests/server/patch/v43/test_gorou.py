@@ -1,5 +1,3 @@
-# TODO: only one geo with burst
-
 import os
 from lpsim import MatchState
 from tests.utils_for_test import (
