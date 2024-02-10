@@ -23,8 +23,7 @@ class SapwoodBladeStatus_4_4(RoundCharacterStatus):
     version: Literal["4.4"] = "4.4"
     usage: int = 1
     max_usage: int = 1
-    # TODO check icon
-    icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
+    icon_type: Literal[IconType.BUFF] = IconType.BUFF
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Match
