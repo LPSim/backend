@@ -919,6 +919,6 @@
         "history_level": 10,
         "compress_history": true,
         "recreate_mode": false,
-        "random_object_information": {}
+        "random_object_information": []
     }
 }
