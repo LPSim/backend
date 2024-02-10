@@ -90,6 +90,8 @@ class SilverAndMelus_4_4(CreateSystemEventHandlerObject, CompanionBase):
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
     cost: Cost = Cost(same_dice_number=1)
 
+    handler_name: Literal["Silver and Melus"] = "Silver and Melus"
+
     def event_handler_ROUND_END(
         self,
         event: RoundEndEventArguments,

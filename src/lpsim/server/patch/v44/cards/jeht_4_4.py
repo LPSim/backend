@@ -73,6 +73,8 @@ class Jeht_4_4(CreateSystemEventHandlerObject, CompanionBase):
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
     cost: Cost = Cost(any_dice_number=2)
 
+    handler_name: Literal["Jeht"] = "Jeht"
+
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Match
     ) -> List[CreateDiceAction | RemoveObjectAction]:
