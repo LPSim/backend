@@ -13,7 +13,6 @@ from .....utils.desc_registry import DescDictType
 
 
 class FallsAndFortuneStatus_4_3(RoundTeamStatus):
-    # TODO both player have the status
     name: Literal["Falls and Fortune"] = "Falls and Fortune"
     version: Literal["4.3"] = "4.3"
     usage: int = 1
