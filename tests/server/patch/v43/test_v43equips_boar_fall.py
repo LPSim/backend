@@ -258,6 +258,6 @@ def test_glow_defeated_no_draw():
 
 
 if __name__ == "__main__":
-    # test_v43equips_boar_fall()
-    test_boar_princess()
-    test_glow_defeated_no_draw()
+    test_v43equips_boar_fall()
+    # test_boar_princess()
+    # test_glow_defeated_no_draw()

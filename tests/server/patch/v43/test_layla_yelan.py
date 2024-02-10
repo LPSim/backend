@@ -75,8 +75,5 @@ def test_layla_yelan():
     assert match.state != MatchState.ERROR
 
 
-# TODO yelan talent
-
-
 if __name__ == "__main__":
     test_layla_yelan()
