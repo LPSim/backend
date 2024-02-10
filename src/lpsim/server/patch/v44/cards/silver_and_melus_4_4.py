@@ -1,40 +1,64 @@
-"""
-TODO: same as jeht
-"""
 from typing import Dict, List, Literal
-
 from pydantic import PrivateAttr
 
+from ....event_handler import SystemEventHandlerBase
+from ....object_base import CreateSystemEventHandlerObject
 from .....utils.class_registry import register_class
 from ....struct import Cost
-from ....action import Actions, DrawCardAction, RemoveObjectAction
+from ....action import ChangeObjectUsageAction, DrawCardAction, RemoveObjectAction
 from ....match import Match
-from ....event import ReceiveDamageEventArguments, RoundEndEventArguments
-from ....consts import DamageElementalType, DamageType, IconType, ObjectPositionType
+from ....event import (
+    MoveObjectEventArguments,
+    ReceiveDamageEventArguments,
+    RoundEndEventArguments,
+)
+from ....consts import DamageElementalType, DamageType, IconType
 from ....card.support.companions import CompanionBase
 from .....utils.desc_registry import DescDictType
 
 
-class SilverAndMelus_4_4(CompanionBase):
-    name: Literal["Silver and Melus"]
+class SilverAndMelusEventHandler_4_4(SystemEventHandlerBase):
+    """
+    It will be generated when Silver and Melus in deck, and record elemental damage
+    types for both player, and when Silver and Melus is played into area or elemental
+    damage is made, it will update its counter and also update all existing Silver and
+    Melus usage.
+    """
+
+    name: Literal["Silver and Melus"] = "Silver and Melus"
     version: Literal["4.4"] = "4.4"
-    usage: int = 0
+    etypes: List[List[DamageElementalType]] = [[], []]
     _max_usage: int = PrivateAttr(4)
-    recorded_damage_type: List[DamageElementalType] = []
-    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
-    cost: Cost = Cost(same_dice_number=1)
+
+    def _update_usage(self, match: Match) -> List[ChangeObjectUsageAction]:
+        """
+        check all, if their usage not same as self, update it.
+        """
+        actions: List[ChangeObjectUsageAction] = []
+        for etypes, table in zip(self.etypes, match.player_tables):
+            counter = min(len(etypes), self._max_usage)
+            for support in table.supports:
+                if support.name == self.name and support.usage != counter:
+                    actions.append(
+                        ChangeObjectUsageAction(
+                            object_position=support.position,
+                            change_usage=counter - support.usage,
+                        )
+                    )
+        return actions
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Match
+    ) -> List[ChangeObjectUsageAction]:
+        if event.object_name != self.name:
+            # not Silver and Melus
+            return []
+        return self._update_usage(match)
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Match
-    ) -> List[Actions]:
-        if not self.position.check_position_valid(
-            event.final_damage.target_position,
-            match,
-            player_idx_same=False,
-            source_area=ObjectPositionType.SUPPORT,
-        ):
-            # self not in support or damage receive not in enemy
-            return []
+    ) -> List[ChangeObjectUsageAction]:
+        pidx = event.final_damage.target_position.player_idx
         if event.final_damage.damage_type != DamageType.DAMAGE or (
             event.final_damage.damage_elemental_type
             in [
@@ -47,10 +71,24 @@ class SilverAndMelus_4_4(CompanionBase):
             return []
         # record damage type
         damage_element = event.final_damage.damage_elemental_type
-        if damage_element not in self.recorded_damage_type:
-            self.recorded_damage_type.append(damage_element)
-        self.usage = min(len(self.recorded_damage_type), self._max_usage)
-        return []
+        # damage is too frequent. If not new damage type, do not check usage.
+        changed = False
+        if damage_element not in self.etypes[pidx]:
+            self.etypes[pidx].append(damage_element)
+            changed = True
+        if not changed:
+            return []
+        return self._update_usage(match)
+
+
+class SilverAndMelus_4_4(CreateSystemEventHandlerObject, CompanionBase):
+    name: Literal["Silver and Melus"]
+    version: Literal["4.4"] = "4.4"
+    usage: int = 0
+    _max_usage: int = PrivateAttr(4)
+    recorded_damage_type: List[DamageElementalType] = []
+    icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
+    cost: Cost = Cost(same_dice_number=1)
 
     def event_handler_ROUND_END(
         self,
@@ -84,7 +122,11 @@ desc: Dict[str, DescDictType] = {
         "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_NPC_Silver.png",  # noqa: E501
         "id": 322023,
     },
+    "SYSTEM/Silver and Melus": {
+        "names": {"en-US": "Silver and Melus", "zh-CN": "西尔弗和迈勒斯"},
+        "descs": {"4.4": {}},
+    },
 }
 
 
-register_class(SilverAndMelus_4_4, desc)
+register_class(SilverAndMelus_4_4 | SilverAndMelusEventHandler_4_4, desc)

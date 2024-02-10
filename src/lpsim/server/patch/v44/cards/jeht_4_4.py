@@ -1,12 +1,15 @@
-"""
-TODO need a global counter hook
-"""
 from typing import Dict, List, Literal
-
 from pydantic import PrivateAttr
+
+from ....object_base import CreateSystemEventHandlerObject
+from ....event_handler import SystemEventHandlerBase
 from ....match import Match
-from ....action import Actions, CreateDiceAction, RemoveObjectAction
-from ....event import RemoveObjectEventArguments, SkillEndEventArguments
+from ....action import ChangeObjectUsageAction, CreateDiceAction, RemoveObjectAction
+from ....event import (
+    MoveObjectEventArguments,
+    RemoveObjectEventArguments,
+    SkillEndEventArguments,
+)
 from ....consts import DieColor, IconType, ObjectPositionType, SkillType
 from ....card.support.companions import CompanionBase
 from ....struct import Cost
@@ -14,29 +17,61 @@ from .....utils.class_registry import register_class
 from .....utils.desc_registry import DescDictType
 
 
-class Jeht_4_4(CompanionBase):
+class JehtEventHandler_4_4(SystemEventHandlerBase):
+    """
+    It will be generated when Jeht in deck, and record disappeared support card numbers
+    for both player, and when Jeht is played into area or any card is removed from
+    support area, it will update its counter and also update all existing Jeht usage.
+    """
+
+    name: Literal["Jeht"] = "Jeht"
+    version: Literal["4.4"] = "4.4"
+    counters: List[int] = [0, 0]
+    _max_usage: int = PrivateAttr(6)
+
+    def _update_jedt_usage(self, match: Match) -> List[ChangeObjectUsageAction]:
+        """
+        check all jeht, if their usage not same as self, update it.
+        """
+        actions: List[ChangeObjectUsageAction] = []
+        for counter, table in zip(self.counters, match.player_tables):
+            for support in table.supports:
+                if support.name == self.name and support.usage != counter:
+                    actions.append(
+                        ChangeObjectUsageAction(
+                            object_position=support.position,
+                            change_usage=counter - support.usage,
+                        )
+                    )
+        return actions
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Match
+    ) -> List[ChangeObjectUsageAction]:
+        if event.object_name != self.name:
+            # not Jeht
+            return []
+        return self._update_jedt_usage(match)
+
+    def event_handler_REMOVE_OBJECT(
+        self, event: RemoveObjectEventArguments, match: Match
+    ) -> List[ChangeObjectUsageAction]:
+        if event.action.object_position.area != ObjectPositionType.SUPPORT:
+            # not moved from support zone
+            return []
+        # add one usage
+        pidx = event.action.object_position.player_idx
+        self.counters[pidx] = min(self.counters[pidx] + 1, self._max_usage)
+        return self._update_jedt_usage(match)
+
+
+class Jeht_4_4(CreateSystemEventHandlerObject, CompanionBase):
     name: Literal["Jeht"]
     version: Literal["4.4"] = "4.4"
     usage: int = 0
     _max_usage: int = PrivateAttr(6)
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
     cost: Cost = Cost(any_dice_number=2)
-
-    def event_handler_REMOVE_OBJECT(
-        self, event: RemoveObjectEventArguments, match: Match
-    ) -> List[Actions]:
-        if not self.position.check_position_valid(
-            event.action.object_position,
-            match,
-            player_idx_same=True,
-            target_area=ObjectPositionType.SUPPORT,
-            source_area=ObjectPositionType.SUPPORT,
-        ):
-            # not self or source or target not in support zone
-            return []
-        # add one usage
-        self.usage = min(self.usage + 1, self._max_usage)
-        return []
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Match
@@ -78,7 +113,11 @@ desc: Dict[str, DescDictType] = {
         "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_NPC_Jeht.png",  # noqa: E501
         "id": 322022,
     },
+    "SYSTEM/Jeht": {
+        "names": {"en-US": "Jeht", "zh-CN": "婕德"},
+        "descs": {"4.4": {}},
+    },
 }
 
 
-register_class(Jeht_4_4, desc)
+register_class(Jeht_4_4 | JehtEventHandler_4_4, desc)
