@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Literal, Set, Type
 
 from pydantic import PrivateAttr
 
-from ....action import ActionTypes, Actions, CreateObjectAction
+from ....action import ActionTypes, Actions, CreateRandomObjectAction
 from .....utils.desc_registry import DescDictType
 from .....utils.class_registry import (
     get_class_list_by_base_class,
@@ -93,9 +93,6 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
         # recall _get_candidate_list to create data
         candidate_list = self._get_candidate_list(match)
         if card_name in self._accept_class_name_set:
-            # using target type, generate new card
-            # get candidate list for target type, except self
-            random_target = candidate_list[int(match._random() * len(candidate_list))]
             # use, and generate new card
             self.use()
             res: List[Actions] = []
@@ -106,10 +103,11 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
             if self._accept_version is not None:
                 args["version"] = self._accept_version
             res.append(
-                CreateObjectAction(
-                    object_name=random_target,
+                CreateRandomObjectAction(
+                    object_names=candidate_list,
                     object_position=position,
                     object_arguments=args,
+                    number=1,
                 )
             )
             res += self.check_should_remove()

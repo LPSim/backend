@@ -1,6 +1,6 @@
 from enum import Enum
 from ..utils import BaseModel
-from typing import Literal, List
+from typing import Literal, List, Tuple
 from .interaction import (
     ChooseCharacterResponse,
     RerollDiceResponse,
@@ -30,6 +30,7 @@ class ActionTypes(str, Enum):
     CHARACTER_DEFEATED = "CHARACTER_DEFEATED"
     CHARACTER_REVIVE = "CHARACTER_REVIVE"
     CREATE_OBJECT = "CREATE_OBJECT"
+    CREATE_RANDOM_OBJECT = "CREATE_RANDOM_OBJECT"
     REMOVE_OBJECT = "REMOVE_OBJECT"
     OBJECT_REMOVED = "OBJECT_REMOVED"
     CHANGE_OBJECT_USAGE = "CHANGE_OBJECT_USAGE"
@@ -307,6 +308,54 @@ class CreateObjectAction(ActionBase):
     object_arguments: dict
 
 
+class CreateRandomObjectAction(ActionBase):
+    """
+    Action for creating random objects. A list of names are provided, and
+    `number` of them will be created by uniformly selecting from the list and doing
+    `CreateObjectAction` for each of them.
+    NOTE: some actions will not generate existing objects, e.g. elemental skill of
+    Rhodeia will not summoning existing objects unless full. This action will not deal
+    with such situation, you need to write logic to filter out existing objects before
+    creating this action.
+    """
+
+    type: Literal[ActionTypes.CREATE_OBJECT] = ActionTypes.CREATE_OBJECT
+    object_position: ObjectPosition
+    object_names: List[str]
+    object_arguments: dict
+    number: int
+
+    def select_by_idx(
+        self, idx: int
+    ) -> Tuple[CreateObjectAction, "CreateRandomObjectAction"]:
+        """
+        Select an object name by index and create a `CreateObjectAction` for it.
+        It will also return a new `CreateRandomObjectAction` with the same
+        arguments but with the `number` reduced by 1 and the selected object
+        name removed from the list.
+
+        Returns:
+            CreateObjectAction: The action for creating the object.
+            CreateRandomObjectAction: The new action with the `number` reduced
+                by 1 and the selected object name removed from the list.
+        """
+        selected = self.object_names[idx]
+        others = self.object_names[:idx] + self.object_names[idx + 1 :]
+        return (
+            CreateObjectAction(
+                object_position=self.object_position,
+                object_name=selected,
+                object_arguments=self.object_arguments,
+            ),
+            CreateRandomObjectAction(
+                object_position=self.object_position,
+                object_names=others,
+                object_arguments=self.object_arguments,
+                number=self.number - 1,
+            ),
+        )
+
+
 class RemoveObjectAction(ActionBase):
     """
     Action for removing objects.
@@ -345,6 +394,9 @@ class MoveObjectAction(ActionBase):
     reset_usage: bool = False
 
 
+# 20
+
+
 class MakeDamageAction(ActionBase):
     """
     Action for making damage. Heal treats as negative damage. Elemental
@@ -380,9 +432,6 @@ class MakeDamageAction(ActionBase):
             assert (
                 damage_value.position.id == self.damage_value_list[0].position.id
             ), "all damage should from same source"
-
-
-# 20
 
 
 class ConsumeArcaneLegendAction(ActionBase):
@@ -423,6 +472,9 @@ class SkipPlayerActionAction(ActionBase):
     type: Literal[ActionTypes.SKIP_PLAYER_ACTION] = ActionTypes.SKIP_PLAYER_ACTION
 
 
+# 25
+
+
 class CharacterReviveAction(ActionBase):
     """
     Action for character revive.
@@ -433,9 +485,6 @@ class CharacterReviveAction(ActionBase):
     player_idx: int
     character_idx: int
     revive_hp: int
-
-
-# 25
 
 
 class GenerateSwitchCardRequestAction(ActionBase):
@@ -467,14 +516,17 @@ Actions = (
     | CharacterDefeatedAction
     # 15
     | CreateObjectAction
+    | CreateRandomObjectAction
     | RemoveObjectAction
     | ChangeObjectUsageAction
     | MoveObjectAction
-    | MakeDamageAction
     # 20
+    | MakeDamageAction
     | ConsumeArcaneLegendAction
     | GenerateChooseCharacterRequestAction
     | GenerateRerollDiceRequestAction
     | SkipPlayerActionAction
+    # 25
     | CharacterReviveAction
+    | GenerateSwitchCardRequestAction
 )

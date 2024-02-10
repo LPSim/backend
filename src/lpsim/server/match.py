@@ -34,9 +34,9 @@ from .action import (
     ChargeAction,
     UseCardAction,
     UseSkillAction,
-    # UseCardAction,
     SkillEndAction,
     CreateObjectAction,
+    CreateRandomObjectAction,
     RemoveObjectAction,
     ChangeObjectUsageAction,
     MoveObjectAction,
@@ -250,17 +250,15 @@ class MatchConfig(BaseModel):
     filters, e.g. NRE, will only draw top card, and if top card is not target,
     it stops drawing. Drawing card with replacement will put the replaced
     card into the bottom of table deck.
-    For random effects, e.g. Abyss Sommon, or Rhodeia's skill, they will read
-    orders from random_object_information. The key is defined by the skill,
-    usually the skill name, refer to source code to check. The value is a list
-    of created object names, it will check whether the first name of current 
-    list is valid, remove the name and generate corresponding object. 
+    For random effects, e.g. Abyss Sommon, or Rhodeia's skill, CreateRandomObjectAction
+    will read orders from random_object_information. When action is called, it will
+    check whether first name is in object names, create that object and remove the name.
 
     TODO: As all dice are omni, Liben and Vanarana may have non-reproducible
     results. Need to fix it.
     """
     recreate_mode: bool = False
-    random_object_information: Dict[str, List[str]] = {}
+    random_object_information: List[str] = []
 
     def check_config(self) -> bool:
         """
@@ -1818,6 +1816,8 @@ class Match(BaseModel):
             return list(self._action_character_defeated(action))
         elif isinstance(action, CreateObjectAction):
             return list(self._action_create_object(action))
+        elif isinstance(action, CreateRandomObjectAction):
+            return list(self._action_create_random_object(action))
         elif isinstance(action, RemoveObjectAction):
             return list(self._action_remove_object(action))
         elif isinstance(action, ChangeObjectUsageAction):
@@ -2591,6 +2591,34 @@ class Match(BaseModel):
                 create_result="NEW",
             )
         ]
+
+    def _action_create_random_object(
+        self, action: CreateRandomObjectAction
+    ) -> List[CreateObjectEventArguments]:
+        """
+        Action for creating random objects, e.g. Abyss Summoning and elemental skills
+        of Rhodeia. If in recreate mode, will create objects based on hints.
+        TODO now it will create multiple `CreateObjectEventArguments` and no specified
+        event arguments for this action directly. If it is needed, may add it after.
+        """
+        assert action.number <= len(action.object_names), (
+            "Number of objects to create should be less than or equal to "
+            "number of object names."
+        )
+        events: List[CreateObjectEventArguments] = []
+        while action.number > 0:
+            if self.config.recreate_mode:
+                name = self.config.random_object_information.pop(0)
+                assert name in action.object_names, (
+                    f"In recreate mode, next random object name ({name}) should "
+                    f"be in object names ({' '.join(action.object_names)})."
+                )
+                idx = action.object_names.index(name)
+            else:
+                idx = int(self._random() * len(action.object_names))
+            coa, action = action.select_by_idx(idx)
+            events += self._action_create_object(coa)
+        return events
 
     def _action_remove_object(
         self, action: RemoveObjectAction
