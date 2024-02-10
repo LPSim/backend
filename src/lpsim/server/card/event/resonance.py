@@ -9,6 +9,7 @@ from ...action import (
     ChargeAction,
     CreateDiceAction,
     CreateObjectAction,
+    CreateRandomObjectAction,
     DrawCardAction,
     GenerateSwitchCardRequestAction,
     MakeDamageAction,
@@ -536,7 +537,7 @@ class AbyssalSummons_3_3(NationResonanceCardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[CreateObjectAction]:
+    ) -> List[CreateRandomObjectAction]:
         """
         Create 1 Random Hilichurl Summon!
         """
@@ -554,16 +555,16 @@ class AbyssalSummons_3_3(NationResonanceCardBase):
             if summon.name in hilichurl_names:
                 hilichurl_names.remove(summon.name)
         assert len(hilichurl_names) > 0, "No Hilichurl summon can be created."
-        selected_name = hilichurl_names[int(match._random() * len(hilichurl_names))]
         return [
-            CreateObjectAction(
-                object_name=selected_name,
+            CreateRandomObjectAction(
+                object_names=hilichurl_names,
                 object_position=ObjectPosition(
                     player_idx=self.position.player_idx,
                     area=ObjectPositionType.SUMMON,
                     id=-1,
                 ),
                 object_arguments={},
+                number=1,
             )
         ]
 
@@ -579,7 +580,7 @@ class FatuiConspiracy_3_7(NationResonanceCardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Any
-    ) -> List[CreateObjectAction]:
+    ) -> List[CreateRandomObjectAction]:
         """
         Create 1 Random Status
         """
@@ -598,16 +599,16 @@ class FatuiConspiracy_3_7(NationResonanceCardBase):
                 fatui_names.remove(status.name)
         assert len(fatui_names) > 0, "No Fatui status can be created."
         # create with random name
-        selected_name = fatui_names[int(match._random() * len(fatui_names))]
         return [
-            CreateObjectAction(
-                object_name=selected_name,
+            CreateRandomObjectAction(
+                object_names=fatui_names,
                 object_position=ObjectPosition(
                     player_idx=1 - self.position.player_idx,
                     area=ObjectPositionType.TEAM_STATUS,
                     id=-1,
                 ),
                 object_arguments={},
+                number=1,
             )
         ]
 
