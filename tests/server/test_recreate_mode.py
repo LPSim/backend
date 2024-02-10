@@ -152,7 +152,10 @@ def test_recreate_mode():
     match.config.random_first_player = False
     # recreate mode and random object information
     match.config.recreate_mode = True
-    match.config.random_object_information = {"rhodeia": ["frog", "squirrel"]}
+    match.config.random_object_information = [
+        "Oceanic Mimic: Frog",
+        "Oceanic Mimic: Squirrel",
+    ]
     match.config.player_go_first = 1
     match.start()
     match.step()
@@ -259,9 +262,14 @@ def test_recreate_mode_v43_rhodeia():
     # check whether random_first_player is enabled.
     match.config.random_first_player = False
     match.config.recreate_mode = True
-    match.config.random_object_information = {
-        "rhodeia": ["frog", "squirrel", "frog", "squirrel", "frog", "frog"]
-    }
+    match.config.random_object_information = [
+        "Oceanic Mimic: Frog",
+        "Oceanic Mimic: Squirrel",
+        "Oceanic Mimic: Frog",
+        "Oceanic Mimic: Squirrel",
+        "Oceanic Mimic: Frog",
+        "Oceanic Mimic: Frog",
+    ]
     # check whether in rich mode (16 omni each round)
     set_16_omni(match)
     match.start()

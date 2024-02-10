@@ -2735,7 +2735,7 @@
         "make_skill_prediction": false,
         "history_level": 0,
         "recreate_mode": false,
-        "random_object_information": {}
+        "random_object_information": []
     },
     "command_history_raw": [
         [
