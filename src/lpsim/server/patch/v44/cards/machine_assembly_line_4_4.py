@@ -61,10 +61,13 @@ class MachineAssemblyLineStatus_4_4(CharacterStatusBase):
             # or artifact
             return value
         total_cost = value.cost.total_dice_cost
+        if total_cost == 0:
+            # cost is 0, do nothing
+            return value
         for _ in range(total_cost):
             value.cost.decrease_cost(None)
         if mode == "REAL":
-            self.usage -= total_cost
+            self.usage = 0
         return value
 
 

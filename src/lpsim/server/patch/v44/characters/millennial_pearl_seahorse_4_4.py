@@ -13,8 +13,8 @@ from ....summon.base import AttackerSummonBase
 from ....modifiable_values import DamageDecreaseValue
 from ....match import Match
 from ....event import (
+    DeclareRoundEndEventArguments,
     GameStartEventArguments,
-    RoundEndEventArguments,
     RoundPrepareEventArguments,
 )
 from ....status.character_status.base import DefendCharacterStatus
@@ -60,7 +60,7 @@ class FontemerPearl_4_4(DefendCharacterStatus):
 
     def renew(self, obj: "FontemerPearl_4_4") -> None:
         # When renew, update extra usage. If has talent, update desc
-        super().renew(obj)
+        self.usage = max(self.usage, obj.usage)
         self.extra_usage = max(self.extra_usage, obj.extra_usage)
         self.round_extra_usage = max(self.round_extra_usage, obj.round_extra_usage)
         if obj.desc == "talent":
@@ -87,9 +87,12 @@ class FontemerPearl_4_4(DefendCharacterStatus):
             self.extra_usage -= 1
         return ret
 
-    def event_handler_ROUND_END(
-        self, event: RoundEndEventArguments, match: Match
+    def event_handler_DECLARE_ROUND_END(
+        self, event: DeclareRoundEndEventArguments, match: Any
     ) -> List[DrawCardAction]:
+        """
+        if declare round end, draw card
+        """
         if (
             match.player_tables[self.position.player_idx].active_character_idx
             == self.position.character_idx
