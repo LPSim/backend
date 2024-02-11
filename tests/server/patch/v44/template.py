@@ -2,9 +2,6 @@ import json
 import os
 from lpsim import MatchState
 from tests.utils_for_test import (
-    check_hp,
-    check_usage,
-    get_pidx_cidx,
     get_test_id_from_command,
     make_respond,
     set_16_omni,
@@ -13,9 +10,13 @@ from tests.utils_for_test import (
 
 
 def template():
-    json_fname = "test_dvalin_talent_2.json"
+    json_fname = "veteran_2.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
     match, agent_0, agent_1 = read_from_log_json(json_path)
+    # backup json
+    open("111.json", "w", encoding="utf8").write(
+        open(json_path, "r", encoding="utf8").read()
+    )
     json_data = json.loads(open(json_path, "r", encoding="utf8").read())
     if "command_history_raw" in json_data:
         raise AssertionError("command_history_raw already exists!")
@@ -47,11 +48,13 @@ def template():
             # 3,  # support
             # 4,  # team status
             5,  # character status
-            # 6,  # hands
-            # 7,  # dice
+            6,  # hands
+            7,  # dice
             # 8,  # charge
             # 9,  # summon element
             # 10,  # character desc
+            # 11,  # hand usage availability
+            # 12,  # element application
         ]
         # 1 for hp
         hp_str = "TEST 1"
@@ -89,6 +92,11 @@ def template():
                 cdesc_str = f"TEST 10 p{tnum}c{cnum} |{c.desc}|"
                 if c.is_alive and 10 in enable:
                     nc.append(cdesc_str)
+                cele_str = f"TEST 12 p{tnum}c{cnum}"
+                for e in c.element_application:
+                    cele_str += f" {e.value}"
+                if c.is_alive and 12 in enable:
+                    nc.append(cele_str)
             # 6 for hands
             hands_str = f"TEST 6 p{tnum} {len(table.hands)}"
             if 6 in enable:
@@ -112,62 +120,20 @@ def template():
                 charge_str += " " + str(c.charge)
         if 8 in enable:
             nc.append(charge_str)
-        # do tests
+        # 11 for hand usage availability
+        hand_usage_str = "TEST 11"
+        for req in match.requests:
+            if req.name == "UseCardRequest":
+                hand_usage_str += " " + str(req.card_idx)
+        if 11 in enable:
+            nc.append(hand_usage_str)
+        # filter tests
         while True:
             nc.append(agent.commands[0])
-            cmd = agent.commands[0].strip().split(" ")
             test_id = get_test_id_from_command(agent)
             if test_id == 0:
                 # id 0 means current command is not a test command.
                 break
-            elif test_id == 1:
-                hps = cmd[2:]
-                hps = [int(x) for x in hps]
-                hps = [hps[:3], hps[3:]]
-                check_hp(match, hps)
-            elif test_id == 2:
-                pidx = int(cmd[2][1])
-                check_usage(match.player_tables[pidx].summons, cmd[3:])
-            elif test_id == 3:
-                pidx = int(cmd[2][1])
-                check_usage(match.player_tables[pidx].supports, cmd[3:])
-            elif test_id == 4:
-                pidx = int(cmd[2][1])
-                check_usage(match.player_tables[pidx].team_status, cmd[3:])
-            elif test_id == 5:
-                pidx, cidx = get_pidx_cidx(cmd)
-                check_usage(match.player_tables[pidx].characters[cidx].status, cmd[3:])
-            elif test_id == 6:
-                pidx = int(cmd[2][1])
-                assert len(match.player_tables[pidx].hands) == int(cmd[3])
-            elif test_id == 7:
-                pidx = int(cmd[2][1])
-                d = {}
-                for c in match.player_tables[pidx].dice.colors:
-                    d[c.value] = d.get(c.value, 0) + 1
-                for c in cmd[3:]:
-                    d[c] -= 1
-                    if d[c] == 0:
-                        del d[c]
-                assert len(d) == 0
-            elif test_id == 8:
-                charges = []
-                for table in match.player_tables:
-                    for c in table.characters:
-                        charges.append(c.charge)
-                assert charges == [int(x) for x in cmd[2:]]
-            elif test_id == 9:
-                pidx = int(cmd[2][1])
-                assert len(match.player_tables[pidx].summons) == len(cmd[3:])
-                for i, s in enumerate(match.player_tables[pidx].summons):
-                    assert s.damage_elemental_type.value == cmd[3 + i]
-            elif test_id == 10:
-                pidx, cidx = get_pidx_cidx(cmd)
-                desc = match.player_tables[pidx].characters[cidx].desc
-                cmd_desc = " ".join(cmd[3:])[1:-1]
-                assert desc == cmd_desc
-            else:
-                raise AssertionError(f"Unknown test id {test_id}")
         # respond
         make_respond(agent, match)
         if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
@@ -176,7 +142,7 @@ def template():
     # simulate ends, check final state
     assert match.state != MatchState.ERROR
     json_data["command_history"] = new_commands
-    open("111.json", "w").write((json.dumps(json_data, indent=4)))
+    open(json_path, "w").write((json.dumps(json_data, indent=4)))
 
 
 if __name__ == "__main__":
