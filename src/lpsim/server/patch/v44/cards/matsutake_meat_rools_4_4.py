@@ -79,7 +79,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "治疗目标角色2点，3回合内的结束阶段再治疗此角色1点。\n（每回合每个角色最多食用1次「料理」）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Event_Food_Matsutake.png",  # noqa: E501
+        "image_path": "cardface/Event_Food_Matsutake.png",  # noqa: E501
         "id": 333014,
     },
 }

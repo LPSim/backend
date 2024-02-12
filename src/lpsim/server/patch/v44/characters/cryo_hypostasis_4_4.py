@@ -252,7 +252,7 @@ character_descs: Dict[str, DescDictType] = {
     "CHARACTER/Cryo Hypostasis": {
         "names": {"en-US": "Cryo Hypostasis", "zh-CN": "无相之冰"},
         "descs": {"4.4": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Monster_EffigyIce.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_EffigyIce.png",  # noqa: E501
         "id": 2103,
     },
     "SKILL_Cryo Hypostasis_NORMAL_ATTACK/Icespike Shot": {
@@ -296,6 +296,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：对敌方距离我方出战角色最近的角色造成1点冰元素伤害。\n可用次数：2",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_EffigyIce.png",
     },
     "SKILL_Cryo Hypostasis_PASSIVE/Cryocrystal Core": {
         "names": {"en-US": "Cryocrystal Core", "zh-CN": "冰晶核心"},
@@ -323,7 +324,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "我方出战角色为无相之冰时，才能打出：使其附属冰晶核心。\n装备有此牌的无相之冰触发冰晶核心后：对敌方出战角色附属严寒。\n（牌组中包含无相之冰，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_EffigyIce.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_EffigyIce.png",  # noqa: E501
         "id": 221031,
     },
 }

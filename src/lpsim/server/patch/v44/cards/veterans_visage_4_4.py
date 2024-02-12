@@ -75,7 +75,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "角色受到伤害或治疗后：根据本回合触发此效果的次数，执行不同的效果。\n第一次触发：生成1个此角色类型的元素骰。\n第二次触发：抓1张牌。\n（角色最多装备1件「圣遗物」）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Artifact_LaobinDanjian.png",  # noqa: E501
+        "image_path": "cardface/Modify_Artifact_LaobinDanjian.png",  # noqa: E501
         "id": 312023,
     },
 }

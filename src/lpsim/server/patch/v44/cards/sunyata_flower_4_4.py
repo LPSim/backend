@@ -161,7 +161,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "选择一张我方支援区的牌，将其弃置。然后，在我方手牌中随机生成2张支援牌。\n本回合中，我方下次打出支援牌时：少花费1个元素骰。",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Event_Event_Ganluhua.png",  # noqa: E501
+        "image_path": "cardface/Event_Event_Ganluhua.png",  # noqa: E501
         "id": 332029,
     },
 }

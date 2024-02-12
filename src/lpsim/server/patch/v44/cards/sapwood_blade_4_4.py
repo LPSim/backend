@@ -97,7 +97,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "角色造成的伤害+1。\n入场时：所附属角色在本回合中，下次使用「普通攻击」后：生成2个此角色类型的元素骰。\n（「单手剑」角色才能装备。角色最多装备1件「武器」）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Weapon_Yuanmu.png",  # noqa: E501
+        "image_path": "cardface/Modify_Weapon_Yuanmu.png",  # noqa: E501
         "id": 311507,
     },
 }

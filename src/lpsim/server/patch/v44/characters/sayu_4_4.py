@@ -249,7 +249,7 @@ desc: Dict[str, DescDictType] = {
     "CHARACTER/Sayu": {
         "names": {"en-US": "Sayu", "zh-CN": "早柚"},
         "descs": {"4.4": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Avatar_Sayu.png",  # noqa
+        "image_path": "cardface/Char_Avatar_Sayu.png",  # noqa
         "id": 1507,
     },
     "SKILL_Sayu_NORMAL_ATTACK/Shuumatsuban Ninja Blade": {
@@ -293,6 +293,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点风元素伤害，治疗我方受伤最多的角色2点。\n可用次数：2",  # noqa
             }
         },
+        "image_path": "cardface/Summon_Sayu.png",
     },
     "SKILL_Sayu_ELEMENTAL_SKILL/Fuufuu Whirlwind Kick": {
         "names": {"en-US": "Fuufuu Whirlwind Kick", "zh-CN": "风风轮舞踢"},
@@ -311,7 +312,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为早柚时，装备此牌。\n早柚装备此牌后，立刻使用一次呜呼流·风隐急进。\n装备有此牌的早柚为出战角色期间，我方引发扩散反应时：抓2张牌。（每回合1次）\n（牌组中包含早柚，才能加入牌组）",  # noqa
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Constellation_Sayu.png",  # noqa
+        "image_path": "cardface/Modify_Constellation_Sayu.png",  # noqa
         "id": 215071,
     },
 }

@@ -112,7 +112,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "此牌会记录本场对局中我方支援区弃置卡牌的数量，称为「阅历」。（最多6点）\n我方角色使用「元素爆发」后：如果「阅历」至少为5，则弃置此牌，生成「阅历」-2数量的万能元素。",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_NPC_Jeht.png",  # noqa: E501
+        "image_path": "cardface/Assist_NPC_Jeht.png",  # noqa: E501
         "id": 322022,
     },
     "SYSTEM/Jeht": {

@@ -115,7 +115,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "目标我方角色每次受到伤害或治疗后：累积1点「备战度」（最多累积2点）。\n我方打出原本费用不多于「备战度」的「武器」或「圣遗物」时：移除所有「备战度」，以免费打出该牌。",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Event_Event_Fatiaoji.png",  # noqa: E501
+        "image_path": "cardface/Event_Event_Fatiaoji.png",  # noqa: E501
         "id": 332028,
     },
 }

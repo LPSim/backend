@@ -154,7 +154,7 @@ desc: Dict[str, DescDictType] = {
     "CHARACTER/Thoma": {
         "names": {"en-US": "Thoma", "zh-CN": "托马"},
         "descs": {"4.4": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Avatar_Tohma.png",  # noqa: E501
+        "image_path": "cardface/Char_Avatar_Tohma.png",  # noqa: E501
         "id": 1311,
     },
     "SKILL_Thoma_NORMAL_ATTACK/Swiftshatter Spear": {
@@ -198,6 +198,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "我方角色普通攻击后：造成1点火元素伤害，生成烈烧佑命护盾。\n可用次数：2",  # noqa: E501
             }
         },
+        "image_path": "status/Tohma_E.png",
     },
     "TALENT_Thoma/A Subordinate's Skills": {
         "names": {"en-US": "A Subordinate's Skills", "zh-CN": "僚佐的才巧"},
@@ -207,7 +208,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为托马时，装备此牌。\n托马装备此牌后，立刻使用一次真红炽火之大铠。\n装备有此牌的托马生成的炽火大铠，初始可用次数+1。\n（牌组中包含托马，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Constellation_Thoma.png",  # noqa: E501
+        "image_path": "cardface/Modify_Constellation_Thoma.png",  # noqa: E501
         "id": 213111,
     },
 }

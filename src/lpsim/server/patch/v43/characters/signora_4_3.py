@@ -522,7 +522,6 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "角色受到至少为3点的伤害时：抵消1点伤害，然后根据「女士」的形态对敌方出战角色附属严寒或炽热。（每回合1次）",  # noqa: E501
             }
         },
-        "image_path": "cardface/Modify_Talent_LaSignora.png",  # noqa: E501
     },
     "TALENT_Signora/Pain for Pain": {
         "names": {"en-US": "Pain for Pain", "zh-CN": "苦痛奉还"},
