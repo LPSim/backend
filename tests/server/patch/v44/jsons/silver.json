@@ -632,453 +632,217 @@
         0
     ],
     "start_deck": [
-        "default_version:4.4\ncharacter:Nahida@3.7\ncharacter:Fischl@3.3\ncharacter:Sangonomiya Kokomi@3.6\ncharacter:Lyney@4.3\ncharacter:Venti@3.7\ncharacter:Ningguang@3.3\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\n",
-        "default_version:4.4\ncharacter:Nahida@3.7\ncharacter:Fischl@3.3\ncharacter:Sangonomiya Kokomi@3.6\ncharacter:Lyney@4.3\ncharacter:Venti@3.7\ncharacter:Ningguang@3.3\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nJeht@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\nSunyata Flower@4.4\n"
+        "default_version:4.4\ncharacter:AnemoMobMage@1.0\ncharacter:CryoMob@1.0\ncharacter:PyroMobMage@1.0\ncharacter:Sangonomiya Kokomi@3.6\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\n",
+        "default_version:4.4\ncharacter:AnemoMobMage@1.0\ncharacter:CryoMob@1.0\ncharacter:PyroMobMage@1.0\ncharacter:Sangonomiya Kokomi@3.6\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMushroom Pizza@3.3\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nMatsutake Meat Rolls@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\nSilver and Melus@4.4\n"
     ],
     "command_history": [
         [
-            [
-                2,
-                "sw_card 2 4",
-                0
-            ],
-            [
-                4,
-                "choose 3",
-                2
-            ],
-            [
-                7,
-                "card 4 0 15",
-                4
-            ],
-            [
-                10,
-                "skill 1 14 13 12",
-                5
-            ],
-            [
-                21,
-                "sw_char 2 11",
-                8
-            ],
-            [
-                25,
-                "skill 1 10 9 8",
-                10
-            ],
-            [
-                31,
-                "sw_char 3 7",
-                12
-            ],
-            [
-                35,
-                "skill 1 6 5 4",
-                14
-            ],
-            [
-                40,
-                "sw_char 2 3",
-                16
-            ],
-            [
-                45,
-                "skill 1 2 1 0",
-                18
-            ],
-            [
-                50,
-                "end",
-                20
-            ],
-            [
-                64,
-                "sw_char 1 15",
-                23
-            ],
-            [
-                68,
-                "skill 0 14 13 12",
-                25
-            ],
-            [
-                80,
-                "sw_char 5 11",
-                29
-            ],
-            [
-                85,
-                "skill 0 10 9 8",
-                31
-            ],
-            [
-                91,
-                "sw_char 2 7",
-                33
-            ],
-            [
-                95,
-                "skill 2 6 5 4",
-                35
-            ],
-            [
-                103,
-                "skill 0 3 2 1",
-                38
-            ],
-            [
-                107,
-                "end",
-                39
-            ],
-            [
-                133,
-                "card 1 0 15 14",
-                46
-            ],
-            [
-                136,
-                "card 2 0 13 12",
-                47
-            ],
-            [
-                139,
-                "card 5 0 11",
-                48
-            ],
-            [
-                142,
-                "skill 0 10 9 8",
-                49
-            ],
-            [
-                159,
-                "card 0 1",
-                54
-            ],
-            [
-                161,
-                "card 7 0 7",
-                55
-            ],
-            [
-                164,
-                "card 7 0 6 5",
-                56
-            ],
-            [
-                168,
-                "card 1 1",
-                57
-            ],
-            [
-                170,
-                "card 2 1",
-                58
-            ],
-            [
-                172,
-                "card 8 0",
-                59
-            ],
-            [
-                175,
-                "end",
-                60
-            ],
-            [
-                189,
-                "card 3 0 15 14",
-                63
-            ],
-            [
-                192,
-                "skill 2 13 12 11",
-                64
-            ],
-            [
-                198,
-                "sw_char 4 10",
-                66
-            ],
-            [
-                203,
-                "sw_char 1 9",
-                68
-            ],
-            [
-                216,
-                "card 7 1",
-                73
-            ],
-            [
-                218,
-                "sw_char 3 8",
-                74
-            ],
-            [
-                222,
-                "skill 3 7 6 5",
-                76
-            ],
-            [
-                227,
-                "card 9 0",
-                78
-            ],
-            [
-                230,
-                "card 7 1",
-                79
-            ],
-            [
-                232,
-                "end",
-                80
-            ],
-            [
-                244,
-                "skill 1 15 14 13",
-                82
-            ],
-            [
-                250,
-                "skill 2 12 11 10",
-                84
-            ],
-            [
-                256,
-                "skill 3 9 8 7",
-                86
-            ]
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0",
+            "TEST 6 p0 5",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "sw_card 1",
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0",
+            "TEST 6 p0 5",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "choose 1",
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0",
+            "TEST 6 p0 5",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "card 2 0 15",
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "skill 0 14 13 12",
+            "TEST 1 10 8 10 10 10 8 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "skill 0 11 10 9",
+            "TEST 1 10 5 10 10 10 7 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "skill 1 8 7 6",
+            "TEST 1 10 5 10 10 10 4 10 10",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "skill 1 5 4 3",
+            "TEST 1 10 5 10 10 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "end",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "sw_char 0 15",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "sw_char 3 14",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "sw_char 0 13",
+            "TEST 1 9 3 9 9 10 7 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "skill 0 12 11 10",
+            "TEST 1 9 3 9 9 9 5 9 6",
+            "TEST 3 p0 3",
+            "TEST 6 p0 6",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "card 4 0 9",
+            "TEST 1 9 3 9 9 9 5 9 6",
+            "TEST 3 p0 3 3",
+            "TEST 6 p0 5",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "skill 0 8 7 6",
+            "TEST 1 9 3 9 9 9 5 9 5",
+            "TEST 3 p0 3 3",
+            "TEST 6 p0 5",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "sw_char 2 5",
+            "TEST 1 9 3 9 9 9 5 9 5",
+            "TEST 3 p0 3 3",
+            "TEST 6 p0 5",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "skill 0 4 3 2",
+            "TEST 1 9 3 9 9 9 5 9 4",
+            "TEST 3 p0 4 4",
+            "TEST 6 p0 5",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "end"
         ],
         [
-            [
-                2,
-                "sw_card 1 2",
-                1
-            ],
-            [
-                4,
-                "choose 3",
-                3
-            ],
-            [
-                14,
-                "card 2 0 15",
-                6
-            ],
-            [
-                17,
-                "skill 1 14 13 12",
-                7
-            ],
-            [
-                23,
-                "sw_char 4 11",
-                9
-            ],
-            [
-                28,
-                "skill 1 10 9 8",
-                11
-            ],
-            [
-                33,
-                "sw_char 3",
-                13
-            ],
-            [
-                38,
-                "sw_char 0",
-                15
-            ],
-            [
-                42,
-                "skill 0 7 6 5",
-                17
-            ],
-            [
-                48,
-                "sw_char 5 4",
-                19
-            ],
-            [
-                52,
-                "skill 0 3 2 1",
-                21
-            ],
-            [
-                55,
-                "end",
-                22
-            ],
-            [
-                66,
-                "sw_char 2 15",
-                24
-            ],
-            [
-                71,
-                "card 1 1 14 13",
-                26
-            ],
-            [
-                74,
-                "card 1 0 12 11",
-                27
-            ],
-            [
-                77,
-                "skill 1 10 9 8",
-                28
-            ],
-            [
-                82,
-                "skill 1 7 6 5",
-                30
-            ],
-            [
-                88,
-                "skill 2 4 3 2",
-                32
-            ],
-            [
-                93,
-                "sw_char 1 1",
-                34
-            ],
-            [
-                98,
-                "card 5 0 0",
-                36
-            ],
-            [
-                101,
-                "end",
-                37
-            ],
-            [
-                117,
-                "card 1 0 15",
-                40
-            ],
-            [
-                120,
-                "card 0 1",
-                41
-            ],
-            [
-                122,
-                "card 4 0 14",
-                42
-            ],
-            [
-                125,
-                "card 0 0 13",
-                43
-            ],
-            [
-                128,
-                "card 5 1 12 11",
-                44
-            ],
-            [
-                131,
-                "sw_char 2 10",
-                45
-            ],
-            [
-                146,
-                "card 4 2 9",
-                50
-            ],
-            [
-                149,
-                "card 3 2 8 7",
-                51
-            ],
-            [
-                152,
-                "card 3 3 6 5",
-                52
-            ],
-            [
-                155,
-                "skill 0 4 3 2",
-                53
-            ],
-            [
-                177,
-                "card 0 0 1 0",
-                61
-            ],
-            [
-                180,
-                "end",
-                62
-            ],
-            [
-                195,
-                "skill 1 15 14 13",
-                65
-            ],
-            [
-                200,
-                "skill 0 12 11 10",
-                67
-            ],
-            [
-                205,
-                "card 2 3",
-                69
-            ],
-            [
-                207,
-                "card 3 0",
-                70
-            ],
-            [
-                210,
-                "card 3 3 9",
-                71
-            ],
-            [
-                213,
-                "skill 2 8 7 6",
-                72
-            ],
-            [
-                220,
-                "sw_char 3 13",
-                75
-            ],
-            [
-                225,
-                "sw_char 4 12",
-                77
-            ],
-            [
-                234,
-                "end",
-                81
-            ],
-            [
-                248,
-                "sw_char 0 15",
-                83
-            ],
-            [
-                254,
-                "sw_char 4 14",
-                85
-            ],
-            [
-                259,
-                "end",
-                87
-            ]
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0",
+            "TEST 6 p0 5",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "sw_card 1 2 3",
+            "TEST 1 10 10 10 10 10 10 10 10",
+            "TEST 3 p0",
+            "TEST 6 p0 5",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "choose 1",
+            "TEST 1 10 10 10 10 10 8 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "skill 0 15 14 13",
+            "TEST 1 10 8 10 10 10 6 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 5",
+            "card 0 0 12",
+            "TEST 1 10 8 10 10 10 7 10 10",
+            "TEST 3 p0 0",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "skill 1 11 10 9",
+            "TEST 1 10 5 10 10 10 4 10 10",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "sw_char 3 8",
+            "TEST 1 10 5 10 10 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "skill 1 7 6 5",
+            "TEST 1 10 5 10 10 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1",
+            "TEST 6 p1 4",
+            "card 2 0 4",
+            "TEST 1 10 5 10 10 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1 1",
+            "TEST 6 p1 3",
+            "sw_char 0 3",
+            "TEST 1 10 5 10 10 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1 1",
+            "TEST 6 p1 3",
+            "skill 0 2 1 0",
+            "TEST 1 9 4 9 9 10 4 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 4",
+            "TEST 3 p1 2",
+            "TEST 6 p1 3",
+            "end",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "sw_char 3 15",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "skill 1 14 13 12",
+            "TEST 1 9 3 9 9 10 5 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 8",
+            "card 3 0 11 10",
+            "TEST 1 9 3 9 9 10 7 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1",
+            "TEST 6 p1 7",
+            "card 5 0 9",
+            "TEST 1 9 3 9 9 10 7 10 7",
+            "TEST 3 p0 1",
+            "TEST 6 p0 6",
+            "TEST 3 p1 3",
+            "TEST 6 p1 6",
+            "end",
+            "TEST 1 9 3 7 9 9 7 9 5",
+            "TEST 3 p0",
+            "TEST 6 p0 15",
+            "TEST 3 p1",
+            "TEST 6 p1 11",
+            "sw_char 1 15"
         ]
     ],
     "match_config": {
@@ -1102,5 +866,181 @@
         "compress_history": true,
         "recreate_mode": false,
         "random_object_information": []
-    }
+    },
+    "command_history_raw": [
+        [
+            [
+                2,
+                "sw_card 1",
+                0
+            ],
+            [
+                4,
+                "choose 1",
+                2
+            ],
+            [
+                7,
+                "card 2 0 15",
+                4
+            ],
+            [
+                10,
+                "skill 0 14 13 12",
+                5
+            ],
+            [
+                16,
+                "skill 0 11 10 9",
+                7
+            ],
+            [
+                25,
+                "skill 1 8 7 6",
+                10
+            ],
+            [
+                30,
+                "skill 1 5 4 3",
+                12
+            ],
+            [
+                36,
+                "end",
+                14
+            ],
+            [
+                54,
+                "sw_char 0 15",
+                19
+            ],
+            [
+                58,
+                "sw_char 3 14",
+                21
+            ],
+            [
+                63,
+                "sw_char 0 13",
+                23
+            ],
+            [
+                73,
+                "skill 0 12 11 10",
+                27
+            ],
+            [
+                76,
+                "card 4 0 9",
+                28
+            ],
+            [
+                79,
+                "skill 0 8 7 6",
+                29
+            ],
+            [
+                82,
+                "sw_char 2 5",
+                30
+            ],
+            [
+                84,
+                "skill 0 4 3 2",
+                31
+            ],
+            [
+                87,
+                "end",
+                32
+            ]
+        ],
+        [
+            [
+                2,
+                "sw_card 1 2 3",
+                1
+            ],
+            [
+                4,
+                "choose 1",
+                3
+            ],
+            [
+                13,
+                "skill 0 15 14 13",
+                6
+            ],
+            [
+                19,
+                "card 0 0 12",
+                8
+            ],
+            [
+                22,
+                "skill 1 11 10 9",
+                9
+            ],
+            [
+                28,
+                "sw_char 3 8",
+                11
+            ],
+            [
+                33,
+                "skill 1 7 6 5",
+                13
+            ],
+            [
+                38,
+                "card 2 0 4",
+                15
+            ],
+            [
+                41,
+                "sw_char 0 3",
+                16
+            ],
+            [
+                43,
+                "skill 0 2 1 0",
+                17
+            ],
+            [
+                46,
+                "end",
+                18
+            ],
+            [
+                56,
+                "sw_char 3 15",
+                20
+            ],
+            [
+                60,
+                "skill 1 14 13 12",
+                22
+            ],
+            [
+                65,
+                "card 3 0 11 10",
+                24
+            ],
+            [
+                68,
+                "card 5 0 9",
+                25
+            ],
+            [
+                71,
+                "end",
+                26
+            ],
+            [
+                98,
+                "sw_char 1 15",
+                33
+            ]
+        ]
+    ]
 }

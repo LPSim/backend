@@ -64,6 +64,18 @@ def test_veteran_2():
     do_log_tests(json_path)
 
 
+def test_silver():
+    json_fname = "silver.json"
+    json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
+    do_log_tests(json_path)
+
+
+def test_jeht_sunyata():
+    json_fname = "jeht_sunyata.json"
+    json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
+    do_log_tests(json_path)
+
+
 if __name__ == "__main__":
     # test_balance()
     # test_cryo_hypostasis()
@@ -73,4 +85,5 @@ if __name__ == "__main__":
     # test_sayu()
     # test_sapwood_machine_veteran()
     # test_machine_2()
-    test_veteran_2()
+    # test_veteran_2()
+    test_silver()

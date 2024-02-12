@@ -635,6 +635,28 @@
         "default_version:4.4\ncharacter:Millennial Pearl Seahorse@4.4\ncharacter:Fischl@3.3\ncharacter:Mona@3.3\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\n",
         "default_version:4.4\ncharacter:Millennial Pearl Seahorse@4.4\ncharacter:Fischl@3.3\ncharacter:Mona@3.3\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nPearl Solidification@4.4\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\nLotus Flower Crisp@3.3\n"
     ],
+    "match_config": {
+        "random_first_player": false,
+        "player_go_first": 0,
+        "check_deck_restriction": false,
+        "initial_hand_size": 5,
+        "initial_card_draw": 2,
+        "initial_dice_number": 16,
+        "initial_dice_reroll_times": 1,
+        "card_number": null,
+        "max_same_card_number": null,
+        "character_number": null,
+        "max_round_number": 999,
+        "max_hand_size": 10,
+        "max_dice_number": 16,
+        "max_summon_number": 4,
+        "max_support_number": 4,
+        "make_skill_prediction": false,
+        "history_level": 10,
+        "compress_history": true,
+        "recreate_mode": false,
+        "random_object_information": []
+    },
     "command_history": [
         [
             "TEST 1 8 10 10 8 10 10",
@@ -1305,28 +1327,6 @@
             "skill 2 11 10 9"
         ]
     ],
-    "match_config": {
-        "random_first_player": false,
-        "player_go_first": 0,
-        "check_deck_restriction": false,
-        "initial_hand_size": 5,
-        "initial_card_draw": 2,
-        "initial_dice_number": 16,
-        "initial_dice_reroll_times": 1,
-        "card_number": null,
-        "max_same_card_number": null,
-        "character_number": null,
-        "max_round_number": 999,
-        "max_hand_size": 10,
-        "max_dice_number": 16,
-        "max_summon_number": 4,
-        "max_support_number": 4,
-        "make_skill_prediction": false,
-        "history_level": 10,
-        "compress_history": true,
-        "recreate_mode": false,
-        "random_object_information": []
-    },
     "command_history_raw": [
         [
             [
