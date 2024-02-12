@@ -10,12 +10,14 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     deck_str_1 = """
-        default_version:4.2
-        character:Baizhu
-        character:Nilou
-        character:Tighnari
-        All Things Are of the Earth*15
-        Lotus Flower Crisp*15
+        default_version:4.4
+        character:AnemoMobMage
+        character:CryoMob
+        character:PyroMobMage
+        character:Sangonomiya Kokomi
+        Mushroom Pizza*10
+        Matsutake Meat Rolls*10
+        Silver and Melus*10
     """
     deck_str_2 = """
     character:Nahida@3.7
