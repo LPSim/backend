@@ -40,7 +40,7 @@ class OverwhelmingIce_4_4(UsageCharacterStatus):
     version: Literal["4.4"] = "4.4"
     usage: int = 1
     max_usage: int = 1
-    icon_type: IconType = IconType.OTHERS
+    icon_type: IconType = IconType.ATK_SELF
 
 
 class CryocrystalCore_4_4(ReviveCharacterStatus):
