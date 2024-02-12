@@ -73,8 +73,8 @@ class SilverAndMelusEventHandler_4_4(SystemEventHandlerBase):
         damage_element = event.final_damage.damage_elemental_type
         # damage is too frequent. If not new damage type, do not check usage.
         changed = False
-        if damage_element not in self.etypes[pidx]:
-            self.etypes[pidx].append(damage_element)
+        if damage_element not in self.etypes[1 - pidx]:
+            self.etypes[1 - pidx].append(damage_element)
             changed = True
         if not changed:
             return []
@@ -121,7 +121,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "此牌会记录本场对局中敌方角色受到过的元素伤害种类数，称为「侍从的周到」。（最多4点）\n结束阶段：如果「侍从的周到」至少为3，则弃置此牌，然后抓「侍从的周到」点数的牌。",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_NPC_Silver.png",  # noqa: E501
+        "image_path": "cardface/Assist_NPC_Silver.png",  # noqa: E501
         "id": 322023,
     },
     "SYSTEM/Silver and Melus": {

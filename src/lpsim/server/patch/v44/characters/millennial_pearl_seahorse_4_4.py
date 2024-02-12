@@ -96,6 +96,7 @@ class FontemerPearl_4_4(DefendCharacterStatus):
         if (
             match.player_tables[self.position.player_idx].active_character_idx
             == self.position.character_idx
+            and event.action.player_idx == self.position.player_idx
         ):
             # active character
             return [
@@ -254,7 +255,7 @@ desc: Dict[str, DescDictType] = {
     "CHARACTER/Millennial Pearl Seahorse": {
         "names": {"en-US": "Millennial Pearl Seahorse", "zh-CN": "千年珍珠骏麟"},
         "descs": {"4.4": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Monster_SeaHorsePrimo.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_SeaHorsePrimo.png",  # noqa: E501
         "id": 2403,
     },
     "SKILL_Millennial Pearl Seahorse_NORMAL_ATTACK/Tail Sweep": {
@@ -307,6 +308,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点雷元素伤害。\n可用次数：2",
             }
         },
+        "image_path": "cardface/Summon_SeaHorsePrimo.png",
     },
     "SKILL_Millennial Pearl Seahorse_PASSIVE/Pearl Armor": {
         "names": {"en-US": "Pearl Armor", "zh-CN": "明珠甲胄"},
@@ -325,7 +327,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "我方出战角色为千年珍珠骏麟时，才能打出：入场时，使千年珍珠骏麟附属可用次数为1的原海明珠；如果已附属原海明珠，则使其可用次数+1。\n装备有此牌的千年珍珠骏麟所附属的原海明珠抵消召唤物伤害时，改为每回合2次不消耗可用次数。\n（牌组中包含千年珍珠骏麟，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_SeaHorsePrimo.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_SeaHorsePrimo.png",  # noqa: E501
         "id": 224031,
     },
 }
