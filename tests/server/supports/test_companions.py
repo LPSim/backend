@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Dict
 from lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
 from lpsim.agents.nothing_agent import NothingAgent
@@ -6,6 +7,7 @@ from lpsim.server.match import Match, MatchState
 from lpsim.server.deck import Deck
 from tests.utils_for_test import (
     check_usage,
+    do_log_tests,
     get_pidx_cidx,
     get_test_id_from_command,
     remove_ids,
@@ -900,127 +902,9 @@ def test_chang_nine():
 
 
 def test_paimon_kujirai():
-    cmd_records = [
-        [
-            "sw_card 1 4",
-            "choose 0",
-            "reroll",
-            "card 3 0 7 6 5",
-            "card 0 0",
-            "card 0 0",
-            "card 0 0",
-            "end",
-            "reroll",
-            "TEST 1 p0 support 1 0 0 0",
-            "TEST 1 p1 support 1 0",
-            "TEST 2 p0 dice 12",
-            "TEST 2 p1 dice 12",
-            "end",
-            "reroll",
-            "TEST 1 p0 support 0 0",
-            "TEST 1 p1 support 0 0",
-            "TEST 2 p0 dice 12",
-            "TEST 2 p1 dice 11",
-            "card 2 0",
-            "card 2 0",
-            "sw_char 1 10",
-            "end",
-            "reroll",
-        ],
-        [
-            "sw_card 2 1",
-            "choose 0",
-            "reroll",
-            "card 0 0",
-            "card 0 0",
-            "card 0 0 5 4 0",
-            "TEST 1 p0 support 2 0 0 0",
-            "TEST 1 p1 support 0 0 2",
-            "end",
-            "reroll",
-            "end",
-            "reroll",
-            "card 1 0",
-            "card 0 0",
-            "end",
-            "reroll",
-            "TEST 2 p0 dice 11",
-            "TEST 2 p1 dice 12",
-            "TEST 1 p0 support 0",
-            "TEST 1 p1 support 0 0 0",
-            "end",
-        ],
-    ]
-    agent_0 = InteractionAgent(
-        player_idx=0, verbose_level=0, commands=cmd_records[0], only_use_command=True
-    )
-    agent_1 = InteractionAgent(
-        player_idx=1, verbose_level=0, commands=cmd_records[1], only_use_command=True
-    )
-    # initialize match. It is recommended to use default random state to make
-    # replay unchanged.
-    match = Match(random_state=get_random_state())
-    # deck information
-    deck = Deck.from_str(
-        """
-        default_version:4.0
-        character:Xingqiu
-        character:AnemoMobMage
-        character:Yae Miko
-        character:Mona
-        character:Ganyu
-        character:Klee
-        Chang the Ninth*15
-        Kid Kujirai*15
-        Paimon*15
-        """
-    )
-    match.set_deck([deck, deck])
-    match.config.max_same_card_number = None
-    match.config.character_number = None
-    match.config.card_number = None
-    match.config.check_deck_restriction = False
-    # check whether random_first_player is enabled.
-    match.config.random_first_player = False
-    match.start()
-    match.step()
-
-    while True:
-        if match.need_respond(0):
-            agent = agent_0
-        elif match.need_respond(1):
-            agent = agent_1
-        else:
-            raise AssertionError("No need respond.")
-        # do tests
-        while True:
-            cmd = agent.commands[0]
-            test_id = get_test_id_from_command(agent)
-            if test_id == 0:
-                # id 0 means current command is not a test command.
-                break
-            elif test_id == 1:
-                cmd = cmd.split()
-                pidx = int(cmd[2][1])
-                usages = [int(x) for x in cmd[4:]]
-                supports = match.player_tables[pidx].supports
-                assert len(supports) == len(usages)
-                for u, s in zip(usages, supports):
-                    assert u == s.usage
-            elif test_id == 2:
-                cmd = cmd.split()
-                pidx = int(cmd[2][1])
-                dice_num = int(cmd[4])
-                assert len(match.player_tables[pidx].dice.colors) == dice_num
-            else:
-                raise AssertionError(f"Unknown test id {test_id}")
-        # respond
-        make_respond(agent, match)
-        if len(agent_1.commands) == 0 and len(agent_0.commands) == 0:
-            break
-
-    # simulate ends, check final state
-    assert match.state != MatchState.ERROR
+    json_fname = "kujirai_log.json"
+    json_path = os.path.join(os.path.dirname(__file__), json_fname)
+    do_log_tests(json_path, omnipotent=False)
 
 
 def test_master_zhang():
@@ -2354,7 +2238,7 @@ if __name__ == "__main__":
     # test_liusu()
     # test_tubby()
     # test_chang_nine()
-    # test_paimon_kujirai()
+    test_paimon_kujirai()
     # test_master_zhang()
     # test_katheryne_tian_ellin()
     # test_wagner_timaeus()
