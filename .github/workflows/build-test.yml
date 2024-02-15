@@ -4,6 +4,7 @@ name: Test Build
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
 
