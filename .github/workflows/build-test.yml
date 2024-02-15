@@ -38,7 +38,6 @@ jobs:
 
     - name: Create distributions
       run: |
-        rm -rf build
         python -m build
 
     - name: Upload artifacts
