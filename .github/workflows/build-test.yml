@@ -28,10 +28,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        ls -alh
-        du -shc *
         python -m pip install --upgrade pip
         pip install ".[dev]"
+        ls -alh
+        du -shc *
 
     - name: Fetch tags and print
       run: |
