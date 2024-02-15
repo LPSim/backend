@@ -38,10 +38,7 @@ jobs:
 
     - name: Create distributions
       run: |
-        echo path $PATH 
-        echo pythonpath $PYTHONPATH
-        ls -alh build
-        du -shc build/*
+        rm -rf build
         python -m build
 
     - name: Upload artifacts
