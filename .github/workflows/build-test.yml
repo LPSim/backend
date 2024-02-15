@@ -29,6 +29,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        echo $PATH $PYTHONPATH
         pip install ".[dev]"
 
     - name: Fetch tags and print
