@@ -29,7 +29,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        echo $PATH $PYTHONPATH
         pip install ".[dev]"
 
     - name: Fetch tags and print
@@ -39,6 +38,9 @@ jobs:
 
     - name: Create distributions
       run: |
+        echo path $PATH 
+        echo pythonpath $PYTHONPATH
+        ls -alh
         python -m build
 
     - name: Upload artifacts
