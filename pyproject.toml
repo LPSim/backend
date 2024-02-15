@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["setuptools-scm", "pytest", "pytest-cov", "pytest-xdist"]
+dev = ["setuptools-scm", "pytest", "pytest-cov", "pytest-xdist", "pyright"]
 
 [project.urls]
 "Homepage" = "https://github.com/LPSim/backend"
@@ -44,3 +44,7 @@ Invokation = "Invokation"
 
 [tool.ruff]
 exclude = ["templates"]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+include = ["src", "tests"]
