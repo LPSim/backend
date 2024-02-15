@@ -27,10 +27,15 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+        cache: 'pip'
   
     - name: Install dependencies
       run: |
         pip install -e ".[dev]"
+
+    - name: Run type check
+      run: |
+        pyright .
 
     - name: Run tests with coverage
       run: |
