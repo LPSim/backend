@@ -1,5 +1,5 @@
 # test build CI, all the steps are the same as publish.yml, except will not publish
-# to pypi and calling test.yml, and can only be triggered manually.
+# to pypi or doing tests.
 name: Test Build
 
 on:
