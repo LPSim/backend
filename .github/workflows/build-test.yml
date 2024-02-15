@@ -28,6 +28,8 @@ jobs:
 
     - name: Install dependencies
       run: |
+        ls -alh
+        du -shc *
         python -m pip install --upgrade pip
         pip install ".[dev]"
 
@@ -41,6 +43,7 @@ jobs:
         echo path $PATH 
         echo pythonpath $PYTHONPATH
         ls -alh
+        du -shc *
         python -m build
 
     - name: Upload artifacts
