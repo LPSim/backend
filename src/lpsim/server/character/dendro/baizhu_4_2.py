@@ -127,8 +127,13 @@ class AllThingsAreOfTheEarth_4_2(SkillTalent):
         ):
             # not our team status, or not equipped
             return []
-        source = match.get_object(source_position)
-        if source.name != "Seamless Shield":
+        # shield should be moved to trashbin, found it in trashbin
+        source = None
+        for obj in match.trashbin:
+            if obj.id == source_position.id:
+                source = obj
+        # source = match.get_object(source_position, ActionTypes.MAKE_DAMAGE)
+        if source is None or source.name != "Seamless Shield":
             # not our shield
             return []
         # create dice

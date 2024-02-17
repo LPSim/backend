@@ -466,10 +466,21 @@ class GenerateRerollDiceRequestAction(ActionBase):
 
 class SkipPlayerActionAction(ActionBase):
     """
-    Action for skipping current player action.
+    Action for skipping current player action. As skipping will cause action end, its
+    variables are the same as ActionEndAction.
     """
 
     type: Literal[ActionTypes.SKIP_PLAYER_ACTION] = ActionTypes.SKIP_PLAYER_ACTION
+    action_label: int  # Refer to PlayerActionLabels
+    do_combat_action: bool
+    position: ObjectPosition
+
+    def get_action_end_action(self):
+        return ActionEndAction(
+            action_label=self.action_label,
+            do_combat_action=self.do_combat_action,
+            position=self.position,
+        )
 
 
 # 25

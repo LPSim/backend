@@ -485,6 +485,21 @@ class Match(BaseModel):
             if len(self._history) > 2:
                 self._history = [self._history[0], self._history[-1]]
 
+    def _record_last_action_history(self):
+        """
+        Record history based on last action.
+        When history level is 0, no information will be recorded.
+        With higher history level, more information will be recorded.
+        By default, all actions have history level 100.
+        """
+        if (
+            self.config.history_level >= self.last_action.record_level
+            and self.last_action.type != ActionTypes.EMPTY
+        ):  # pragma: no cover
+            self._save_history()
+        # after potential history recording, reset last action
+        self.last_action = ActionBase()
+
     def _debug_save_appeared_object_names_to_file(self):  # pragma: no cover
         # save appeared object names and descs
         if self._debug_save_file_name == "":
@@ -565,7 +580,7 @@ class Match(BaseModel):
         """
         Save the random state.
         """
-        self.random_state = list(self._random_state.get_state(legacy=True))  # type: ignore
+        self.random_state = list(self._random_state.get_state(legacy=True))
         self.random_state[1] = self.random_state[1].tolist()
 
     def _random(self):
@@ -799,19 +814,7 @@ class Match(BaseModel):
                 self._round_start()
             else:
                 raise NotImplementedError(f"Match state {self.state} not implemented.")
-            """
-            Record history.
-            When history level is 0, no information will be recorded.
-            With higher history level, more information will be recorded.
-            By default, all actions have history level 100.
-            """
-            if (
-                self.config.history_level >= self.last_action.record_level
-                and self.last_action.type != ActionTypes.EMPTY
-            ):  # pragma: no cover
-                self._save_history()
-            # after potential history recording, reset last action
-            self.last_action = ActionBase()
+            self._record_last_action_history()
             if self._debug_save_appeared_object_names:  # pragma: no cover
                 self._debug_save_appeared_object_names_to_file()
             if len(self.requests) or not run_continuously:
@@ -911,11 +914,22 @@ class Match(BaseModel):
         while len(self.event_frames):
             event_frame = self.event_frames[-1]
             if len(event_frame.triggered_actions):
-                # do one action
-                activated_action = event_frame.triggered_actions.pop(0)
-                logging.info(f"Action activated: {activated_action}")
-                event_args = self._act(activated_action)
-                self._stack_events(event_args)
+                if event_frame.processing_event is None:
+                    # do one action
+                    activated_action = event_frame.triggered_actions.pop(0)
+                    logging.info(f"Action activated: {activated_action}")
+                    event_args = self._act(activated_action)
+                    self._record_last_action_history()
+                    self._stack_events(event_args)
+                else:
+                    # do all actions
+                    event_args = []
+                    for activated_action in event_frame.triggered_actions:
+                        logging.info(f"Action activated: {activated_action}")
+                        event_args += self._act(activated_action)
+                        self._record_last_action_history()
+                    event_frame.triggered_actions = []
+                    self._stack_events(event_args)
                 return
             elif len(event_frame.triggered_objects):
                 # get actions
@@ -2389,16 +2403,7 @@ class Match(BaseModel):
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
         character = table.characters[action.character_idx]
-        if character.is_defeated:
-            # charge defeated character
-            logging.warning(
-                f"tried to charge a defeated character! "
-                f"player {player_idx} "
-                f"character {character.name}:{action.character_idx}. "
-                f"bug or defeated before charging?"
-            )
-            # ignore this action and return empty event arguments
-            return []
+        assert character.is_alive, "Cannot charge a defeated character."
         logging.info(
             f"player {player_idx} "
             f"character {character.name}:{table.active_character_idx} "
@@ -2959,9 +2964,7 @@ class Match(BaseModel):
         use_card_value = UseCardValue(position=card.position, card=card)
         self._modify_value(use_card_value, "REAL")
 
-        info_str = (
-            f"player {action.card_position.player_idx} " f"use card {card.name}."  # type: ignore
-        )
+        info_str = f"player {action.card_position.player_idx} use card {card.name}."
         if not use_card_value.use_card:
             info_str += " But use card failed!"
         logging.info(info_str)
@@ -3028,11 +3031,16 @@ class Match(BaseModel):
 
     def _action_skip_player_action(
         self, action: SkipPlayerActionAction
-    ) -> List[EventArgumentsBase]:
+    ) -> List[ActionEndEventArguments]:
+        """
+        In this action, match state is changed to PLAYER_ACTION_REQUEST, so
+        no requests are generated to current player, and it will immediately end
+        the action phase.
+        """
         if self.state != MatchState.PLAYER_ACTION_START:
             raise AssertionError(
                 f"Cannot skip player action when match state is " f"{self.state}."
             )
         self._set_match_state(MatchState.PLAYER_ACTION_REQUEST)
         logging.info(f"player {self.current_player} skipped player action.")
-        return []
+        return self._action_action_end(action.get_action_end_action())

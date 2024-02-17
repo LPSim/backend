@@ -201,7 +201,6 @@ class FierySanctumField_4_1(DefendTeamStatus):
     min_damage_to_trigger: int = 1
     max_in_one_time: int = 1
     decrease_usage_by_damage: bool = False
-    remove_triggered: bool = False
 
     def _find_dehya(self, match: Any) -> int:
         """
@@ -235,10 +234,6 @@ class FierySanctumField_4_1(DefendTeamStatus):
         """
         ret: List[MakeDamageAction | RemoveObjectAction] = []
         if self.usage == 0:
-            if self.remove_triggered:
-                # has triggered remove, do nothing
-                return []
-            self.remove_triggered = True
             # check if should attack dehya
             dehya_idx = self._find_dehya(match)
             assert dehya_idx != -1
