@@ -1,6 +1,6 @@
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
-from src.lpsim.network import HTTPServer
-from src.lpsim.server.match import MatchConfig, Match
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
+from lpsim.network import HTTPServer
+from lpsim.server.match import MatchConfig, Match
 from tests.utils_for_test import get_random_state
 import logging
 
