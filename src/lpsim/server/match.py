@@ -2255,11 +2255,8 @@ class Match(BaseModel):
             character change, i.e. overloaded,
             a SwitchCharacterEventArguments will be generated.
         3. CreateObjectEventArguments: If this damage action contains create
-            object, i.e. massive skills that deal damage and create object,
-            or triggered dendro reaction, etc. A CreateObjectEventArguments
+            object, i.e. dendro reactions, a CreateObjectEventArguments
             will be generated.
-        NOTE: side effects by elemental reaction is handled by system event
-        handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
         switch_character: List[int] = [-1, -1]
