@@ -6,7 +6,12 @@ from ...summon.base import SwirlChangeSummonBase
 
 from ...event import RoundEndEventArguments
 
-from ...action import ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
+from ...action import (
+    Actions,
+    ChangeObjectUsageAction,
+    MakeDamageAction,
+    SwitchCharacterAction,
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -37,11 +42,14 @@ class Stormeye_3_7(SwirlChangeSummonBase):
 
     def event_handler_ROUND_END(
         self, event: RoundEndEventArguments, match: Any
-    ) -> List[MakeDamageAction | ChangeObjectUsageAction]:
+    ) -> List[MakeDamageAction | ChangeObjectUsageAction | SwitchCharacterAction]:
         """
         Need to change enemy active
         """
-        ret = super().event_handler_ROUND_END(event, match)
+        ret: List[
+            MakeDamageAction | ChangeObjectUsageAction | SwitchCharacterAction
+        ] = []
+        ret += super().event_handler_ROUND_END(event, match)
         our_active = match.player_tables[self.position.player_idx].active_character_idx
         target_characters = match.player_tables[1 - self.position.player_idx].characters
         target_idx = our_active
@@ -53,9 +61,16 @@ class Stormeye_3_7(SwirlChangeSummonBase):
                     break
             else:
                 raise AssertionError("No character alive")
-        attack_action = ret[0]
-        assert attack_action.type == ActionTypes.MAKE_DAMAGE
-        attack_action.character_change_idx[1 - self.position.player_idx] = target_idx
+        if (
+            target_idx
+            != match.player_tables[1 - self.position.player_idx].active_character_idx
+        ):
+            ret.append(
+                SwitchCharacterAction(
+                    player_idx=1 - self.position.player_idx,
+                    character_idx=target_idx,
+                )
+            )
         return ret
 
 

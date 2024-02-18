@@ -8,7 +8,12 @@ from ...summon.base import AttackerSummonBase
 
 from ...modifiable_values import DamageIncreaseValue, DamageValue
 
-from ...action import ActionTypes, Actions, ChangeObjectUsageAction, MakeDamageAction
+from ...action import (
+    Actions,
+    ChangeObjectUsageAction,
+    MakeDamageAction,
+    SwitchCharacterAction,
+)
 from ...struct import Cost
 
 from ...consts import (
@@ -100,17 +105,18 @@ class GaleBlade(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match)
         next_idx = match.player_tables[
             1 - self.position.player_idx
         ].next_character_idx()
         if next_idx is None:
-            return ret
-        # change character
-        attack_action = ret[0]
-        assert attack_action.type == ActionTypes.MAKE_DAMAGE
-        attack_action.character_change_idx[1 - self.position.player_idx] = next_idx
-        return ret
+            return super().get_actions(match)
+        return [
+            self.attack_opposite_active(match, self.damage, self.damage_type),
+            SwitchCharacterAction(
+                player_idx=1 - self.position.player_idx, character_idx=next_idx
+            ),
+            self.charge_self(1),
+        ]
 
 
 class DandelionBreeze(ElementalBurstBase):

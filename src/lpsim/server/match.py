@@ -2252,13 +2252,8 @@ class Match(BaseModel):
         1. MakeDamageEventArguments: All damage information dealt by this
             action.
         2. SwitchCharacterEventArguments: If this damage action contains
-            character change, i.e. overloaded, Skills of Anemo characters, etc.
-            A SwitchCharacterEventArguments will be generated.
-            NOTE: only character switch of character received this damage will
-            trigger this event, character switch of attacker (Kazuha, Kenki,
-            When the Crane Returned) should be another SwitchCharacterAction.
-            TODO is it possible to have character switch of attacker in
-                make damage action?
+            character change, i.e. overloaded,
+            a SwitchCharacterEventArguments will be generated.
         3. CreateObjectEventArguments: If this damage action contains create
             object, i.e. massive skills that deal damage and create object,
             or triggered dendro reaction, etc. A CreateObjectEventArguments
@@ -2267,7 +2262,7 @@ class Match(BaseModel):
         handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
-        switch_character: List[int] = action.character_change_idx
+        switch_character: List[int] = [-1, -1]
         create_objects: List[CreateObjectAction] = []
         assert self.event_handlers[0].name == "System"
         # version used in side effect generation
