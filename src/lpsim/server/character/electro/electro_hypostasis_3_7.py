@@ -90,9 +90,9 @@ class RockPaperScissorsCombo(ElementalSkillBase):
         """
         Attack and create prepare skill
         """
-        return super().get_actions(
-            match, [self.create_character_status("Rock-Paper-Scissors Combo: Scissors")]
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Rock-Paper-Scissors Combo: Scissors")
+        ]
 
 
 class RockPaperScissorsComboScissors(ElementalSkillBase):
@@ -118,8 +118,8 @@ class RockPaperScissorsComboScissors(ElementalSkillBase):
                 match,
                 self.damage,
                 self.damage_type,
-                [self.create_character_status("Rock-Paper-Scissors Combo: Paper")],
-            )
+            ),
+            self.create_character_status("Rock-Paper-Scissors Combo: Paper"),
         ]
 
 
@@ -157,9 +157,9 @@ class LightningLockdown(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match, [self.create_summon("Chains of Warding Thunder")]
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Chains of Warding Thunder")
+        ]
 
 
 class ElectroCrystalCore(CreateStatusPassiveSkill):

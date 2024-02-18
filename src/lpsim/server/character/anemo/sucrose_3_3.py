@@ -117,9 +117,9 @@ class ForbiddenCreationIsomer75TypeII(ElementalBurstBase):
 
     def get_actions(self, match: Any) -> List[Actions]:
         args = {"talent_activated": self.is_talent_equipped(match)}
-        return super().get_actions(
-            match, [self.create_summon("Large Wind Spirit", args)]
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Large Wind Spirit", args)
+        ]
 
 
 # Talents

@@ -97,12 +97,9 @@ class HanegaSongOfTheWind(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Windfavored"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Windfavored"),
+        ]
 
 
 class KyougenFiveCeremonialPlays(ElementalBurstBase):

@@ -147,12 +147,9 @@ class MistySummons(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.CRYO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon("Cryo Cicins", {"version": self.version}),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Cryo Cicins", {"version": self.version}),
+        ]
 
 
 class BlizzardBranchBlossom(ElementalBurstBase):
@@ -176,8 +173,8 @@ class BlizzardBranchBlossom(ElementalBurstBase):
                 match,
                 self.damage,
                 self.damage_type,
-                [self.create_team_status("Flowing Cicin Shield", args)],
             ),
+            self.create_team_status("Flowing Cicin Shield", args),
         ]
         app = self.element_application_self(match, DamageElementalType.CRYO)
         ret[1].damage_value_list += app.damage_value_list

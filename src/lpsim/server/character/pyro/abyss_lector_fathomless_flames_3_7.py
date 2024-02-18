@@ -54,7 +54,7 @@ class OminousStar(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Darkfire Furnace")])
+        return super().get_actions(match) + [self.create_summon("Darkfire Furnace")]
 
 
 class FieryRebirth(CreateStatusPassiveSkill):

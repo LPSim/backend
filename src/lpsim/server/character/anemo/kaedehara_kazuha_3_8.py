@@ -53,8 +53,8 @@ class Chihayaburu(ElementalSkillBase):
                 match,
                 self.damage,
                 self.damage_type,
-                [self.create_character_status("Midare Ranzan: New")],
             ),
+            self.create_character_status("Midare Ranzan: New"),
             self.charge_self(1),
         ]
 
@@ -87,12 +87,9 @@ class KazuhaSlash(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon("Autumn Whirlwind"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Autumn Whirlwind"),
+        ]
 
 
 # Talents

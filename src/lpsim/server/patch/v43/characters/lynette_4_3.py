@@ -149,7 +149,7 @@ class EnigmaticFeint(ElementalSkillBase):
             # first use, heal 2 hp and attach status
             heal = self.attack_self(match, -2)
             damage_action.damage_value_list += heal.damage_value_list
-            damage_action.create_objects.append(
+            ret.append(
                 CreateObjectAction(
                     object_name="Overawing Assault",
                     object_position=character.position.set_area(
@@ -170,7 +170,7 @@ class MagicTrickAstonishingShift(ElementalBurstBase):
     damage_type: DamageElementalType = DamageElementalType.ANEMO
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Bogglecat Box", {})])
+        return super().get_actions(match) + [self.create_summon("Bogglecat Box", {})]
 
 
 class AColdBladeLikeAShadow_4_3(SkillTalent):

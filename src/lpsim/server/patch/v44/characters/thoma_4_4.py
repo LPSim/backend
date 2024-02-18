@@ -56,19 +56,19 @@ class ScorchingOoyoroi_4_4(ExtraAttackTeamStatus, UsageTeamStatus):
 
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Match
-    ) -> List[MakeDamageAction | RemoveObjectAction]:
+    ) -> List[MakeDamageAction | RemoveObjectAction | CreateObjectAction]:
         skill = match.get_object(event.action.position)
         assert skill is not None
         if skill.name == "Crimson Ooyoroi":
             # Thoma use burst Crimson Ooyoroi
             return []
-        ret: List[MakeDamageAction | RemoveObjectAction] = []
+        ret: List[MakeDamageAction | RemoveObjectAction | CreateObjectAction] = []
         ret += super().event_handler_SKILL_END(event, match)
         if len(ret) == 0:
             return ret
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        damage_action.create_objects.append(
+        ret.append(
             CreateObjectAction(
                 object_name="Blazing Barrier",
                 object_position=ObjectPosition(
@@ -89,7 +89,7 @@ class BlazingBlessing(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.PYRO, elemental_dice_number=3)
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match, [self.create_team_status("Blazing Barrier")])
+        return super().get_actions(match) + [self.create_team_status("Blazing Barrier")]
 
 
 class CrimsonOoyoroi(ElementalBurstBase):
@@ -110,13 +110,10 @@ class CrimsonOoyoroi(ElementalBurstBase):
                 "usage": 3,
                 "max_usage": 3,
             }
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Blazing Barrier"),
-                self.create_team_status("Scorching Ooyoroi", status_args),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Blazing Barrier"),
+            self.create_team_status("Scorching Ooyoroi", status_args),
+        ]
 
 
 class ASubordinatesSkills_4_4(SkillTalent):

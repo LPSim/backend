@@ -93,12 +93,9 @@ class SpringSpiritSummoning(ElementalSkillBase):
                     "talent_max_usage": 1,
                 }
             )
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Icy Quill", args),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Icy Quill", args),
+        ]
 
 
 class DivineMaidensDeliverance(ElementalBurstBase):
@@ -110,7 +107,7 @@ class DivineMaidensDeliverance(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Talisman Spirit")])
+        return super().get_actions(match) + [self.create_summon("Talisman Spirit")]
 
 
 # Talents

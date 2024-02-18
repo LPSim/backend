@@ -411,7 +411,6 @@ class MakeDamageAction(ActionBase):
     type: Literal[ActionTypes.MAKE_DAMAGE] = ActionTypes.MAKE_DAMAGE
     record_level: int = 10
     damage_value_list: List[DamageValue]
-    create_objects: List[CreateObjectAction] = []
 
     def __init__(self, *argv, **kwargs):
         super().__init__(*argv, **kwargs)

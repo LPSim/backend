@@ -2388,7 +2388,6 @@ class Match(BaseModel):
                 )
                 sw_events = self._action_switch_character(sw_action)
                 events += sw_events
-        create_objects += action.create_objects
         for co_action in create_objects:
             co_events = self._action_create_object(co_action)
             events += co_events

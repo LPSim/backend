@@ -61,14 +61,11 @@ class KamisatoArtKyouka(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status(
-                    "Takimeguri Kanka", {"usage": 3, "max_usage": 3}
-                ),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status(
+                "Takimeguri Kanka", {"usage": 3, "max_usage": 3}
+            ),
+        ]
 
 
 class KamisatoArtSuiyuu(ElementalBurstBase):
@@ -80,7 +77,7 @@ class KamisatoArtSuiyuu(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Garden of Purity")])
+        return super().get_actions(match) + [self.create_summon("Garden of Purity")]
 
 
 # Talents

@@ -100,9 +100,9 @@ class UniversalityAnElaborationOnForm(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_character_status("Chisel-Light Mirror")]
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Chisel-Light Mirror")
+        ]
 
 
 class ParticularFieldFettersOfPhenomena(ElementalBurstBase):
@@ -126,10 +126,9 @@ class ParticularFieldFettersOfPhenomena(ElementalBurstBase):
                 break
         if status is None:
             # attack and create 3-stack status
-            return super().get_actions(
-                match,
-                [self.create_character_status("Chisel-Light Mirror", {"usage": 3})],
-            )
+            return super().get_actions(match) + [
+                self.create_character_status("Chisel-Light Mirror", {"usage": 3})
+            ]
         else:
             # attack and change status usage
             has_talent = self.is_talent_equipped(match)
