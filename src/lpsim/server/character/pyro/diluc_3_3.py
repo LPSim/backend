@@ -101,14 +101,9 @@ class Dawn(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status(
-                    "Pyro Elemental Infusion", {"mark": "Diluc"}
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Pyro Elemental Infusion", {"mark": "Diluc"})
+        ]
 
 
 # Talents

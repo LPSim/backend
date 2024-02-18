@@ -37,7 +37,7 @@ class Prowl(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match, [self.create_character_status("Stealth")])
+        return super().get_actions(match) + [self.create_character_status("Stealth")]
 
 
 class StealthMaster(CreateStatusPassiveSkill):

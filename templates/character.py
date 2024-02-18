@@ -117,11 +117,10 @@ class ...(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match, [
-            self.create_summon('...'),
+        return super().get_actions(match) + [self.create_summon('...'),
             self.create_character_status('...'),
             self.create_team_status('...'),
-        ])
+        ]
 
 
 class ...(ElementalBurstBase):

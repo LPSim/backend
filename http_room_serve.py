@@ -4,7 +4,7 @@ Serve a room server on localhost:7999. Note you should wrap the server with
 """
 
 
-from src.lpsim.network.http_room_server import HTTPRoomServer
+from lpsim.network.http_room_server import HTTPRoomServer
 
 
 if __name__ == "__main__":

@@ -131,12 +131,9 @@ class IceRingWaltz(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Overwhelming Ice"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Overwhelming Ice"),
+        ]
 
 
 class PlungingIceShards(ElementalBurstBase, AOESkillBase):
@@ -151,7 +148,7 @@ class PlungingIceShards(ElementalBurstBase, AOESkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Piercing Iceridge")])
+        return super().get_actions(match) + [self.create_summon("Piercing Iceridge")]
 
 
 class CryocrystalCore(CreateStatusPassiveSkill):

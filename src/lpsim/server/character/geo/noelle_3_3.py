@@ -28,8 +28,7 @@ class Breastplate(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_number=3, elemental_dice_color=DieColor.GEO)
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match, [self.create_team_status("Full Plate")])
-        return ret
+        return super().get_actions(match) + [self.create_team_status("Full Plate")]
 
 
 class SweepingTime(ElementalBurstBase):
@@ -41,10 +40,9 @@ class SweepingTime(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(
-            match, [self.create_character_status("Sweeping Time")]
-        )
-        return ret
+        return super().get_actions(match) + [
+            self.create_character_status("Sweeping Time")
+        ]
 
 
 class IGotYourBack_3_3(SkillTalent):

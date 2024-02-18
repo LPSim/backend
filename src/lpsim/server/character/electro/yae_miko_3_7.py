@@ -78,14 +78,10 @@ class GreatSecretArtTenkoKenshin(ElementalBurstBase):
         if sakura is not None:
             # destroy and add status
             ret = [RemoveObjectAction(object_position=sakura.position)] + ret
-            damage_action.create_objects.append(
-                self.create_team_status("Tenko Thunderbolts")
-            )
+            ret.append(self.create_team_status("Tenko Thunderbolts"))
             if self.is_talent_equipped(match):
                 # add status
-                damage_action.create_objects.append(
-                    self.create_character_status("The Shrine's Sacred Shade")
-                )
+                ret.append(self.create_character_status("The Shrine's Sacred Shade"))
         return ret
 
 

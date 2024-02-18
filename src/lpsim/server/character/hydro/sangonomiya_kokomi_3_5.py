@@ -19,12 +19,9 @@ class NereidsAscension(NA_3_6):
         """
         No healing
         """
-        return super(NA_3_6, self).get_actions(
-            match,
-            [
-                self.create_character_status("Ceremonial Garment"),
-            ],
-        )
+        return super(NA_3_6, self).get_actions(match) + [
+            self.create_character_status("Ceremonial Garment"),
+        ]
 
 
 class TamakushiCasket_3_5(SkillTalent):

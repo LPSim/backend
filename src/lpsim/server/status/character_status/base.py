@@ -20,7 +20,6 @@ from ...consts import (
 )
 from ..base import StatusBase
 from ...action import (
-    ActionEndAction,
     MakeDamageAction,
     RemoveObjectAction,
     Actions,
@@ -34,6 +33,7 @@ from ...event import (
     RoundEndEventArguments,
     RoundPrepareEventArguments,
     SwitchCharacterEventArguments,
+    UseSkillEventArguments,
 )
 
 
@@ -285,6 +285,8 @@ class PrepareCharacterStatus(CharacterStatusBase):
     max_usage: int = 1
     icon_type: Literal[IconType.SPECIAL] = IconType.SPECIAL
 
+    done: bool = False
+
     def event_handler_SWITCH_CHARACTER(
         self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[RemoveObjectAction]:
@@ -320,12 +322,12 @@ class PrepareCharacterStatus(CharacterStatusBase):
 
     def event_handler_PLAYER_ACTION_START(
         self, event: PlayerActionStartEventArguments, match: Any
-    ) -> List[
-        RemoveObjectAction | UseSkillAction | SkipPlayerActionAction | ActionEndAction
-    ]:
+    ) -> List[UseSkillAction]:
         """
         If self player action start, and this character is at front,
-        use skill, remove this status, and skip player action.
+        use skill. it will also listen to Use Skill event to remove self, and skip
+        player action.
+        remove this status, and skip player action.
         """
         if event.player_idx != self.position.player_idx:
             # not self player action start, do nothing
@@ -339,37 +341,34 @@ class PrepareCharacterStatus(CharacterStatusBase):
         if character.is_stunned:
             # stunned, do nothing
             return []
-        ret: List[
-            RemoveObjectAction
-            | UseSkillAction
-            | SkipPlayerActionAction
-            | ActionEndAction
-        ] = []
-        ret.append(RemoveObjectAction(object_position=self.position))
         assert character.name == self.character_name
-        # use skill
         for skill in character.skills:
             if skill.name == self.skill_name:
-                # clear, should not remove self first
-                ret.clear()
-                ret.append(UseSkillAction(skill_position=skill.position))
-                # skip player action
-                ret.append(SkipPlayerActionAction())
-                # remove self
-                ret.append(RemoveObjectAction(object_position=self.position))
-                # action end action to switch player
-                ret.append(
-                    ActionEndAction(
-                        action_label=PlayerActionLabels.SKILL,
-                        do_combat_action=True,
-                        position=skill.position,
-                    )
-                )
-                # note based on its description, no skill end action will be
-                # triggered.
-                return ret
+                self.done = True
+                return [UseSkillAction(skill_position=skill.position)]
         else:
             raise AssertionError("Skill not found")
+
+    def event_handler_USE_SKILL(
+        self, event: UseSkillEventArguments, match: Any
+    ) -> List[RemoveObjectAction | SkipPlayerActionAction]:
+        """
+        When use skill, and this status is marked as done, remove self and trigger
+        skip player action.
+        As it is a character status, it will always trigger after skill of character.
+        """
+        if self.done:
+            return [
+                # remove self
+                RemoveObjectAction(object_position=self.position),
+                # skip player action
+                SkipPlayerActionAction(
+                    action_label=PlayerActionLabels.SKILL,
+                    do_combat_action=True,
+                    position=event.action.skill_position,
+                ),
+            ]
+        return []
 
 
 class ReviveCharacterStatus(UsageCharacterStatus):

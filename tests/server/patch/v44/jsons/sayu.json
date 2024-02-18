@@ -635,6 +635,28 @@
         "default_version:4.4\ncharacter:Sayu@4.4\ncharacter:Mona@3.3\ncharacter:Klee@3.4\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\n",
         "default_version:4.4\ncharacter:Sayu@4.4\ncharacter:Mona@3.3\ncharacter:Klee@3.4\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSweet Madame@3.3\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\nSkiving: New and Improved@4.4\n"
     ],
+    "match_config": {
+        "random_first_player": false,
+        "player_go_first": 0,
+        "check_deck_restriction": false,
+        "initial_hand_size": 5,
+        "initial_card_draw": 2,
+        "initial_dice_number": 16,
+        "initial_dice_reroll_times": 1,
+        "card_number": null,
+        "max_same_card_number": null,
+        "character_number": null,
+        "max_round_number": 999,
+        "max_hand_size": 10,
+        "max_dice_number": 16,
+        "max_summon_number": 4,
+        "max_support_number": 4,
+        "make_skill_prediction": false,
+        "history_level": 10,
+        "compress_history": true,
+        "recreate_mode": false,
+        "random_object_information": []
+    },
     "command_history": [
         [
             "TEST 1 10 10 10 10 10 10",
@@ -1252,7 +1274,7 @@
             "TEST 6 p1 7",
             "end",
             "TEST 1 0 9 10 0 4 0",
-            "TEST 2 p0 1 1",
+            "TEST 2 p0 1",
             "TEST 5 p0c0",
             "TEST 5 p0c1",
             "TEST 12 p0c1 PYRO",
@@ -1283,28 +1305,6 @@
             "card 0 0"
         ]
     ],
-    "match_config": {
-        "random_first_player": false,
-        "player_go_first": 0,
-        "check_deck_restriction": false,
-        "initial_hand_size": 5,
-        "initial_card_draw": 2,
-        "initial_dice_number": 16,
-        "initial_dice_reroll_times": 1,
-        "card_number": null,
-        "max_same_card_number": null,
-        "character_number": null,
-        "max_round_number": 999,
-        "max_hand_size": 10,
-        "max_dice_number": 16,
-        "max_summon_number": 4,
-        "max_support_number": 4,
-        "make_skill_prediction": false,
-        "history_level": 10,
-        "compress_history": true,
-        "recreate_mode": false,
-        "random_object_information": []
-    },
     "command_history_raw": [
         [
             [

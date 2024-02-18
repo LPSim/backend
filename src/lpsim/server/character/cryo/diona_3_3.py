@@ -78,9 +78,9 @@ class IcyPaws(ElementalSkillBase):
             # have talent, shield gain one more usage
             args["usage"] = 2
             args["max_usage"] = 2
-        return super().get_actions(
-            match, [self.create_team_status("Cat-Claw Shield", args)]
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Cat-Claw Shield", args)
+        ]
 
 
 class SignatureMix(ElementalBurstBase):
@@ -108,9 +108,9 @@ class SignatureMix(ElementalBurstBase):
                         cost=Cost(),
                     )
                 ],
-                create_objects=[self.create_summon("Drunken Mist")],
             )
         )
+        ret.append(self.create_summon("Drunken Mist"))
         return ret
 
 

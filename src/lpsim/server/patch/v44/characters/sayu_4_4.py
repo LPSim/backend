@@ -118,12 +118,9 @@ class YooHooArtFuuinDash(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Fuufuu Whirlwind Kick"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Fuufuu Whirlwind Kick"),
+        ]
 
 
 class FuufuuWhirlwindKick(ElementalSkillBase):
@@ -160,12 +157,9 @@ class YoohooArtMujinaFlurry(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon("Muji-Muji Daruma"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Muji-Muji Daruma"),
+        ]
 
 
 class SkivingNewAndImproved_4_4(SkillTalent):

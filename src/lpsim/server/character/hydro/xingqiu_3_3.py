@@ -22,8 +22,8 @@ class Raincutter(R_3_6):
                 match,
                 self.damage,
                 self.damage_type,
-                [self.create_team_status("Rainbow Bladework", {"version": "3.3"})],
             ),
+            self.create_team_status("Rainbow Bladework", {"version": "3.3"}),
             self.element_application_self(match, DamageElementalType.HYDRO),
         ]
 

@@ -138,14 +138,9 @@ class SpiritOfOmensAwakeningPyroScorpion(ElementalBurstBase):
         summon_desc = ""
         if self.is_talent_equipped(match):
             summon_desc = "talent"
-        return super().get_actions(
-            match,
-            [
-                self.create_summon(
-                    "Spirit of Omen: Pyro Scorpion", {"desc": summon_desc}
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Spirit of Omen: Pyro Scorpion", {"desc": summon_desc})
+        ]
 
 
 class SpiritOfOmensPower(PassiveSkillBase):

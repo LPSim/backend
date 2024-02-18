@@ -160,13 +160,10 @@ class FontemerHoarthunder(ElementalBurstBase):
         args: Dict[str, Any] = {"usage": 2}
         if self.is_talent_equipped(match):
             args["desc"] = "talent"
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Fontemer Pearl", args),
-                self.create_summon("Resonant Coral Orb"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Fontemer Pearl", args),
+            self.create_summon("Resonant Coral Orb"),
+        ]
 
 
 class PearlArmor(CreateStatusPassiveSkill):

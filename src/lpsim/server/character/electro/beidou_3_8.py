@@ -76,12 +76,9 @@ class Stormbreaker(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Thunderbeast's Targe"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Thunderbeast's Targe"),
+        ]
 
 
 # Talents

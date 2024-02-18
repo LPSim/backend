@@ -28,12 +28,9 @@ class KamisatoArtKyouka(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Takimeguri Kanka"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Takimeguri Kanka"),
+        ]
 
 
 class KamisatoAyato_3_6(KA_4_1):

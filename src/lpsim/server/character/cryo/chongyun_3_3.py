@@ -50,12 +50,9 @@ class ChonghuasLayeredFrost(ElementalSkillBase):
                 "usage": talent.status_max_usage,
                 "max_usage": talent.status_max_usage,
             }
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Chonghua's Frost Field", args),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Chonghua's Frost Field", args),
+        ]
 
 
 # Talents
