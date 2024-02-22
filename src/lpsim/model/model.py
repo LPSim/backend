@@ -1,12 +1,19 @@
 import json
 import os
 
-from src.lpsim.server import *
-from src.lpsim.server.consts import ObjectType
-from src.lpsim.server.dice import Dice
-from src.lpsim.server.match import Match
-from src.lpsim.server.player_table import PlayerTable
-from src.lpsim.utils import *
+from lpsim.server import (
+    CharacterBase,
+    CardBase,
+    CharacterStatusBase,
+    SummonBase,
+    SupportBase,
+    TeamStatusBase,
+)
+from lpsim.server.consts import ObjectType
+from lpsim.server.dice import Dice
+from lpsim.server.match import Match
+from lpsim.server.player_table import PlayerTable
+from lpsim.utils import get_instance
 
 PROTOTYPE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/"
 
@@ -19,11 +26,11 @@ class model:
 
     def match_to_json(self, match, name):
         match_data = self.get_match(match)
-        with open(PROTOTYPE_PATH + name + ".json", 'w') as f:
+        with open(PROTOTYPE_PATH + name + ".json", "w") as f:
             json.dump(match_data, f, indent=4)
 
     def json_to_match(self, name):
-        with open(PROTOTYPE_PATH + name + ".json", 'r') as f:
+        with open(PROTOTYPE_PATH + name + ".json", "r") as f:
             data = json.load(f)
         return self.set_match(data)
 
@@ -56,7 +63,9 @@ class model:
         player_model["plunge_satisfied"] = player.plunge_satisfied
         player_model["dice"] = self.get_dice(player.dice)
         player_model["characters"] = [self.get_character(x) for x in player.characters]
-        player_model["team_status"] = [self.get_team_status(x) for x in player.team_status]
+        player_model["team_status"] = [
+            self.get_team_status(x) for x in player.team_status
+        ]
         player_model["summons"] = [self.get_summon(x) for x in player.summons]
         player_model["supports"] = [self.get_support(x) for x in player.supports]
         player_model["hands"] = self.get_hands(player.hands)
@@ -70,9 +79,13 @@ class model:
         )
         player.dice = self.set_dice(player_model["dice"])
         player.characters = [self.set_character(x) for x in player_model["characters"]]
-        player.team_status = [self.set_character_status(x) for x in player_model["team_status"]]
+        player.team_status = [
+            self.set_character_status(x) for x in player_model["team_status"]
+        ]
         player.summons = [self.set_character_status(x) for x in player_model["summons"]]
-        player.supports = [self.set_character_status(x) for x in player_model["supports"]]
+        player.supports = [
+            self.set_character_status(x) for x in player_model["supports"]
+        ]
         player.hands = self.set_hands(player_model["hands"])
         player.table_deck = self.set_deck(player_model["table_deck"])
         return player
@@ -190,12 +203,13 @@ class model:
 
 
 if __name__ == "__main__":
-    from src.lpsim.server.deck import Deck
-    from src.lpsim.agents import RandomAgent
+    from lpsim.server.deck import Deck
+    from lpsim.agents import RandomAgent
+
     agent_0 = RandomAgent(player_idx=0)
     agent_1 = RandomAgent(player_idx=1)
     deck = Deck.from_str(
-        '''
+        """
         default_version:4.1
         character:Rhodeia of Loch
         character:Kamisato Ayaka
@@ -207,7 +221,7 @@ if __name__ == "__main__":
         Abyssal Summons*5
         Fatui Conspiracy*5
         Timmie*5
-        '''
+        """
     )
     match = Match()
     match.set_deck([deck, deck])
