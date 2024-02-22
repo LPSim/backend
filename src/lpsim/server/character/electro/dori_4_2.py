@@ -84,9 +84,9 @@ class SpiritWaridingLampTroubleshooterCannon(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match, [self.create_summon("After-Sales Service Rounds")]
-        )
+        return super().get_actions(match) + [
+            self.create_summon("After-Sales Service Rounds")
+        ]
 
 
 class AlcazarzaraysExactitude(ElementalBurstBase):
@@ -98,14 +98,11 @@ class AlcazarzaraysExactitude(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon(
-                    "Jinni", {"talent_activated": self.is_talent_equipped(match)}
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon(
+                "Jinni", {"talent_activated": self.is_talent_equipped(match)}
+            )
+        ]
 
 
 # Talents

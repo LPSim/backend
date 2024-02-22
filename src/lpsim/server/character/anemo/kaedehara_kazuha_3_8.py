@@ -48,29 +48,34 @@ class Chihayaburu(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_color=DieColor.ANEMO, elemental_dice_number=3)
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret: List[Actions] = []
-        # make damage
-        ret.append(
+        return [
             self.attack_opposite_active(
                 match,
                 self.damage,
                 self.damage_type,
-                [self.create_character_status("Midare Ranzan: New")],
-            )
-        )
+            ),
+            self.create_character_status("Midare Ranzan: New"),
+            self.charge_self(1),
+        ]
+
+    def event_handler_SKILL_END(
+        self, event: SkillEndEventArguments, match: Any
+    ) -> List[SwitchCharacterAction]:
+        if event.action.position.id != self.id:
+            # not using this skill, do nothing
+            return []
         # switch character
         next_character = match.player_tables[
             self.position.player_idx
         ].next_character_idx()
         if next_character is not None:
-            ret.append(
+            return [
                 SwitchCharacterAction(
                     player_idx=self.position.player_idx,
                     character_idx=next_character,
                 )
-            )
-        ret.append(self.charge_self(1))
-        return ret
+            ]
+        return []
 
 
 class KazuhaSlash(ElementalBurstBase):
@@ -82,12 +87,9 @@ class KazuhaSlash(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon("Autumn Whirlwind"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Autumn Whirlwind"),
+        ]
 
 
 # Talents

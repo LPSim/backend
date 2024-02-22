@@ -96,9 +96,9 @@ class TempestuousBarrage(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_opposite_character_status(match, "Total Collapse", {})]
-        )
+        return super().get_actions(match) + [
+            self.create_opposite_character_status(match, "Total Collapse", {})
+        ]
 
 
 class DvalinsCleansing(ElementalSkillBase):
@@ -111,9 +111,9 @@ class DvalinsCleansing(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_character_status("Perpetual Cleansing", {})]
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Perpetual Cleansing", {})
+        ]
 
 
 class PerpetualCleansing(ElementalSkillBase):
@@ -142,8 +142,8 @@ class PerpetualCleansing(ElementalSkillBase):
                         cost=self.cost.copy(),
                     )
                 ],
-                create_objects=[self.create_character_status("Ultimate Cleansing", {})],
             ),
+            self.create_character_status("Ultimate Cleansing", {}),
         ]
 
 
@@ -196,7 +196,7 @@ class CaelestinumFinaleTermini(ElementalBurstBase):
             if character.is_defeated:
                 continue
             # apply status
-            damage_action.create_objects.append(
+            ret.append(
                 CreateObjectAction(
                     object_name="Total Collapse",
                     object_position=character.position.set_area(

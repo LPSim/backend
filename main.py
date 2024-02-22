@@ -1,9 +1,9 @@
 import logging
 from typing import Literal
-from src.lpsim.server.match import Match
-from src.lpsim.utils import BaseModel
-from src.lpsim.server.deck import Deck
-from src.lpsim.agents import RandomAgent
+from lpsim.server.match import Match
+from lpsim.utils import BaseModel
+from lpsim.server.deck import Deck
+from lpsim.agents import RandomAgent
 
 
 class Main(BaseModel):

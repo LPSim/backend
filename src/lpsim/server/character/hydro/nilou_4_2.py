@@ -61,9 +61,9 @@ class DanceOfHaftkarsvar(ElementalSkillBase):
                 break
         if all_hydro_dendro:
             # first generate team status, then attack
-            return super().get_actions(
-                match, [self.create_team_status("Golden Chalice's Bounty")]
-            )
+            return super().get_actions(match) + [
+                self.create_team_status("Golden Chalice's Bounty")
+            ]
         return super().get_actions(match)
 
 
@@ -78,9 +78,9 @@ class DanceOfAbzendegiDistantDreamsListeningSpring(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_opposite_character_status(match, "Lingering Aeon")]
-        )
+        return super().get_actions(match) + [
+            self.create_opposite_character_status(match, "Lingering Aeon")
+        ]
 
 
 # Talents

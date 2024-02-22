@@ -51,7 +51,7 @@ class FatalRainscreen(ElementalSkillBase):
         ]
         talent = character.talent
         if talent is not None:
-            ret[0].create_objects += [
+            ret.append(
                 self.create_team_status(
                     "Rain Sword",
                     {
@@ -60,11 +60,9 @@ class FatalRainscreen(ElementalSkillBase):
                         "max_usage": 3,
                     },
                 )
-            ]
+            )
         else:
-            ret[0].create_objects += [
-                self.create_team_status("Rain Sword", {"version": "3.3"})
-            ]
+            ret.append(self.create_team_status("Rain Sword", {"version": "3.3"}))
         return ret
 
 
@@ -86,7 +84,7 @@ class Raincutter(ElementalBurstBase):
         ]
         ele_app = self.element_application_self(match, DamageElementalType.HYDRO)
         ret[1].damage_value_list += ele_app.damage_value_list
-        ret[1].create_objects += [self.create_team_status("Rainbow Bladework")]
+        ret.append(self.create_team_status("Rainbow Bladework"))
         return ret
 
 

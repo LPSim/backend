@@ -128,7 +128,7 @@ class PropArrow(ElementalNormalAttackBase):
         ret = super().get_actions(match)
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        damage_action.create_objects += [
+        ret += [
             self.create_summon("Grin-Malkin Hat"),
             self.create_character_status("Prop Surplus"),
         ]
@@ -152,7 +152,7 @@ class WondrousTrickMiracleParade(ElementalBurstBase):
         ret = super().get_actions(match)
         damage_action = ret[1]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
-        damage_action.create_objects += [
+        ret += [
             self.create_summon("Grin-Malkin Hat"),
             self.create_character_status("Prop Surplus"),
         ]

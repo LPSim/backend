@@ -1407,7 +1407,7 @@ if __name__ == "__main__":
     # test_lotus_flower_crisp()
     # test_lotus_flower_crisp_and_reflection()
     # test_mond_hash()
-    # test_tandoori()
+    test_tandoori()
     # test_pizza()
     # test_full_and_tandoori()
     # test_north_chicken()

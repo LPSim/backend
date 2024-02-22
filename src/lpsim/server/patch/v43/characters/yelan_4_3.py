@@ -141,12 +141,9 @@ class DepthClarionDice(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Exquisite Throw"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Exquisite Throw"),
+        ]
 
 
 class Breakthrough(CreateStatusPassiveSkill):

@@ -174,12 +174,9 @@ class DreamOfTheStarStreamShaker(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_summon("Celestial Dreamsphere"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Celestial Dreamsphere"),
+        ]
 
 
 class LightsRemit_4_3(SkillTalent):

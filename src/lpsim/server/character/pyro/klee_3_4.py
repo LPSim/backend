@@ -39,18 +39,15 @@ class JumpyDumpty(ElementalSkillBase):
         status_usage = 1
         if self.is_talent_equipped(match):
             status_usage = 2
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status(
-                    "Explosive Spark",
-                    {
-                        "usage": status_usage,
-                        "max_usage": status_usage,
-                    },
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status(
+                "Explosive Spark",
+                {
+                    "usage": status_usage,
+                    "max_usage": status_usage,
+                },
+            )
+        ]
 
 
 class SparksNSplash(ElementalBurstBase):
@@ -70,14 +67,11 @@ class SparksNSplash(ElementalBurstBase):
             area=ObjectPositionType.TEAM_STATUS,
             id=-1,
         )
-        return super().get_actions(
-            match,
-            [
-                CreateObjectAction(
-                    object_name=self.name, object_position=position, object_arguments={}
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            CreateObjectAction(
+                object_name=self.name, object_position=position, object_arguments={}
+            )
+        ]
 
 
 # Talents

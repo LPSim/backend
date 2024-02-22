@@ -75,12 +75,9 @@ class SacredRiteWagtailsTide(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("Prayer of the Crimson Crown"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("Prayer of the Crimson Crown"),
+        ]
 
 
 # Talents

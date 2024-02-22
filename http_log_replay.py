@@ -1,7 +1,7 @@
 import sys
-from src.lpsim.tools import interact_match_with_agents, read_log
-from src.lpsim.network import HTTPServer
-from src.lpsim.server.match import MatchConfig
+from lpsim.tools import interact_match_with_agents, read_log
+from lpsim.network import HTTPServer
+from lpsim.server.match import MatchConfig
 import logging
 
 
@@ -22,7 +22,9 @@ if __name__ == "__main__":
     try:
         interact_match_with_agents(agents[0], agents[1], match)
     except Exception:
-        print("!!!!! ERROR: play log failed, play to last success log. !!!!!")
+        print("*************************************************************")
+        print("!!!!! ERROR: play log FAILED, play to last success log. !!!!!")
+        print("*************************************************************")
     server = HTTPServer(
         decks=["", ""],
         match_config=MatchConfig(

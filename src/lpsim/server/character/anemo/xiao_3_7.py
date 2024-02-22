@@ -42,12 +42,9 @@ class BaneOfAllEvil(ElementalBurstBase):
         args = {}
         if self.is_talent_equipped(match):
             args["skill_cost_decrease_usage"] = 2
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status("Yaksha's Mask", args),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Yaksha's Mask", args),
+        ]
 
 
 # Talents

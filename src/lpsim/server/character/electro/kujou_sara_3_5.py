@@ -51,7 +51,7 @@ class TenguJuuraiAmbush_3_5(AttackerSummonBase):
         damage_action = ret[0]
         assert damage_action.type == ActionTypes.MAKE_DAMAGE
         active_idx = match.player_tables[self.position.player_idx].active_character_idx
-        damage_action.create_objects.append(
+        ret.append(
             CreateObjectAction(
                 object_name="Crowfeather Cover",
                 object_position=ObjectPosition(
@@ -86,7 +86,7 @@ class TenguStormcall(ElementalSkillBase):
         """
         Attack and create object
         """
-        return super().get_actions(match, [self.create_summon("Tengu Juurai: Ambush")])
+        return super().get_actions(match) + [self.create_summon("Tengu Juurai: Ambush")]
 
 
 class SubjugationKoukouSendou(ElementalBurstBase):
@@ -101,9 +101,9 @@ class SubjugationKoukouSendou(ElementalBurstBase):
         """
         Attack and create object
         """
-        return super().get_actions(
-            match, [self.create_summon("Tengu Juurai: Stormcluster")]
-        )
+        return super().get_actions(match) + [
+            self.create_summon("Tengu Juurai: Stormcluster")
+        ]
 
 
 # Talents

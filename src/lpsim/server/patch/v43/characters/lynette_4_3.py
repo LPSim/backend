@@ -3,7 +3,13 @@ from typing import Any, Dict, List, Literal
 from .....utils.class_registry import register_class
 from ....status.team_status.base import DefendTeamStatus
 from ....summon.base import AttackAndGenerateStatusSummonBase, SwirlChangeSummonBase
-from ....action import Actions, CreateObjectAction, MakeDamageAction, RemoveObjectAction
+from ....action import (
+    Actions,
+    CreateObjectAction,
+    MakeDamageAction,
+    RemoveObjectAction,
+    SwitchCharacterAction,
+)
 from ....status.character_status.base import RoundEndAttackCharacterStatus
 from ....match import Match
 from ....event import (
@@ -131,14 +137,19 @@ class EnigmaticFeint(ElementalSkillBase):
                 1 - self.position.player_idx
             ].previous_character_idx()
             if prev_character_idx is not None:
-                damage_action.character_change_idx[
-                    1 - self.position.player_idx
-                ] = prev_character_idx
+                return [
+                    damage_action,
+                    SwitchCharacterAction(
+                        player_idx=1 - self.position.player_idx,
+                        character_idx=prev_character_idx,
+                    ),
+                    self.charge_self(1),
+                ]
         elif self.use_time_this_round == 1 and character.hp <= 8:
             # first use, heal 2 hp and attach status
             heal = self.attack_self(match, -2)
             damage_action.damage_value_list += heal.damage_value_list
-            damage_action.create_objects.append(
+            ret.append(
                 CreateObjectAction(
                     object_name="Overawing Assault",
                     object_position=character.position.set_area(
@@ -159,7 +170,7 @@ class MagicTrickAstonishingShift(ElementalBurstBase):
     damage_type: DamageElementalType = DamageElementalType.ANEMO
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(match, [self.create_summon("Bogglecat Box", {})])
+        return super().get_actions(match) + [self.create_summon("Bogglecat Box", {})]
 
 
 class AColdBladeLikeAShadow_4_3(SkillTalent):
