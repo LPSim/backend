@@ -7,13 +7,10 @@ from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
 
-from .event_frame import EventFrameController
+from .event_controller import EventController
 from .summon.base import SummonBase
-
 from .status.team_status.base import TeamStatusBase
-
 from .status.character_status.base import CharacterStatusBase
-
 from ..utils import BaseModel, get_instance
 from .deck import Deck
 from .player_table import PlayerTable
@@ -35,9 +32,9 @@ from .action import (
     ChargeAction,
     UseCardAction,
     UseSkillAction,
-    # UseCardAction,
     SkillEndAction,
     CreateObjectAction,
+    CreateRandomObjectAction,
     RemoveObjectAction,
     ChangeObjectUsageAction,
     MoveObjectAction,
@@ -88,7 +85,6 @@ from .event import (
     EventArguments,
     EventArgumentsBase,
     DrawCardEventArguments,
-    EventFrame,
     GameStartEventArguments,
     RestoreCardEventArguments,
     RemoveCardEventArguments,
@@ -251,17 +247,15 @@ class MatchConfig(BaseModel):
     filters, e.g. NRE, will only draw top card, and if top card is not target,
     it stops drawing. Drawing card with replacement will put the replaced
     card into the bottom of table deck.
-    For random effects, e.g. Abyss Sommon, or Rhodeia's skill, they will read
-    orders from random_object_information. The key is defined by the skill,
-    usually the skill name, refer to source code to check. The value is a list
-    of created object names, it will check whether the first name of current 
-    list is valid, remove the name and generate corresponding object. 
+    For random effects, e.g. Abyss Sommon, or Rhodeia's skill, CreateRandomObjectAction
+    will read orders from random_object_information. When action is called, it will
+    check whether first name is in object names, create that object and remove the name.
 
     TODO: As all dice are omni, Liben and Vanarana may have non-reproducible
     results. Need to fix it.
     """
     recreate_mode: bool = False
-    random_object_information: Dict[str, List[str]] = {}
+    random_object_information: List[str] = []
 
     def check_config(self) -> bool:
         """
@@ -351,8 +345,7 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = []
     state: MatchState = MatchState.WAITING
-    event_frames = EventFrameController()
-    # event_frames: List[EventFrame] = []
+    event_controller = EventController()
     requests: List[Requests] = []
     winner: int = -1
 
@@ -489,6 +482,21 @@ class Match(BaseModel):
             if len(self._history) > 2:
                 self._history = [self._history[0], self._history[-1]]
 
+    def record_last_action_history(self):
+        """
+        Record history based on last action.
+        When history level is 0, no information will be recorded.
+        With higher history level, more information will be recorded.
+        By default, all actions have history level 100.
+        """
+        if (
+            self.config.history_level >= self.last_action.record_level
+            and self.last_action.type != ActionTypes.EMPTY
+        ):  # pragma: no cover
+            self._save_history()
+        # after potential history recording, reset last action
+        self.last_action = ActionBase()
+
     def _debug_save_appeared_object_names_to_file(self):  # pragma: no cover
         # save appeared object names and descs
         if self._debug_save_file_name == "":
@@ -569,7 +577,7 @@ class Match(BaseModel):
         """
         Save the random state.
         """
-        self.random_state = list(self._random_state.get_state(legacy=True))  # type: ignore
+        self.random_state = list(self._random_state.get_state(legacy=True))
         self.random_state[1] = self.random_state[1].tolist()
 
     def _random(self):
@@ -710,8 +718,8 @@ class Match(BaseModel):
                     draw_if_filtered_not_enough=True,
                 )
             )
-            event_frame = self._stack_events(event_args)
-            self.event_frames.append(event_frame)
+            event_frame = self.event_controller.stack_events(event_args)
+            self.event_controller.append(event_frame)
         return True, None
 
     def step(self, run_continuously: bool = True) -> bool:
@@ -742,8 +750,8 @@ class Match(BaseModel):
                 logging.info("There are still requests not responded.")
                 return False
             # check if action is needed
-            elif self.event_frames.has_event():
-                self.event_frames.run_event_frame(self)
+            elif self.event_controller.has_event():
+                self.event_controller.run_event_frame(self)
             # all response and action are cleared, start state transition
             elif self.state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
@@ -783,19 +791,7 @@ class Match(BaseModel):
                 self._round_start()
             else:
                 raise NotImplementedError(f"Match state {self.state} not implemented.")
-            """
-            Record history.
-            When history level is 0, no information will be recorded.
-            With higher history level, more information will be recorded.
-            By default, all actions have history level 100.
-            """
-            if (
-                self.config.history_level >= self.last_action.record_level
-                and self.last_action.type != ActionTypes.EMPTY
-            ):  # pragma: no cover
-                self._save_history()
-            # after potential history recording, reset last action
-            self.last_action = ActionBase()
+            self.record_last_action_history()
             if self._debug_save_appeared_object_names:  # pragma: no cover
                 self._debug_save_appeared_object_names_to_file()
             if len(self.requests) or not run_continuously:
@@ -889,7 +885,7 @@ class Match(BaseModel):
         event = GameStartEventArguments(
             player_go_first=self.current_player,
         )
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def _round_start(self):
         """
@@ -929,10 +925,7 @@ class Match(BaseModel):
             event_args += self._act(
                 CreateDiceAction(player_idx=pnum, number=random_number, random=True)
             )
-        event_frame = EventFrame(
-            events=event_args,
-        )
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_events(event_args)
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
@@ -963,7 +956,7 @@ class Match(BaseModel):
             round=self.round_number,
             dice_colors=[table.dice.colors.copy() for table in self.player_tables],
         )
-        event_frame = self._stack_event(event_arg)
+        event_frame = self.event_controller.stack_event(event_arg)
         logging.info(
             f"In round prepare, {len(event_frame.triggered_objects)} "
             f"handlers triggered."
@@ -979,7 +972,7 @@ class Match(BaseModel):
                 not_all_declare_end = True
         assert not_all_declare_end, "All players have declared round end."
         event = PlayerActionStartEventArguments(player_idx=self.current_player)
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def _player_action_request(self):
         """
@@ -1038,7 +1031,7 @@ class Match(BaseModel):
             round=self.round_number,
             initial_card_draw=self.config.initial_card_draw,
         )
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def get_object(
         self, position: ObjectPosition, action: ActionTypes | None = None
@@ -1085,30 +1078,6 @@ class Match(BaseModel):
             + self.player_tables[1 - self.current_player].get_object_lists()
             + self.event_handlers
         )
-
-    def _stack_event(
-        self,
-        event_arg: EventArguments,
-    ) -> EventFrame:
-        """
-        stack a new event. It will wrap it into a list and call
-        self._trigger_events.
-        """
-        return self._stack_events([event_arg])
-
-    def _stack_events(
-        self,
-        event_args: List[EventArguments],
-    ) -> EventFrame:
-        """
-        stack events. It will create a new EventFrame with events and
-        append it into self.event_frames. Then it will return the event frame.
-        """
-        frame = EventFrame(
-            events=event_args,
-        )
-        self.event_frames.append(frame)
-        return frame
 
     def _modify_value(
         self,
@@ -1402,7 +1371,7 @@ class Match(BaseModel):
 
     def _respond_switch_card(self, response: SwitchCardResponse):
         """
-        TODO: generate a event frame with action queues.
+        Deal with switch card response.
         """
         # restore cards
         event_args: List[EventArguments] = []
@@ -1419,8 +1388,8 @@ class Match(BaseModel):
                 draw_if_filtered_not_enough=True,
             )
         )
-        event_frame = self._stack_events(event_args)
-        self.event_frames.append(event_frame)
+        event_frame = self.event_controller.stack_events(event_args)
+        self.event_controller.append(event_frame)
         # remove related requests
         self.requests = [
             req for req in self.requests if req.player_idx != response.player_idx
@@ -1428,7 +1397,7 @@ class Match(BaseModel):
 
     def _respond_choose_character(self, response: ChooseCharacterResponse):
         event_args = self._act(ChooseCharacterAction.from_response(response))
-        self._stack_events(event_args)
+        self.event_controller.stack_events(event_args)
         # remove related requests
         self.requests = [
             req for req in self.requests if req.player_idx != response.player_idx
@@ -1439,11 +1408,10 @@ class Match(BaseModel):
         Deal with reroll dice response. If there are still reroll times left,
         keep request and only substrat reroll times. If there are no reroll
         times left, remove request.
-        TODO: generate a event frame with action queues.
         """
         event_args = self._action_remove_dice(RemoveDiceAction.from_response(response))
-        event_frame = self._stack_events(list(event_args))
-        self.event_frames.append(event_frame)
+        event_frame = self.event_controller.stack_events(list(event_args))
+        self.event_controller.append(event_frame)
         event_args = self._action_create_dice(
             CreateDiceAction(
                 player_idx=response.player_idx,
@@ -1451,8 +1419,8 @@ class Match(BaseModel):
                 random=True,
             )
         )
-        event_frame = self._stack_events(list(event_args))
-        self.event_frames.append(event_frame)
+        event_frame = self.event_controller.stack_events(list(event_args))
+        self.event_controller.append(event_frame)
         # modify request
         for num, req in enumerate(self.requests):  # pragma: no branch
             if isinstance(req, RerollDiceRequest):  # pragma: no branch
@@ -1506,8 +1474,7 @@ class Match(BaseModel):
                 do_combat_action=True,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1546,8 +1513,7 @@ class Match(BaseModel):
                 do_combat_action=False,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1568,8 +1534,7 @@ class Match(BaseModel):
                 do_combat_action=True,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1607,8 +1572,7 @@ class Match(BaseModel):
                 do_combat_action=combat_action,
             ),
         ]
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1639,8 +1603,7 @@ class Match(BaseModel):
                 do_combat_action=combat_action,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1697,6 +1660,8 @@ class Match(BaseModel):
             return list(self._action_character_defeated(action))
         elif isinstance(action, CreateObjectAction):
             return list(self._action_create_object(action))
+        elif isinstance(action, CreateRandomObjectAction):
+            return list(self._action_create_random_object(action))
         elif isinstance(action, RemoveObjectAction):
             return list(self._action_remove_object(action))
         elif isinstance(action, ChangeObjectUsageAction):
@@ -2117,22 +2082,14 @@ class Match(BaseModel):
         1. MakeDamageEventArguments: All damage information dealt by this
             action.
         2. SwitchCharacterEventArguments: If this damage action contains
-            character change, i.e. overloaded, Skills of Anemo characters, etc.
-            A SwitchCharacterEventArguments will be generated.
-            NOTE: only character switch of character received this damage will
-            trigger this event, character switch of attacker (Kazuha, Kenki,
-            When the Crane Returned) should be another SwitchCharacterAction.
-            TODO is it possible to have character switch of attacker in
-                make damage action?
+            character change, i.e. overloaded,
+            a SwitchCharacterEventArguments will be generated.
         3. CreateObjectEventArguments: If this damage action contains create
-            object, i.e. massive skills that deal damage and create object,
-            or triggered dendro reaction, etc. A CreateObjectEventArguments
+            object, i.e. dendro reactions, a CreateObjectEventArguments
             will be generated.
-        NOTE: side effects by elemental reaction is handled by system event
-        handler, which is listening ReceiveDamageEventArguments.
         """
         damage_lists = action.damage_value_list[:]
-        switch_character: List[int] = action.character_change_idx
+        switch_character: List[int] = [-1, -1]
         create_objects: List[CreateObjectAction] = []
         assert self.event_handlers[0].name == "System"
         # version used in side effect generation
@@ -2258,7 +2215,6 @@ class Match(BaseModel):
                 )
                 sw_events = self._action_switch_character(sw_action)
                 events += sw_events
-        create_objects += action.create_objects
         for co_action in create_objects:
             co_events = self._action_create_object(co_action)
             events += co_events
@@ -2268,16 +2224,7 @@ class Match(BaseModel):
         player_idx = action.player_idx
         table = self.player_tables[player_idx]
         character = table.characters[action.character_idx]
-        if character.is_defeated:
-            # charge defeated character
-            logging.warning(
-                f"tried to charge a defeated character! "
-                f"player {player_idx} "
-                f"character {character.name}:{action.character_idx}. "
-                f"bug or defeated before charging?"
-            )
-            # ignore this action and return empty event arguments
-            return []
+        assert character.is_alive, "Cannot charge a defeated character."
         logging.info(
             f"player {player_idx} "
             f"character {character.name}:{table.active_character_idx} "
@@ -2470,6 +2417,34 @@ class Match(BaseModel):
                 create_result="NEW",
             )
         ]
+
+    def _action_create_random_object(
+        self, action: CreateRandomObjectAction
+    ) -> List[CreateObjectEventArguments]:
+        """
+        Action for creating random objects, e.g. Abyss Summoning and elemental skills
+        of Rhodeia. If in recreate mode, will create objects based on hints.
+        TODO now it will create multiple `CreateObjectEventArguments` and no specified
+        event arguments for this action directly. If it is needed, may add it after.
+        """
+        assert action.number <= len(action.object_names), (
+            "Number of objects to create should be less than or equal to "
+            "number of object names."
+        )
+        events: List[CreateObjectEventArguments] = []
+        while action.number > 0:
+            if self.config.recreate_mode:
+                name = self.config.random_object_information.pop(0)
+                assert name in action.object_names, (
+                    f"In recreate mode, next random object name ({name}) should "
+                    f"be in object names ({' '.join(action.object_names)})."
+                )
+                idx = action.object_names.index(name)
+            else:
+                idx = int(self._random() * len(action.object_names))
+            coa, action = action.select_by_idx(idx)
+            events += self._action_create_object(coa)
+        return events
 
     def _action_remove_object(
         self, action: RemoveObjectAction
@@ -2810,9 +2785,7 @@ class Match(BaseModel):
         use_card_value = UseCardValue(position=card.position, card=card)
         self._modify_value(use_card_value, "REAL")
 
-        info_str = (
-            f"player {action.card_position.player_idx} " f"use card {card.name}."  # type: ignore
-        )
+        info_str = f"player {action.card_position.player_idx} use card {card.name}."
         if not use_card_value.use_card:
             info_str += " But use card failed!"
         logging.info(info_str)
@@ -2879,11 +2852,16 @@ class Match(BaseModel):
 
     def _action_skip_player_action(
         self, action: SkipPlayerActionAction
-    ) -> List[EventArgumentsBase]:
+    ) -> List[ActionEndEventArguments]:
+        """
+        In this action, match state is changed to PLAYER_ACTION_REQUEST, so
+        no requests are generated to current player, and it will immediately end
+        the action phase.
+        """
         if self.state != MatchState.PLAYER_ACTION_START:
             raise AssertionError(
                 f"Cannot skip player action when match state is " f"{self.state}."
             )
         self._set_match_state(MatchState.PLAYER_ACTION_REQUEST)
         logging.info(f"player {self.current_player} skipped player action.")
-        return []
+        return self._action_action_end(action.get_action_end_action())

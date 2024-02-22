@@ -19,12 +19,9 @@ class BlusteringBlade(BB_3_4):
         """
         gather two actions
         """
-        return super(BB_3_4, self).get_actions(
-            match,
-            [
-                self.create_summon("Shadowsword: Lone Gale"),
-            ],
-        )
+        return super(BB_3_4, self).get_actions(match) + [
+            self.create_summon("Shadowsword: Lone Gale"),
+        ]
 
 
 class FrostyAssault(FA_3_4):
@@ -34,12 +31,9 @@ class FrostyAssault(FA_3_4):
         """
         gather two actions
         """
-        return super(FA_3_4, self).get_actions(
-            match,
-            [
-                self.create_summon("Shadowsword: Galloping Frost"),
-            ],
-        )
+        return super(FA_3_4, self).get_actions(match) + [
+            self.create_summon("Shadowsword: Galloping Frost"),
+        ]
 
 
 class MaguuKenki_3_3(MK_3_4):

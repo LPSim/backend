@@ -2,7 +2,7 @@ from typing import Any, List, Literal
 
 from ....utils.class_registry import register_class
 
-from ...event import SkillEndEventArguments
+from ...event import SkillEndEventArguments, SwitchCharacterEventArguments
 
 from ...consts import (
     ELEMENT_TO_ATK_UP_ICON,
@@ -65,7 +65,7 @@ class Stormzone_3_7(UsageTeamStatus):
         return value
 
     def event_handler_SWITCH_CHARACTER(
-        self, event: ..., match: Any
+        self, event: SwitchCharacterEventArguments, match: Any
     ) -> List[CreateObjectAction | RemoveObjectAction]:
         """
         if this status is talent activated, them create Winds of Harmony.

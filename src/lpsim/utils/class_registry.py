@@ -7,7 +7,7 @@ corresponding class and version, and instantiate it.
 
 
 import types
-from typing import Any, Dict, List, Optional, Set, Type, Union
+from typing import Any, Dict, List, Optional, Set, Union
 
 from .instance_factory import InstanceFactory
 from .desc_registry import DescDictType, update_desc
@@ -23,7 +23,7 @@ def _is_union_type(t) -> bool:
     )
 
 
-def register_base_class(base_class: Type[Any]):
+def register_base_class(base_class: Any):
     """
     Register a base class.
     TODO: after refactor, we should remove this function. Currently remain here for
@@ -32,7 +32,7 @@ def register_base_class(base_class: Type[Any]):
     return
 
 
-def register_class(classes: Type[Any], descs: Dict[str, DescDictType] | None = None):
+def register_class(classes: Any, descs: Dict[str, DescDictType] | None = None):
     """
     Register classes with their descriptions. If classes is a Union, register
     all classes in the union. Otherwise, register the class itself.
@@ -47,7 +47,7 @@ def register_class(classes: Type[Any], descs: Dict[str, DescDictType] | None = N
         instance_factory.register_instance(classes)
 
 
-def get_instance(base_class: Type[Any], args: Dict):
+def get_instance(base_class: Any, args: Dict):
     """
     Get instance from registry. If the base class is a union type, we will try
     each type sequentially.
@@ -68,7 +68,7 @@ def get_instance(base_class: Type[Any], args: Dict):
 
 
 def get_class_list_by_base_class(
-    base_class: Type[Any], version: str = "99.9", exclude: Set[str] = set()
+    base_class: Any, version: str = "99.9", exclude: Set[str] = set()
 ) -> List[str]:
     """
     Get list of class names by base class and version. If the base class is a

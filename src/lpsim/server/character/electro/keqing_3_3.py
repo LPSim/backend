@@ -60,16 +60,13 @@ class StellarRestoration(ElementalSkillBase):
             position = ObjectPosition(
                 player_idx=self.position.player_idx, area=ObjectPositionType.HAND, id=-1
             )
-            return super().get_actions(
-                match,
-                [
-                    CreateObjectAction(
-                        object_name="Lightning Stiletto",
-                        object_position=position,
-                        object_arguments={},
-                    )
-                ],
-            )
+            return super().get_actions(match) + [
+                CreateObjectAction(
+                    object_name="Lightning Stiletto",
+                    object_position=position,
+                    object_arguments={},
+                )
+            ]
         return super().get_actions(match)
 
 

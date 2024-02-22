@@ -248,7 +248,6 @@ class SeamlessShield_4_2(ShieldTeamStatus):
     version: Literal["4.2"] = "4.2"
     usage: int = 1
     max_usage: int = 1
-    remove_triggered: bool = False
 
     def effect_action(self, match: Any) -> MakeDamageAction:
         """
@@ -309,13 +308,8 @@ class SeamlessShield_4_2(ShieldTeamStatus):
         """
         When damage made, check whether the team status should be removed.
         """
-        if self.remove_triggered:
-            # already triggered, do nothing
-            return []
         ret = self.check_should_remove()
         if len(ret) > 0:
-            # should remove, remove self, then make damage and heal
-            self.remove_triggered = True
             return [
                 self.effect_action(match),
                 RemoveObjectAction(object_position=self.position),

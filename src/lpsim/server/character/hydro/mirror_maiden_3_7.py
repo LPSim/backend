@@ -61,8 +61,10 @@ class InfluxBlast(ElementalSkillBase):
         ):
             # attach to same character, do not remove
             ret = []
-        return ret + super().get_actions(
-            match, [self.create_opposite_character_status(match, "Refraction", args)]
+        return (
+            ret
+            + super().get_actions(match)
+            + [self.create_opposite_character_status(match, "Refraction", args)]
         )
 
 

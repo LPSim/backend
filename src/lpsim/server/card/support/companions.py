@@ -735,14 +735,7 @@ class KidKujirai_3_7(CompanionBase):
         )
         opposite = match.player_tables[1 - self.position.player_idx].supports
         max_number = match.config.max_support_number
-        if len(opposite) >= max_number:
-            # opposite side support is full, remove self
-            ret.append(
-                RemoveObjectAction(
-                    object_position=self.position,
-                )
-            )
-        else:
+        if len(opposite) < max_number:
             # opposite side support is not full, move to opposite
             ret.append(
                 MoveObjectAction(

@@ -95,11 +95,10 @@ class KuragesOath(ElementalSkillBase):
         application and create object
         """
         ret = [
-            self.charge_self(1),
             self.element_application_self(match, DamageElementalType.HYDRO),
+            self.create_summon("Bake-Kurage"),
+            self.charge_self(1),
         ]
-        summon = self.create_summon("Bake-Kurage")
-        ret[1].create_objects.append(summon)
         return ret
 
 
@@ -131,9 +130,7 @@ class NereidsAscension(ElementalBurstBase):
                         cost=Cost(),
                     )
                 )
-        damage_action.create_objects.append(
-            self.create_character_status("Ceremonial Garment")
-        )
+        ret.append(self.create_character_status("Ceremonial Garment"))
         character = match.player_tables[self.position.player_idx].characters[
             self.position.character_idx
         ]
@@ -148,9 +145,7 @@ class NereidsAscension(ElementalBurstBase):
             if talent.version == "3.5":
                 # if has 3.5 talent, re-create Bake-Kurage
                 if kurage_found:
-                    damage_action.create_objects.append(
-                        self.create_summon("Bake-Kurage")
-                    )
+                    ret.append(self.create_summon("Bake-Kurage"))
             elif talent.version == "4.2":
                 # with 4.2 talent
                 if kurage_found is not None:
@@ -162,7 +157,7 @@ class NereidsAscension(ElementalBurstBase):
                     )
                 else:
                     # otherwise, create kurage with 1 usage
-                    damage_action.create_objects.append(
+                    ret.append(
                         self.create_summon(
                             "Bake-Kurage",
                             {

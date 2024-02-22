@@ -260,10 +260,9 @@ class AzhdahaOtherElementalSkill(ElementalSkillBase):
         raise AssertionError("Stone Facets: Elemental Absorption not found")
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [self.create_character_status("Stone Facets: Elemental Crystallization")],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Stone Facets: Elemental Crystallization")
+        ]
 
 
 class DecimatingRockfall(ElementalBurstBase):

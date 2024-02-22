@@ -52,9 +52,11 @@ def read_log(
         match.set_deck(decks)
         commands = data["command_history"]
         agents: List[InteractionAgent] = []
-        if isinstance(commands[0][0], (list, tuple)):  # pragma: no cover
-            # new version, extract only string
-            commands = [[y[1] for y in x] for x in commands]
+        if len(commands[0]) > 0:  # pragma: no cover
+            if isinstance(commands[0][0], (list, tuple)):
+                # new version, extract only string
+                commands = [[y[1] for y in x] for x in commands]
+        commands = [[y for y in x if not y.startswith("TEST")] for x in commands]
         for cnum, command in enumerate(commands):
             agent = InteractionAgent(
                 player_idx=cnum, commands=command, only_use_command=True

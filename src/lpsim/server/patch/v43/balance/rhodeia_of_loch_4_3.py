@@ -1,5 +1,9 @@
 from typing import Dict, List, Literal
 
+from ....struct import ObjectPosition
+
+from ....action import ChargeAction, CreateRandomObjectAction
+
 from .....utils.desc_registry import DescDictType
 
 from .....utils.class_registry import register_class
@@ -8,7 +12,7 @@ from ....character.character_base import ElementalNormalAttackBase
 
 from ....summon.base import DefendSummonBase
 
-from ....consts import ELEMENT_TO_DAMAGE_TYPE, DamageElementalType
+from ....consts import ELEMENT_TO_DAMAGE_TYPE, DamageElementalType, ObjectPositionType
 
 from ....match import Match
 from ....character.hydro.rhodeia_4_2 import (
@@ -46,39 +50,63 @@ class RhodeiaElementSkill(RES_4_2):
             pass
         else:
             assert self.name == "The Myriad Wilds"
-            self.summon_number = 2
+            self._summon_number = 2
             self.cost.elemental_dice_number = 5
 
-    def get_next_summon_names(self, match: Match, occupied: List[int]) -> int:
+    def get_actions(
+        self, match: Match
+    ) -> List[ChargeAction | CreateRandomObjectAction]:
         """
-        Get next summon names randomly, but fit the rule that try to avoid
-        summoning the same type. And maximum summon number should be 2, if
-        exceed, randomly re-generate existing summon.
+        create object
         """
-        summons = match.player_tables[self.position.player_idx].summons
-        summon_names = [x.name for x in summons]
-        select_idx = []
-        exist_idx = []
-        for idx, name in enumerate(mimic_names):
-            if name not in summon_names and idx not in occupied:
-                select_idx.append(idx)
-            if name in summon_names:
-                exist_idx.append(idx)
-        if len(select_idx) <= 1:
-            # exist at least 2, get one from not occupied and exist
-            select_idx = [x for x in exist_idx if x not in occupied]
-        if match.config.recreate_mode:
-            sname = match.config.random_object_information["rhodeia"].pop(0)
-            s_idx = -1
-            for idx, name in enumerate(mimic_names):
-                if sname.lower() in name.lower():
-                    s_idx = idx
-                    break
-            else:
-                raise AssertionError(f"Unknown summon name {sname}")
-            assert s_idx in select_idx
-            return s_idx
-        return select_idx[int(match._random() * len(select_idx))]
+        exist_names, unexist_names = self._get_exist_unexist_names(match)
+        ret: List[ChargeAction | CreateRandomObjectAction] = []
+        target_position = ObjectPosition(
+            player_idx=self.position.player_idx, area=ObjectPositionType.SUMMON, id=-1
+        )
+        if len(exist_names) == 2:
+            # already 2, only refresh existing
+            ret.append(
+                CreateRandomObjectAction(
+                    object_names=exist_names,
+                    object_position=target_position,
+                    object_arguments={"version": self.version},
+                    number=self._summon_number,
+                )
+            )
+        elif (
+            len(unexist_names) >= self._summon_number
+            and self._summon_number + len(exist_names) <= 2
+        ):
+            # enough unexist and will not exceed 2
+            ret.append(
+                CreateRandomObjectAction(
+                    object_names=unexist_names,
+                    object_position=target_position,
+                    object_arguments={"version": self.version},
+                    number=self._summon_number,
+                )
+            )
+        else:
+            # not enough unexist, create all - 1 unexist and refresh random exist
+            ret.append(
+                CreateRandomObjectAction(
+                    object_names=unexist_names,
+                    object_position=target_position,
+                    object_arguments={"version": self.version},
+                    number=len(unexist_names) - 1,
+                )
+            )
+            ret.append(
+                CreateRandomObjectAction(
+                    object_names=exist_names,
+                    object_position=target_position,
+                    object_arguments={"version": self.version},
+                    number=self._summon_number - len(unexist_names) + 1,
+                )
+            )
+        ret.append(self.charge_self(1))
+        return ret
 
 
 class RhodeiaOfLoch_4_3(RhodeiaOfLoch_4_2):

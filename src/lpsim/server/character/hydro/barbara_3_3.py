@@ -81,8 +81,7 @@ class LetTheShowBegin(ElementalSkillBase):
     cost: Cost = Cost(elemental_dice_number=3, elemental_dice_color=DieColor.HYDRO)
 
     def get_actions(self, match: Any) -> List[Actions]:
-        ret = super().get_actions(match, [self.create_summon("Melody Loop")])
-        return ret
+        return super().get_actions(match) + [self.create_summon("Melody Loop")]
 
 
 class ShiningMiracle(ElementalBurstBase):

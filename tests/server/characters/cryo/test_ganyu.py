@@ -374,5 +374,6 @@ def test_ganyu_mona():
 
 if __name__ == "__main__":
     test_ganyu()
+    test_ganyu_2()
     test_ganyu_with_heavy_and_cryo_resonance()
     test_ganyu_mona()

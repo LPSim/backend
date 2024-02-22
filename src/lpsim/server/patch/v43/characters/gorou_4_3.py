@@ -92,7 +92,7 @@ class GeneralsGlory_4_3(AttackerSummonBase):
             if character.element == ElementType.GEO:
                 geo_number += 1
         if geo_number >= 2:
-            damage_action.create_objects.append(
+            ret.append(
                 CreateObjectAction(
                     object_name="Crystallize",
                     object_position=ObjectPosition(
@@ -116,9 +116,9 @@ class InuzakaAllRoundDefense(ElementalSkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_team_status("General's War Banner")]
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("General's War Banner")
+        ]
 
 
 class JuugaForwardUntoVictory(ElementalBurstBase):
@@ -130,13 +130,10 @@ class JuugaForwardUntoVictory(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        return super().get_actions(
-            match,
-            [
-                self.create_team_status("General's War Banner"),
-                self.create_summon("General's Glory"),
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_team_status("General's War Banner"),
+            self.create_summon("General's Glory"),
+        ]
 
 
 class RushingHoundSwiftAsTheWind_4_3(SkillTalent):

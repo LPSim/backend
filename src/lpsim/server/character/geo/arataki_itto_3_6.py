@@ -112,14 +112,10 @@ class MasatsuZetsugiAkaushiBurst(ElementalSkillBase):
         """
         Attack, create Ushi and create status
         """
-        ret = super().get_actions(
-            match,
-            [
-                self.create_summon("Ushi"),
-                self.create_character_status("Superlative Superstrength"),
-            ],
-        )
-        return ret
+        return super().get_actions(match) + [
+            self.create_summon("Ushi"),
+            self.create_character_status("Superlative Superstrength"),
+        ]
 
 
 class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
@@ -137,14 +133,9 @@ class RoyalDescentBeholdIttoTheEvil(ElementalBurstBase):
         """
         Attack and create status
         """
-        return super().get_actions(
-            match,
-            [
-                self.create_character_status(
-                    "Raging Oni King", {"version": self.version}
-                )
-            ],
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("Raging Oni King", {"version": self.version})
+        ]
 
 
 # Talents

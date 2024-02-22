@@ -2,9 +2,11 @@
 """
 This file contains a template for writing tests. You can copy this file to
 tests/folder/test_xxx.py and modify it to write your own tests.
+
+NOTE: outdated, now better to use `do_log_tests` utility function to test on a log.
 """
-from src.lpsim.agents import InteractionAgent
-from src.lpsim import Deck, Match, MatchState
+from lpsim.agents import InteractionAgent
+from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
     check_hp, get_random_state, get_test_id_from_command, make_respond, 
     set_16_omni

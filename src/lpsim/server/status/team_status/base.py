@@ -152,9 +152,6 @@ class DefendTeamStatus(UsageTeamStatus):
         ):
             # not this character receive damage, not modify
             return value
-        if self.usage <= 0:
-            # no usage, not modify
-            return value
         new_usage = value.apply_shield(
             self.usage,
             self.min_damage_to_trigger,

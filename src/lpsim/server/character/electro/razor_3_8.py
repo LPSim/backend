@@ -43,9 +43,9 @@ class LightningFang(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(
-            match, [self.create_character_status("The Wolf Within")]
-        )
+        return super().get_actions(match) + [
+            self.create_character_status("The Wolf Within")
+        ]
 
 
 # Talents

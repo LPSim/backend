@@ -1005,7 +1005,7 @@ def test_prediction():
                     d.requests = []
                     # remove event frames, as it contains ids in some action,
                     # which is hard to remove
-                    d.event_frames = []
+                    d.event_controller.frame_list = []
                 assert after_match == patch_match
         else:
             raise AssertionError("No need respond.")

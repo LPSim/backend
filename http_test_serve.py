@@ -1,6 +1,6 @@
-from src.lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
-from src.lpsim.network import HTTPServer
-from src.lpsim.server.match import MatchConfig, Match
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
+from lpsim.network import HTTPServer
+from lpsim.server.match import MatchConfig, Match
 from tests.utils_for_test import get_random_state
 import logging
 
@@ -10,12 +10,14 @@ logging.basicConfig(level=logging.INFO)
 
 if __name__ == "__main__":
     deck_str_1 = """
-        default_version:4.2
-        character:Baizhu
-        character:Nilou
-        character:Tighnari
-        All Things Are of the Earth*15
-        Lotus Flower Crisp*15
+        default_version:4.4
+        character:AnemoMobMage
+        character:CryoMob
+        character:PyroMobMage
+        character:Sangonomiya Kokomi
+        Mushroom Pizza*10
+        Matsutake Meat Rolls*10
+        Silver and Melus*10
     """
     deck_str_2 = """
     character:Nahida@3.7

@@ -7,8 +7,42 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.4.0] - 2024-02-12
+
+Thanks to new contributors: @xqm32 @jiezichenku!
+
+### Added
+- #86 Version 4.4 cards and balance changes are implemented.
+  - Characters and their talents:
+    - Sayu
+    - Thoma
+    - Cryo Hypostasis
+    - Millennial Pearl Seahorse
+  - Equipment
+    - Sapwood Blace
+    - Veteran's Visage
+  - Action Cards
+    - Jeht
+    - Silver and Melus
+    - Machine Assembly Line
+    - Sunyata Flower
+    - Matsutake Meat Rolls
+- #60 #67 #68 #71 #72 @xqm32 Add and improve the toolchain of developing and CI.
+- #84 New `CreateRandomObjectAction` is implemented, which is used by Rhodeia, 
+  Abyssal Summons, etc.
+
+### Changed
+- In `UseCardEventArguments`, instead of using `Any` type for `card`, now `card` is
+  removed and `card_cost` and `card_name` is added. This change is because with `Any`
+  type, pydantic cannot parse the data from json or dict correctly.
+- #24 Avoid deep copy when simulating, which improves the performance.
+- #71 #78 @jiezichenku In `class_registry`, new `instance_factory` is implemented.
+- #80 Docs of network classes are improved.
+
 ### Fixed
-- Mass typos in the project.
+- #53 #55 #56 @xqm32 Mass typos in the project, which containing wrong variable names.
+- #44 #81 Mamere use wrong card version and will raise error when new cards are added.
+- #85 Falls and Fortune only generate status on one side.
 
 ## [0.4.3.3] - 2024-01-11
 
@@ -460,7 +494,8 @@ Happy New Year 2024! New year comes in coding time!
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.3.3...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.4.0...HEAD
+[0.4.4.0]: https://github.com/LPSim/backend/releases/tag/v0.4.4.0
 [0.4.3.3]: https://github.com/LPSim/backend/releases/tag/v0.4.3.3
 [0.4.3.2]: https://github.com/LPSim/backend/releases/tag/v0.4.3.2
 [0.4.3.1]: https://github.com/LPSim/backend/releases/tag/v0.4.3.1

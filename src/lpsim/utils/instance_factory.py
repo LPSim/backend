@@ -1,13 +1,13 @@
 import bisect
 import logging
-from typing import Any, Dict, Type, get_args, get_type_hints
+from typing import Any, Dict, get_args, get_type_hints
 
 from .desc_registry import desc_exist, update_cost
 
 from ..server.consts import ObjectType
 
 
-def check_cls_valid_and_update_cost(cls: Type[Any], obj_type: ObjectType):
+def check_cls_valid_and_update_cost(cls: Any, obj_type: ObjectType):
     """
     Check whether this class hint and desc is valid for given class, if not, raise
     error. Then register cost information for this class.
@@ -107,7 +107,7 @@ class InstanceFactory:
         self._instance_list = []
         self._instance_list_sorted = False
 
-    def register_instance(self, cls: Type[Any]):
+    def register_instance(self, cls: Any):
         """
         Register one class. If the class is registered, print a warning. If same
         version, name and base class, raise error.
@@ -133,7 +133,7 @@ class InstanceFactory:
             self._instance_list.append(key)
             self._instance_list_sorted = False
 
-    def get_instance(self, base_class: Type[Any], args: Dict):
+    def get_instance(self, base_class: Any, args: Dict):
         cls_type_hints = get_type_hints(base_class)
         obj_types = cls_type_hints["type"].__args__
         name = args["name"]

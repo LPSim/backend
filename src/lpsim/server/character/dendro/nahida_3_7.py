@@ -73,7 +73,7 @@ class AllSchemesToKnow(ElementalSkillBase):
                         )
                     )
         # apply damage after apply status.
-        return super().get_actions(match, ret)
+        return super().get_actions(match) + ret
 
 
 class AllSchemesToKnowTathata(ElementalSkillBase):
@@ -103,7 +103,7 @@ class AllSchemesToKnowTathata(ElementalSkillBase):
                     object_arguments={},
                 )
             )
-        return super().get_actions(match, ret)
+        return super().get_actions(match) + ret
 
 
 class IllusoryHeart(ElementalBurstBase):
@@ -117,7 +117,7 @@ class IllusoryHeart(ElementalBurstBase):
     )
 
     def get_actions(self, match: Any) -> List[Actions]:
-        return super().get_actions(match, [self.create_team_status("Shrine of Maya")])
+        return super().get_actions(match) + [self.create_team_status("Shrine of Maya")]
 
 
 class TheSeedOfStoredKnowledge_3_7(SkillTalent):
