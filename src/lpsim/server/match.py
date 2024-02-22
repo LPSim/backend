@@ -7,12 +7,10 @@ from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
 
+from .event_controller import EventController
 from .summon.base import SummonBase
-
 from .status.team_status.base import TeamStatusBase
-
 from .status.character_status.base import CharacterStatusBase
-
 from ..utils import BaseModel, get_instance
 from .deck import Deck
 from .player_table import PlayerTable
@@ -87,7 +85,6 @@ from .event import (
     EventArguments,
     EventArgumentsBase,
     DrawCardEventArguments,
-    EventFrame,
     GameStartEventArguments,
     RestoreCardEventArguments,
     RemoveCardEventArguments,
@@ -348,7 +345,7 @@ class Match(BaseModel):
     current_player: int = -1
     player_tables: List[PlayerTable] = []
     state: MatchState = MatchState.WAITING
-    event_frames: List[EventFrame] = []
+    event_controller = EventController()
     requests: List[Requests] = []
     winner: int = -1
 
@@ -485,7 +482,7 @@ class Match(BaseModel):
             if len(self._history) > 2:
                 self._history = [self._history[0], self._history[-1]]
 
-    def _record_last_action_history(self):
+    def record_last_action_history(self):
         """
         Record history based on last action.
         When history level is 0, no information will be recorded.
@@ -721,29 +718,9 @@ class Match(BaseModel):
                     draw_if_filtered_not_enough=True,
                 )
             )
-            event_frame = self._stack_events(event_args)
-            self.empty_frame_assertion(
-                event_frame=event_frame,
-                error_message="Initial draw card should not trigger objects.",
-            )
+            event_frame = self.event_controller.stack_events(event_args)
+            self.event_controller.append(event_frame)
         return True, None
-
-    def empty_frame_assertion(
-        self, event_frame: EventFrame, error_message: str
-    ) -> None:
-        while len(event_frame.events):
-            self._trigger_event(event_frame)
-            while len(event_frame.triggered_objects):
-                position = event_frame.triggered_objects.pop(0)
-                object = self.get_object(position)
-                event_arg = event_frame.processing_event
-                assert event_arg is not None
-                handler_name = "event_handler_" + event_arg.type.value
-                func = getattr(object, handler_name)
-                actions = func(event_frame.processing_event, self)
-                if len(actions):
-                    self._set_match_state(MatchState.ERROR)  # pragma no cover
-                    raise AssertionError(error_message)
 
     def step(self, run_continuously: bool = True) -> bool:
         """
@@ -773,8 +750,8 @@ class Match(BaseModel):
                 logging.info("There are still requests not responded.")
                 return False
             # check if action is needed
-            elif len(self.event_frames) != 0:
-                self._next_action()
+            elif self.event_controller.has_event():
+                self.event_controller.run_event_frame(self)
             # all response and action are cleared, start state transition
             elif self.state == MatchState.STARTING:
                 self._set_match_state(MatchState.STARTING_CARD_SWITCH)
@@ -814,7 +791,7 @@ class Match(BaseModel):
                 self._round_start()
             else:
                 raise NotImplementedError(f"Match state {self.state} not implemented.")
-            self._record_last_action_history()
+            self.record_last_action_history()
             if self._debug_save_appeared_object_names:  # pragma: no cover
                 self._debug_save_appeared_object_names_to_file()
             if len(self.requests) or not run_continuously:
@@ -901,78 +878,6 @@ class Match(BaseModel):
             return True
         return False
 
-    def _next_action(self):
-        """
-        Do one action in `self.event_frames`. If the last event frame has
-        triggered actions, it will do one action and stack new event frame.
-        If triggered actions is empty and has triggered objects, get
-        actions and do the first. If have unprocessed event arguments,
-        trigger objects. If none of all, pop last event frame.
-        Unless there are no actions, this function will exactly do one action.
-        """
-        assert len(self.event_frames) > 0, "No event frame to process."
-        while len(self.event_frames):
-            event_frame = self.event_frames[-1]
-            if len(event_frame.triggered_actions):
-                if event_frame.processing_event is None:
-                    # do one action
-                    activated_action = event_frame.triggered_actions.pop(0)
-                    logging.info(f"Action activated: {activated_action}")
-                    event_args = self._act(activated_action)
-                    self._record_last_action_history()
-                    self._stack_events(event_args)
-                else:
-                    # do all actions
-                    event_args = []
-                    for activated_action in event_frame.triggered_actions:
-                        logging.info(f"Action activated: {activated_action}")
-                        event_args += self._act(activated_action)
-                        self._record_last_action_history()
-                    event_frame.triggered_actions = []
-                    self._stack_events(event_args)
-                return
-            elif len(event_frame.triggered_objects):
-                # get actions
-                event_arg = event_frame.processing_event
-                assert event_arg is not None
-                object_position = event_frame.triggered_objects.pop(0)
-                object = self.get_object(object_position, event_arg.type)
-                object_name = object.__class__.__name__
-                if hasattr(object, "name"):
-                    object_name = object.name  # type: ignore
-                if object is None:
-                    logging.warning(
-                        f"Object {object_position} does not exist. "
-                        "Is it be removed before triggering or a bug?"
-                    )
-                else:
-                    handler_name = f"event_handler_{event_arg.type.name}"
-                    func = getattr(object, handler_name, None)
-                    assert func is not None, (
-                        f"Object {object_name} does not have handler for "
-                        f"{event_arg.type.name}."
-                    )
-                    event_frame.triggered_actions = func(event_arg, self)
-                    if event_frame.triggered_actions is None:
-                        raise AssertionError(
-                            f"Object {object_name} with event "
-                            f"{event_arg.type} returns None."
-                        )
-                    if len(event_frame.triggered_actions) > 0:
-                        logging.info(
-                            f"Object {object_name} with event {event_arg.type}"
-                            f", triggered "
-                            f"{len(event_frame.triggered_actions)} actions "
-                        )
-            elif len(event_frame.events):
-                # trigger objects
-                self._trigger_event(event_frame)
-            else:
-                # pop event frame
-                self.event_frames.pop()
-        # event frame cleared, clear trashbin
-        self.trashbin.clear()
-
     def _game_start(self):
         """
         Game started. Will send game start event.
@@ -980,7 +885,7 @@ class Match(BaseModel):
         event = GameStartEventArguments(
             player_go_first=self.current_player,
         )
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def _round_start(self):
         """
@@ -1020,12 +925,7 @@ class Match(BaseModel):
             event_args += self._act(
                 CreateDiceAction(player_idx=pnum, number=random_number, random=True)
             )
-        event_frame = EventFrame(
-            events=event_args,
-        )
-        self.empty_frame_assertion(
-            event_frame, "Create dice in round start should not trigger actions."
-        )
+        self.event_controller.stack_events(event_args)
         # collect actions triggered by round start
         # reroll dice chance. reroll times can be modified by objects.
         for pnum, player_table in enumerate(self.player_tables):
@@ -1056,7 +956,7 @@ class Match(BaseModel):
             round=self.round_number,
             dice_colors=[table.dice.colors.copy() for table in self.player_tables],
         )
-        event_frame = self._stack_event(event_arg)
+        event_frame = self.event_controller.stack_event(event_arg)
         logging.info(
             f"In round prepare, {len(event_frame.triggered_objects)} "
             f"handlers triggered."
@@ -1072,7 +972,7 @@ class Match(BaseModel):
                 not_all_declare_end = True
         assert not_all_declare_end, "All players have declared round end."
         event = PlayerActionStartEventArguments(player_idx=self.current_player)
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def _player_action_request(self):
         """
@@ -1131,7 +1031,7 @@ class Match(BaseModel):
             round=self.round_number,
             initial_card_draw=self.config.initial_card_draw,
         )
-        self._stack_event(event)
+        self.event_controller.stack_event(event)
 
     def get_object(
         self, position: ObjectPosition, action: ActionTypes | None = None
@@ -1178,64 +1078,6 @@ class Match(BaseModel):
             + self.player_tables[1 - self.current_player].get_object_lists()
             + self.event_handlers
         )
-
-    def _stack_event(
-        self,
-        event_arg: EventArguments,
-    ) -> EventFrame:
-        """
-        stack a new event. It will wrap it into a list and call
-        self._trigger_events.
-        """
-        return self._stack_events([event_arg])
-
-    def _stack_events(
-        self,
-        event_args: List[EventArguments],
-    ) -> EventFrame:
-        """
-        stack events. It will create a new EventFrame with events and
-        append it into self.event_frames. Then it will return the event frame.
-        """
-        frame = EventFrame(
-            events=event_args,
-        )
-        self.event_frames.append(frame)
-        return frame
-
-    def _trigger_event(
-        self,
-        event_frame: EventFrame,
-    ) -> EventArguments:
-        """
-        trigger new event to update triggered object lists of a EventFrame.
-        it will take first event from events, put it into processing_event,
-        and update triggered object lists.
-        """
-        assert len(event_frame.triggered_objects) == 0
-        assert len(event_frame.triggered_actions) == 0
-        assert len(event_frame.events) != 0
-        event_arg = event_frame.events.pop(0)
-        event_frame.processing_event = event_arg
-        object_list = self.get_object_list()
-        # add object in trashbin to list
-        for object in self.trashbin:
-            if event_arg.type in object.available_handler_in_trashbin:
-                object_list.append(object)
-        handler_name = f"event_handler_{event_arg.type.name}"
-        for obj in object_list:
-            # for deck objects, check availability
-            if obj.position.area == ObjectPositionType.DECK:
-                if event_arg.type not in obj.available_handler_in_deck:
-                    continue
-            name = obj.__class__.__name__
-            if hasattr(obj, "name"):  # pragma: no cover
-                name = obj.name  # type: ignore
-            func = getattr(obj, handler_name, None)
-            if func is not None:
-                logging.debug(f"Trigger event {event_arg.type.name} " f"for {name}.")
-                event_frame.triggered_objects.append(obj.position)
-        return event_arg
 
     def _modify_value(
         self,
@@ -1529,7 +1371,7 @@ class Match(BaseModel):
 
     def _respond_switch_card(self, response: SwitchCardResponse):
         """
-        TODO: generate a event frame with action queues.
+        Deal with switch card response.
         """
         # restore cards
         event_args: List[EventArguments] = []
@@ -1546,10 +1388,8 @@ class Match(BaseModel):
                 draw_if_filtered_not_enough=True,
             )
         )
-        event_frame = self._stack_events(event_args)
-        self.empty_frame_assertion(
-            event_frame, "Switch card should not trigger actions now."
-        )
+        event_frame = self.event_controller.stack_events(event_args)
+        self.event_controller.append(event_frame)
         # remove related requests
         self.requests = [
             req for req in self.requests if req.player_idx != response.player_idx
@@ -1557,7 +1397,7 @@ class Match(BaseModel):
 
     def _respond_choose_character(self, response: ChooseCharacterResponse):
         event_args = self._act(ChooseCharacterAction.from_response(response))
-        self._stack_events(event_args)
+        self.event_controller.stack_events(event_args)
         # remove related requests
         self.requests = [
             req for req in self.requests if req.player_idx != response.player_idx
@@ -1568,13 +1408,10 @@ class Match(BaseModel):
         Deal with reroll dice response. If there are still reroll times left,
         keep request and only substrat reroll times. If there are no reroll
         times left, remove request.
-        TODO: generate a event frame with action queues.
         """
         event_args = self._action_remove_dice(RemoveDiceAction.from_response(response))
-        event_frame = self._stack_events(list(event_args))
-        self.empty_frame_assertion(
-            event_frame, "Removing dice in Reroll Dice should not trigger actions."
-        )
+        event_frame = self.event_controller.stack_events(list(event_args))
+        self.event_controller.append(event_frame)
         event_args = self._action_create_dice(
             CreateDiceAction(
                 player_idx=response.player_idx,
@@ -1582,10 +1419,8 @@ class Match(BaseModel):
                 random=True,
             )
         )
-        event_frame = self._stack_events(list(event_args))
-        self.empty_frame_assertion(
-            event_frame, "Creating dice in Reroll Dice should not trigger actions."
-        )
+        event_frame = self.event_controller.stack_events(list(event_args))
+        self.event_controller.append(event_frame)
         # modify request
         for num, req in enumerate(self.requests):  # pragma: no branch
             if isinstance(req, RerollDiceRequest):  # pragma: no branch
@@ -1639,8 +1474,7 @@ class Match(BaseModel):
                 do_combat_action=True,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1679,8 +1513,7 @@ class Match(BaseModel):
                 do_combat_action=False,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1701,8 +1534,7 @@ class Match(BaseModel):
                 do_combat_action=True,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1740,8 +1572,7 @@ class Match(BaseModel):
                 do_combat_action=combat_action,
             ),
         ]
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
@@ -1772,8 +1603,7 @@ class Match(BaseModel):
                 do_combat_action=combat_action,
             )
         )
-        event_frame = EventFrame(events=[], triggered_actions=actions)
-        self.event_frames.append(event_frame)
+        self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx
         ]
