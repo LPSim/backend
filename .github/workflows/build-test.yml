@@ -10,9 +10,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    environment:
-      name: test-release
-      url: https://test.pypi.org/p/lpsim/
     permissions:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
