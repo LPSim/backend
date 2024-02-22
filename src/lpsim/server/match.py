@@ -7,7 +7,7 @@ from enum import Enum
 from pydantic import PrivateAttr, validator
 import dictdiffer
 
-from .event_frame import EventController
+from .event_controller import EventController
 from .summon.base import SummonBase
 from .status.team_status.base import TeamStatusBase
 from .status.character_status.base import CharacterStatusBase
