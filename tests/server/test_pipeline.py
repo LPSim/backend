@@ -1355,6 +1355,45 @@ def test_use_card_event_serialize():
     assert card_event.action.card_position.area == ObjectPositionType.HAND
 
 
+def test_different_random_state():
+    deck = Deck.from_str(
+        """
+        default_version:4.0
+        character:Rhodeia of Loch
+        character:Kamisato Ayaka
+        Traveler's Handy Sword*5
+        Gambler's Earrings*5
+        Kanten Senmyou Blessing*5
+        Sweet Madame*5
+        Abyssal Summons*5
+        Fatui Conspiracy*5
+        Timmie*5
+        """
+    )
+    # numpy random state
+    match = Match(random_state=get_random_state())
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.card_number = None
+    match.config.character_number = None
+    match.config.check_deck_restriction = False
+    assert match.start()[0]
+    assert match.random_state[0] == "MT19937"
+    assert match.random_state[3] == 0
+    assert match.random_state[4] == 0
+
+    # python random state
+    match = Match()
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = 30
+    match.config.card_number = None
+    match.config.character_number = None
+    match.config.check_deck_restriction = False
+    assert match.start()[0]
+    assert match.random_state[0] == 3
+    assert match.random_state[2] is None
+
+
 if __name__ == "__main__":
     # test_match_pipeline()
     # test_save_load()
@@ -1377,3 +1416,4 @@ if __name__ == "__main__":
     # test_version_validation()
     # test_round_end_all_lose()
     test_use_card_event_serialize()
+    test_different_random_state()

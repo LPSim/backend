@@ -1,7 +1,7 @@
 import os
 import logging
 import copy
-import numpy as np
+import random
 from typing import Literal, List, Any, Dict, Tuple
 from enum import Enum
 from pydantic import PrivateAttr, validator
@@ -128,6 +128,15 @@ from .elemental_reaction import (
     apply_elemental_reaction,
 )
 from .event_handler import SystemEventHandlerBase, SystemEventHandler
+
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    # in legacy version, we use numpy as random generator. And in newer version, we
+    # use random as random generator. If numpy is not installed, we cannot set random
+    # state with numpy version states.
+    pass
 
 
 class MatchState(str, Enum):
@@ -332,7 +341,7 @@ class Match(BaseModel):
 
     # random state
     random_state: List[Any] = []
-    _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
+    _random_state: Any = PrivateAttr(None)
 
     # event handlers to implement special rules.
     event_handlers: List[SystemEventHandlerBase] = [
@@ -433,13 +442,26 @@ class Match(BaseModel):
             # no need to init random state
             return
         if self.random_state:
-            random_state = self.random_state[:]
-            random_state[1] = np.array(random_state[1], dtype="uint32")
-            self._random_state.set_state(random_state)  # type: ignore
+            if self.random_state[0] == "MT19937":
+                assert "np" in globals(), (
+                    "numpy is not installed, cannot set random state with numpy "
+                    "version states."
+                )
+                random_state = self.random_state[:]
+                random_state[1] = np.array(random_state[1], dtype="uint32")
+                self._random_state = np.random.RandomState()
+                self._random_state.set_state(random_state)
+            else:
+                random_state = (
+                    self.random_state[0],
+                    tuple(self.random_state[1]),
+                    self.random_state[2],
+                )
+                self._random_state = random.Random()
+                self._random_state.setstate(random_state)
         else:
-            # random state not set, re-new self._random_state to avoid
-            # affecting other matches.
-            self._random_state = np.random.RandomState()
+            # random state not set, create new random state
+            self._random_state = random.Random()
             self._save_random_state()
 
     def _save_history(self) -> None:
@@ -577,8 +599,17 @@ class Match(BaseModel):
         """
         Save the random state.
         """
-        self.random_state = list(self._random_state.get_state(legacy=True))
-        self.random_state[1] = self.random_state[1].tolist()
+        if isinstance(self._random_state, random.Random):
+            self.random_state = list(self._random_state.getstate())
+            self.random_state[1] = list(self.random_state[1])
+            return
+        elif isinstance(self._random_state, np.random.RandomState):
+            self.random_state = list(self._random_state.get_state(legacy=True))
+            self.random_state[1] = self.random_state[1].tolist()
+        else:
+            raise AssertionError(
+                f"Random state type {type(self._random_state)} not recognized."
+            )
 
     def _random(self):
         """
