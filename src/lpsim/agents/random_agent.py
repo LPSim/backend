@@ -1,4 +1,4 @@
-import numpy as np
+from typing import Any
 from pydantic import PrivateAttr
 from .agent_base import AgentBase
 from ..server.match import Match
@@ -23,6 +23,12 @@ from ..server.interaction import (
 from ..server.consts import DieColor
 
 
+try:
+    import numpy as np
+except ImportError:
+    print("numpy is not installed, RandomAgent will not work.")
+
+
 class RandomAgent(AgentBase):
     """
     Agent that randomly choose one type of requests, randomly choose one of
@@ -30,7 +36,7 @@ class RandomAgent(AgentBase):
     """
 
     random_seed: int | None = None
-    _random_state: np.random.RandomState = PrivateAttr(np.random.RandomState())
+    _random_state: Any = PrivateAttr(None)
     random_state_set: bool = False
 
     def json(self, *argv, **kwargs):
@@ -39,6 +45,7 @@ class RandomAgent(AgentBase):
     def random(self) -> float:
         """
         Return a random float between 0 and 1.
+        TODO: should save random state after random call to ensure reproducibility.
         """
         if not self.random_state_set:
             self._random_state = np.random.RandomState()

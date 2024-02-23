@@ -16,7 +16,6 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
-    "numpy",
     "pydantic==1.10.14",
     "typing_extensions",
     "dictdiffer",
@@ -25,7 +24,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["setuptools-scm", "pytest", "pytest-cov", "pytest-xdist", "pyright", "build"]
+dev = [
+    "build",
+    "numpy",
+    "setuptools-scm", 
+    "pytest", 
+    "pytest-cov", 
+    "pytest-xdist", 
+    "pyright",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/LPSim/backend"

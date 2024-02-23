@@ -20,7 +20,8 @@ def get_new_match(
     Args:
         decks: The decks of players. If its length is zero, will not set decks
             or start the match.
-        seed: The random seed. It should follow the format of numpy.random.
+        seed: The random seed. It should follow the format of
+            numpy.RandomState.get_state(legacy=True) or random.Random.getstate().
         rich_mode: If True, use rich mode, at round start, players is given
             16 omni dice. Mainly used in code testing.
         match_config: The config of the match. If None, use default config.
