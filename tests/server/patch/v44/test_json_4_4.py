@@ -78,7 +78,7 @@ def test_jeht_sunyata():
 
 if __name__ == "__main__":
     # test_balance()
-    # test_cryo_hypostasis()
+    test_cryo_hypostasis()
     # test_millennial_pearl_seahorse()
     # test_millennial_pearl_seahorse_2()
     test_thoma()

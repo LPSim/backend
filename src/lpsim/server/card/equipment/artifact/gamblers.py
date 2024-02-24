@@ -39,14 +39,12 @@ class GamblersEarrings_3_8(ArtifactBase):
             area=ObjectPositionType.INVALID,
             id=-1,
         )
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=diff and source area=character active=true",
             target_position,
             match,
-            player_idx_same=False,
-            source_area=ObjectPositionType.CHARACTER,
-            source_is_active_character=True,
         ):
-            # our character defeated, or self not active, or self not equipped
+            # not opponent character defeated, or self not active, or self not equipped
             return []
         if self.usage <= 0:
             # no usage left

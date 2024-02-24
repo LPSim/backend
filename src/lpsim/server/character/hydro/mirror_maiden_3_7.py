@@ -36,17 +36,11 @@ class InfluxBlast(ElementalSkillBase):
         First remove existing Refraction on opposite, then create new
         Refraction.
         """
-        target_characters = match.player_tables[1 - self.position.player_idx].characters
-        exist_status = None
-        for character in target_characters:
-            for status in character.status:
-                if status.name == "Refraction":
-                    exist_status = status
-                    break
-            if exist_status is not None:
-                break
+        exist_status = self.query_one(
+            match, "opponent character status name=Refraction"
+        )
         ret: List[RemoveObjectAction] = []
-        if exist_status:
+        if exist_status is not None:
             ret.append(RemoveObjectAction(object_position=exist_status.position))
         args = {}
         if self.is_talent_equipped(match):

@@ -49,14 +49,11 @@ class TheBell_3_7(RoundEffectWeaponBase):
         If self character use any skill, and have usage, create Rebellious
         Shield.
         """
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same and source area=character and target area=skill",
             event.action.position,
-            match,
-            player_idx_same=True,
-            character_idx_same=True,
-            target_area=ObjectPositionType.SKILL,
         ):
-            # not self character use skill
+            # not self character use skill or not equipped
             return []
         if self.usage == 0:
             # no usage

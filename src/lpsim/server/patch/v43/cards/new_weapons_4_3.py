@@ -54,13 +54,10 @@ class TulaytullahsRemembrance_4_3(RoundEffectWeaponBase):
         if self.usage <= 0:
             # not enough usage, not modify
             return value
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same and source area=character and target area=skill",
             value.position,
             match,
-            player_idx_same=True,
-            character_idx_same=True,
-            target_area=ObjectPositionType.SKILL,
-            source_area=ObjectPositionType.CHARACTER,
         ):
             # not this character use skill, or not equipped, not modify
             return value

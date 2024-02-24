@@ -151,12 +151,10 @@ class TheSeedOfStoredKnowledge_3_7(SkillTalent):
         if event.action.object_name != "Shrine of Maya":
             # not creating Shrine of Maya, do nothing.
             return []
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same and source area=character active=true",
             event.action.object_position,
             match,
-            player_idx_same=True,
-            source_area=ObjectPositionType.CHARACTER,
-            source_is_active_character=True,
         ):
             # not self, or not equipped, or not active character, do nothing.
             return []
