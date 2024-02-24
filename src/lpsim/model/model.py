@@ -81,6 +81,7 @@ class model:
         character_model = self.get_prototype("character")
         character_model["name"] = character.name
         character_model["version"] = character.version
+        character_model["element"] = character.element
         character_model["hp"] = character.hp
         character_model["charge"] = character.charge
         character_model["attaches"] = [self.get_attach(x) for x in character.attaches]
@@ -219,6 +220,20 @@ if __name__ == "__main__":
     match.config.card_number = None
     assert match.start()[0]
     match.step()
+
+    while match.round_number < 3 \
+            and not match.is_game_end():
+        if match.need_respond(0):
+            current_agent = agent_0
+        elif match.need_respond(1):
+            current_agent = agent_1
+        else:
+            raise RuntimeError("no agent need to respond")
+        resp = current_agent.generate_response(match)
+        assert resp is not None
+        match.respond(resp)
+        match.step()
+
     Model = model()
     Model.match_to_json(match, "match_1")
     match = Model.json_to_match("match_1")
