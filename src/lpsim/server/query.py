@@ -15,7 +15,8 @@ def _query(object_position: Any, match: Any, command: List[str]) -> List[Any]:
         assert object_position.area in [
             ObjectPositionType.CHARACTER,
             ObjectPositionType.CHARACTER_STATUS,
-        ], "self can only be used for objects in character or character_status"
+            ObjectPositionType.SKILL,
+        ], "self can only be used for objects in character skill or character_status"
         current_objs = [
             match.player_tables[object_position.player_idx].characters[
                 object_position.character_idx

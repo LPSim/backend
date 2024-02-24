@@ -2,12 +2,9 @@ from typing import Any, List, Literal
 
 from .....utils.class_registry import register_class
 
-from ....consts import ELEMENT_TO_DIE_COLOR, ElementalReactionType, ObjectPositionType
-
+from ....consts import ELEMENT_TO_DIE_COLOR, ElementalReactionType
 from ....action import CreateDiceAction
-
 from ....event import ReceiveDamageEventArguments, SkillEndEventArguments
-
 from ....struct import Cost
 from .base import RoundEffectArtifactBase
 
@@ -46,13 +43,9 @@ class InstructorsCap_3_3(RoundEffectArtifactBase):
         if self.usage <= 0:
             # no usage
             return []
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same and source area=character and target area=skill",
             event.action.position,
-            match,
-            player_idx_same=True,
-            character_idx_same=True,
-            source_area=ObjectPositionType.CHARACTER,
-            target_area=ObjectPositionType.SKILL,
         ):
             # not self player use skill or not equipped
             return []

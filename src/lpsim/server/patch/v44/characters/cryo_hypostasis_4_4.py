@@ -1,4 +1,4 @@
-from typing import Dict, List, Literal
+from typing import Any, Dict, List, Literal
 
 from ....action import (
     ActionTypes,
@@ -95,16 +95,7 @@ class IcespikeShot(ElementalNormalAttackBase, AOESkillBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        status = (
-            match.player_tables[self.position.player_idx]
-            .characters[self.position.character_idx]
-            .status
-        )
-        found_target = None
-        for s in status:
-            if s.name == "Overwhelming Ice":
-                found_target = s
-                break
+        found_target = self.query_one(match, "self status 'name=Overwhelming Ice'")
         if found_target is not None:
             # use AOE attack opposite
             return [
@@ -178,8 +169,8 @@ class SternfrostPrism_4_4(TalentBase):
         Using this card will attach cryo crystal core to it.
         """
         ret = super().get_actions(target, match)
-        character = match.player_tables[self.position.player_idx].get_active_character()
-        assert character.name == self.character_name
+        character: Any = self.query_one(match, "our active")
+        assert character is not None and character.name == self.character_name
         return ret + [
             CreateObjectAction(
                 object_name="Cryocrystal Core",
@@ -197,13 +188,11 @@ class SternfrostPrism_4_4(TalentBase):
         When this card equipped, cryo core is removed from self, create
         sheer cold on opposite active.
         """
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same "
+            "and source area=character "
+            "and target area=character_status",
             event.action.object_position,
-            match,
-            player_idx_same=True,
-            character_idx_same=True,
-            source_area=ObjectPositionType.CHARACTER,
-            target_area=ObjectPositionType.CHARACTER_STATUS,
         ):
             # not equipped, or target not self character status
             return []

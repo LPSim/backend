@@ -1,13 +1,9 @@
 from typing import Any, List, Literal
 
 from .....utils.class_registry import register_class
-
-from ....consts import ObjectPositionType, SkillType
-
+from ....consts import SkillType
 from ....action import ChargeAction
-
 from ....event import SkillEndEventArguments
-
 from ....struct import Cost
 from .base import RoundEffectArtifactBase
 
@@ -24,13 +20,9 @@ class ExilesCirclet_3_3(RoundEffectArtifactBase):
         """
         If self use elemental burst, charge standby characters.
         """
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same and source area=character and target area=skill",
             event.action.position,
-            match,
-            player_idx_same=True,
-            character_idx_same=True,
-            source_area=ObjectPositionType.CHARACTER,
-            target_area=ObjectPositionType.SKILL,
         ):
             # not equipped, or not this character use skill
             return []

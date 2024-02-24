@@ -175,11 +175,9 @@ class RagingOniKing_4_2(RoundCharacterStatus, ElementalInfusionCharacterStatus):
         if action.skill_type != SkillType.NORMAL_ATTACK:
             # not using normal attack
             return []
-        if not self.position.check_position_valid(
+        if self.position.not_satisfy(
+            "both pidx=same cidx=same",
             action.position,
-            match,
-            player_idx_same=True,
-            character_idx_same=True,
         ):
             # not attack by self
             return []
