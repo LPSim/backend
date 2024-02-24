@@ -1,5 +1,7 @@
 from typing import List, Any, Literal
 
+from .query import satisfy
+
 from ..utils import BaseModel
 from .consts import ObjectPositionType, DieColor
 
@@ -104,6 +106,8 @@ class ObjectPosition(BaseModel):
         target_is_active_character: bool | None = None,
     ) -> bool:
         """
+        @deprecated This function is deprecated. Use `self.satisfy` instead.
+
         Based on this position, target position and constraints, give whether
         two position relations fit the constraints.
         """
@@ -134,6 +138,54 @@ class ObjectPosition(BaseModel):
             cidx = match.player_tables[target_position.player_idx].active_character_idx
             return target_is_active_character == (target_position.character_idx == cidx)
         return True
+
+    def satisfy(
+        self,
+        command: str,
+        target: "ObjectPosition | None" = None,
+        match: Any | None = None,
+    ) -> bool:
+        """
+        Check whether object position satisfies the command.
+        Optionally receives target `ObjectPosition` and match. If they are not input,
+        related command string will raise error.
+
+        Command formats are:
+        - `source / target` to select one object position, or `both` to compare between
+            two positions
+        - if one position selected: `[pidx=? / cidx=? / area=? / active=(true|false)]`
+            to check if position fulfills the situation. for area names, they are case
+            insensitive. can use multiple times, and all of them should pass.
+        - if two position selected (i.e. `both`), `[(pidx|cidx|area|id)=(same|diff)]`
+            to compare two positions are same or not. can use multiple times, and all of
+            them should pass.
+        - `and` to make multiple checks. All check should pass.
+
+        samples:
+        - `source area=support` is this object placed to support
+        - `source area=character and target area=skill and both pidx=same cidx=same` is
+            this object equipped to a character, and target object is skill of this
+            character
+        - `both pidx=same and source area=hand and target area=skill` this object in
+            hand and target object is this player use skill
+        """
+        return satisfy(self, command, target, match)
+
+    def not_satisfy(
+        self,
+        command: str,
+        target: "ObjectPosition | None" = None,
+        match: Any | None = None,
+    ) -> bool:
+        """
+        Check whether object position not satisfies the command.
+        Optionally receives target `ObjectPosition` and match. If they are not input,
+        related command string will raise error.
+
+        Command formats are the same as `satisfy`. The result is just the opposite
+        of `satisfy`.
+        """
+        return not self.satisfy(command, target, match)
 
 
 class MultipleObjectPosition(BaseModel):
