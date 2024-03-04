@@ -1,0 +1,10 @@
+{
+  "name": "",
+  "version": "",
+  "hp": -1,
+  "charge": -1,
+  "element": "",
+  "attaches": [],
+  "element_application": [],
+  "is_alive": true
+}

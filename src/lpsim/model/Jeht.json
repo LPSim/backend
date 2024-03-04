@@ -1,0 +1,258 @@
+{
+    "name": "Match",
+    "version": "0.0.4",
+    "player_tables": [
+        {
+            "name": "PlayerTable",
+            "version": "0.0.4",
+            "player_idx": 0,
+            "active_charactor_idx": -1,
+            "has_round_ended": false,
+            "dice": {
+                "colors": [
+                    "OMNI",
+                    "HYDRO",
+                    "GEO",
+                    "GEO",
+                    "GEO",
+                    "DENDRO",
+                    "ANEMO",
+                    "ANEMO"
+                ]
+            },
+            "team_status": [],
+            "characters": [
+                {
+                    "name": "Lyney",
+                    "version": "4.3",
+                    "hp": 8,
+                    "charge": 2,
+                    "attaches": [],
+                    "element_application": [],
+                    "is_alive": true,
+                    "element": "PYRO"
+                },
+                {
+                    "name": "Millennial Pearl Seahorse",
+                    "version": "4.4",
+                    "hp": 4,
+                    "charge": 1,
+                    "attaches": [
+                        {
+                            "name": "Fontemer Pearl",
+                            "version": "4.4",
+                            "usage": 1,
+                            "max_usage": 1,
+                            "type": "character_status"
+                        },
+                        {
+                            "name": "Gilded Dreams",
+                            "version": "4.3",
+                            "type": "equipment"
+                        }
+                    ],
+                    "element_application": [
+                        "PYRO"
+                    ],
+                    "is_alive": true,
+                    "element": "ELECTRO"
+                },
+                {
+                    "name": "Azhdaha",
+                    "version": "4.3",
+                    "hp": 4,
+                    "charge": 2,
+                    "attaches": [
+                        {
+                            "name": "Stone Facets: Elemental Absorption",
+                            "version": "4.3",
+                            "usage": 1,
+                            "max_usage": 0,
+                            "type": "character_status"
+                        }
+                    ],
+                    "element_application": [],
+                    "is_alive": true,
+                    "element": "GEO"
+                }
+            ],
+            "summons": [],
+            "supports": [
+                {
+                    "name": "Sumeru City",
+                    "version": "3.7",
+                    "usage": 1
+                }
+            ],
+            "hands": [
+                {
+                    "name": "Covenant of Rock",
+                    "version": "3.8"
+                },
+                {
+                    "name": "Jeht",
+                    "version": "4.4"
+                },
+                {
+                    "name": "Dunyarzad",
+                    "version": "4.1"
+                },
+                {
+                    "name": "Memento Lens",
+                    "version": "4.3"
+                },
+                {
+                    "name": "Gilded Dreams",
+                    "version": "4.3"
+                },
+                {
+                    "name": "Lyresong",
+                    "version": "4.2"
+                },
+                {
+                    "name": "Heart of Khvarena's Brilliance",
+                    "version": "4.3"
+                }
+            ],
+            "table_deck": [],
+            "arcane_legend": true,
+            "plunge_satisfied": false,
+            "active_character_idx": 1
+        },
+        {
+            "name": "PlayerTable",
+            "version": "0.0.4",
+            "player_idx": 1,
+            "active_charactor_idx": -1,
+            "has_round_ended": false,
+            "dice": {
+                "colors": [
+                    "OMNI",
+                    "HYDRO",
+                    "PYRO",
+                    "ELECTRO",
+                    "GEO",
+                    "GEO",
+                    "DENDRO",
+                    "ANEMO"
+                ]
+            },
+            "team_status": [],
+            "characters": [
+                {
+                    "name": "Lyney",
+                    "version": "4.3",
+                    "hp": 0,
+                    "charge": 0,
+                    "attaches": [],
+                    "element_application": [],
+                    "is_alive": false,
+                    "element": "PYRO"
+                },
+                {
+                    "name": "Millennial Pearl Seahorse",
+                    "version": "4.4",
+                    "hp": 2,
+                    "charge": 2,
+                    "attaches": [
+                        {
+                            "name": "Heart of Khvarena's Brilliance",
+                            "version": "4.3",
+                            "type": "equipment"
+                        }
+                    ],
+                    "element_application": [],
+                    "is_alive": true,
+                    "element": "ELECTRO"
+                },
+                {
+                    "name": "Azhdaha",
+                    "version": "4.3",
+                    "hp": 2,
+                    "charge": 2,
+                    "attaches": [
+                        {
+                            "name": "Stone Facets: Elemental Absorption",
+                            "version": "4.3",
+                            "usage": 0,
+                            "max_usage": 0,
+                            "type": "character_status"
+                        },
+                        {
+                            "name": "Gilded Dreams",
+                            "version": "4.3",
+                            "type": "equipment"
+                        }
+                    ],
+                    "element_application": [
+                        "ELECTRO"
+                    ],
+                    "is_alive": true,
+                    "element": "GEO"
+                }
+            ],
+            "summons": [],
+            "supports": [],
+            "hands": [
+                {
+                    "name": "Chang the Ninth",
+                    "version": "3.3"
+                },
+                {
+                    "name": "Lyresong",
+                    "version": "4.2"
+                },
+                {
+                    "name": "Strategize",
+                    "version": "3.3"
+                },
+                {
+                    "name": "Sunyata Flower",
+                    "version": "4.4"
+                },
+                {
+                    "name": "I Haven't Lost Yet!",
+                    "version": "4.0"
+                },
+                {
+                    "name": "Chang the Ninth",
+                    "version": "3.3"
+                },
+                {
+                    "name": "Gambler's Earrings",
+                    "version": "3.8"
+                },
+                {
+                    "name": "Gilded Dreams",
+                    "version": "4.3"
+                },
+                {
+                    "name": "Jeht",
+                    "version": "4.4"
+                },
+                {
+                    "name": "Seed Dispensary",
+                    "version": "4.3"
+                },
+                {
+                    "name": "Memento Lens",
+                    "version": "4.3"
+                },
+                {
+                    "name": "Jeht",
+                    "version": "4.4"
+                },
+                {
+                    "name": "Dunyarzad",
+                    "version": "4.1"
+                }
+            ],
+            "table_deck": [],
+            "arcane_legend": true,
+            "plunge_satisfied": false,
+            "active_character_idx": 2
+        }
+    ],
+    "current_player": 0,
+    "round_number": 15
+}
