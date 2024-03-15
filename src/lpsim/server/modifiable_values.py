@@ -251,6 +251,47 @@ class DamageElementEnhanceValue(ModifiableValueBase):
             return False
         return True
 
+    @classmethod
+    def create_heal(
+        cls,
+        source_position: ObjectPosition,
+        target_position: ObjectPosition,
+        heal: int,
+        cost: Cost,
+    ):
+        """
+        class method to create heal-type damage
+        """
+        assert heal < 0, "Heal should be negative"
+        return cls(
+            position=source_position,
+            target_position=target_position,
+            damage_type=DamageType.HEAL,
+            damage=heal,
+            damage_elemental_type=DamageElementalType.HEAL,
+            cost=cost,
+        )
+
+    @classmethod
+    def create_element_application(
+        cls,
+        source_position: ObjectPosition,
+        target_position: ObjectPosition,
+        element: DamageElementalType,
+        cost: Cost,
+    ):
+        """
+        class method to create element-application-type damage
+        """
+        return cls(
+            position=source_position,
+            target_position=target_position,
+            damage_type=DamageType.ELEMENT_APPLICATION,
+            damage=0,
+            damage_elemental_type=element,
+            cost=cost,
+        )
+
 
 class DamageIncreaseValue(DamageElementEnhanceValue):
     """

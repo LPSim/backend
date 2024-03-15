@@ -50,25 +50,18 @@ class MelodyLoop_3_3(AttackerSummonBase):
         for cid, character in enumerate(target_table.characters):
             if character.is_alive:
                 damage_action.damage_value_list.append(
-                    DamageValue(
-                        position=self.position,
-                        damage_type=DamageType.HEAL,
-                        target_position=character.position,
-                        damage=self.damage,
-                        damage_elemental_type=self.damage_elemental_type,
-                        cost=Cost(),
+                    DamageValue.create_heal(
+                        self.position, character.position, self.damage, Cost()
                     )
                 )
             if target_table.active_character_idx == cid:
                 assert character.is_alive
                 damage_action.damage_value_list.append(
-                    DamageValue(
-                        position=self.position,
-                        damage_type=DamageType.ELEMENT_APPLICATION,
-                        target_position=character.position,
-                        damage=0,
-                        damage_elemental_type=DamageElementalType.HYDRO,
-                        cost=Cost(),
+                    DamageValue.create_element_application(
+                        self.position,
+                        character.position,
+                        DamageElementalType.HYDRO,
+                        Cost(),
                     )
                 )
         return [damage_action]

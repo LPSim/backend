@@ -5,7 +5,7 @@ from .....utils.class_registry import register_class
 from .base import RoundEffectArtifactBase
 from ....struct import Cost
 from ....modifiable_values import CostValue, InitialDiceColorValue
-from ....consts import ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType, CostLabels
+from ....consts import ELEMENT_TO_DIE_COLOR, ElementType, ObjectPositionType
 
 
 class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
@@ -60,44 +60,8 @@ class SmallElementalArtifact_4_0(RoundEffectArtifactBase):
         """
         if self.usage > 0:
             # has usage
-            if not self.position.check_position_valid(
-                value.position,
-                match,
-                player_idx_same=True,
-                source_area=ObjectPositionType.CHARACTER,
-            ):
-                # not from self position or not equipped
+            if not self._check_value_self_skill_or_talent(value, match):
                 return value
-            label = value.cost.label
-            if (
-                label
-                & (
-                    CostLabels.NORMAL_ATTACK.value
-                    | CostLabels.ELEMENTAL_SKILL.value
-                    | CostLabels.ELEMENTAL_BURST.value
-                    | CostLabels.TALENT.value
-                )
-                == 0
-            ):  # no label match
-                return value
-            position = value.position
-            assert self.position.character_idx != -1
-            if position.area == ObjectPositionType.SKILL:
-                # cost from character
-                if position.character_idx != self.position.character_idx:
-                    # not same character
-                    return value
-            else:
-                assert position.area == ObjectPositionType.HAND
-                # cost from hand card, is a talent card
-                equipped_character = match.player_tables[
-                    self.position.player_idx
-                ].characters[self.position.character_idx]
-                for card in match.player_tables[self.position.player_idx].hands:
-                    if card.id == value.position.id:
-                        if card.character_name != equipped_character.name:
-                            # talent card not for this character
-                            return value
             # can decrease cost
             if value.cost.decrease_cost(ELEMENT_TO_DIE_COLOR[self.element]):
                 # decrease cost success
