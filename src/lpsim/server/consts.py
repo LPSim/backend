@@ -395,6 +395,12 @@ class IconType(str, Enum):
     # with others, the status has its special icon based on its name
     OTHERS = "OTHERS"
 
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name
+
 
 ELEMENT_TO_ATK_UP_ICON = {
     ElementType.CRYO: IconType.ATK_UP_ICE,

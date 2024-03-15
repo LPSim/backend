@@ -72,6 +72,31 @@ def check_cls_valid_and_update_cost(cls: Any, obj_type: ObjectType):
             target_character_names = cls_type_hints["character_name"].__args__
             assert len(target_character_names) == 1
             desc_type = f"TALENT_{target_character_names[0]}"
+        check_id = obj_type in [
+            ObjectType.CHARACTER,
+            ObjectType.TALENT,
+            ObjectType.CARD,
+            ObjectType.ARCANE,
+            ObjectType.SUPPORT,
+            ObjectType.WEAPON,
+            ObjectType.ARTIFACT,
+        ]
+        check_image_path = obj_type in [
+            ObjectType.CHARACTER,
+            ObjectType.TALENT,
+            ObjectType.CARD,
+            ObjectType.ARCANE,
+            ObjectType.SUPPORT,
+            ObjectType.SUMMON,
+            ObjectType.WEAPON,
+            ObjectType.ARTIFACT,
+        ]
+        if obj_type in [ObjectType.CHARACTER_STATUS, ObjectType.TEAM_STATUS]:
+            # for character or team status, whether to check image path based on whether
+            # is others icon_type
+            icon_hint = cls.__fields__["icon_type"].default
+            assert icon_hint is not None
+            check_image_path = str(icon_hint) == "OTHERS"
         for desc in descs:
             if desc == "":
                 desc_name = name
@@ -79,13 +104,17 @@ def check_cls_valid_and_update_cost(cls: Any, obj_type: ObjectType):
                 desc_name = f"{name}_{desc}"
             if desc == "":
                 # empty, no extra desc
-                if not desc_exist(desc_type, desc_name, version):
+                if not desc_exist(
+                    desc_type, desc_name, version, check_id, check_image_path
+                ):
                     raise AssertionError(
                         f"Class {cls} name {name} version {version} type "
                         f"{desc_type} is not found in descs"
                     )
             else:
-                if not desc_exist(desc_type, desc_name, version):
+                if not desc_exist(
+                    desc_type, desc_name, version, False, check_image_path
+                ):
                     raise AssertionError(
                         f"Class {cls} name {name}(desc: {desc}) version "
                         f"{version} is not found in descs"

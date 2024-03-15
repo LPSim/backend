@@ -269,6 +269,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点火元素伤害。\n可用次数：2\n\n入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合1次，使角色受到的伤害-1。）",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_Muscleman.png",
     },
     "SUMMON/Spirit of Omen: Pyro Scorpion_talent": {
         "names": {"en-US": "Spirit of Omen: Pyro Scorpion", "zh-CN": "厄灵·炎之魔蝎"},
@@ -278,6 +279,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点火元素伤害；在镀金旅团·炽沙叙事人使用过「普通攻击」或「元素战技」的回合中，造成的伤害+1。\n可用次数：2\n\n入场时和行动阶段开始：使我方镀金旅团·炽沙叙事人附属炎之魔蝎·守势。（厄灵·炎之魔蝎在场时每回合2次，使角色受到的伤害-1。）",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_Muscleman.png",
     },
     "CHARACTER_STATUS/Pyro Scorpion: Guardian Stance": {
         "names": {"en-US": "Pyro Scorpion: Guardian Stance", "zh-CN": "炎之魔蝎·守势"},
