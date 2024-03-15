@@ -285,6 +285,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点岩元素伤害；如果队伍中存在2名岩元素角色，则生成结晶。\n可用次数：2",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_Gorou.png",
     },
     "TALENT_Gorou/Rushing Hound: Swift as the Wind": {
         "names": {"en-US": "Rushing Hound: Swift as the Wind", "zh-CN": "犬奔·疾如风"},

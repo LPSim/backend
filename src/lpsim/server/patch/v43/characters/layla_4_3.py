@@ -299,6 +299,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点冰元素伤害。如果飞星在场，则使其累积1枚「晚星」。\n可用次数：2",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_Layla.png",
     },
     "TALENT_Layla/Light's Remit": {
         "names": {"en-US": "Light's Remit", "zh-CN": "归芒携信"},

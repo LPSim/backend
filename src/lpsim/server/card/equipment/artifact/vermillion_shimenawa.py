@@ -27,37 +27,10 @@ class SkillCostDecreaseArtifact(RoundEffectArtifactBase):
     ) -> CostValue:
         if self.usage > 0:
             # has usage
-            if not self.position.check_position_valid(
-                value.position,
-                match,
-                player_idx_same=True,
-                source_area=ObjectPositionType.CHARACTER,
+            if not self._check_value_self_skill_or_talent(
+                value, match, self.skill_label
             ):
-                # not from self position or not equipped
                 return value
-            label = value.cost.label
-            target = CostLabels.TALENT.value | self.skill_label
-            if label & target == 0:
-                # no label match
-                return value
-            position = value.position
-            assert self.position.character_idx != -1
-            if position.area == ObjectPositionType.SKILL:
-                # cost from character
-                if position.character_idx != self.position.character_idx:
-                    # not same character
-                    return value
-            else:
-                assert position.area == ObjectPositionType.HAND
-                # cost from hand card, is a talent card
-                equipped_character = match.player_tables[
-                    self.position.player_idx
-                ].characters[self.position.character_idx]
-                for card in match.player_tables[self.position.player_idx].hands:
-                    if card.id == value.position.id:
-                        if card.character_name != equipped_character.name:
-                            # talent card not for this character
-                            return value
             # can decrease cost
             if (  # pragma: no branch
                 value.cost.decrease_cost(value.cost.elemental_dice_color)

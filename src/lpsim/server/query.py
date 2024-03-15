@@ -170,10 +170,10 @@ def _satisfy_single_position(
         if "=" not in cmd:
             raise ValueError(f"command {cmd} is not valid")
         key, value = cmd.split("=")
-        if key == "pidx":
+        if key == "pidx" or key == "player":
             if object_position.player_idx != int(value):
                 return False
-        elif key == "cidx":
+        elif key == "cidx" or key == "character":
             if object_position.character_idx != int(value):
                 return False
         elif key == "area":
@@ -216,10 +216,10 @@ def _satisfy_between_position(source: Any, target: Any, command: List[str]) -> b
         if value not in ["same", "diff"]:
             raise ValueError(f"value {value} is not valid, should be same or diff")
         value = value == "same"
-        if key == "pidx":
+        if key == "pidx" or key == "player":
             if (source.player_idx == target.player_idx) != value:
                 return False
-        elif key == "cidx":
+        elif key == "cidx" or key == "character":
             if (source.character_idx == target.character_idx) != value:
                 return False
         elif key == "area":
@@ -264,6 +264,7 @@ def satisfy(
     - if one position selected: `[pidx=? / cidx=? / area=? / active=(true|false)]` to
         check if position fulfills the situation. for area names, they are case
         insensitive. can use multiple times, and all of them should pass.
+        You can also use player and character to replace pidx and cidx.
     - if two position selected (i.e. `both`), `[(pidx|cidx|area|id)=(same|diff)]` to
         compare two positions are same or not. can use multiple times, and all of them
         should pass.

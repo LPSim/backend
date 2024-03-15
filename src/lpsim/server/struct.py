@@ -156,6 +156,7 @@ class ObjectPosition(BaseModel):
         - if one position selected: `[pidx=? / cidx=? / area=? / active=(true|false)]`
             to check if position fulfills the situation. for area names, they are case
             insensitive. can use multiple times, and all of them should pass.
+            You can also use player and character to replace pidx and cidx.
         - if two position selected (i.e. `both`), `[(pidx|cidx|area|id)=(same|diff)]`
             to compare two positions are same or not. can use multiple times, and all of
             them should pass.

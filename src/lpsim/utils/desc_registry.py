@@ -93,11 +93,30 @@ def update_desc(desc_dict: Dict[str, DescDictType]) -> None:
     _merge_dict(desc_dict, _desc_dict)
 
 
-def desc_exist(type: str, name: str, version: str) -> bool:
+def desc_exist(
+    type: str,
+    name: str,
+    version: str,
+    check_id: bool | None = None,
+    check_image_path: bool | None = None,
+) -> bool:
     """
     Check if the description of the class exists.
+    Also check if id and image_path exists if check_id and check_image_path is not None,
+    when not satisfied for these two, a warning message will be shown, but will not
+    change the return.
     """
     full_name = f"{type}/{name}"
+    if full_name not in _desc_dict:
+        return False
+    if check_id is not None:
+        if ("id" in _desc_dict[full_name]) != check_id:
+            w = "with" if check_id else "without"
+            logging.warning(f"expected {full_name} {w} id, but not satisfied")
+    if check_image_path is not None:
+        if ("image_path" in _desc_dict[full_name]) != check_image_path:
+            w = "with" if check_image_path else "without"
+            logging.warning(f"expected {full_name} {w} image_path, but not satisfied")
     return (
         full_name in _desc_dict
         and "descs" in _desc_dict[full_name]

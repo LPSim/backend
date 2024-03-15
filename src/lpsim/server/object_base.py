@@ -18,7 +18,7 @@ from typing import List, Literal, Any, Tuple
 from pydantic import validator
 from .action import Actions, ActionTypes, CreateObjectAction, RemoveCardAction
 from .consts import ObjectType, ObjectPositionType, CostLabels, PlayerActionLabels
-from .modifiable_values import ModifiableValueTypes
+from .modifiable_values import CostValue, ModifiableValueTypes
 from .struct import DeckRestriction, MultipleObjectPosition, ObjectPosition, Cost
 
 
@@ -131,6 +131,64 @@ class ObjectBase(BaseModel):
         If allow_multiple is False, when multiple objects are found, raise error.
         """
         return query_one(self.position, match, command, allow_multiple)
+
+    """
+    Utility functions that many objects may use and have relaively complex logic, so
+    define here and can be called by object.
+    TODO: If some logic is restricted to specified base class, put here or under that 
+    base class?
+    """
+
+    def _check_value_self_skill_or_talent(
+        self,
+        value: CostValue,
+        match: Any,
+        skill_cost_label: int = (
+            CostLabels.ELEMENTAL_SKILL.value
+            | CostLabels.NORMAL_ATTACK.value
+            | CostLabels.ELEMENTAL_BURST.value
+        ),
+    ) -> bool:
+        """
+        Check whether this object is located on a character, and value is self use
+        skill or equip talent to self. This mainly used by artifacts and character
+        status.
+
+        Args:
+            value (CostValue): The value to check.
+            match (Any): The match object.
+            skill_cost_label (int): The skill label to check. Defaults to
+                accept all three types of skills, i.e. `CostLabels.ELEMENTAL_SKILL.value
+                | CostLabels.NORMAL_ATTACK.value | CostLabels.ELEMENTAL_BURST.value`.
+        """
+        if self.position.area not in [
+            ObjectPositionType.CHARACTER,
+            ObjectPositionType.SKILL,
+            ObjectPositionType.CHARACTER_STATUS,
+        ]:
+            # self position not right
+            return False
+        label = value.cost.label
+        if label & (skill_cost_label | CostLabels.TALENT.value) == 0:
+            # no label match
+            return False
+        position = value.position
+        if self.position.satisfy(
+            "both player=same character=same and target area=skill",
+            target=position,
+        ):
+            # self use skill
+            return True
+        if self.position.satisfy(
+            "both player=same and target area=hand", target=position
+        ):
+            # is hand card, should be talent
+            card = match.get_object(position)
+            assert card is not None
+            character = self.query_one(match, "self")  # self returns character
+            assert character is not None
+            return card.character_name == character.name
+        return False
 
 
 class CardBase(ObjectBase):

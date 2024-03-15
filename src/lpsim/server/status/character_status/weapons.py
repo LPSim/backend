@@ -6,7 +6,7 @@ from ...action import RemoveObjectAction
 
 from ...event import MoveObjectEventArguments, UseSkillEventArguments
 
-from ...consts import CostLabels, IconType, ObjectPositionType
+from ...consts import CostLabels, IconType
 
 from ...modifiable_values import CostValue
 from .base import RoundCharacterStatus, ShieldCharacterStatus
@@ -40,31 +40,10 @@ class KingsSquire_4_0(RoundCharacterStatus):
         """
         If self use elemental skill, or equip talent, cost -2.
         """
-        label = value.cost.label
-        if (
-            label & (CostLabels.ELEMENTAL_SKILL.value | CostLabels.TALENT.value) == 0
-        ):  # no label match
+        if not self._check_value_self_skill_or_talent(
+            value, match, CostLabels.ELEMENTAL_SKILL.value
+        ):
             return value
-        position = value.position
-        if position.player_idx != self.position.player_idx:
-            # not same player
-            return value
-        assert self.position.character_idx != -1
-        if position.area == ObjectPositionType.SKILL:
-            # cost from character
-            if position.character_idx != self.position.character_idx:
-                # not same character
-                return value
-        else:
-            # cost from hand card, is a talent card
-            character = match.player_tables[self.position.player_idx].characters[
-                self.position.character_idx
-            ]
-            for card in match.player_tables[self.position.player_idx].hands:
-                if card.id == value.position.id:
-                    if card.character_name != character.name:
-                        # talent card not for this character
-                        return value
         # decrease cost
         assert self.usage > 0
         decrease_result = [
