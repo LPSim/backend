@@ -1,28 +1,42 @@
-from typing import Dict, List, Literal
-from lpsim.server.action import CreateDiceAction, DrawCardAction
-from lpsim.server.card.support.items import RoundEffectItemBase
+from typing import Any, Dict, List, Literal
+from lpsim.server.action import (
+    Actions,
+    CreateDiceAction,
+    DrawCardAction,
+    RemoveObjectAction,
+)
+from lpsim.server.card.support.base import UsageWithRoundRestrictionSupportBase
+from lpsim.server.card.support.items import ItemBase
 from lpsim.server.consts import DieColor, IconType, PlayerActionLabels
-from lpsim.server.event import ActionEndEventArguments
+from lpsim.server.event import ActionEndEventArguments, RoundPrepareEventArguments
 from lpsim.server.match import Match
 from lpsim.server.struct import Cost
 from lpsim.utils.class_registry import register_class
 from lpsim.utils.desc_registry import DescDictType
 
 
-class Lumenstonedjuvant_4_5(RoundEffectItemBase):
+class Lumenstonedjuvant_4_5(ItemBase, UsageWithRoundRestrictionSupportBase):
     name: Literal["Lumenstone Adjuvant"] = "Lumenstone Adjuvant"
     version: Literal["4.5"] = "4.5"
     cost: Cost = Cost(same_dice_number=2)
-    max_usage_per_round: int = 0
+    max_usage_one_round: int = 1
+    usage: int = 3
+    counter: int = 0
     icon_type: IconType = IconType.COUNTER
+
+    def event_handler_ROUND_PREPARE(
+        self, event: RoundPrepareEventArguments, match: Any
+    ) -> List[Actions]:
+        self.counter = 0
+        return super().event_handler_ROUND_PREPARE(event, match)
 
     def event_handler_ACTION_END(
         self, event: ActionEndEventArguments, match: Match
-    ) -> List[CreateDiceAction | DrawCardAction]:
+    ) -> List[CreateDiceAction | DrawCardAction | RemoveObjectAction]:
         """
         When used 3 cards, create 1 omni die and draw one card.
         """
-        if self.usage >= 3:
+        if not self.has_usage():
             return []
         if self.position.not_satisfy(
             "source area=support and both player=same id=diff", event.action.position
@@ -30,9 +44,10 @@ class Lumenstonedjuvant_4_5(RoundEffectItemBase):
             return []
         if event.action.action_label & PlayerActionLabels.CARD != 0:
             # is card action
-            self.usage += 1
-        if self.usage < 3:
+            self.counter += 1
+        if self.counter < 3:
             return []
+        self.use()
         return [
             CreateDiceAction(
                 player_idx=self.position.player_idx,
@@ -44,7 +59,7 @@ class Lumenstonedjuvant_4_5(RoundEffectItemBase):
                 number=1,
                 draw_if_filtered_not_enough=True,
             ),
-        ]
+        ] + self.check_should_remove()
 
 
 desc: Dict[str, DescDictType] = {

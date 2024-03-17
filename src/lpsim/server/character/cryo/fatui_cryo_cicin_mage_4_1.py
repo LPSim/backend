@@ -1,15 +1,12 @@
 from typing import Any, List, Literal
+from pydantic import PrivateAttr
 
 from ....utils.class_registry import register_class
 from ...modifiable_values import DamageValue
-
 from ...summon.base import AttackerSummonBase
-
 from ...event import ReceiveDamageEventArguments, SkillEndEventArguments
-
 from ...action import Actions, ChangeObjectUsageAction, MakeDamageAction
 from ...struct import Cost, ObjectPosition
-
 from ...consts import (
     DamageElementalType,
     DamageType,
@@ -42,6 +39,9 @@ class CryoCicins_4_1(AttackerSummonBase):
     damage: int = 1
     renew_type: Literal["ADD"] = "ADD"
     decrease_only_self_damage: bool = True
+    _character_name: Literal["Fatui Cryo Cicin Mage"] = PrivateAttr(
+        "Fatui Cryo Cicin Mage"
+    )
 
     over_maximum: bool = False
 
@@ -60,7 +60,7 @@ class CryoCicins_4_1(AttackerSummonBase):
         assert event.action.position.area == ObjectPositionType.SKILL
         characters = match.player_tables[self.position.player_idx].characters
         character = characters[event.action.position.character_idx]
-        if character.name != "Fatui Cryo Cicin Mage":
+        if character.name != self._character_name:
             # not Fatui Cryo Cicin Mage, do nothing
             self.over_maximum = False
             return []
@@ -112,7 +112,7 @@ class CryoCicins_4_1(AttackerSummonBase):
         target = match.player_tables[
             event.final_damage.target_position.player_idx
         ].characters[event.final_damage.target_position.character_idx]
-        if self.decrease_only_self_damage and target.name != "Fatui Cryo Cicin Mage":
+        if self.decrease_only_self_damage and target.name != self._character_name:
             # only decrease in self damage
             return []
         return [ChangeObjectUsageAction(object_position=self.position, change_usage=-1)]
