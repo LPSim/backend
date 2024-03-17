@@ -44,7 +44,6 @@ class ArcaneLegendBase(EventCardBase):
         """
         Consume arcane legend.
         """
-        assert target is None
         return [ConsumeArcaneLegendAction(player_idx=self.position.player_idx)]
 
     def event_handler_USE_CARD(
