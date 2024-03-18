@@ -118,19 +118,18 @@ class StillPhotoComprehensiveConfirmation(ElementalBurstBase):
     )
 
     def get_actions(self, match: Match) -> List[Actions]:
-        ret: List[Actions] = [self.charge_self(-self.cost.charge)]
-        heal_action = MakeDamageAction(
-            damage_value_list=[],
-        )
+        ret: List[Actions] = super().get_actions(match)
+        damage_action = ret[1]
+        assert damage_action.type == ActionTypes.MAKE_DAMAGE
         characters = self.query(match, "our character is_alive=true")
         assert len(characters) > 0
         for character in characters:
-            heal_action.damage_value_list.append(
+            damage_action.damage_value_list.append(
                 DamageValue.create_heal(
                     self.position, character.position, -1, self.cost
                 )
             )
-        ret.append(heal_action)
+        ret.append(damage_action)
         ret.append(self.create_summon("Newsflash Field"))
         return ret
 
@@ -228,7 +227,7 @@ character_descs: Dict[str, DescDictType] = {
     "CHARACTER/Charlotte": {
         "names": {"en-US": "Charlotte", "zh-CN": "夏洛蒂"},
         "descs": {"4.5": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Avatar_Charlotte.png",  # noqa: E501
+        "image_path": "cardface/Char_Avatar_Charlotte.png",  # noqa: E501
         "id": 1110,
     },
     "SKILL_Charlotte_NORMAL_ATTACK/Cool-Color Capture": {
@@ -278,6 +277,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点冰元素伤害，治疗我方出战角色1点。\n可用次数：2",
             }
         },
+        "image_path": "cardface/Summon_Charlotte.png",
     },
     "TALENT_Charlotte/A Summation of Interest": {
         "names": {"en-US": "A Summation of Interest", "zh-CN": "以有趣相关为要义"},
@@ -287,7 +287,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为夏洛蒂时，装备此牌。\n夏洛蒂装备此牌后，立刻使用一次取景·冰点构图法。\n装备有此牌的夏洛蒂在场时，我方角色进行普通攻击后：如果对方场上有角色附属有瞬时剪影，则治疗我方出战角色2点。（每回合1次）\n（牌组中包含夏洛蒂，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_Charlotte.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_Charlotte.png",  # noqa: E501
         "id": 211101,
     },
 }

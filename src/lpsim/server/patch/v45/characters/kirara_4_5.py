@@ -243,7 +243,7 @@ character_descs: Dict[str, DescDictType] = {
     "CHARACTER/Kirara": {
         "names": {"en-US": "Kirara", "zh-CN": "绮良良"},
         "descs": {"4.5": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Avatar_Momoka.png",  # noqa: E501
+        "image_path": "cardface/Char_Avatar_Momoka.png",  # noqa: E501
         "id": 1707,
     },
     "SKILL_Kirara_NORMAL_ATTACK/Boxcutter": {
@@ -269,6 +269,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "绮良良为出战角色时，我方切换角色后：造成1点草元素伤害，抓1张牌。\n可用次数：1（可叠加，最多叠加到2次）",  # noqa: E501
             }
         },
+        "image_path": "status/Momoka_S.png",
     },
     "TEAM_STATUS/Shield of Safe Transport": {
         "names": {"en-US": "Shield of Safe Transport", "zh-CN": "安全运输护盾"},
@@ -296,6 +297,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "所在阵营打出2张行动牌后：对所在阵营的出战角色造成1点草元素伤害。\n可用次数：2",  # noqa: E501
             }
         },
+        "image_path": "status/Debuff_Momoka_E.png",
     },
     "TALENT_Kirara/Countless Sights to See": {
         "names": {"en-US": "Countless Sights to See", "zh-CN": "沿途百景会心"},
@@ -305,7 +307,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为绮良良时，装备此牌。\n绮良良装备此牌后，立刻使用一次呜喵町飞足。\n装备有此牌的绮良良为出战角色，我方进行「切换角色」行动时：少花费1个元素骰。（每回合1次）\n（牌组中包含绮良良，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_Momoka.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_Momoka.png",  # noqa: E501
         "id": 217071,
     },
 }

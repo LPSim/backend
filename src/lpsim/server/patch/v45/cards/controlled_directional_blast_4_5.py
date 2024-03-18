@@ -49,7 +49,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "对方支援区和召唤物区的卡牌数量总和至少为4时，才能打出：双方所有召唤物的可用次数-1。",
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Event_Event_Kexueyuan.png",  # noqa: E501
+        "image_path": "cardface/Event_Event_Kexueyuan.png",  # noqa: E501
         "id": 332030,
     },
 }

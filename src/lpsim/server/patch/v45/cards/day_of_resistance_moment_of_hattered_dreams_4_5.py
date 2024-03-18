@@ -89,7 +89,7 @@ desc: dict[str, DescDictType] = {
                 "zh-CN": "本回合中，目标我方角色受到的伤害-1。（最多生效4次）\n（整局游戏只能打出一张「秘传」卡牌；这张牌一定在你的起始手牌中）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Event_Event_Fankang.png",  # noqa: E501
+        "image_path": "cardface/Event_Event_Fankang.png",  # noqa: E501
         "id": 330007,
     },
 }

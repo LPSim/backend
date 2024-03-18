@@ -313,7 +313,7 @@ character_descs: Dict[str, DescDictType] = {
     "CHARACTER/Fatui Electro Cicin Mage": {
         "names": {"en-US": "Fatui Electro Cicin Mage", "zh-CN": "愚人众·雷萤术士"},
         "descs": {"4.5": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Monster_FatuusSummoner.png",  # noqa: E501
+        "image_path": "cardface/Char_Monster_FatuusSummoner.png",  # noqa: E501
         "id": 2404,
     },
     "SKILL_Fatui Electro Cicin Mage_NORMAL_ATTACK/Hurtling Bolts": {
@@ -343,6 +343,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：造成1点雷元素伤害。\n可用次数：3\n\n敌方累计打出3张行动牌后：此牌可用次数+1。（最多叠加到3）\n愚人众·雷萤术士受到元素反应伤害后：此牌可用次数-1。",  # noqa: E501
             }
         },
+        "image_path": "cardface/Summon_FatuusSummoner.png",
     },
     "SKILL_Fatui Electro Cicin Mage_ELEMENTAL_BURST/Thundering Shield": {
         "names": {"en-US": "Thundering Shield", "zh-CN": "霆雷之护"},
@@ -388,7 +389,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为愚人众·雷萤术士时，装备此牌。\n愚人众·雷萤术士装备此牌后，立刻使用一次雾虚之召。\n装备有此牌的愚人众·雷萤术士在场时，我方选择行动前：如果雷萤的可用次数至少为3，则雷萤立刻造成1点雷元素伤害。（需消耗可用次数，每回合1次）\n（牌组中包含愚人众·雷萤术士，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_FatuusSummoner.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_FatuusSummoner.png",  # noqa: E501
         "id": 224041,
     },
 }

@@ -89,7 +89,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "角色造成的伤害+1。\n角色受到伤害或治疗后：如果本回合已受到伤害或治疗累计2次，则角色本回合中下次造成的伤害+2。（每回合1次）\n（「法器」角色才能装备。角色最多装备1件「武器」）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Weapon_Wanshiliuyongdadian.png",  # noqa: E501
+        "image_path": "cardface/Modify_Weapon_Wanshiliuyongdadian.png",  # noqa: E501
         "id": 311108,
     },
 }

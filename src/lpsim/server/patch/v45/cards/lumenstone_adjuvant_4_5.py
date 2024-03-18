@@ -71,7 +71,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "我方打出行动牌后：如果此牌在场期间本回合中我方已打出3张行动牌，则抓1张牌并生成1个万能元素骰。（每回合1次）\n可用次数：3",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_Prop_Liumingshi.png",  # noqa: E501
+        "image_path": "cardface/Assist_Prop_Liumingshi.png",  # noqa: E501
         "id": 323007,
     },
 }

@@ -49,7 +49,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "结束阶段：如果所附属角色在后台，则此牌累积1点「报酬」。（最多累积2点）\n对角色打出「天赋」或角色使用「元素战技」时：此牌每有1点「报酬」，就将其消耗，以少花费1个元素骰。\n（角色最多装备1件「圣遗物」）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Artifact_HuangjinjutuanXiaojian.png",  # noqa: E501
+        "image_path": "cardface/Modify_Artifact_HuangjinjutuanXiaojian.png",  # noqa: E501
         "id": 312025,
     },
 }

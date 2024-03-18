@@ -120,7 +120,7 @@ desc: Dict[str, DescDictType] = {
                 "zh-CN": "我方出战角色受到伤害或治疗后：此牌累积1点「禁令」。（最多累积到4点）\n行动阶段开始时：如果此牌已有4点「禁令」，则消耗4点，在对方场上生成严格禁令。（本回合中打出的1张事件牌无效）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Assist_Location_BideBao.png",  # noqa: E501
+        "image_path": "cardface/Assist_Location_BideBao.png",  # noqa: E501
         "id": 321018,
     },
 }

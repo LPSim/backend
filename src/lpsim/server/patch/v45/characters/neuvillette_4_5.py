@@ -233,7 +233,7 @@ character_descs: Dict[str, DescDictType] = {
     "CHARACTER/Neuvillette": {
         "names": {"en-US": "Neuvillette", "zh-CN": "那维莱特"},
         "descs": {"4.5": {"en-US": "", "zh-CN": ""}},
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Char_Avatar_Neuvillette.png",  # noqa: E501
+        "image_path": "cardface/Char_Avatar_Neuvillette.png",  # noqa: E501
         "id": 1210,
     },
     "CHARACTER_STATUS/Heir to the Ancient Sea's Authority": {
@@ -256,7 +256,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "战斗行动：我方出战角色为那维莱特时，装备此牌。\n那维莱特装备此牌后，立刻使用一次如水从平。\n我方角色引发水元素相关反应后：装备有此牌的那维莱特接下来2次造成的伤害+1。\n（牌组中包含那维莱特，才能加入牌组）",  # noqa: E501
             }
         },
-        "image_path": "https://api.ambr.top/assets/UI/gcg/UI_Gcg_CardFace_Modify_Talent_Neuvillette.png",  # noqa: E501
+        "image_path": "cardface/Modify_Talent_Neuvillette.png",  # noqa: E501
         "id": 212101,
     },
     "SKILL_Neuvillette_NORMAL_ATTACK/As Water Seeks Equilibrium": {
@@ -282,6 +282,7 @@ character_descs: Dict[str, DescDictType] = {
                 "zh-CN": "那维莱特进行普通攻击后：治疗角色2点，然后角色准备技能：衡平推裁。\n可用次数：1（可叠加，最多叠加到3次）",  # noqa: E501
             }
         },
+        "image_path": "status/Neuvillette_S.png",
     },
     "SKILL_Neuvillette_ELEMENTAL_BURST/O Tides, I Have Returned": {
         "names": {"en-US": "O Tides, I Have Returned", "zh-CN": "潮水啊，我已归来"},
