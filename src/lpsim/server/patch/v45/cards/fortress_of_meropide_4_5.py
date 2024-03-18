@@ -80,9 +80,13 @@ class FortressOfMeropide_4_5(LocationBase):
         self, event: RoundPrepareEventArguments, match: Match
     ) -> List[CreateObjectAction]:
         """
-        When usage reach max, create status
+        When usage reach max, and status not exist, create status
         """
         if self.usage < self._max_usage:
+            return []
+        target = self.query_one(match, f'opponent team_status "name={self.name}"')
+        if target is not None:
+            # status already exist
             return []
         self.usage = 0
         return [
