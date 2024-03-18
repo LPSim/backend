@@ -10,7 +10,7 @@ from tests.utils_for_test import (
 
 
 def template():
-    json_fname = "electro_cicin_mage_2_v45.json"
+    json_fname = "charlotte_v45.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
     match, agent_0, agent_1 = read_from_log_json(json_path)
     # backup json
@@ -46,9 +46,9 @@ def template():
             1,  # hp
             2,  # summon
             # 3,  # support
-            4,  # team status
+            # 4,  # team status
             5,  # character status
-            6,  # hands
+            # 6,  # hands
             # 7,  # dice
             # 8,  # charge
             # 9,  # summon element

@@ -129,7 +129,6 @@ class StillPhotoComprehensiveConfirmation(ElementalBurstBase):
                     self.position, character.position, -1, self.cost
                 )
             )
-        ret.append(damage_action)
         ret.append(self.create_summon("Newsflash Field"))
         return ret
 
