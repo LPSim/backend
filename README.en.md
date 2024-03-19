@@ -26,10 +26,8 @@ related to miHoYo products.
 
 ## Progress
 
-All characters and cards with their balance changes until 4.3 are done.
-
-:sparkles: NEW: 4.3 characters and cards, as well as balance changes are 
-implemented. 
+:sparkles: 4.5 characters and cards, as well as balance changes are 
+implemented. :sparkles:
 
 ## Feature
 

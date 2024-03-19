@@ -7,6 +7,35 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.5.0] - 2024-03-19
+
+### Added
+- #108 Version 4.5 cards and balance changes are implemented.
+  - Characters and their talents:
+    - Neuvillette
+    - Kirara
+    - Charlotte
+    - Fatui Electro Cicin Mage
+  - Equipment
+    - Golden Troupe's Reward
+  - Action Cards
+    - Controlled Directional Blast
+    - Day of Resistance: Moment of Hattered Dreams
+    - Fortress of Meropide
+    - Lumenstone Adjuvant
+    - Tome of the Eternal Flow
+  - Balance Changes
+    - Gilded Dreams
+    - Jade Chamber
+    - Knights of Favonius Library
+- #107 Utility functions, `ObjectBase._check_value_self_skill_or_talent`,
+  `DamageValue.create_heal`, and `DamageValue.create_element_application` are added.
+  They are used by many objects, define public functions to avoid code duplication.
+- #107 Add desc validation about image_path and id. For objects that should have 
+  card face, or status that their type is `OTHER`, they must contain image_path; 
+  otherwise should not contain image_path. For objects that should have id, e.g. characters, equipment, summons, etc., they must contain id; otherwise should not 
+  contain id.
+
 ## [0.4.4.1] - 2024-02-24
 
 ### Added
@@ -513,7 +542,8 @@ Happy New Year 2024! New year comes in coding time!
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.4.1...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.5.0...HEAD
+[0.4.5.0]: https://github.com/LPSim/backend/releases/tag/v0.4.5.0
 [0.4.4.1]: https://github.com/LPSim/backend/releases/tag/v0.4.4.1
 [0.4.4.0]: https://github.com/LPSim/backend/releases/tag/v0.4.4.0
 [0.4.3.3]: https://github.com/LPSim/backend/releases/tag/v0.4.3.3
