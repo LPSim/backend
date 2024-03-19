@@ -163,7 +163,7 @@ def do_log_tests(
                 c.hp = c.max_hp = hp_modify
     # add omnipotent guide
     if omnipotent:
-        set_16_omni(match)
+        match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
     match.start()
     match.step()
     while True:

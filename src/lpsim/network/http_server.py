@@ -20,7 +20,7 @@ from ..server.deck import Deck
 from ..agents import InteractionAgent
 from .utils import get_new_match
 from ..utils.deck_code import deck_code_data
-from .. import __version_tuple__, __version__  # type: ignore
+from .__version__ import __version_tuple__, __version__, __frontend_version__
 
 
 class EndpointFilter(logging.Filter):
@@ -180,11 +180,13 @@ class HTTPServer:
             Return:
                 version: version string
                 version_tuple: version tuple
+                support_version: support version of frontend
                 info: information of the server
             """
             return {
                 "version": __version__,
                 "version_tuple": __version_tuple__,
+                "support_version": __frontend_version__,
                 "info": {
                     "class": "HTTPServer",
                 },

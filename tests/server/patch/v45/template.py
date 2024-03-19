@@ -10,7 +10,7 @@ from tests.utils_for_test import (
 
 
 def template():
-    json_fname = "sayu.json"
+    json_fname = "charlotte_v45.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
     match, agent_0, agent_1 = read_from_log_json(json_path)
     # backup json
