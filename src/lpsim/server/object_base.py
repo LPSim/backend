@@ -143,11 +143,7 @@ class ObjectBase(BaseModel):
         self,
         value: CostValue,
         match: Any,
-        skill_cost_label: int = (
-            CostLabels.ELEMENTAL_SKILL.value
-            | CostLabels.NORMAL_ATTACK.value
-            | CostLabels.ELEMENTAL_BURST.value
-        ),
+        skill_cost_label: int = CostLabels.SKILLS.value,
     ) -> bool:
         """
         Check whether this object is located on a character, and value is self use
