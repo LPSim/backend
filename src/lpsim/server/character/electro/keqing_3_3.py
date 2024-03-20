@@ -55,8 +55,8 @@ class StellarRestoration(ElementalSkillBase):
             if card.name == "Lightning Stiletto":
                 found_stiletto = True
                 break
-        if not found_stiletto and len(hands) < match.config.max_hand_size:
-            # not found stiletto and hand not full
+        if not found_stiletto:
+            # not found stiletto
             position = ObjectPosition(
                 player_idx=self.position.player_idx, area=ObjectPositionType.HAND, id=-1
             )
