@@ -2390,9 +2390,18 @@ class Match(BaseModel):
             target_list = renew_target_list = table.summons
             target_name = "summon"
         elif action.object_position.area == ObjectPositionType.HAND:
-            assert (
-                len(table.hands) < self.config.max_hand_size
-            ), "Cannot create hand card when hand is full."
+            if len(table.hands) >= self.config.max_hand_size:
+                logging.warning(
+                    f"Player {player_idx} "
+                    f"tried to create new hand {action.object_name}, "
+                    "but hand size is already maximum."
+                )
+                return [
+                    CreateObjectEventArguments(
+                        action=action,
+                        create_result="FAIL",
+                    )
+                ]
             target_class = CardBase
             target_list = renew_target_list = table.hands
             target_name = "hand"

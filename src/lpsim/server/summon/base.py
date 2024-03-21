@@ -449,8 +449,8 @@ class AttackAndGenerateStatusSummonBase(AttackerSummonBase):
         """
         When created object is self, and not renew, also create teams status
         """
-        if event.create_result == "RENEW":
-            # renew, do nothing
+        if event.create_result != "NEW":
+            # not new, do nothing
             return []
         if event.action.object_name == self.name and self.position.check_position_valid(
             event.action.object_position, match, player_idx_same=True, area_same=True

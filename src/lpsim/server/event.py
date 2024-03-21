@@ -279,7 +279,7 @@ class CreateObjectEventArguments(EventArgumentsBase):
 
     type: Literal[ActionTypes.CREATE_OBJECT] = ActionTypes.CREATE_OBJECT
     action: CreateObjectAction
-    create_result: Literal["NEW", "RENEW"]
+    create_result: Literal["NEW", "RENEW", "FAIL"]
 
 
 # 20
