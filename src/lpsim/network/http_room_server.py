@@ -181,7 +181,7 @@ class HTTPRoomServer:
                 "version_tuple": __version_tuple__,
                 "support_version": __frontend_version__,
                 "info": {
-                    "class": "HTTPServer",
+                    "class": "HTTPRoomServer",
                 },
             }
 
