@@ -72,6 +72,7 @@ class RhodeiaElementSkill(RES_4_2):
                     object_position=target_position,
                     object_arguments={"version": self.version},
                     number=self._summon_number,
+                    replace=False,
                 )
             )
         elif (
@@ -85,6 +86,7 @@ class RhodeiaElementSkill(RES_4_2):
                     object_position=target_position,
                     object_arguments={"version": self.version},
                     number=self._summon_number,
+                    replace=False,
                 )
             )
         else:
@@ -95,6 +97,7 @@ class RhodeiaElementSkill(RES_4_2):
                     object_position=target_position,
                     object_arguments={"version": self.version},
                     number=len(unexist_names) - 1,
+                    replace=False,
                 )
             )
             ret.append(
@@ -103,6 +106,7 @@ class RhodeiaElementSkill(RES_4_2):
                     object_position=target_position,
                     object_arguments={"version": self.version},
                     number=self._summon_number - len(unexist_names) + 1,
+                    replace=False,
                 )
             )
         ret.append(self.charge_self(1))

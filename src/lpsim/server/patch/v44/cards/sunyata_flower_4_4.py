@@ -1,7 +1,13 @@
 from typing import Any, Dict, List, Literal, Type
 from pydantic import PrivateAttr
 
-from ....action import ActionTypes, Actions, CreateObjectAction, RemoveObjectAction
+from ....action import (
+    ActionTypes,
+    Actions,
+    CreateObjectAction,
+    CreateRandomObjectAction,
+    RemoveObjectAction,
+)
 from .....utils.class_registry import get_instance, register_class
 from ....event import GameStartEventArguments, MoveObjectEventArguments
 from ....modifiable_values import CostValue
@@ -109,30 +115,30 @@ class SunyataFlower_4_4(EventCardBase):
 
     def get_actions(
         self, target: ObjectPosition | None, match: Match
-    ) -> List[RemoveObjectAction | CreateObjectAction]:
+    ) -> List[RemoveObjectAction | CreateObjectAction | CreateRandomObjectAction]:
         """
         remove target, and generate 2 random support cards, and create status
         """
         assert target is not None
-        ret: List[RemoveObjectAction | CreateObjectAction] = [
-            RemoveObjectAction(object_position=target)
-        ]
+        ret: List[
+            RemoveObjectAction | CreateObjectAction | CreateRandomObjectAction
+        ] = [RemoveObjectAction(object_position=target)]
         candidate_list = self._get_candidate_list(match)
-        for i in range(2):
-            random_target = candidate_list[int(match._random() * len(candidate_list))]
-            position = ObjectPosition(
-                player_idx=self.position.player_idx, area=ObjectPositionType.HAND, id=-1
+        position = ObjectPosition(
+            player_idx=self.position.player_idx, area=ObjectPositionType.HAND, id=-1
+        )
+        args = {}
+        if self._accept_version is not None:
+            args["version"] = self._accept_version
+        ret.append(
+            CreateRandomObjectAction(
+                object_names=candidate_list,
+                object_position=position,
+                object_arguments=args,
+                number=2,
+                replace=True,
             )
-            args = {}
-            if self._accept_version is not None:
-                args["version"] = self._accept_version
-            ret.append(
-                CreateObjectAction(
-                    object_name=random_target,
-                    object_position=position,
-                    object_arguments=args,
-                )
-            )
+        )
         ret.append(
             CreateObjectAction(
                 object_name=self.name,
