@@ -33,6 +33,9 @@ dev = [
     "pytest-xdist", 
     "pyright",
 ]
+rl = [
+    "pettingzoo",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/LPSim/backend"
