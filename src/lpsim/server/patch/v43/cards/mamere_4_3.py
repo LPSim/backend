@@ -108,6 +108,7 @@ class Mamere_4_3(CompanionBase, UsageWithRoundRestrictionSupportBase):
                     object_position=position,
                     object_arguments=args,
                     number=1,
+                    replace=True,
                 )
             )
             res += self.check_should_remove()

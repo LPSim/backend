@@ -565,6 +565,7 @@ class AbyssalSummons_3_3(NationResonanceCardBase):
                 ),
                 object_arguments={},
                 number=1,
+                replace=False,
             )
         ]
 
@@ -609,6 +610,7 @@ class FatuiConspiracy_3_7(NationResonanceCardBase):
                 ),
                 object_arguments={},
                 number=1,
+                replace=False,
             )
         ]
 

@@ -312,7 +312,8 @@ class CreateRandomObjectAction(ActionBase):
     """
     Action for creating random objects. A list of names are provided, and
     `number` of them will be created by uniformly selecting from the list and doing
-    `CreateObjectAction` for each of them.
+    `CreateObjectAction` for each of them. Replace means whether the sample is with or
+    without replacement. True meaning that a value of a can be selected multiple times.
     NOTE: some actions will not generate existing objects, e.g. elemental skill of
     Rhodeia will not summoning existing objects unless full. This action will not deal
     with such situation, you need to write logic to filter out existing objects before
@@ -324,15 +325,16 @@ class CreateRandomObjectAction(ActionBase):
     object_names: List[str]
     object_arguments: dict
     number: int
+    replace: bool
 
     def select_by_idx(
         self, idx: int
     ) -> Tuple[CreateObjectAction, "CreateRandomObjectAction"]:
         """
         Select an object name by index and create a `CreateObjectAction` for it.
-        It will also return a new `CreateRandomObjectAction` with the same
-        arguments but with the `number` reduced by 1 and the selected object
-        name removed from the list.
+        It will also return a new `CreateRandomObjectAction`. If replace is False, with
+        the same arguments but with the `number` reduced by 1 and the selected object
+        name removed from the list. If replace is True, only number is decreased by 1.
 
         Returns:
             CreateObjectAction: The action for creating the object.
@@ -341,18 +343,29 @@ class CreateRandomObjectAction(ActionBase):
         """
         selected = self.object_names[idx]
         others = self.object_names[:idx] + self.object_names[idx + 1 :]
+        if self.replace:
+            ret_action = CreateRandomObjectAction(
+                object_position=self.object_position,
+                object_names=self.object_names,
+                object_arguments=self.object_arguments,
+                number=self.number - 1,
+                replace=True,
+            )
+        else:
+            ret_action = CreateRandomObjectAction(
+                object_position=self.object_position,
+                object_names=others,
+                object_arguments=self.object_arguments,
+                number=self.number - 1,
+                replace=False,
+            )
         return (
             CreateObjectAction(
                 object_position=self.object_position,
                 object_name=selected,
                 object_arguments=self.object_arguments,
             ),
-            CreateRandomObjectAction(
-                object_position=self.object_position,
-                object_names=others,
-                object_arguments=self.object_arguments,
-                number=self.number - 1,
-            ),
+            ret_action,
         )
 
 
