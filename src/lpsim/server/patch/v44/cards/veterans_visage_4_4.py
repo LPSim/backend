@@ -1,4 +1,6 @@
 from typing import Dict, List, Literal
+
+from lpsim.server.event import MoveObjectEventArguments
 from ....struct import Cost
 
 from .....utils.class_registry import register_class
@@ -6,7 +8,7 @@ from ....consts import ELEMENT_TO_DIE_COLOR, DamageType, ObjectPositionType
 from ....action import Actions, CreateDiceAction, DrawCardAction
 from ....match import Match
 from ....event import ReceiveDamageEventArguments
-from ....card.equipment.artifact.base import RoundEffectArtifactBase
+from ....card.equipment.artifact.base import ArtifactBase, RoundEffectArtifactBase
 from .....utils.desc_registry import DescDictType
 
 
@@ -15,6 +17,12 @@ class VeteransVisage_4_4(RoundEffectArtifactBase):
     version: Literal["4.4"] = "4.4"
     cost: Cost = Cost(any_dice_number=2)
     max_usage_per_round: int = 2
+
+    def event_handler_MOVE_OBJECT(
+        self, event: MoveObjectEventArguments, match: Match
+    ) -> List[Actions]:
+        # veteran's visage will not reset usage when moved
+        return ArtifactBase.event_handler_MOVE_OBJECT(self, event, match)
 
     def event_handler_RECEIVE_DAMAGE(
         self, event: ReceiveDamageEventArguments, match: Match
