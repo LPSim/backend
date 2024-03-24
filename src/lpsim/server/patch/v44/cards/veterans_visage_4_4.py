@@ -1,13 +1,11 @@
 from typing import Dict, List, Literal
 
-from lpsim.server.event import MoveObjectEventArguments
 from ....struct import Cost
-
 from .....utils.class_registry import register_class
 from ....consts import ELEMENT_TO_DIE_COLOR, DamageType, ObjectPositionType
 from ....action import Actions, CreateDiceAction, DrawCardAction
 from ....match import Match
-from ....event import ReceiveDamageEventArguments
+from ....event import ReceiveDamageEventArguments, MoveObjectEventArguments
 from ....card.equipment.artifact.base import ArtifactBase, RoundEffectArtifactBase
 from .....utils.desc_registry import DescDictType
 
