@@ -557,7 +557,7 @@ Happy New Year 2024! New year comes in coding time!
 - Test version to ensure release pipeline is working
 
 [Unreleased]: https://github.com/LPSim/backend/compare/v0.4.5.1...HEAD
-[0.4.5.1]: https://github.com/LPSim/backend/releases/tag/v0.4.5.0
+[0.4.5.1]: https://github.com/LPSim/backend/releases/tag/v0.4.5.1
 [0.4.5.0]: https://github.com/LPSim/backend/releases/tag/v0.4.5.0
 [0.4.4.1]: https://github.com/LPSim/backend/releases/tag/v0.4.4.1
 [0.4.4.0]: https://github.com/LPSim/backend/releases/tag/v0.4.4.0
