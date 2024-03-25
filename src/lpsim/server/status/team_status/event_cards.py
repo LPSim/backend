@@ -152,7 +152,9 @@ class LeaveItToMe_3_3(UsageTeamStatus):
     def value_modifier_COMBAT_ACTION(
         self, value: CombatActionValue, match: Any, mode: Literal["TEST", "REAL"]
     ) -> CombatActionValue:
-        assert self.usage > 0
+        if self.usage <= 0:
+            # no usage, do nothing
+            return value
         if not self.position.check_position_valid(
             value.position,
             match,
