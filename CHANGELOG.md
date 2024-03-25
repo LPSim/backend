@@ -7,6 +7,20 @@ of the game, and the last number is the patch version of this project.
 
 ## [Unreleased]
 
+## [0.4.5.1] - 2024-03-25
+
+### Changed
+- #104 `CreateRandomObjectAction` have new `replace` attribute, when it is true,
+  an object can be selected multiple times.
+
+### Fixed
+- Golden Troupe's Reward decrease cost of all skill types.
+- When generate card to hand with full hand will raise an error.
+- `HTTPRoomServer` info wrong in `/version`.
+- #106 `Blessing of the Divine Relic's Installation` will reset counter of 
+  `Veteran's Visage`.
+- #82 team status have higher event trigger priority than standby characters.
+
 ## [0.4.5.0] - 2024-03-19
 
 ### Added
@@ -542,7 +556,8 @@ Happy New Year 2024! New year comes in coding time!
 ### Added
 - Test version to ensure release pipeline is working
 
-[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.5.0...HEAD
+[Unreleased]: https://github.com/LPSim/backend/compare/v0.4.5.1...HEAD
+[0.4.5.1]: https://github.com/LPSim/backend/releases/tag/v0.4.5.0
 [0.4.5.0]: https://github.com/LPSim/backend/releases/tag/v0.4.5.0
 [0.4.4.1]: https://github.com/LPSim/backend/releases/tag/v0.4.4.1
 [0.4.4.0]: https://github.com/LPSim/backend/releases/tag/v0.4.4.0
