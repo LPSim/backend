@@ -1094,11 +1094,15 @@ class Match(BaseModel):
         Get all objects in the match by `self.table.get_object_lists`.
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
-        2. objects belongs to character goes first
-            2.1. active character first, otherwise the default order.
-            2.2. for one character, order is weapon, artifact, talent, status.
-            2.3. for status, order is their index in status list, i.e.
-                generated time.
+        2. objects belongs to character and team status goes first
+            2.1. active character first, then next, next ... until all alive
+                characters are included.
+            2.2. for one character, order is character self, its skills, other objects
+                attached to the character.
+            2.3. status and equipment have no priority, just based on the time when they
+                are attached to the character.
+            2.4. specifically, team status has lower priority of active character and
+                its attached objects, but higher priority of other characters.
         3. for other objects, order is: summon, support, hand, dice, deck.
             3.1. all other objects in same region are sorted by their index in
                 the list.
@@ -1491,20 +1495,28 @@ class Match(BaseModel):
         )
         cost_value = self._modify_cost_value(cost_value, "REAL")
         actions.append(SwitchCharacterAction.from_response(response))
-        actions.append(
-            ActionEndAction(
-                action_label=PlayerActionLabels.SWITCH.value,
-                position=ObjectPosition(
-                    player_idx=response.player_idx,
-                    character_idx=response.request.active_character_idx,
-                    area=ObjectPositionType.CHARACTER,
-                    id=self.player_tables[response.player_idx]
-                    .characters[response.request.active_character_idx]
-                    .id,
-                ),
-                do_combat_action=True,
-            )
+        end_action = ActionEndAction(
+            action_label=PlayerActionLabels.SWITCH.value,
+            position=ObjectPosition(
+                player_idx=response.player_idx,
+                character_idx=response.request.active_character_idx,
+                area=ObjectPositionType.CHARACTER,
+                id=self.player_tables[response.player_idx]
+                .characters[response.request.active_character_idx]
+                .id,
+            ),
+            do_combat_action=True,
         )
+        # as after switching character, the active character may change, so
+        # we need to update combat action value before switching.
+        combat_action_value = CombatActionValue(
+            position=end_action.position,
+            action_label=end_action.action_label,
+            do_combat_action=end_action.do_combat_action,
+        )
+        self._modify_value(value=combat_action_value, mode="REAL")
+        end_action.do_combat_action = combat_action_value.do_combat_action
+        actions.append(end_action)
         self.event_controller.stack_actions(actions)
         self.requests = [
             x for x in self.requests if x.player_idx != response.player_idx

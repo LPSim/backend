@@ -197,12 +197,15 @@ class PlayerTable(BaseModel):
         Get all objects in the table.
         The order of objects should follow the game rule. The rules are:
         1. objects of `self.current_player` goes first
-        2. objects belongs to character goes first
+        2. objects belongs to character and team status goes first
             2.1. active character first, then next, next ... until all alive
                 characters are included.
-            2.2. for one character, order is weapon, artifact, talent, status.
-            2.3. for status, order is their index in status list, i.e.
-                generated time.
+            2.2. for one character, order is character self, its skills, other objects
+                attached to the character.
+            2.3. status and equipment have no priority, just based on the time when they
+                are attached to the character.
+            2.4. specifically, team status has lower priority of active character and
+                its attached objects, but higher priority of other characters.
         3. for other objects, order is: summon, support, hand, dice, deck.
             3.1. all other objects in same region are sorted by their index in
                 the list.
@@ -215,7 +218,8 @@ class PlayerTable(BaseModel):
             target = (start_character_idx + i) % len(self.characters)
             if self.characters[target].is_alive:
                 result += self.characters[target].get_object_lists()
-        result += self.team_status
+            if i == 0:
+                result += self.team_status
         result += self.summons
         result += self.supports
         if self.using_hand is not None:
