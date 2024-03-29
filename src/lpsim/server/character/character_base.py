@@ -751,9 +751,9 @@ class CharacterBase(ObjectBase):
 
     def get_object_lists(self) -> List[ObjectBase]:
         """
-        Get all objects of the character, order is passive skill, weapon,
-        artifact, talent, status. For status, order is their index in status
-        list, i.e. generated time.
+        Get all objects of the character, order is character itself, skills, and other
+        objects. Order of other objects, including equipment and status, are based on
+        when they are attached, regardless of their types.
         """
         result: List[ObjectBase] = [self]
         for skill in self.skills:

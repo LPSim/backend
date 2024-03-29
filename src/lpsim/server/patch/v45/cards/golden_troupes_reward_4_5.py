@@ -2,6 +2,7 @@ from typing import Dict, List, Literal
 from lpsim.server.action import Actions
 
 from lpsim.server.card.equipment.artifact.base import ArtifactBase
+from lpsim.server.consts import CostLabels
 from lpsim.server.event import RoundEndEventArguments
 from lpsim.server.match import Match
 from lpsim.server.modifiable_values import CostValue
@@ -30,7 +31,9 @@ class GoldenTroupesReward_4_5(ArtifactBase):
         """
         If self use any skill, or equip talent, cost decrease based on self usage.
         """
-        if not self._check_value_self_skill_or_talent(value, match):
+        if not self._check_value_self_skill_or_talent(
+            value, match, CostLabels.ELEMENTAL_SKILL.value
+        ):
             return value
         # decrease cost
         for _ in range(self.usage):
