@@ -31,7 +31,7 @@ jobs:
   
     - name: Install dependencies
       run: |
-        pip install -e ".[dev]"
+        pip install -e ".[dev,rl]"
 
     - name: Run type check
       run: |
