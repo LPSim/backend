@@ -60,6 +60,9 @@ class LPSimObservationSpace(gymnasium.Space):
     def from_jsonable(self, sample_n: list[Any]) -> list:
         return [Match(**x) for x in sample_n]
 
+    def __eq__(self, other):
+        return isinstance(other, LPSimObservationSpace)
+
 
 class ResponseParseClass(BaseModel):
     """
@@ -89,6 +92,9 @@ class LPSimActionSpace(gymnasium.Space):
     def from_jsonable(self, sample_n: list[Any]) -> list:
         return [ResponseParseClass(resp=x).resp for x in sample_n]
 
+    def __eq__(self, other):
+        return isinstance(other, LPSimActionSpace)
+
 
 class LPSimAgentSelector(agent_selector):
     """
@@ -96,19 +102,19 @@ class LPSimAgentSelector(agent_selector):
     It will check match.requests to decide which agent should be selected.
     """
 
-    def __init__(self, agent_order: list[Any]):
-        pass
+    def __init__(self, agent_order: list[str]):
+        self._agent_order = agent_order
 
-    def reinit(self, agent_order: list[Any]) -> None:
-        pass
+    def reinit(self, agent_order: list[str]) -> None:
+        self._agent_order = agent_order
 
     def reset(self) -> Any:
         pass
 
-    def next(self, match: Match) -> Any:
+    def next(self, match: Match) -> str:
         """Get the valid agent. There should be at least one valid request."""
         assert len(match.requests) > 0, "There should be at least one request."
-        return match.requests[0].player_idx
+        return self._agent_order[match.requests[0].player_idx]
 
     def is_last(self) -> bool:
         """Check if the current agent is the last agent in the cycle."""
@@ -122,7 +128,7 @@ class LPSimAgentSelector(agent_selector):
         raise NotImplementedError
 
 
-class LPSimBaseV0Env(AECEnv):
+class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
     """
     The base environment of LPSim, which inherits AECEnv. The observation is
     the match instance, and accept Responses as action. observation space and action
@@ -174,7 +180,7 @@ class LPSimBaseV0Env(AECEnv):
 
         These attributes should not be changed after initialization.
         """
-        self.possible_agents: list[int] = [0, 1]
+        self.possible_agents: list[str] = ["player_1", "player_2"]
 
         # optional: a mapping between agent name and ID
         # self.agent_name_mapping = dict(
@@ -227,20 +233,10 @@ class LPSimBaseV0Env(AECEnv):
         up a graphical window, or open up some other display that a human can see and
         understand.
         """
-        print("Not implemented")
-        # if self.render_mode is None:
-        #     gymnasium.logger.warn(
-        #         "You are calling render method without specifying any render mode."
-        #     )
-        #     return
-
-        # if len(self.agents) == 2:
-        #     string = "Current state: Agent1: {} , Agent2: {}".format(
-        #         MOVES[self.state[self.agents[0]]], MOVES[self.state[self.agents[1]]]
-        #     )
-        # else:
-        #     string = "Game over"
-        # print(string)
+        assert self.match is not None
+        round = self.match.round_number
+        hps = [[y.hp for y in x.characters] for x in self.match.player_tables]
+        print(f"Round: {round}, HPs: {hps}")
 
     def observe(self, agent: int):
         """
@@ -294,6 +290,16 @@ class LPSimBaseV0Env(AECEnv):
         Here it sets up the state dictionary which is used by step() and the
         observations dictionary which is used by step() and observe()
         """
+        # if options is None:
+        #     logging.warning("No options specified, use default options.")
+        #     c = 'Mn8/BmRCMM/QI18+Qm8wJGI+Qo9wJ2M/O7BPN/E/O9CPOvU/O+C/PPg/PBA/PQBAPD8v'
+        #     decks = [
+        #         Deck.from_deck_code(c, version = '4.4'),
+        #         Deck.from_deck_code(c, version = '4.4')
+        #     ]
+        #     options = {
+        #         'decks': decks
+        #     }
         assert options is not None, "The options should be specified."
         assert "decks" in options, "The decks should be specified."
         decks = options["decks"]
@@ -302,7 +308,7 @@ class LPSimBaseV0Env(AECEnv):
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
         self.terminations = {agent: False for agent in self.agents}
         self.truncations = {agent: False for agent in self.agents}
-        self.history: dict[int, list[Responses]] = {agent: [] for agent in self.agents}
+        self.history: dict[str, list[Responses]] = {agent: [] for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
         self.total_step = 0
         self._agent_selector = LPSimAgentSelector(self.agents)
@@ -338,7 +344,8 @@ class LPSimBaseV0Env(AECEnv):
             return
 
         agent = self.agent_selection
-        assert agent == action.player_idx, "The action is not for the current agent."
+        agent_idx = self.agents.index(agent)
+        assert agent_idx == action.player_idx, "Action is not for the current agent."
 
         # the agent which stepped last had its _cumulative_rewards accounted for
         # (because it was returned by last()), so the _cumulative_rewards for this
@@ -359,14 +366,16 @@ class LPSimBaseV0Env(AECEnv):
 
         if self.match.is_game_end():
             # when game end, set rewards
-            self.rewards[0] = self.rewards[1] = -1
+            for agent in self.agents:
+                self.rewards[agent] = -1
             if self.match.winner != -1:
                 # anyone wins
-                self.rewards[self.match.winner] = 1
+                self.rewards[self.agents[self.match.winner]] = 1
             self.terminations = {agent: True for agent in self.agents}
         elif self.total_step >= self.max_steps:
             # when reach max steps, set rewards
-            self.rewards[0] = self.rewards[1] = -1
+            for agent in self.agents:
+                self.rewards[agent] = -1
             self.truncations = {agent: True for agent in self.agents}
         else:
             # selects the next agent.
@@ -379,7 +388,7 @@ class LPSimBaseV0Env(AECEnv):
             self.render()
 
 
-class LPSimAgentWrapper(BaseWrapper):
+class LPSimAgentWrapper(BaseWrapper[str, Any, Any]):  # type: ignore
     """
     This wrapper will use two lpsim agent to response to the environment. When agent
     is InteractionAgent, it will replace the response type in step from Responses to
@@ -389,19 +398,27 @@ class LPSimAgentWrapper(BaseWrapper):
 
     def __init__(self, env: AECEnv, agents: list[Agents]):
         super().__init__(env)
+        assert "lpsim" in env.unwrapped.metadata["name"].lower(), (
+            "The environment should be LPSim environment, "
+            f"but got {env.unwrapped.metadata['name']}."
+        )
         self.lpsim_agents = agents
         assert len(self.lpsim_agents) == 2, "The agents should be two."
-        last_interactive_agent = None
+        last_interactive_agent_idx = None
         for idx, agent in enumerate(self.lpsim_agents):
             assert (
                 agent.player_idx == idx
             ), "The player_idx of agent should be the same as index."
-            if isinstance(agent, InteractionAgent):
-                last_interactive_agent = idx
+            if type(agent) is InteractionAgent:
+                if last_interactive_agent_idx is not None:
+                    raise ValueError(
+                        "There should be only one InteractionAgent in the agents."
+                    )
+                last_interactive_agent_idx = idx
         assert (
-            last_interactive_agent is not None
+            last_interactive_agent_idx is not None
         ), "At least one agent should be InteractionAgent."
-        self.last_interactive_agent = last_interactive_agent
+        self.last_interactive_agent = env.possible_agents[last_interactive_agent_idx]
 
     def _non_interactive_step(self) -> bool:
         """
@@ -410,12 +427,13 @@ class LPSimAgentWrapper(BaseWrapper):
         If a non-interactive step is done, return True, otherwise return False.
         """
         agent = self.env.agent_selection
-        if isinstance(self.lpsim_agents[agent], InteractionAgent):
+        agent_idx = self.env.agents.index(agent)
+        if type(self.lpsim_agents[agent_idx]) is InteractionAgent:
             return False
         if self.env.terminations[agent] or self.env.truncations[agent]:
             # game has ended
             return False
-        resp = self.lpsim_agents[agent].generate_response(self.env.match)  # type: ignore  # noqa: E501
+        resp = self.lpsim_agents[agent_idx].generate_response(self.env.match)  # type: ignore  # noqa: E501
         self.env.step(resp)
         return True
 
@@ -428,8 +446,9 @@ class LPSimAgentWrapper(BaseWrapper):
 
     def step(self, action: str) -> None:
         self.last_interactive_agent = self.env.agent_selection
-        agent = self.lpsim_agents[self.env.agent_selection]
-        assert isinstance(agent, InteractionAgent)
+        agent_idx = self.env.agents.index(self.last_interactive_agent)
+        agent = self.lpsim_agents[agent_idx]
+        assert type(agent) is InteractionAgent
         agent.commands = [action]
         resp = agent.generate_response(self.env.match)  # type: ignore
         self.env.step(resp)
@@ -457,6 +476,29 @@ class LPSimAgentWrapper(BaseWrapper):
         )
 
 
+class ModelAgent(InteractionAgent):
+    """
+    This agent will use a model to response to the environment. It will use the model
+    to predict the response, and use the response to response to the environment.
+    """
+
+    def __init__(self, player_idx: int, model: Any):
+        super().__init__(player_idx=player_idx)
+        self.model = model
+
+    def generate_response(self, match: Match) -> Responses:
+        """
+        Generate response for the match.
+
+        Args:
+            match (Match): The match instance.
+
+        Returns:
+            Responses: The response instance.
+        """
+        raise NotImplementedError
+
+
 if __name__ == "__main__":
     match_config = MatchConfig(max_round_number=999)
     env = LPSimBaseV0Env(match_config=match_config)
@@ -477,7 +519,8 @@ if __name__ == "__main__":
         if term or trunc:
             break
         requests = env.match.requests
-        requests = [x for x in requests if x.player_idx == env.agent_selection]
+        agent_idx = env.agents.index(env.agent_selection)
+        requests = [x for x in requests if x.player_idx == agent_idx]
         assert len(requests) > 0
         if requests[0].name == "ChooseCharacterRequest":
             cmd = f"choose {requests[0].available_character_idxs[0]}"
