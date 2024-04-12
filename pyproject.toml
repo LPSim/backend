@@ -35,7 +35,7 @@ dev = [
 ]
 rl = [
     "pettingzoo",
-    "tianshou",
+    "tianshou==0.5.1",
 ]
 
 [project.urls]

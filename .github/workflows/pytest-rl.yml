@@ -1,20 +1,12 @@
-name: pytest
+name: pytest-RL
 
 on:
   push:
     paths:
-      - "src/**"
-      - "tests/**"
-      - "**/*.py"
-    paths-ignore: 
-      - "src/env/**"
+      - "src/env/**/*.py"
   pull_request:
     paths:
-      - "src/**"
-      - "tests/**"
-      - "**/*.py"
-    paths-ignore: 
-      - "src/env/**"
+      - "src/env/**/*.py"
   workflow_dispatch:
   workflow_call:
 
@@ -35,15 +27,7 @@ jobs:
   
     - name: Install dependencies
       run: |
-        pip install -e ".[dev]"
-
-    - name: Create pyrightconfig.json
-      run: |
-        echo '{
-          "exclude": [
-            "src/env/**"
-          ]
-        }' > pyrightconfig.json
+        pip install -e ".[dev,rl]"
 
     - name: Run type check
       run: |
