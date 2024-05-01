@@ -161,7 +161,7 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     name: str
     version: str
     cost: Cost
-    usage: int = 2
+    usage: int
     usage_this_round: int = 0
     max_usage_one_round: int
 
