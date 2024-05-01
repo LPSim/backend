@@ -54,15 +54,15 @@ def import_all_modules(py_file: str, name: str, exceptions: set[str] = set()) ->
 
 
 def accept_same_or_higher_version(cls, v: str, values):
-    msg = "version annotation must be Literal with one str"
+    msg = f"class {cls}: version annotation must be Literal with one str. "
     if not isinstance(v, str):
-        raise ValueError(msg)
+        raise ValueError(msg + f"v is {type(v)} not str")
     version_hints = get_type_hints(cls)["version"]
     if get_origin(version_hints) != Literal:
-        raise ValueError(msg)
+        raise ValueError(msg + f"version_hints is {version_hints}")
     version_hints = version_hints.__args__
     if len(version_hints) > 1:
-        raise ValueError(msg)
+        raise ValueError(msg + f"version_hints is {version_hints}")
     version_hint = version_hints[0]
     if values["strict_version_validation"] and v != version_hint:
         raise ValueError(f"version {v} is not equal to {version_hint}")
