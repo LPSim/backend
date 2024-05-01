@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "CurrentFile",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -19,7 +19,7 @@
         },
         {
             "name": "Uvicorn",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "http_test_serve.py",
             "args": [
@@ -32,30 +32,5 @@
             },
             "justMyCode": true
         },
-        // {
-        //     "name": "Uvicorn",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "module": "uvicorn",
-        //     "args": [
-        //         "network:app",
-        //         "--reload"
-        //     ],
-        //     "console": "integratedTerminal",
-        //     "cwd": "${workspaceFolder}",
-        //     "env": {
-        //         "PYTHONPATH": "${workspaceFolder}"
-        //     },
-        //     "justMyCode": true
-        // },
-        // {
-        //     "name": "Main",
-        //     "type": "python",
-        //     "request": "launch",
-        //     "program": "main.py",
-        //     "console": "integratedTerminal",
-        //     "cwd": "${workspaceFolder}",
-        //     "justMyCode": true
-        // },
     ]
 }
