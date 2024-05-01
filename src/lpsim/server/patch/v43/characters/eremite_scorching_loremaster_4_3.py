@@ -53,11 +53,6 @@ class SpiritOfOmenPyroScorpion_4_3(AttackAndGenerateStatusSummonBase):
     damage_elemental_type: DamageElementalType = DamageElementalType.PYRO
     status_name: str = "Pyro Scorpion: Guardian Stance"
 
-    def renew(self, obj: "SpiritOfOmenPyroScorpion_4_3") -> None:
-        super().renew(obj)
-        if obj.desc == "talent" and self.desc != "talent":
-            self.desc = "talent"
-
     def _create_status(self, match: Match) -> List[CreateObjectAction]:
         """
         Create for eremite self
