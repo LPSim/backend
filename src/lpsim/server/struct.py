@@ -185,6 +185,26 @@ class ObjectPosition(BaseModel):
 
         Command formats are the same as `satisfy`. The result is just the opposite
         of `satisfy`.
+
+        Command formats are:
+        - `source / target` to select one object position, or `both` to compare between
+            two positions
+        - if one position selected: `[pidx=? / cidx=? / area=? / active=(true|false)]`
+            to check if position fulfills the situation. for area names, they are case
+            insensitive. can use multiple times, and all of them should pass.
+            You can also use player and character to replace pidx and cidx.
+        - if two position selected (i.e. `both`), `[(pidx|cidx|area|id)=(same|diff)]`
+            to compare two positions are same or not. can use multiple times, and all of
+            them should pass.
+        - `and` to make multiple checks. All check should pass.
+
+        samples:
+        - `source area=support` is this object placed to support
+        - `source area=character and target area=skill and both pidx=same cidx=same` is
+            this object equipped to a character, and target object is skill of this
+            character
+        - `both pidx=same and source area=hand and target area=skill` this object in
+            hand and target object is this player use skill
         """
         return not self.satisfy(command, target, match)
 

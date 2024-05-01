@@ -129,6 +129,29 @@ class ObjectBase(BaseModel):
         Receives match, and get one object from match based on command.
         If no object is found, return None. For command structure, see `query` function.
         If allow_multiple is False, when multiple objects are found, raise error.
+
+        Command contains:
+        - `both / our / opponent` to select player_table, or `self` to select this
+            character (caller area must be character or character_status). must appear
+            first.
+        - `[active / prev / next]` or
+            `[deck / hand / character / team_status / summon / support]`
+            for player_table, `[weapon / artifact / talent]` or `[skill / status]` for
+            character, to select an object (first group) or object lists (second group).
+            Note with `both`, select one object may also receive two objects.
+        - `['key=value']` to filter current objects that `x.key == value`. All types
+            will be converted to str to compare. it can be used multiple times. command
+            can be surrounded with quotes, and if not space in key and value, quotes can
+            be omitted.
+        - `and` to make multiple queries, and their results are combined.
+
+        Samples:
+        - `self` to get self character when called by a character status
+        - `opponent active status 'name=Seed of Skandha'` to get status
+        - `opponent character status name=Refraction` to get status from all opponent
+            characters
+        - `both summon` to get all summons on field
+        - `self and our active and our next` to select characters
         """
         return query_one(self.position, match, command, allow_multiple)
 
