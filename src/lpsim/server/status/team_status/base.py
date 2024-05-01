@@ -64,7 +64,7 @@ class UsageTeamStatus(TeamStatusBase):
     usage: int
     max_usage: int
 
-    def check_should_remove(self) -> List[RemoveObjectAction]:
+    def check_should_remove(self, match: Any = None) -> List[RemoveObjectAction]:
         """
         Check if the status should be removed.
         when usage has changed, call this function to check if the status
@@ -99,7 +99,7 @@ class RoundTeamStatus(TeamStatusBase):
     usage: int
     max_usage: int
 
-    def check_should_remove(self) -> List[RemoveObjectAction]:
+    def check_should_remove(self, match: Any = None) -> List[RemoveObjectAction]:
         """
         Check if the status should be removed.
         when round has changed, call this function to check if the status
