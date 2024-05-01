@@ -2,7 +2,7 @@ from typing import Literal
 from pydantic import validator
 
 from ...utils import accept_same_or_higher_version
-from ..consts import IconType, ObjectType
+from ..consts import IconType
 from ..object_base import ObjectBase
 
 
@@ -17,7 +17,6 @@ class StatusBase(ObjectBase):
     show_usage: bool = True
     usage: int
     max_usage: int
-    type: Literal[ObjectType.CHARACTER_STATUS, ObjectType.TEAM_STATUS]
     renew_type: Literal["ADD", "RESET", "RESET_WITH_MAX"] = "ADD"
 
     icon_type: IconType

@@ -126,7 +126,7 @@ class ShakenNotPurred_4_1(SkillTalent):
 
 
 class ShakenNotPurred_3_3(ShakenNotPurred_4_1):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(elemental_dice_color=DieColor.CRYO, elemental_dice_number=4)
 
 

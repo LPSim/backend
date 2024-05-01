@@ -471,7 +471,7 @@ class IncinerationDrive_4_1(PrepareCharacterStatus):
 
 
 class ScarletSeal_3_8(ScarletSeal_4_2):
-    version: Literal["3.8"]
+    version: Literal["3.8"] = "3.8"
     usage: int = 1
     max_usage: int = 1
 

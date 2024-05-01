@@ -337,7 +337,7 @@ class MintyMeatRolls_3_4(FoodCardBase):
 
 
 class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
 
 
 class TeyvatFriedEgg_4_1(FoodCardBase):

@@ -29,7 +29,7 @@ class NaganoharaMeteorSwarm_3_3(SkillTalent):
 
 
 class Yoimiya_3_3(Y_3_8):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     max_charge: int = 2
     skills: List[FireworkFlareUp | NiwabiFireDance | RyuukinSaxifrage] = []
 

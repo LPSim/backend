@@ -28,7 +28,7 @@ class LightningStorm_3_4(LightningStorm_4_2):
 
 
 class Beidou_3_4(Beidou_3_8):
-    version: Literal["3.4"]
+    version: Literal["3.4"] = "3.4"
     skills: List[
         PhysicalNormalAttackBase | Tidecaller | Wavestrider | Stormbreaker
     ] = []

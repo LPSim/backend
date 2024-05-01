@@ -1283,7 +1283,7 @@ def test_version_validation():
 
     # multiple version hints
     class OOZZ(Oz_3_3):
-        version: Literal["3.4", "3.5"]
+        version: Literal["3.4", "3.5"] = "3.4"
 
     with pytest.raises(ValueError):
         _ = OOZZ(

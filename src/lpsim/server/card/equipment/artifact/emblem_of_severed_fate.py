@@ -42,7 +42,7 @@ class OrnateKabuto_4_0(ArtifactBase):
 
 
 class OrnateKabuto_3_5(OrnateKabuto_4_0):
-    version: Literal["3.5"]
+    version: Literal["3.5"] = "3.5"
     cost: Cost = Cost(any_dice_number=2)
 
 
@@ -74,12 +74,12 @@ class EmblemOfSeveredFate_4_1(OrnateKabuto_4_0, RoundEffectArtifactBase):
 
 
 class EmblemOfSeveredFate_4_0(EmblemOfSeveredFate_4_1):
-    version: Literal["4.0"]
+    version: Literal["4.0"] = "4.0"
     max_usage_per_round: int = 999
 
 
 class EmblemOfSeveredFate_3_7(EmblemOfSeveredFate_4_0):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(any_dice_number=3)
 
 

@@ -35,7 +35,7 @@ class TamakushiCasket_3_5(SkillTalent):
 
 
 class SangonomiyaKokomi_3_5(SK_3_6):
-    version: Literal["3.5"]
+    version: Literal["3.5"] = "3.5"
     skills: List[ElementalNormalAttackBase | KuragesOath | NereidsAscension] = []
 
     def _init_skills(self) -> None:

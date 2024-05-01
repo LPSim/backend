@@ -115,7 +115,7 @@ class RainbowBladework_3_3(UsageTeamStatus, ExtraAttackTeamStatus):
 
 
 class RainSword_3_3(RainSword_4_2):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     min_damage_to_trigger: int = 3
 
 

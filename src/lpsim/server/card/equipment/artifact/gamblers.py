@@ -58,7 +58,7 @@ class GamblersEarrings_3_8(ArtifactBase):
 
 
 class GamblersEarrings_3_3(GamblersEarrings_3_8):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     usage: int = 999
 
     def equip(self, match: Any) -> List[Actions]:

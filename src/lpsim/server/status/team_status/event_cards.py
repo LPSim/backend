@@ -575,7 +575,7 @@ class WindAndFreedom_4_1(WhenTheCraneReturned_3_3, RoundTeamStatus):
 
 class WindAndFreedom_3_7(FreshWindOfFreedom_4_1):
     name: Literal["Wind and Freedom"] = "Wind and Freedom"
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
 
 
 class Pankration_4_1(TeamStatusBase):

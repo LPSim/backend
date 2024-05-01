@@ -34,7 +34,7 @@ class KamisatoArtKyouka(ElementalSkillBase):
 
 
 class KamisatoAyato_3_6(KA_4_1):
-    version: Literal["3.6"]
+    version: Literal["3.6"] = "3.6"
     max_charge: int = 3
     skills: List[PhysicalNormalAttackBase | KamisatoArtKyouka | KamisatoArtSuiyuu] = []
 

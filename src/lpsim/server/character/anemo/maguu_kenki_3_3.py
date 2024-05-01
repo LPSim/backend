@@ -37,7 +37,7 @@ class FrostyAssault(FA_3_4):
 
 
 class MaguuKenki_3_3(MK_3_4):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     skills: List[
         PhysicalNormalAttackBase | BlusteringBlade | FrostyAssault | PseudoTenguSweeper
     ] = []

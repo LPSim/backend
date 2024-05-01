@@ -135,22 +135,22 @@ class ShimenawasReminiscence_4_0(CapriciousVisage_4_0):
 
 
 class ThunderingPoise_3_7(ThunderingPoise_4_0):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(same_dice_number=2)
 
 
 class VermillionHereafter_3_7(VermillionHereafter_4_0):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(same_dice_number=3)
 
 
 class CapriciousVisage_3_7(CapriciousVisage_4_0):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(same_dice_number=2)
 
 
 class ShimenawasReminiscence_3_7(ShimenawasReminiscence_4_0):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     cost: Cost = Cost(same_dice_number=3)
 
 

@@ -23,7 +23,7 @@ class GlacialIllumination(GI_3_8):
 
 
 class Eula_3_5(E_3_8):
-    version: Literal["3.5"]
+    version: Literal["3.5"] = "3.5"
     skills: List[FavoniusBladeworkEdel | IcetideVortex | GlacialIllumination] = []
 
     def _init_skills(self) -> None:

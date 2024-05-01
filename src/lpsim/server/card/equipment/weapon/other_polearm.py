@@ -135,7 +135,7 @@ class LithicSpear_3_7(WeaponBase):
 
 
 class LithicSpear_3_3(LithicSpear_3_7):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
 
     def equip(self, match: Any) -> List[Actions]:
         """
