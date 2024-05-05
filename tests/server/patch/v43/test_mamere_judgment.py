@@ -1,5 +1,6 @@
 import json
 from typing import Dict
+import pytest
 from lpsim.agents import InteractionAgent
 from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import (
@@ -537,6 +538,7 @@ def remove_ellin_information(match_dict: Dict):
     return json.dumps(h)
 
 
+@pytest.mark.slowtest
 def test_mamere_load_and_save():
     agent_0, agent_1, match = get_mamere_judgment_match()
     assert match.start()[0]

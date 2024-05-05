@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Dict
+import pytest
 from lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
 from lpsim.agents.nothing_agent import NothingAgent
 from lpsim.server.match import Match, MatchState
@@ -2182,6 +2183,7 @@ def remove_ellin_information(match_dict: Dict):
     return json.dumps(h)
 
 
+@pytest.mark.slowtest
 def test_ellin_load_and_save():
     agent_0, agent_1, match = get_ellin_match()
     assert match.start()[0]
