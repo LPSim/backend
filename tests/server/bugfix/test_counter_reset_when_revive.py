@@ -17,6 +17,7 @@ def test_counter_reset_when_revive():
             os.path.dirname(__file__), "jsons", "test_counter_reset_when_revive.json"
         )  # noqa: E501
     )
+    match.version = "0.0.4"
     match.config.history_level = 0
     # modify hp
     # for i in range(2):

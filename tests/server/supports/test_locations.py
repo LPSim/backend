@@ -163,7 +163,7 @@ def test_tenshukaku():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -294,7 +294,7 @@ def test_sumeru_city():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -435,7 +435,7 @@ def test_vanarana():
         ],
         only_use_command=True,
     )
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     deck = Deck.from_str(
         """
         default_version:4.0
@@ -824,7 +824,7 @@ def test_golden_house():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -994,7 +994,7 @@ def test_jade_dawn_narukami_chinju():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """

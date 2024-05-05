@@ -12,6 +12,7 @@ def test_seed_dispensary():
     match, agent_0, agent_1 = read_from_log_json(
         os.path.join(os.path.dirname(__file__), "jsons", "test_seed_dispensary.json")
     )
+    match.version = "0.0.4"
     # modify hp
     for i in range(2):
         characters = match.player_tables[i].player_deck_information.characters

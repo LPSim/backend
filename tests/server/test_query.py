@@ -92,7 +92,7 @@ def test_query_satisfy():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         "default_version:4.3\ncharacter:Yoimiya@3.8\ncharacter:Keqing@3.3\ncharacter:Dehya@4.1\ncharacter:Shenhe@4.2\ncharacter:Barbara@3.3\nLost Prayer to the Sacred Winds@4.3\nLost Prayer to the Sacred Winds@4.3\nTulaytullah's Remembrance@4.3\nTulaytullah's Remembrance@4.3\nBeacon of the Reed Sea@4.3\nBeacon of the Reed Sea@4.3\nPrimordial Jade Winged-Spear@4.3\nPrimordial Jade Winged-Spear@4.3\nLight of Foliar Incision@4.3\nLight of Foliar Incision@4.3\nFlowing Rings@4.3\nFlowing Rings@4.3\nEchoes of an Offering@4.3\nEchoes of an Offering@4.3\nHeart of Khvarena's Brilliance@4.3\nHeart of Khvarena's Brilliance@4.3\nVourukasha's Glow@4.3\nVourukasha's Glow@4.3\nThe Boar Princess@4.3\nThe Boar Princess@4.3\nFalls and Fortune@4.3\nFalls and Fortune@4.3\n"  # noqa: E501
