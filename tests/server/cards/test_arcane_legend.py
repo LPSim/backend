@@ -1,3 +1,4 @@
+import pytest
 from lpsim.server.deck import Deck
 from lpsim.server.interaction import UseCardResponse
 from lpsim.server.match import Match, MatchState
@@ -98,6 +99,7 @@ def test_covenant_of_rock():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_rock_dice_different_not_omni():
     """
     stop in using card, and set random random_state, then use card again

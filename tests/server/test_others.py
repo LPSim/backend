@@ -249,6 +249,7 @@ def test_create_dice():
         match.player_tables[0].dice.colors.clear()
 
 
+@pytest.mark.slowtest
 def test_id_wont_duplicate():
     s = set()
     position = ObjectPosition(
