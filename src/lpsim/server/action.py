@@ -16,6 +16,7 @@ class ActionTypes(str, Enum):
     EMPTY = "EMPTY"
     DRAW_CARD = "DRAW_CARD"
     RESTORE_CARD = "RESTORE_CARD"
+    SWITCH_CARD = "SWITCH_CARD"
     REMOVE_CARD = "REMOVE_CARD"
     CHOOSE_CHARACTER = "CHOOSE_CHARACTER"
     CREATE_DICE = "CREATE_DICE"
@@ -506,6 +507,21 @@ class GenerateSwitchCardRequestAction(ActionBase):
     player_idx: int
 
 
+class SwitchCardAction(ActionBase):
+    """
+    Action for switching card. Specified cards will be put back to deck, and same
+    number of cards draw from deck.
+    Now restore card will randomly put back to deck, and draw same number of cards from
+    top to bottom. Cards with same name put back into deck will be skipped, until card
+    number is not enough, they will be drawn from top to bottom.
+    """
+
+    type: Literal[ActionTypes.SWITCH_CARD] = ActionTypes.SWITCH_CARD
+    record_level: int = 10
+    player_idx: int
+    restore_card_idxs: List[int]
+
+
 Actions = (
     ActionBase
     | DrawCardAction
@@ -539,4 +555,5 @@ Actions = (
     # 25
     | CharacterReviveAction
     | GenerateSwitchCardRequestAction
+    | SwitchCardAction
 )
