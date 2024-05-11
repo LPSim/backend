@@ -14,6 +14,7 @@
             "env": {
                 // NEED TO INSTALL Command Variable plugin!
                 "PYTHONPATH": "${workspaceFolder}${command:extension.commandvariable.envListSep}${workspaceFolder}/src",
+                "LPSIM_DEBUG_LEVEL": "DEBUG",
             },
             "justMyCode": true
         },

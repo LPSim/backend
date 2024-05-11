@@ -260,7 +260,7 @@ def test_stone_thunder_nature():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -399,7 +399,7 @@ def test_fatui_monster():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """

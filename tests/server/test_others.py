@@ -249,6 +249,7 @@ def test_create_dice():
         match.player_tables[0].dice.colors.clear()
 
 
+@pytest.mark.slowtest
 def test_id_wont_duplicate():
     s = set()
     position = ObjectPosition(
@@ -454,8 +455,8 @@ def test_vanilla_element_infusion_team_status():
     assert dendro_ele_status.infused_elemental_type == DamageElementalType.DENDRO
 
 
-def test_blacklist_draw_card():
-    match = Match()
+def test_blacklist_draw_card_004():
+    match = Match(version="0.0.4")
     deck_str = """
     character:Nahida
     Strategize*29
@@ -505,6 +506,67 @@ def test_blacklist_draw_card():
     assert len(match.player_tables[0].hands) == 7
 
 
+def test_blacklist_draw_card_005():
+    match = Match()
+    deck_str = """
+    character:Nahida
+    Strategize*29
+    Fresh Wind of Freedom
+    """
+    deck = Deck.from_str(deck_str)
+    match.config.character_number = None
+    match.config.max_same_card_number = 999
+    match.set_deck([deck, deck])
+    assert match.start()[0]
+    match.step()
+    match.respond(
+        SwitchCardResponse(
+            request=match.requests[0],  # type: ignore
+            card_idxs=[1, 2, 3, 4],
+        )
+    )
+    match.respond(
+        SwitchCardResponse(
+            request=match.requests[0],  # type: ignore
+            card_idxs=[1, 2, 3, 4],
+        )
+    )
+    assert len(match.player_tables[0].hands) == 5
+    assert len(match.player_tables[1].hands) == 5
+    for i in range(1, 5):
+        assert match.player_tables[0].hands[i].name == "Strategize"
+        assert match.player_tables[1].hands[i].name == "Strategize"
+    # then test whitelist draw card but not enough
+    match._action_draw_card(
+        DrawCardAction(
+            player_idx=0,
+            number=2,
+            whitelist_names=["Fresh Wind of Freedom"],
+            draw_if_filtered_not_enough=False,
+        )
+    )
+    assert len(match.player_tables[0].hands) == 5
+    with pytest.raises(AssertionError):
+        match._action_draw_card(
+            DrawCardAction(
+                player_idx=0,
+                number=2,
+                whitelist_names=["Fresh Wind of Freedom"],
+                draw_if_filtered_not_enough=True,
+            )
+        )
+    with pytest.raises(AssertionError):
+        match._action_draw_card(
+            DrawCardAction(
+                player_idx=0,
+                number=2,
+                whitelist_names=["Fresh Wind of Freedom"],
+                blacklist_cost_labels=2,
+                draw_if_filtered_not_enough=True,
+            )
+        )
+
+
 if __name__ == "__main__":
     # test_object_position_validation()
     # test_match_config_and_match_errors()
@@ -513,4 +575,5 @@ if __name__ == "__main__":
     # test_id_wont_duplicate()
     # test_remove_non_exist_equip()
     test_vanilla_element_infusion_team_status()
-    test_blacklist_draw_card()
+    test_blacklist_draw_card_004()
+    test_blacklist_draw_card_005()

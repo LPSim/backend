@@ -44,6 +44,7 @@ from .action import (
     CharacterReviveAction,
     ConsumeArcaneLegendAction,
     GenerateSwitchCardRequestAction,
+    SwitchCardAction,
 )
 from .interaction import (
     Requests,
@@ -108,6 +109,7 @@ from .event import (
     MoveObjectEventArguments,
     UseCardEventArguments,
     UseSkillEventArguments,
+    SwitchCardEventArguments,
 )
 from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
@@ -315,7 +317,9 @@ class Match(BaseModel):
 
     name: Literal["Match"] = "Match"
 
-    version: Literal["0.0.1", "0.0.2", "0.0.3", "0.0.4"] = "0.0.4"
+    # TODO what is the difference between different version?
+    # 0.0.5: officially accounced the deck order, and change relative actions.
+    version: Literal["0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5"] = "0.0.5"
 
     config: MatchConfig = MatchConfig()
 
@@ -399,6 +403,10 @@ class Match(BaseModel):
                 )
             )
         self._init_random_state()
+
+        debug_level = os.getenv("LPSIM_DEBUG_LEVEL", None)
+        if debug_level is not None:  # pragma: no cover
+            logging.getLogger().setLevel(debug_level)
 
     def new_match_from_history(self, history_idx: int) -> "Match":
         """
@@ -746,7 +754,7 @@ class Match(BaseModel):
                 DrawCardAction(
                     player_idx=pnum,
                     number=self.config.initial_hand_size,
-                    draw_if_filtered_not_enough=True,
+                    draw_if_filtered_not_enough=False,
                 )
             )
             event_frame = self.event_controller.stack_events(event_args)
@@ -1405,6 +1413,28 @@ class Match(BaseModel):
     """
 
     def _respond_switch_card(self, response: SwitchCardResponse):
+        if self.version <= "0.0.4":
+            return self._respond_switch_card_004(response)
+        return self._respond_switch_card_005(response)
+
+    def _respond_switch_card_005(self, response: SwitchCardResponse):
+        """
+        New version, using SwitchCardAction.
+        """
+        event_args = self._act(
+            SwitchCardAction(
+                player_idx=response.player_idx,
+                restore_card_idxs=response.card_idxs,
+            )
+        )
+        event_frame = self.event_controller.stack_events(event_args)
+        self.event_controller.append(event_frame)
+        # remove related requests
+        self.requests = [
+            req for req in self.requests if req.player_idx != response.player_idx
+        ]
+
+    def _respond_switch_card_004(self, response: SwitchCardResponse):
         """
         Deal with switch card response.
         """
@@ -1683,6 +1713,8 @@ class Match(BaseModel):
             return list(self._action_draw_card(action))
         elif isinstance(action, RemoveCardAction):
             return list(self._action_remove_card(action))
+        elif isinstance(action, SwitchCardAction):
+            return list(self._action_switch_card(action))
         elif isinstance(action, SwitchCharacterAction):
             return list(self._action_switch_character(action))
         elif isinstance(action, DeclareRoundEndAction):
@@ -1736,6 +1768,127 @@ class Match(BaseModel):
         If available cards are less than number, draw all available cards,
         and if draw_if_not_enough is set True, randomly draw cards until
         number is reached or deck is empty.
+        """
+        if self.version <= "0.0.4":
+            return self._action_draw_card_004(action)
+        return self._action_draw_card_005(action)
+
+    def _action_draw_card_005(
+        self, action: DrawCardAction
+    ) -> List[DrawCardEventArguments]:
+        """
+        When no list set, just draw cards. When whitelist set, will find all cards
+        that satisfy the whitelist, and randomly draw from them. When blacklist set,
+        will draw cards from top to bottom that not blacklist-ed. If not enough and
+        draw_if_filtered_not_enough is set, will draw from blacklist cards, and this
+        is not allowed when using whitelist.
+        """
+        player_idx = action.player_idx
+        number = action.number
+        table = self.player_tables[player_idx]
+        deck = table.table_deck
+        target_card_idxs: list[int] = []
+        if (
+            action.whitelist_cost_labels > 0
+            or len(action.whitelist_names) > 0
+            or len(action.whitelist_types) > 0
+        ):
+            if (
+                action.blacklist_cost_labels > 0
+                or len(action.blacklist_names) > 0
+                or len(action.blacklist_types) > 0
+            ):
+                self._set_match_state(MatchState.ERROR)
+                raise AssertionError(
+                    "Whitelist and blacklist cannot be both specified."
+                )
+            if action.draw_if_filtered_not_enough:
+                self._set_match_state(MatchState.ERROR)
+                raise AssertionError(
+                    "Cannot draw_if_filtered_not_enough when whitelist is set."
+                )
+            # whitelist set
+            for idx, card in enumerate(table.table_deck):
+                if (
+                    card.cost_label & action.whitelist_cost_labels != 0
+                    or card.name in action.whitelist_names
+                    or card.type in action.whitelist_types
+                ):
+                    target_card_idxs.append(idx)
+            if self.config.recreate_mode:
+                # in recreate mode, just select top cards
+                for i in range(number):
+                    assert i in target_card_idxs, (
+                        f"Card {deck[i].name}:{i} should be in whitelist in recreate "
+                        "mode, but not found"
+                    )
+            else:
+                # otherwise, shuffle target and pick number cards
+                self._random_shuffle(target_card_idxs)
+            target_card_idxs = target_card_idxs[:number]
+        elif (
+            action.blacklist_cost_labels > 0
+            or len(action.blacklist_names) > 0
+            or len(action.blacklist_types) > 0
+        ):
+            # blacklist set
+            black_card_idxs: list[int] = []
+            for idx, card in enumerate(table.table_deck):
+                if (
+                    card.cost_label & action.blacklist_cost_labels == 0
+                    and card.name not in action.blacklist_names
+                    and card.type not in action.blacklist_types
+                ):
+                    target_card_idxs.append(idx)
+                else:
+                    black_card_idxs.append(idx)
+            if self.config.recreate_mode:
+                raise NotImplementedError("Not tested")
+                # in recreate mode, just select top cards
+                for i in range(number):
+                    assert i in target_card_idxs, (
+                        f"Card {deck[i].name}:{i} should not be in blacklist in "
+                        "recreate mode, but found"
+                    )
+            if len(target_card_idxs) < number and action.draw_if_filtered_not_enough:
+                # draw blacklist cards
+                length = number - len(target_card_idxs)
+                target_card_idxs += black_card_idxs[:length]
+                black_card_idxs = black_card_idxs[length:]
+            target_card_idxs = target_card_idxs[:number]
+        else:
+            # no filter
+            target_card_idxs = list(range(min(len(deck), number)))
+        new_deck: list[CardBase] = []
+        drawn_cards: list[CardBase] = []
+        for idx, card in enumerate(table.table_deck):
+            if idx in target_card_idxs:
+                drawn_cards.append(card)
+            else:
+                new_deck.append(card)
+        table.table_deck = new_deck
+        names = [x.name for x in drawn_cards]
+        for card in drawn_cards:
+            card.position = card.position.set_area(ObjectPositionType.HAND)
+        table.hands.extend(drawn_cards)
+        logging.info(
+            f"Draw card action, player {player_idx}, number {number}, "
+            f"cards {names}, "
+            f"deck size {len(table.table_deck)}, hand size {len(table.hands)}"
+        )
+        event_arg = DrawCardEventArguments(
+            action=action,
+            hand_size=len(table.hands),
+            max_hand_size=self.config.max_hand_size,
+        )
+        return [event_arg]
+
+    def _action_draw_card_004(
+        self, action: DrawCardAction
+    ) -> List[DrawCardEventArguments]:
+        """
+        In old versions, the order of cards in deck will be changed if using filters.
+        In new versions, the order will not change, and _action_draw_card_005 is used.
         """
         player_idx = action.player_idx
         number = action.number
@@ -1835,6 +1988,71 @@ class Match(BaseModel):
         self, action: RestoreCardAction
     ) -> List[RestoreCardEventArguments]:
         """
+        Restore cards to the deck. It will be put into random position of deck.
+        Before 0.0.5, the order of original cards may be changed after restore, after
+        0.0.5, the order of original cards will not change.
+        """
+        if self.version <= "0.0.4":
+            return self._action_restore_card_004(action)
+        return self._action_restore_card_005(action)
+
+    def _action_restore_card_005(
+        self, action: RestoreCardAction
+    ) -> List[RestoreCardEventArguments]:
+        """
+        Restore cards to the deck. It will be put into random position of deck.
+        The order of original cards will not change, but the order of restored cards
+        will be random.
+        If recreate mode is on, all cards will be put at bottom of deck without shuffle.
+        """
+        player_idx = action.player_idx
+        table = self.player_tables[player_idx]
+        number_after_restore: int = len(action.card_idxs) + len(table.table_deck)
+        numbers = list(range(number_after_restore))
+        if len(action.card_idxs) == 0:
+            # nothing to do
+            logging.info(
+                f"Restore card action, player {action.player_idx}, "
+                f"number 0, deck size {len(table.table_deck)}, "
+                f"hand size {len(table.hands)}"
+            )
+            return [RestoreCardEventArguments(action=action, card_names=[])]
+        if not self.config.recreate_mode:  # pragma: no branch
+            # if not recreate mode, shuffle the numbers
+            self._random_shuffle(numbers)
+            action.card_idxs.sort()
+            self._random_shuffle(action.card_idxs)
+        numbers = numbers[-len(action.card_idxs) :]  # restored card positions in deck
+        new_hand = []
+        restored_cards = []
+        new_deck = []
+        for idx in action.card_idxs:
+            restored_cards.append(table.hands[idx])
+        for idx, card in enumerate(table.hands):
+            if idx not in action.card_idxs:
+                new_hand.append(card)
+        for card in restored_cards:
+            card.position = card.position.set_area(ObjectPositionType.DECK)
+        card_names = [x.name for x in restored_cards]
+        for new_deck_idx in range(number_after_restore):
+            if new_deck_idx in numbers:
+                new_deck.append(restored_cards.pop(0))
+            else:
+                new_deck.append(table.table_deck.pop(0))
+        table.hands = new_hand
+        table.table_deck = new_deck
+        logging.info(
+            f"Restore card action, player {player_idx}, "
+            f"number {len(action.card_idxs)}, cards: {card_names}, "
+            f"deck size {len(table.table_deck)}, hand size {len(table.hands)}"
+        )
+        event_arg = RestoreCardEventArguments(action=action, card_names=card_names)
+        return [event_arg]
+
+    def _action_restore_card_004(
+        self, action: RestoreCardAction
+    ) -> List[RestoreCardEventArguments]:
+        """
         Restore cards to the deck.
         """
         player_idx = action.player_idx
@@ -1859,6 +2077,40 @@ class Match(BaseModel):
         )
         event_arg = RestoreCardEventArguments(action=action, card_names=card_names)
         return [event_arg]
+
+    def _action_switch_card(
+        self, action: SwitchCardAction
+    ) -> List[
+        SwitchCardEventArguments | DrawCardEventArguments | RestoreCardEventArguments
+    ]:
+        """
+        Switch card from hand to deck. It will be put into random position of deck.
+        It is implemented by calling restore card and draw card.
+
+        It will return three events, one for switch card, one for restore card,
+        and one for draw card.
+        """
+        table = self.player_tables[action.player_idx]
+        restore_action = RestoreCardAction(
+            player_idx=action.player_idx, card_idxs=action.restore_card_idxs
+        )
+        card_names = [table.hands[x].name for x in action.restore_card_idxs]
+        draw_action = DrawCardAction(
+            player_idx=action.player_idx,
+            number=len(action.restore_card_idxs),
+            blacklist_names=card_names,
+            draw_if_filtered_not_enough=True,
+        )
+        restore_event_arg = self._action_restore_card(restore_action)
+        draw_event_arg = self._action_draw_card(draw_action)
+        return [
+            SwitchCardEventArguments(
+                action=action,
+                switch_number=len(action.restore_card_idxs),
+                restore_card_event=restore_event_arg[0],
+                draw_card_event=draw_event_arg[0],
+            )
+        ]
 
     def _action_remove_card(
         self, action: RemoveCardAction

@@ -14,6 +14,7 @@ def test_nilou_dendro_core():
     json_fname = "test_nilou_dendro_core.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
     match, agent_0, agent_1 = read_from_log_json(json_path)
+    match.version = "0.0.4"
     match.config.history_level = 0
     # modify hp
     # for i in range(2):

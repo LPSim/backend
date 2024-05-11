@@ -26,6 +26,7 @@ from .action import (
     UseCardAction,
     UseSkillAction,
     CharacterReviveAction,
+    SwitchCardAction,
 )
 from .modifiable_values import DamageValue, FinalDamageValue
 
@@ -378,6 +379,18 @@ class UseCardEventArguments(EventArgumentsBase):
     use_card_success: bool
 
 
+class SwitchCardEventArguments(EventArgumentsBase):
+    """
+    Event arguments for switch card event.
+    """
+
+    type: Literal[ActionTypes.SWITCH_CARD] = ActionTypes.SWITCH_CARD
+    action: SwitchCardAction
+    switch_number: int
+    restore_card_event: RestoreCardEventArguments
+    draw_card_event: DrawCardEventArguments
+
+
 EventArguments = (
     EventArgumentsBase
     | DrawCardEventArguments
@@ -412,4 +425,5 @@ EventArguments = (
     | PlayerActionStartEventArguments
     | CharacterReviveEventArguments
     | UseCardEventArguments
+    | SwitchCardEventArguments
 )

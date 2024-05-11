@@ -5,7 +5,7 @@ from tests.utils_for_test import do_log_tests
 def test_issue_106():
     json_fname = "test_issue_106.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def test_issue_82():

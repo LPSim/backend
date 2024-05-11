@@ -3,6 +3,7 @@ from lpsim.utils import deck_code_to_deck_str, deck_str_to_deck_code
 from lpsim import Deck
 
 
+@pytest.mark.slowtest
 def test_deck_code():
     deck_str = """
     # nahida mona fischl, with 4.0 wind and freedom
