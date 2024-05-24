@@ -5,6 +5,7 @@ from .consts import DieColor, ElementalReactionType, ElementType, ObjectType
 from .action import (
     ActionTypes,
     ActionBase,
+    CreateDeckCardAction,
     DrawCardAction,
     RestoreCardAction,
     RemoveCardAction,
@@ -391,6 +392,18 @@ class SwitchCardEventArguments(EventArgumentsBase):
     draw_card_event: DrawCardEventArguments
 
 
+class CreateDeckCardEventArguments(EventArgumentsBase):
+    """
+    Event arguments for create deck card event.
+    create_card_idx (list[int]): The indexes of the cards created, start from top as 1,
+    indexes are after the card is created.
+    """
+
+    type: Literal[ActionTypes.CREATE_DECK_CARD] = ActionTypes.CREATE_DECK_CARD
+    action: CreateDeckCardAction
+    create_card_idx: list[int]
+
+
 EventArguments = (
     EventArgumentsBase
     | DrawCardEventArguments
@@ -426,4 +439,5 @@ EventArguments = (
     | CharacterReviveEventArguments
     | UseCardEventArguments
     | SwitchCardEventArguments
+    | CreateDeckCardEventArguments
 )

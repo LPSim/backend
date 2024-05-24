@@ -1,4 +1,4 @@
-from typing import Dict, Literal
+from typing import Any, Dict, Literal
 import pytest
 from lpsim.utils.desc_registry import DescDictType
 
@@ -10,11 +10,17 @@ from lpsim.utils.class_registry import get_instance, register_class
 
 from lpsim.agents.random_agent import RandomAgent
 from lpsim.agents.nothing_agent import NothingAgent
-from lpsim.server.action import CreateDiceAction, DrawCardAction, MoveObjectAction
+from lpsim.server.action import (
+    ActionTypes,
+    CreateDeckCardAction,
+    CreateDiceAction,
+    DrawCardAction,
+    MoveObjectAction,
+)
 from lpsim.server.consts import DamageElementalType, ObjectPositionType
 from lpsim.server.deck import Deck
 from lpsim.server.interaction import SwitchCardResponse
-from lpsim.server.object_base import ObjectBase
+from lpsim.server.object_base import CardBase, ObjectBase
 from lpsim.server.struct import ObjectPosition
 from lpsim.server.match import Match, MatchConfig
 
@@ -567,6 +573,302 @@ def test_blacklist_draw_card_005():
         )
 
 
+def reset_deck(match: Match, initial_decks: list[list[CardBase]]):
+    for x in range(2):
+        match.player_tables[x].table_deck.clear()
+        for y in initial_decks[x]:
+            match.player_tables[x].table_deck.append(y.copy(deep=True))
+
+
+def test_create_deck_card_action():
+    match = Match()
+    deck_str = """
+    character:Nahida
+    Strategize*30
+    """
+    card_names: list[str | dict[str, Any]] = [
+        "Gambler's Earrings",
+        "Wine-Stained Tricorne",
+        "Vanarana",
+        "Timmie",
+        "Rana",
+        # 5
+        "Covenant of Rock",
+        "Wind and Freedom",
+        "The Bestest Travel Companion!",
+        "Changing Shifts",
+        "Toss-Up",
+        # 10
+        "I Haven't Lost Yet!",
+        "Leave It to Me!",
+        "Calx's Arts",
+        "Adeptus' Temptation",
+        "Lotus Flower Crisp",
+        # 15
+        "Mondstadt Hash Brown",
+        "Tandoori Roast Chicken",
+    ]
+    deck = Deck.from_str(deck_str)
+    match.set_deck([deck, deck])
+    match.config.max_same_card_number = None
+    match.config.character_number = None
+    match.config.card_number = None
+    match.config.check_deck_restriction = False
+    match.config.initial_hand_size = 0
+    assert match.start()[0]
+    initial_decks = [
+        [y.copy(deep=True) for y in match.player_tables[x].table_deck] for x in range(2)
+    ]
+
+    # range smaller than card number
+    with pytest.raises(ValueError):
+        action = CreateDeckCardAction(
+            player_idx=0,
+            create_cards=card_names[:5],
+            create_card_default_version=None,
+            shuffle_create_cards=False,
+            create_method="random",
+            create_range=(1, 4),
+        )
+        _ = match._act(action)
+    with pytest.raises(ValueError):
+        action = CreateDeckCardAction(
+            player_idx=0,
+            create_cards=card_names[:5],
+            create_card_default_version=None,
+            shuffle_create_cards=False,
+            create_method="random",
+            create_range=(33, 40),
+        )
+        _ = match._act(action)
+
+    # range wrong
+    with pytest.raises(ValueError):
+        action = CreateDeckCardAction(
+            player_idx=0,
+            create_cards=card_names[:5],
+            create_card_default_version=None,
+            shuffle_create_cards=False,
+            create_method="random",
+            create_range=(4, 1),
+        )
+        _ = match._act(action)
+    with pytest.raises(ValueError):
+        action = CreateDeckCardAction(
+            player_idx=0,
+            create_cards=card_names[:5],
+            create_card_default_version=None,
+            shuffle_create_cards=False,
+            create_method="random",
+            create_range=(0, 5),
+        )
+        _ = match._act(action)
+    with pytest.raises(ValueError):
+        action = CreateDeckCardAction(
+            player_idx=0,
+            create_cards=card_names[:5],
+            create_card_default_version=None,
+            shuffle_create_cards=False,
+            create_method="random",
+            create_range=(100, 105),
+        )
+        _ = match._act(action)
+
+    # random create
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:5],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="random",
+        create_range=None,
+    )
+    for _ in range(10):
+        resp = match._act(action)
+        assert len(resp) == 1
+        resp = resp[0]
+        assert resp.type == ActionTypes.CREATE_DECK_CARD
+        assert len(match.player_tables[0].table_deck) == 35
+        assert len(resp.create_card_idx) == 5
+        for left, right in zip(resp.create_card_idx[:-1], resp.create_card_idx[1:]):
+            assert left < right
+        for num, idx in enumerate(resp.create_card_idx):
+            idx -= 1
+            assert match.player_tables[0].table_deck[idx].name == card_names[num]
+        reset_deck(match, initial_decks)
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:8],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="random",
+        create_range=(12, 27),
+    )
+    for _ in range(10):
+        resp = match._act(action)
+        assert len(resp) == 1
+        resp = resp[0]
+        assert resp.type == ActionTypes.CREATE_DECK_CARD
+        assert len(match.player_tables[0].table_deck) == 38
+        assert len(resp.create_card_idx) == 8
+        assert max(resp.create_card_idx) <= 27
+        assert min(resp.create_card_idx) >= 12
+        for left, right in zip(resp.create_card_idx[:-1], resp.create_card_idx[1:]):
+            assert left < right
+        for num, idx in enumerate(resp.create_card_idx):
+            idx -= 1
+            assert match.player_tables[0].table_deck[idx].name == card_names[num]
+        reset_deck(match, initial_decks)
+    match.player_tables[0].table_deck = match.player_tables[0].table_deck[:2]
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=[card_names[0]],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="random",
+        create_range=(1, 5),
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 1
+    assert len(match.player_tables[0].table_deck) == 3
+    assert (
+        match.player_tables[0].table_deck[resp.create_card_idx[0] - 1].name
+        == card_names[0]
+    )
+    reset_deck(match, initial_decks)
+
+    # equal create
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:5],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="equal",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 5
+    assert len(match.player_tables[0].table_deck) == 35
+    assert resp.create_card_idx == [6, 12, 18, 24, 30]
+    for num, idx in enumerate(resp.create_card_idx):
+        idx -= 1
+        assert match.player_tables[0].table_deck[idx].name == card_names[num]
+    reset_deck(match, initial_decks)
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:8],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="equal",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 8
+    assert len(match.player_tables[0].table_deck) == 38
+    assert resp.create_card_idx == [5, 10, 15, 19, 23, 27, 31, 35]
+    for num, idx in enumerate(resp.create_card_idx):
+        idx -= 1
+        assert match.player_tables[0].table_deck[idx].name == card_names[num]
+    reset_deck(match, initial_decks)
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:8],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="equal",
+        create_range=(12, 25),
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 8
+    assert len(match.player_tables[0].table_deck) == 38
+    assert resp.create_card_idx == [13, 15, 17, 19, 21, 23, 24, 25]
+    for num, idx in enumerate(resp.create_card_idx):
+        idx -= 1
+        assert match.player_tables[0].table_deck[idx].name == card_names[num]
+    reset_deck(match, initial_decks)
+
+    # top
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:5],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="top",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 5
+    assert len(match.player_tables[0].table_deck) == 35
+    assert resp.create_card_idx == [1, 2, 3, 4, 5]
+    for num, idx in enumerate(resp.create_card_idx):
+        idx -= 1
+        assert match.player_tables[0].table_deck[idx].name == card_names[num]
+    reset_deck(match, initial_decks)
+
+    # bottom
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=card_names[:5],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="bottom",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 5
+    assert len(match.player_tables[0].table_deck) == 35
+    assert resp.create_card_idx == [31, 32, 33, 34, 35]
+    for num, idx in enumerate(resp.create_card_idx):
+        idx -= 1
+        assert match.player_tables[0].table_deck[idx].name == card_names[num]
+    reset_deck(match, initial_decks)
+
+    # use version hint and dict
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=[
+            "Minty Meat Rolls",
+            {"name": "Minty Meat Rolls", "version": "4.0"},
+        ],
+        create_card_default_version="3.3",
+        shuffle_create_cards=False,
+        create_method="top",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 2
+    assert len(match.player_tables[0].table_deck) == 32
+    assert resp.create_card_idx == [1, 2]
+    deck = match.player_tables[0].table_deck
+    assert deck[0].name == "Minty Meat Rolls"
+    assert deck[1].name == "Minty Meat Rolls"
+    assert deck[0].version == "3.3"
+    assert deck[1].version == "3.4"
+    reset_deck(match, initial_decks)
+    match.player_tables[0].player_deck_information.default_version = "4.0"
+    action = CreateDeckCardAction(
+        player_idx=0,
+        create_cards=[
+            "Minty Meat Rolls",
+            {"name": "Minty Meat Rolls", "version": "3.3"},
+        ],
+        create_card_default_version=None,
+        shuffle_create_cards=False,
+        create_method="top",
+        create_range=None,
+    )
+    resp = match._action_create_deck_card(action)[0]
+    assert len(resp.create_card_idx) == 2
+    assert len(match.player_tables[0].table_deck) == 32
+    assert resp.create_card_idx == [1, 2]
+    deck = match.player_tables[0].table_deck
+    assert deck[0].name == "Minty Meat Rolls"
+    assert deck[1].name == "Minty Meat Rolls"
+    assert deck[0].version == "3.4"
+    assert deck[1].version == "3.3"
+    reset_deck(match, initial_decks)
+
+
 if __name__ == "__main__":
     # test_object_position_validation()
     # test_match_config_and_match_errors()
@@ -574,6 +876,7 @@ if __name__ == "__main__":
     # test_create_dice()
     # test_id_wont_duplicate()
     # test_remove_non_exist_equip()
-    test_vanilla_element_infusion_team_status()
-    test_blacklist_draw_card_004()
-    test_blacklist_draw_card_005()
+    # test_vanilla_element_infusion_team_status()
+    # test_blacklist_draw_card_004()
+    # test_blacklist_draw_card_005()
+    test_create_deck_card_action()

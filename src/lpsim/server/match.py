@@ -45,6 +45,7 @@ from .action import (
     ConsumeArcaneLegendAction,
     GenerateSwitchCardRequestAction,
     SwitchCardAction,
+    CreateDeckCardAction,
 )
 from .interaction import (
     Requests,
@@ -110,6 +111,7 @@ from .event import (
     UseCardEventArguments,
     UseSkillEventArguments,
     SwitchCardEventArguments,
+    CreateDeckCardEventArguments,
 )
 from .object_base import CardBase, ObjectBase
 from .modifiable_values import (
@@ -1755,6 +1757,8 @@ class Match(BaseModel):
             return list(self._action_character_revive(action))
         elif isinstance(action, GenerateSwitchCardRequestAction):
             return list(self._action_generate_switch_card_request(action))
+        elif isinstance(action, CreateDeckCardAction):
+            return list(self._action_create_deck_card(action))
         else:
             self._set_match_state(MatchState.ERROR)  # pragma no cover
             raise AssertionError(f"Unknown action {action}.")
@@ -3051,6 +3055,109 @@ class Match(BaseModel):
         return [
             ConsumeArcaneLegendEventArguments(
                 action=action,
+            )
+        ]
+
+    def _action_create_deck_card(
+        self, action: CreateDeckCardAction
+    ) -> list[CreateDeckCardEventArguments]:
+        """
+        It will create multiple deck cards
+        """
+        player_idx = action.player_idx
+        table = self.player_tables[player_idx]
+        now_deck = table.table_deck
+        card_args = action.create_cards
+        default_version = action.create_card_default_version
+        if default_version is None:
+            default_version = table.player_deck_information.default_version
+        final_num = len(now_deck) + len(card_args)
+        card_method = action.create_method
+        card_range = action.create_range
+        if card_range is None:
+            card_range = (1, final_num)
+        if card_range[0] > final_num:
+            raise ValueError(
+                f"Card range left position {card_range[0]}"
+                f"should be less than final length {final_num}."
+            )
+        if card_range[1] > final_num:
+            card_range = (card_range[0], final_num)
+        if card_range[0] < 1:
+            raise ValueError("Card range left position should be greater than 1.")
+        if card_range[0] > card_range[1]:
+            raise ValueError(f"Card range error: {card_range}.")
+        if card_range[1] - card_range[0] + 1 < len(card_args):
+            raise ValueError(
+                "Card range should be greater than or equal to number of new cards. "
+                f"Range: {card_range}, number of new cards: {len(card_args)}."
+            )
+
+        # if need shuffle, create_card_idx should reverse indexing!
+        assert (
+            not action.shuffle_create_cards
+        ), "Shuffle created cards is not supported now."
+        # if action.shuffle_created_cards:
+        #     card_args = action.create_cards[:]
+        #     self._random_shuffle(card_args)
+
+        # add version, and create
+        final_card_args: list[dict[str, Any]] = []
+        for arg in card_args:
+            if isinstance(arg, str):
+                arg = {"name": arg}
+            if "version" not in arg and default_version is not None:
+                arg["version"] = default_version
+            final_card_args.append(arg)
+        cards: list[CardBase] = [get_instance(CardBase, x) for x in final_card_args]
+        card_names = [x.name for x in cards]
+
+        # prev and after will not change, cards will put with mid, but mid order remains
+        prev_card = now_deck[: card_range[0] - 1]
+        mid_card = now_deck[card_range[0] - 1 : card_range[1] - len(card_args)]
+        after_card = now_deck[card_range[1] - len(card_args) :]
+
+        # create selection, all use 0 to represent mid card, 1 to represent new card
+        if card_method == "random":
+            selection = [0] * len(mid_card) + [1] * len(cards)
+            self._random_shuffle(selection)
+        elif card_method == "equal":
+            bucket_number = len(cards) + 1
+            div = len(mid_card) // bucket_number
+            rem = len(mid_card) % bucket_number
+            bucket = [div + int(i < rem) for i in range(bucket_number)]
+            selection = []
+            for i in range(bucket_number):
+                selection += [0] * bucket[i]
+                selection.append(1)
+            selection = selection[:-1]
+        elif card_method == "bottom":
+            selection = [0] * len(mid_card) + [1] * len(cards)
+        elif card_method == "top":
+            selection = [1] * len(cards) + [0] * len(mid_card)
+        else:
+            raise AssertionError(f"Unknown card method {card_method}.")
+        final_deck = prev_card
+        create_card_idx = []
+        for sel in selection:
+            if sel == 0:
+                final_deck.append(mid_card.pop(0))
+            else:
+                final_deck.append(cards.pop(0))
+                create_card_idx.append(len(final_deck))
+        assert len(mid_card) == 0 and len(cards) == 0, "Selection error."
+        final_deck += after_card
+        table.table_deck = final_deck
+        logging.info(
+            f"player {player_idx} created {len(create_card_idx)} cards "
+            f"({card_names})"
+            f"to deck with method {card_method}. "
+            f"position: {create_card_idx}."
+        )
+        return [
+            CreateDeckCardEventArguments(
+                action=action,
+                create_card_idx=create_card_idx,
             )
         ]
 

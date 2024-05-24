@@ -1,6 +1,6 @@
 from enum import Enum
 from ..utils import BaseModel
-from typing import Literal, List, Tuple
+from typing import Any, Literal, List, Tuple
 from .interaction import (
     ChooseCharacterResponse,
     RerollDiceResponse,
@@ -18,6 +18,7 @@ class ActionTypes(str, Enum):
     RESTORE_CARD = "RESTORE_CARD"
     SWITCH_CARD = "SWITCH_CARD"
     REMOVE_CARD = "REMOVE_CARD"
+    CREATE_DECK_CARD = "CREATE_DECK_CARD"
     CHOOSE_CHARACTER = "CHOOSE_CHARACTER"
     CREATE_DICE = "CREATE_DICE"
     REMOVE_DICE = "REMOVE_DICE"
@@ -522,6 +523,44 @@ class SwitchCardAction(ActionBase):
     restore_card_idxs: List[int]
 
 
+class CreateDeckCardAction(ActionBase):
+    """
+    Create cards to the deck. Can specify different way to put into deck.
+
+    create_cards:
+        dict to create card instance, or just the card name str.
+
+    create_card_default_version:
+        default version for create_cards, if not specified, will use version in the
+        deck information.  if version already exists in create_cards, this will be
+        ignored.
+
+    shuffle_create_cards:
+        if true, will do shuffle for create_cards before creating.
+
+    create_method:
+        random: randomly put into deck
+        equal: put into deck equally (space-evenly logic, refer to b23.tv/av1354331246)
+        top: put into top of deck
+        bottom: put into bottom of deck
+
+    create_range:
+        by default, card will be put in all range. If specified, the range means the
+        possible positions for cards appear in deck. It starts with 1 and includes the
+        first and last number. e.g., (1, 5) means this card will appear in the first 5
+        positions of the deck. When card number is not enough, the right number will be
+        decreased to fit the length.
+    """
+
+    type: Literal[ActionTypes.CREATE_DECK_CARD] = ActionTypes.CREATE_DECK_CARD
+    player_idx: int
+    create_cards: list[str | dict[str, Any]]
+    create_card_default_version: str | None = None
+    shuffle_create_cards: bool = False
+    create_method: Literal["random", "equal", "top", "bottom"]
+    create_range: tuple[int, int] | None = None
+
+
 Actions = (
     ActionBase
     | DrawCardAction
@@ -556,4 +595,5 @@ Actions = (
     | CharacterReviveAction
     | GenerateSwitchCardRequestAction
     | SwitchCardAction
+    | CreateDeckCardAction
 )
