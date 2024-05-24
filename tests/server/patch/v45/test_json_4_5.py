@@ -17,7 +17,7 @@ def test_lumenstone_enternalflow_v45():
 def test_balance_v45():
     json_fname = "balance_v45.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, omnipotent=True)
 
 
 def test_meropide_golden_v45():

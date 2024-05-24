@@ -95,7 +95,7 @@ def check_cls_valid_and_update_cost(cls: Any, obj_type: ObjectType):
             # for character or team status, whether to check image path based on whether
             # is others icon_type
             icon_hint = cls.__fields__["icon_type"].default
-            assert icon_hint is not None
+            assert icon_hint is not None, f"{cls} icon_type is None"
             check_image_path = str(icon_hint) == "OTHERS"
         for desc in descs:
             if desc == "":

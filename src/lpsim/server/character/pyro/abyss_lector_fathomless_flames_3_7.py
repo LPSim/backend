@@ -4,7 +4,7 @@ from ....utils.class_registry import register_class
 
 from ...summon.base import AOESummonBase
 
-from ...event import RemoveObjectEventArguments
+from ...event import GameStartEventArguments, RemoveObjectEventArguments
 
 from ...action import Actions, CreateObjectAction, RemoveObjectAction
 from ...struct import Cost, ObjectPosition
@@ -60,7 +60,18 @@ class OminousStar(ElementalBurstBase):
 class FieryRebirth(CreateStatusPassiveSkill):
     name: Literal["Fiery Rebirth"] = "Fiery Rebirth"
     status_name: Literal["Fiery Rebirth"] = "Fiery Rebirth"
+    version: Literal["3.7"] = "3.7"
     regenerate_when_revive: bool = False
+
+    def event_handler_GAME_START(
+        self, event: GameStartEventArguments, match: Any
+    ) -> List[CreateObjectAction]:
+        """
+        When game begin, gain status
+        """
+        return [
+            self.create_character_status(self.status_name, {"version": self.version})
+        ]
 
 
 # Talents
@@ -80,7 +91,7 @@ class EmbersRekindled_3_7(TalentBase):
     def get_targets(self, match: Any) -> List[ObjectPosition]:
         ret: List[ObjectPosition] = []
         for c in match.player_tables[self.position.player_idx].characters:
-            if c.name == "Abyss Lector: Fathomless Flames":
+            if c.name == "Abyss Lector: Fathomless Flames" and c.is_alive:
                 ret.append(c.position)
         return ret
 
@@ -112,7 +123,7 @@ class EmbersRekindled_3_7(TalentBase):
                         ObjectPositionType.CHARACTER_STATUS
                     ),
                     object_name="Aegis of Abyssal Flame",
-                    object_arguments={},
+                    object_arguments={"version": self.version},
                 ),
             ]
         return []

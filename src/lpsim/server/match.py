@@ -2869,6 +2869,16 @@ class Match(BaseModel):
         elif action.object_position.area == ObjectPositionType.SUMMON:
             target_list = table.summons
             target_name = "summon"
+        elif action.object_position.area == ObjectPositionType.CHARACTER:
+            character = table.characters[action.object_position.character_idx]
+            target_list = [
+                character,
+                character.weapon,
+                character.artifact,
+                character.talent,
+            ]
+            target_list = [x for x in target_list if x is not None]
+            target_name = "character/equip"
         else:
             raise NotImplementedError(
                 f"Change object usage action for area "
@@ -3144,7 +3154,7 @@ class Match(BaseModel):
         self, action: GenerateSwitchCardRequestAction
     ) -> List[EventArgumentsBase]:
         self._request_switch_card(action.player_idx)
-        if self.config.history_level > 0:
+        if self.config.history_level > 0:  # pragma: no cover
             self._save_history()
         return []
 

@@ -45,7 +45,7 @@ def test_sunyata_no_default():
         character:AnemoMobMage
         character:CryoMob
         character:PyroMobMage
-        Jeht*10
+        Jeht@4.5*10
         Sunyata Flower*20
         """
     )

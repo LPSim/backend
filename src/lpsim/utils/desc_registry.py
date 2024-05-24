@@ -3,6 +3,7 @@ Collect descriptions.
 """
 import json
 import logging
+import re
 from typing import Any, Dict, Literal, TypedDict
 
 
@@ -91,6 +92,46 @@ def update_desc(desc_dict: Dict[str, DescDictType]) -> None:
             if "id" in desc_dict[key]:
                 raise ValueError(f"id should not be in {key}")
     _merge_dict(desc_dict, _desc_dict)
+
+
+def duplicate_desc(
+    source_version: str,
+    target_version: str,
+    include_key_regex: str,
+    exclude_key_regex: str = "",
+) -> None:
+    """
+    duplicate the description from source_version to target_version, for all matched
+    keys in include_key_regex and not matched in exclude_key_regex. This is mainly used
+    for character skill modifications, as most skill descriptions are not modified.
+
+    Arguments:
+        source_version (str): source version to copy from
+        target_version (str): target version to copy to
+        include_key_regex (str): regex pattern to match keys, i.e. return True with
+            `re.match`.
+        exclude_key_regex (str): regex pattern to exclude keys, i.e. return False with
+            `re.match`. Default is "", which means no exclusion.
+    """
+    keys = list(_desc_dict.keys())
+    include_regex = re.compile(include_key_regex)
+    exclude_regex = re.compile(exclude_key_regex)
+    selected_keys = [
+        x
+        for x in keys
+        if include_regex.match(x)
+        and not (len(exclude_key_regex) > 0 and exclude_regex.match(x))
+    ]
+    for key in selected_keys:
+        target = _desc_dict[key]
+        assert "descs" in target
+        assert (
+            source_version in target["descs"]
+        ), f"desc of {key} does not have {source_version}"
+        assert (
+            target_version not in target["descs"]
+        ), f"desc of {key} already has {target_version}"
+        target["descs"][target_version] = target["descs"][source_version]
 
 
 def desc_exist(

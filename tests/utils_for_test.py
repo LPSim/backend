@@ -146,7 +146,7 @@ def read_from_log_json(path: str) -> Tuple[Match, InteractionAgent, InteractionA
 def do_log_tests(
     json_path,
     hp_modify: int = -1,
-    omnipotent: bool = True,
+    omnipotent: bool | None = None,
     other_tests: Dict[int, Callable] = {},
     match_version: str | None = None,
 ):
@@ -164,6 +164,9 @@ def do_log_tests(
             characters = match.player_tables[i].player_deck_information.characters  # noqa: E501
             for c in characters:
                 c.hp = c.max_hp = hp_modify
+    if omnipotent is None:
+        # when omnipotent is not set, guess from initial dice number
+        omnipotent = match.config.initial_dice_number == 16
     # add omnipotent guide
     if omnipotent:
         match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
@@ -244,6 +247,43 @@ def do_log_tests(
                 ele_app = match.player_tables[pidx].characters[cidx].element_application
                 now_ele = [x.value for x in ele_app]
                 assert now_ele == cmd[3:]
+            elif test_id == 13:
+                pidx, cidx = get_pidx_cidx(cmd)
+                c = match.player_tables[pidx].characters[cidx]
+                assert c.is_alive
+                eq_usage_str = ""
+                if c.weapon is None:
+                    eq_usage_str += "N"
+                else:
+                    eq_usage_str += str(
+                        c.weapon.usage  # type: ignore
+                        if hasattr(c.weapon, "usage")
+                        else "-"
+                    )
+                if c.artifact is None:
+                    eq_usage_str += "N"
+                else:
+                    eq_usage_str += str(
+                        c.artifact.usage  # type: ignore
+                        if hasattr(c.artifact, "usage")
+                        else "-"
+                    )
+                if c.talent is None:
+                    eq_usage_str += "N"
+                else:
+                    eq_usage_str += str(
+                        c.talent.usage  # type: ignore
+                        if hasattr(c.talent, "usage")
+                        else "-"
+                    )
+                assert eq_usage_str == cmd[3]
+            elif test_id == 14:
+                pidx = int(cmd[2][1])
+                others = " ".join(cmd[3:])
+                summon_desc_str = "|"
+                for i, s in enumerate(match.player_tables[pidx].summons):
+                    summon_desc_str += s.desc + "|"
+                assert summon_desc_str == others
             else:
                 if test_id in other_tests:
                     other_tests[test_id](match, cmd)

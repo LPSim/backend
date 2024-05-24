@@ -64,9 +64,11 @@ class UsageWithRoundRestrictionStatusBase(StatusBase):
         Renew the status.
         """
         super().renew(new_status)
-        if self.usage_this_round < new_status.usage_this_round:
+        if (
+            self.max_usage_one_round < new_status.max_usage_one_round
+        ):  # pragma: no cover  # noqa
             # refresh usage this round when renew
-            self.usage_this_round = new_status.usage_this_round
+            self.max_usage_one_round = new_status.max_usage_one_round
 
     def event_handler_CREATE_OBJECT(
         self, event: CreateObjectEventArguments, match: Any

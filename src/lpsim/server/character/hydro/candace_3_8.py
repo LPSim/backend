@@ -36,6 +36,7 @@ class SacredRiteHeronsSanctum(ElementalSkillBase):
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(elemental_dice_color=DieColor.HYDRO, elemental_dice_number=3)
+    version: Literal["3.8"] = "3.8"
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -43,7 +44,7 @@ class SacredRiteHeronsSanctum(ElementalSkillBase):
         """
         return [
             self.charge_self(1),
-            self.create_character_status("Heron Shield"),
+            self.create_character_status("Heron Shield", {"version": self.version}),
         ]
 
 

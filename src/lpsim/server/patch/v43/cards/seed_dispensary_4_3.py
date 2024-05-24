@@ -1,5 +1,7 @@
 from typing import Dict, List, Literal
 
+from pydantic import PrivateAttr
+
 from ....action import Actions
 from ....event import MoveObjectEventArguments
 from ....card.support.base import UsageWithRoundRestrictionSupportBase
@@ -21,7 +23,8 @@ class SeedDispensary_4_3(ItemBase, UsageWithRoundRestrictionSupportBase):
     icon_type: Literal[IconType.TIMESTATE] = IconType.TIMESTATE
 
     decrease_target: int = CostLabels.SUPPORTS.value | CostLabels.EQUIPMENT.value
-    decrease_threshold: int = 1
+    _max_threshold: int = PrivateAttr(1)
+    _min_threshold: int = PrivateAttr(1)
 
     def value_modifier_COST(
         self, value: CostValue, match: Match, mode: Literal["TEST", "REAL"]
@@ -34,7 +37,8 @@ class SeedDispensary_4_3(ItemBase, UsageWithRoundRestrictionSupportBase):
         if (
             self.position.area == ObjectPositionType.SUPPORT
             and value.position.player_idx == self.position.player_idx
-            and value.cost.original_value.total_dice_cost <= self.decrease_threshold
+            and value.cost.original_value.total_dice_cost <= self._max_threshold
+            and value.cost.original_value.total_dice_cost >= self._min_threshold
             and value.cost.label & self.decrease_target != 0
             and self.has_usage()
         ):
@@ -60,7 +64,7 @@ desc: Dict[str, DescDictType] = {
         "names": {"en-US": "Seed Dispensary", "zh-CN": "化种匣"},
         "descs": {
             "4.3": {
-                "en-US": "When you play an Equipment or Support Card with an original cost of at least 1 Elemental Die: Spend 1 less Elemental Die. (Once per Round)\nUsage(s): 2",  # noqa: E501
+                "en-US": "When you play an Equipment or Support Card with an original cost of 1 Elemental Die: Spend 1 less Elemental Die. (Once per Round)\nUsage(s): 2",  # noqa: E501
                 "zh-CN": "我方打出原本元素骰费用为1的装备或支援牌时：少花费1个元素骰。（每回合1次）\n可用次数：2",  # noqa: E501
             }
         },

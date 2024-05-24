@@ -40,6 +40,7 @@ class Tidecaller(ElementalSkillBase):
     damage: int = 0
     damage_type: DamageElementalType = DamageElementalType.PIERCING
     cost: Cost = Cost(elemental_dice_color=DieColor.ELECTRO, elemental_dice_number=3)
+    version: Literal["3.8"] = "3.8"
 
     def get_actions(self, match: Any) -> List[Actions]:
         """
@@ -47,7 +48,9 @@ class Tidecaller(ElementalSkillBase):
         """
         return [
             self.charge_self(1),
-            self.create_character_status("Tidecaller: Surf Embrace"),
+            self.create_character_status(
+                "Tidecaller: Surf Embrace", {"version": self.version}
+            ),
         ]
 
 

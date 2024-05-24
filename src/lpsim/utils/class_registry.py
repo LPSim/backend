@@ -62,9 +62,7 @@ def get_instance(base_class: Any, args: Dict):
             continue
 
     names = [x.__name__ for x in base_class_list]
-    raise AssertionError(
-        "Instance %s not found in instance factory with args %s" % (names, args)
-    )
+    raise AssertionError(f"Instance not found in class {names} with args {args}")
 
 
 def get_class_list_by_base_class(
