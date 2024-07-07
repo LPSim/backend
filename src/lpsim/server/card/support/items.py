@@ -145,7 +145,7 @@ class NRE_4_1(RoundEffectItemBase):
 
 
 class NRE_3_3(NRE_4_1):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(any_dice_number=2)
 
 

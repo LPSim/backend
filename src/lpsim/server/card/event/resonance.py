@@ -412,7 +412,7 @@ class WindAndFreedom_4_1(NationResonanceCardBase):
 
 class WindAndFreedom_3_7(WindAndFreedom_4_1):
     name: Literal["Wind and Freedom"]
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
 
 
 class StoneAndContracts_3_7(NationResonanceCardBase):
@@ -483,7 +483,7 @@ class ThunderAndEternity_4_0(NationResonanceCardBase):
 
 class ThunderAndEternity_3_7(ThunderAndEternity_4_0):
     name: Literal["Thunder and Eternity"]
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
 
     def get_dice_color(self, match: Any) -> str:
         """

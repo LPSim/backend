@@ -2768,7 +2768,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到1点生命值。",
-        "en-US": "When the character to which this is attached would be defeated: Remove this effect, ensure the character will not be defeated, and heal them to _HEAL_ HP."
+        "en-US": "When the character to which this is attached would be defeated: Remove this effect, ensure the character will not be defeated, and heal them to 1 HP."
       }
     }
   },
@@ -2840,7 +2840,7 @@
     "descs": {
       "3.7": {
         "zh-CN": "所附属角色被击倒时：移除此效果，使角色免于被击倒，并治疗该角色到3点生命值。",
-        "en-US": "When the character to which this is attached would be defeated: Remove this effect, ensure the character will not be defeated, and heal them to _HEAL_ HP."
+        "en-US": "When the character to which this is attached would be defeated: Remove this effect, ensure the character will not be defeated, and heal them to 3 HP."
       }
     }
   },

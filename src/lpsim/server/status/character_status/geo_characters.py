@@ -328,7 +328,7 @@ class Petrification_3_7(RoundCharacterStatus):
 
 
 class RagingOniKing_3_6(RagingOniKing_4_2):
-    version: Literal["3.6"]
+    version: Literal["3.6"] = "3.6"
     damage_increase: int = 2
 
 

@@ -196,7 +196,7 @@ class MintyMeatRolls_3_4(RoundCharacterStatus):
 
 
 class MintyMeatRolls_3_3(MintyMeatRolls_3_4):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     decrease_usage: int = 999
 
 

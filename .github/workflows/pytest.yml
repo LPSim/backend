@@ -6,15 +6,15 @@ on:
       - "src/**"
       - "tests/**"
       - "**/*.py"
-    paths-ignore: 
-      - "src/env/**"
+      - "!src/lpsim/env/**"
+      - "!src/lpsim/network/**"
   pull_request:
     paths:
       - "src/**"
       - "tests/**"
       - "**/*.py"
-    paths-ignore: 
-      - "src/env/**"
+      - "!src/lpsim/env/**"
+      - "!src/lpsim/network/**"
   workflow_dispatch:
   workflow_call:
 

@@ -55,7 +55,7 @@ class TideWithholder(TW_4_1):
 
 
 class AbyssalMayhemHydrospout_3_7(AMH_4_1):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     only_active_character: bool = False
     cost: Cost = Cost(
         elemental_dice_color=DieColor.HYDRO,
@@ -68,7 +68,7 @@ class AbyssalMayhemHydrospout_3_7(AMH_4_1):
 
 class Tartaglia_3_7(Tartaglia_4_1):
     name: Literal["Tartaglia"]
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     skills: List[
         PhysicalNormalAttackBase
         | FoulLegacyRagingTide

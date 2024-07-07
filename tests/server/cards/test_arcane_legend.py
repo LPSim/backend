@@ -1,3 +1,4 @@
+import pytest
 from lpsim.server.deck import Deck
 from lpsim.server.interaction import UseCardResponse
 from lpsim.server.match import Match, MatchState
@@ -98,6 +99,7 @@ def test_covenant_of_rock():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_rock_dice_different_not_omni():
     """
     stop in using card, and set random random_state, then use card again
@@ -265,7 +267,7 @@ def test_ancient_courtyard():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -755,7 +757,7 @@ def test_arcaneguoba_hairan_fenglong_lyresong():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """

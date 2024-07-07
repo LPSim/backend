@@ -17,7 +17,7 @@ class MistySummons(MS_4_1):
 
 
 class FatuiCryoCicinMage_3_7(FCC_4_1):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     skills: List[CicinIcicle | MistySummons | BlizzardBranchBlossom] = []
 
     def _init_skills(self) -> None:

@@ -74,6 +74,7 @@ def test_match_pipeline():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_save_load():
     """
     use v3.3 Catalyzing Field to test save & load.
@@ -162,6 +163,7 @@ def test_save_load():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_copy_speed():
     agent_0 = NothingAgent(player_idx=0)
     agent_1 = InteractionAgent(
@@ -240,6 +242,7 @@ def test_copy_speed():
     assert True
 
 
+@pytest.mark.slowtest
 def test_random_same_after_load():
     agent_0 = RandomAgent(player_idx=0, random_seed=42)
     agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
@@ -314,6 +317,7 @@ def test_random_same_after_load():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_save_load_same():
     agent_0 = RandomAgent(player_idx=0, random_seed=42)
     agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
@@ -593,7 +597,7 @@ def test_summon_over_maximum():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -767,6 +771,7 @@ def test_higher_version_compatible():
         assert c.version == r
 
 
+@pytest.mark.slowtest
 def test_save_history():
     agent_0 = RandomAgent(player_idx=0, random_seed=42)
     agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
@@ -897,6 +902,7 @@ def test_generate_unused_cards():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_prediction():
     """
     3335 + E + talent
@@ -1115,6 +1121,7 @@ def test_frozen_cannot_use_skill_talent():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_new_match_from_history():
     agent_0 = RandomAgent(player_idx=0, random_seed=42)
     agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
@@ -1173,6 +1180,7 @@ def test_new_match_from_history():
     assert remove_ids(initial_match) == remove_ids(match)
 
 
+@pytest.mark.slowtest
 def test_new_match_from_history_compressed():
     agent_0 = RandomAgent(player_idx=0, random_seed=42)
     agent_1 = RandomAgent(player_idx=1, random_seed=19260817)
@@ -1283,7 +1291,7 @@ def test_version_validation():
 
     # multiple version hints
     class OOZZ(Oz_3_3):
-        version: Literal["3.4", "3.5"]
+        version: Literal["3.4", "3.5"] = "3.4"
 
     with pytest.raises(ValueError):
         _ = OOZZ(

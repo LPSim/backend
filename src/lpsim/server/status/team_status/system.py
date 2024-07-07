@@ -64,7 +64,7 @@ class CatalyzingField_3_3(CatalyzingField_3_4):
     Catalyzing field.
     """
 
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     usage: int = 3
     max_usage: int = 3
 

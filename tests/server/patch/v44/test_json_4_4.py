@@ -11,7 +11,7 @@ def test_balance():
 def test_cryo_hypostasis():
     json_fname = "cryo_hypostasis.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def millennial_999_test(match, cmd):
@@ -25,7 +25,9 @@ def millennial_999_test(match, cmd):
 def test_millennial_pearl_seahorse():
     json_fname = "millennial_pearl_seahorse.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path, other_tests={999: millennial_999_test})
+    do_log_tests(
+        json_path, other_tests={999: millennial_999_test}, match_version="0.0.4"
+    )
 
 
 def test_millennial_pearl_seahorse_2():
@@ -49,31 +51,31 @@ def test_sayu():
 def test_sapwood_machine_veteran():
     json_fname = "sapwood_machine_veteran.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def test_machine_2():
     json_fname = "machine_2.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def test_veteran_2():
     json_fname = "veteran_2.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def test_silver():
     json_fname = "silver.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 def test_jeht_sunyata():
     json_fname = "jeht_sunyata.json"
     json_path = os.path.join(os.path.dirname(__file__), "jsons", json_fname)
-    do_log_tests(json_path)
+    do_log_tests(json_path, match_version="0.0.4")
 
 
 if __name__ == "__main__":

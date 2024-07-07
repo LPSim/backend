@@ -53,7 +53,7 @@ class Grimheart_3_8(UsageCharacterStatus):
 
 
 class Grimheart_3_5(Grimheart_3_8):
-    version: Literal["3.5"]
+    version: Literal["3.5"] = "3.5"
     damage: int = 2
 
 

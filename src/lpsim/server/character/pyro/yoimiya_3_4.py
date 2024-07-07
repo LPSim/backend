@@ -16,7 +16,7 @@ class RyuukinSaxifrage(RS_3_8):
 
 
 class Yoimiya_3_4(Y_3_8):
-    version: Literal["3.4"]
+    version: Literal["3.4"] = "3.4"
     skills: List[FireworkFlareUp | NiwabiFireDance | RyuukinSaxifrage] = []
 
     def _init_skills(self) -> None:

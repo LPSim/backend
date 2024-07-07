@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Dict
+import pytest
 from lpsim.agents.interaction_agent import InteractionAgent_V1_0, InteractionAgent
 from lpsim.agents.nothing_agent import NothingAgent
 from lpsim.server.match import Match, MatchState
@@ -271,7 +272,7 @@ def test_timmie():
         ],
         only_use_command=True,
     )
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     deck = Deck.from_str(
         """
         default_version:4.0
@@ -413,7 +414,7 @@ def test_liben():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -513,7 +514,7 @@ def test_setaria():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -717,7 +718,7 @@ def test_tubby():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -836,7 +837,7 @@ def test_chang_nine():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -904,7 +905,7 @@ def test_chang_nine():
 def test_paimon_kujirai():
     json_fname = "kujirai_log.json"
     json_path = os.path.join(os.path.dirname(__file__), json_fname)
-    do_log_tests(json_path, omnipotent=False)
+    do_log_tests(json_path, omnipotent=False, match_version="0.0.4")
 
 
 def test_master_zhang():
@@ -956,7 +957,7 @@ def test_master_zhang():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1109,7 +1110,7 @@ def get_ellin_match():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1137,6 +1138,7 @@ def get_ellin_match():
 
 def test_katheryne_tian_ellin():
     agent_0, agent_1, match = get_ellin_match()
+    match.version = "0.0.4"
     match.start()
     match.step()
 
@@ -1247,7 +1249,7 @@ def test_wagner_timaeus():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1393,7 +1395,7 @@ def test_chef_mao():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1544,7 +1546,7 @@ def test_dunyazard():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1769,7 +1771,7 @@ def test_hanachirusato():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1890,7 +1892,7 @@ def test_chefmao_dunyarzad():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -1971,7 +1973,7 @@ def test_yayoi_fix():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -2182,6 +2184,7 @@ def remove_ellin_information(match_dict: Dict):
     return json.dumps(h)
 
 
+@pytest.mark.slowtest
 def test_ellin_load_and_save():
     agent_0, agent_1, match = get_ellin_match()
     assert match.start()[0]

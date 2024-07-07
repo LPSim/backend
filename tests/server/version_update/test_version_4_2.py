@@ -53,7 +53,7 @@ def test_joy_4_2_and_cost_change_cards():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -182,7 +182,7 @@ def test_chongyun_yoimiya_beidou():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -542,7 +542,7 @@ def test_yanfei_4_2():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -693,7 +693,7 @@ def test_rhodeia_shenhe_itto():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck1 = Deck.from_str(
         """
@@ -852,6 +852,6 @@ if __name__ == "__main__":
     # test_chongyun_yoimiya_beidou()
     # test_razor_sara_cyno()
     # test_jean_kokomi_amber()
-    # test_yanfei_4_2()
+    test_yanfei_4_2()
     # test_rhodeia_shenhe_itto()
     test_kokomi_2()

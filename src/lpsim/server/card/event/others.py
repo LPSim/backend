@@ -203,7 +203,7 @@ class IHaventLostYet_4_0(CreateSystemEventHandlerObject, EventCardBase):
 
 class IHaventLostYet_3_3(IHaventLostYet_4_0):
     name: Literal["I Haven't Lost Yet!"]
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost()
 
     def get_actions(
@@ -465,14 +465,14 @@ class BlessingOfTheDivineRelicsInstallation_4_1(MasterOfWeaponry_4_1):
 
 
 class MasterOfWeaponry_3_3(MasterOfWeaponry_4_1):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     reset_usage: bool = False
 
 
 class BlessingOfTheDivineRelicsInstallation_3_3(
     BlessingOfTheDivineRelicsInstallation_4_1
 ):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     reset_usage: bool = False
 
 
@@ -528,7 +528,7 @@ class SendOff_3_7(EventCardBase):
 
 class SendOff_3_3(SendOff_3_7):
     name: Literal["Send Off"]
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(any_dice_number=2)
 
     def get_actions(

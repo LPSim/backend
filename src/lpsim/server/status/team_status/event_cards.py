@@ -32,7 +32,6 @@ from ...event import (
     DeclareRoundEndEventArguments,
     MakeDamageEventArguments,
     MoveObjectEventArguments,
-    RoundPrepareEventArguments,
     SkillEndEventArguments,
 )
 
@@ -42,7 +41,13 @@ from ...modifiable_values import (
     DamageIncreaseValue,
     DamageValue,
 )
-from .base import RoundTeamStatus, ShieldTeamStatus, TeamStatusBase, UsageTeamStatus
+from .base import (
+    RoundTeamStatus,
+    ShieldTeamStatus,
+    TeamStatusBase,
+    UsageTeamStatus,
+    UsageWithRoundRestrictionTeamStatus,
+)
 
 
 class ChangingShifts_3_3(UsageTeamStatus):
@@ -410,7 +415,7 @@ class AncientCourtyard_3_8(RoundTeamStatus):
         return self.check_should_remove()
 
 
-class FatuiAmbusher_3_7(UsageTeamStatus):
+class FatuiAmbusher_3_7(UsageWithRoundRestrictionTeamStatus):
     name: Literal[
         "Fatui Ambusher: Cryo Cicin Mage",
         "Fatui Ambusher: Mirror Maiden",
@@ -421,9 +426,8 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
     version: Literal["3.7"] = "3.7"
     usage: int = 2
     max_usage: int = 2
+    max_usage_one_round: int = 1
     icon_type: Literal[IconType.OTHERS] = IconType.OTHERS
-
-    activated_this_round: bool = False
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -437,23 +441,13 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
             assert self.name == "Fatui Ambusher: Electrohammer Vanguard"
             self.element = DamageElementalType.ELECTRO
 
-    def event_handler_ROUND_PREPARE(
-        self, event: RoundPrepareEventArguments, match: Any
-    ) -> List[Actions]:
-        """
-        reset activated_this_round
-        """
-        self.activated_this_round = False
-        return []
-
     def event_handler_SKILL_END(
         self, event: SkillEndEventArguments, match: Any
     ) -> List[MakeDamageAction]:
         """
         When attached character use skill, then damage itself.
         """
-        if self.activated_this_round:
-            # already activated, do nothing
+        if not self.has_usage():
             return []
         if not self.position.check_position_valid(
             event.action.position,
@@ -467,8 +461,7 @@ class FatuiAmbusher_3_7(UsageTeamStatus):
             self.position.player_idx
         ].get_active_character()
         if self.usage > 0:  # pragma: no branch
-            self.usage -= 1
-            self.activated_this_round = True
+            self.use()
             return [
                 MakeDamageAction(
                     damage_value_list=[
@@ -575,7 +568,7 @@ class WindAndFreedom_4_1(WhenTheCraneReturned_3_3, RoundTeamStatus):
 
 class WindAndFreedom_3_7(FreshWindOfFreedom_4_1):
     name: Literal["Wind and Freedom"] = "Wind and Freedom"
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
 
 
 class Pankration_4_1(TeamStatusBase):

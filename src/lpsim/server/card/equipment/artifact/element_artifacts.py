@@ -125,17 +125,17 @@ class BigElementalArtifact_4_0(SmallElementalArtifact_4_0):
 
 
 class SmallElementalArtifact_3_3(SmallElementalArtifact_4_0):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(same_dice_number=2)
 
 
 class BigElementalArtifact_3_6(BigElementalArtifact_4_0):
-    version: Literal["3.6"]
+    version: Literal["3.6"] = "3.6"
     cost: Cost = Cost(any_dice_number=3)
 
 
 class BigElementalArtifact_3_3(BigElementalArtifact_4_0):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(same_dice_number=3)
 
 

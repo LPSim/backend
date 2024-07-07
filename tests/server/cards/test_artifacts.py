@@ -224,7 +224,7 @@ def test_old_version_elemental_artifacts():
     deck_dict = deck.dict()
     deck_dict["cards"] += [old_wine] * 12
     deck = Deck(**deck_dict)
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     match.config.max_same_card_number = 30
     match.set_deck([deck, deck])
     match.start()
@@ -912,7 +912,7 @@ def test_big_elemental_artifacts():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """

@@ -71,6 +71,7 @@ class SummonBase(ObjectBase):
         else:
             assert self.renew_type == "RESET_WITH_MAX"
             self.usage = max(self.usage, new_status.usage)
+        self.desc = new_status.desc
 
     def is_valid(self, match: Any) -> bool:
         """

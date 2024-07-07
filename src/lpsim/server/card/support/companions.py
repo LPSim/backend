@@ -133,7 +133,7 @@ class Katheryne_3_6(RoundEffectCompanionBase):
 
 
 class Katheryne_3_3(Katheryne_3_6):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(any_dice_number=2)
 
 
@@ -245,7 +245,7 @@ class ChefMao_4_1(RoundEffectCompanionBase, LimitedEffectSupportBase):
 
 
 class ChefMao_3_3(ChefMao_4_1):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     limited_usage: int = 0
 
 
@@ -805,7 +805,7 @@ class Dunyarzad_4_1(Tubby_3_3, LimitedEffectSupportBase):
 
 
 class Dunyarzad_3_7(Dunyarzad_4_1):
-    version: Literal["3.7"]
+    version: Literal["3.7"] = "3.7"
     limited_usage: int = 0
 
 

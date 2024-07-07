@@ -127,7 +127,7 @@ class FloralSidewinder_3_4(SkillTalent):
 
 
 class FloralSidewinder_3_3(FloralSidewinder_3_4):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     cost: Cost = Cost(elemental_dice_color=DieColor.DENDRO, elemental_dice_number=3)
 
 

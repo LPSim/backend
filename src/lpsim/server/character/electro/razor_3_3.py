@@ -26,7 +26,7 @@ class Awakening_3_3(Awakening_4_2):
 
 
 class Razor_3_3(R_3_8):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     skills: List[PhysicalNormalAttackBase | ClawAndThunder | LightningFang] = []
     max_charge: int = 3
 

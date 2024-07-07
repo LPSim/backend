@@ -14,7 +14,7 @@ class InfluxBlast(IB_3_7):
 
 
 class MirrorMaiden_3_3(MM_3_7):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     skills: List[ElementalNormalAttackBase | InfluxBlast | ElementalBurstBase] = []
 
     def _init_skills(self) -> None:

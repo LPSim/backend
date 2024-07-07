@@ -12,6 +12,7 @@ def test_boar_talent():
     match, agent_0, agent_1 = read_from_log_json(
         os.path.join(os.path.dirname(__file__), "jsons", "test_boar_talent.json")  # noqa: E501
     )
+    match.version = "0.0.4"
     match.config.history_level = 0
     # modify hp
     # for i in range(2):

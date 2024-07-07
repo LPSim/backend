@@ -36,7 +36,7 @@ class SupportBase(CardBase):
     # when status icon type is not none, it will show in team status area
     status_icon_type: Literal[IconType.NONE] = IconType.NONE
 
-    def check_should_remove(self) -> List[RemoveObjectAction]:
+    def check_should_remove(self, match: Any = None) -> List[RemoveObjectAction]:
         """
         Check if the support should be removed.
         when usage has changed, call this function to check if the support
@@ -161,7 +161,7 @@ class UsageWithRoundRestrictionSupportBase(SupportBase):
     name: str
     version: str
     cost: Cost
-    usage: int = 2
+    usage: int
     usage_this_round: int = 0
     max_usage_one_round: int
 

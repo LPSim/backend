@@ -29,7 +29,7 @@ class Raincutter(R_3_6):
 
 
 class Xingqiu_3_3(X_3_6):
-    version: Literal["3.3"]
+    version: Literal["3.3"] = "3.3"
     skills: List[GuhuaStyle | FatalRainscreen | Raincutter] = []
 
     def _init_skills(self) -> None:

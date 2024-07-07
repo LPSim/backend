@@ -27,7 +27,13 @@ related to miHoYo products.
 ## Progress
 
 :sparkles: 4.5 characters and cards, as well as balance changes are 
-implemented. :sparkles:
+implemented.
+
+:hammer: 4.6 characters and cards, as well as balance changes are
+being implemented, including strategies related to deck order.
+
+:construction: AI training support is being implemented, refer to AI training
+support section.
 
 ## Feature
 
@@ -37,6 +43,20 @@ implemented. :sparkles:
 - A frontend is provided to interact with the server.
 - Consistent when load from a state and continue running.
 - 100% Coverage of codes.
+
+
+## :construction: WIP: AI Training Support
+
+Using LPSim as a simulator for AI training has the following advantages:
+1. Since all card versions are implemented internally, updates to the simulator and official balance changes will have little impact on previously trained AI strategies. Old card versions and strategies can be used at any time to play against new card versions and strategies (if the old strategy does not fail due to the opponent using new cards).
+2. The code is implemented in Python, making it easy to integrate into common deep learning frameworks such as PyTorch and TensorFlow.
+3. All simulation processes are implemented by class functions of the Match class, without multi-threading or network communication, making it easy to implement environment parallelization.
+4. Based on Pydantic, Match can import and export from any time without changing the subsequent simulation results, making it easy to reproduce and debug.
+5. Some basic agents have been implemented, which can be used to quickly build a single-agent environment; at the same time, interactive agents have been designed to facilitate training and playing against them after training.
+
+Currently, the environment definition based on `gymnasium` and `pettingzoo` has been developed, including `gymnasium.Env`, `pettingzoo.AECEnv` basic environments. Since how to accurately represent the state of Genius Invokation as an array is a difficult problem, the basic environment has not yet implemented the encoding representation of the state, and can be inherited from the environment for modification or use `Wrapper` to modify the observation and action space.
+
+In the `src/lpsim/env` folder of the [pettingzoo](https://github.com/LPSim/backend/tree/pettingzoo) branch, the above environment implementation is included, as well as simple test code under the [Tianshou]([https://](https://github.com/thu-ml/tianshou)) multi-agent framework. The environment has not been thoroughly tested at present, and currently exists as an independent branch with the possibility of interface changes. AI-related code is currently only tested in Python 3.10, and its availability in other python versions is not guaranteed.
 
 ## Usage
 

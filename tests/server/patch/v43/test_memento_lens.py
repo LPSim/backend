@@ -1,4 +1,5 @@
 import json
+import pytest
 from lpsim.agents import InteractionAgent
 from lpsim import Deck, Match, MatchState
 from tests.utils_for_test import get_random_state, make_respond, remove_ids, set_16_omni
@@ -54,7 +55,7 @@ def get_memento_lens_match():
     )
     # initialize match. It is recommended to use default random state to make
     # replay unchanged.
-    match = Match(random_state=get_random_state())
+    match = Match(version="0.0.4", random_state=get_random_state())
     # deck information
     deck = Deck.from_str(
         """
@@ -102,6 +103,7 @@ def test_memento_lens():
     assert match.state != MatchState.ERROR
 
 
+@pytest.mark.slowtest
 def test_memento_lens_load_and_save():
     agent_0, agent_1, match = get_memento_lens_match()
     assert match.start()[0]
