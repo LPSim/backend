@@ -3,10 +3,10 @@ name: pytest-RL
 on:
   push:
     paths:
-      - "src/env/**/*.py"
+      - "src/lpsim/env/**/*.py"
   pull_request:
     paths:
-      - "src/env/**/*.py"
+      - "src/lpsim/env/**/*.py"
   workflow_dispatch:
   workflow_call:
 
@@ -31,6 +31,7 @@ jobs:
 
     - name: Run type check
       run: |
+        pyright --version
         pyright .
 
     - name: Run tests with coverage
