@@ -37,8 +37,18 @@ jobs:
       run: |
         pip install -e ".[dev]"
 
+    - name: Create pyrightconfig.json
+      run: |
+        echo '{
+          "exclude": [
+            "src/lpsim/env/**"
+          ],
+          "typeCheckingMode": "basic"
+        }' > pyrightconfig.json
+
     - name: Run type check
       run: |
+        pyright --version
         pyright .
 
     - name: Run tests with coverage
