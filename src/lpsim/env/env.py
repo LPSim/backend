@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import lpsim
 from lpsim.agents.random_agent import RandomAgent
 from lpsim.server.deck import Deck
+from lpsim.server.event_handler import OmnipotentGuideEventHandler_3_3
 from lpsim.server.interaction import Responses
 from lpsim.server.match import Match, MatchConfig
 from lpsim.agents import Agents, InteractionAgent
@@ -314,6 +315,8 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
         self._agent_selector = LPSimAgentSelector(self.agents)
 
         self.match = Match(config=self.match_config)
+        if "omnipotent_guide" in options and options["omnipotent_guide"]:
+            self.match.event_handlers.append(OmnipotentGuideEventHandler_3_3())
         self.match.set_deck(decks)
         res, info = self.match.start()
         assert res, f"Failed to start match: {info}"

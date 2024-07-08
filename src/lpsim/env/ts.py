@@ -325,7 +325,7 @@ def get_env_args():
         "4+Izp+vf5iPzG/zm5GJyq2nf5WPTCgLl5VLjrQXh5RMC2pvi3lNiDZzl3oNyHqPm35LS"
     )
     decks = [Deck.from_deck_code(mo_ying_cao_4_5), Deck.from_deck_code(lin_ma_long_4_5)]
-    reset_args = {"options": {"decks": decks}}
+    reset_args = {"options": {"decks": decks, "omnipotent_guide": True}}
     return reset_args
 
 
