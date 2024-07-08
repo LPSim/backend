@@ -110,6 +110,14 @@ class LPSimAgent2TianshouPolicy(BasePolicy):
 
 
 class CommandActionPolicy(LPSimAgent2TianshouPolicy):
+    """
+    Convert action to command. When add_dice_in_output is False, dice information
+    will not included in the output, and output is in length 3. Otherwise, output is in
+    length 4.
+    Note if add_dice_in_output is False, SwitchCardResponse cannot be performed, as it
+    uses dice to represent card index. TODO: maybe we can use target to represent?
+    """
+
     def __init__(self, *args, add_dice_in_output: bool = True, **kwargs):
         super().__init__(*args, **kwargs)
         self._add_dice_in_output = add_dice_in_output
@@ -325,7 +333,7 @@ def get_env_args():
         "4+Izp+vf5iPzG/zm5GJyq2nf5WPTCgLl5VLjrQXh5RMC2pvi3lNiDZzl3oNyHqPm35LS"
     )
     decks = [Deck.from_deck_code(mo_ying_cao_4_5), Deck.from_deck_code(lin_ma_long_4_5)]
-    reset_args = {"options": {"decks": decks, "omnipotent_guide": True}}
+    reset_args = {"options": {"decks": decks}}
     return reset_args
 
 
@@ -366,8 +374,8 @@ if __name__ == "__main__":
     # Step 3: Define policies for each agent
     policies = MultiAgentPolicyManager(
         policies=[
-            CommandActionPolicy(RandomAgent(player_idx=0)),
-            CommandActionPolicy(NothingAgent(player_idx=1)),
+            CommandActionPolicy(RandomAgent(player_idx=0), add_dice_in_output=False),
+            CommandActionPolicy(NothingAgent(player_idx=1), add_dice_in_output=False),
         ],
         env=env,
     )
@@ -378,7 +386,7 @@ if __name__ == "__main__":
     VectorEnv = DummyVectorEnv
     env = VectorEnv(
         # [lambda: PettingZooEnv(original_env, gym_reset_kwargs=reset_args)]
-        [get_lpsim_env] * 4,
+        [get_lpsim_env] * 2,
         # wait_num=2,
         # timeout=None,
     )

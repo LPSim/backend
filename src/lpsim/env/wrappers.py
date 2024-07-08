@@ -6,9 +6,11 @@ from typing import Type
 import numpy as np
 from pettingzoo.utils.wrappers import BaseWrapper
 from pettingzoo import AECEnv
+import torch
 
 from lpsim.agents.interaction_agent import InteractionAgent
 from lpsim.env.env import LPSimBaseV0Env
+from lpsim.env.utils import cost_default_selector
 from lpsim.server.card.equipment.artifact.base import ArtifactBase
 from lpsim.server.card.equipment.weapon.base import WeaponBase
 from lpsim.server.card.support.base import SupportBase
@@ -611,6 +613,8 @@ class AutoDiceWrapper(BaseWrapper):
     """
 
     def step(self, action: list[int]) -> None:
+        if isinstance(action, torch.Tensor | np.ndarray):
+            action = action.tolist()
         assert len(action) == 4 or len(action) == 3
         inner_env: LPSimBaseV0Env = self.unwrapped  # type: ignore
         if len(action) == 3:
@@ -623,10 +627,18 @@ class AutoDiceWrapper(BaseWrapper):
                 "UseSkillRequest",
                 "SwitchCharacterRequest",
             ]:
-                dice = (1 << request.cost.total_dice_cost) - 1  # type: ignore
+                dice_idx = cost_default_selector(
+                    match,
+                    action[0],
+                    "cost",
+                    request.cost,  # type: ignore
+                )
             elif request.name == "ElementalTuningRequest":
-                dice = 1
+                dice_idx = cost_default_selector(match, action[0], "tune")
+            elif request.name == "RerollDiceRequest":
+                dice_idx = cost_default_selector(match, action[0], "reroll")
             else:
-                dice = 0
+                dice_idx = []
+            dice = sum([1 << x for x in dice_idx])
             action = action + [dice]
         return super().step(action)
