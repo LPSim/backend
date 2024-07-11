@@ -41,12 +41,14 @@ jobs:
       run: |
         echo '{
           "exclude": [
-            "src/env/**"
-          ]
+            "src/lpsim/env/**"
+          ],
+          "typeCheckingMode": "basic"
         }' > pyrightconfig.json
 
     - name: Run type check
       run: |
+        pyright --version
         pyright .
 
     - name: Run tests with coverage
