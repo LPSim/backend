@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "src/lpsim/env/**/*.py"
+      - "tests_env/**"
   pull_request:
     paths:
       - "src/lpsim/env/**/*.py"
+      - "tests_env/**"
   workflow_dispatch:
   workflow_call:
 
@@ -29,6 +31,12 @@ jobs:
       run: |
         pip install -e ".[dev,rl]"
 
+    - name: Create pyrightconfig.json
+      run: |
+        echo '{
+          "typeCheckingMode": "basic"
+        }' > pyrightconfig.json
+
     - name: Run type check
       run: |
         pyright --version
@@ -37,9 +45,5 @@ jobs:
     - name: Run tests with coverage
       run: |
         python -m setuptools_scm
-        python -m pytest --cov
+        python -m pytest -c ./pytest_env.ini --cov
         coverage xml
-
-    - name: Upload coverage to Coveralls
-      if: github.ref == 'refs/heads/master'
-      uses: coverallsapp/github-action@v2

@@ -1,0 +1,49 @@
+# test build CI, all the steps are the same as publish.yml, except will not publish
+# to pypi or doing tests.
+name: RL Test Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "src/lpsim/env/**/*.py"
+  pull_request:
+    paths:
+      - "src/lpsim/env/**/*.py"
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for setuptools_scm
+        fetch-tags: true  # Fetch all tags for setuptools_scm
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ".[rl]"
+
+    - name: Fetch tags and print
+      run: |
+        git tag
+        python -m setuptools_scm
+
+    - name: Create distributions
+      run: |
+        python -m build
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: package-rl
+        path: dist/*
