@@ -114,18 +114,22 @@ def cost_default_selector(
         return selected
 
     # firstly select element
-    for cid in range(len(sorted_colors) - 1, -1, -1):
-        if len(selected) == cost.elemental_dice_number:
-            break
-        color = sorted_colors[cid][0]
-        if color == cost.elemental_dice_color or color == DieColor.OMNI:
-            selected.append(sorted_colors[cid][1])
+    if cost.elemental_dice_number > 0:
+        for cid in range(len(sorted_colors) - 1, -1, -1):
+            color = sorted_colors[cid][0]
+            if color == cost.elemental_dice_color or color == DieColor.OMNI:
+                selected.append(sorted_colors[cid][1])
+            if len(selected) == cost.elemental_dice_number:
+                break
+        else:
+            raise ValueError("Not enough dice")
     # then select any
-    for cid in range(len(sorted_colors) - 1, -1, -1):
-        if len(selected) == cost.any_dice_number + cost.elemental_dice_number:
-            break
-        if sorted_colors[cid][1] not in selected:
-            selected.append(sorted_colors[cid][1])
-    else:
-        raise ValueError("Not enough dice")
+    if cost.any_dice_number > 0:
+        for cid in range(len(sorted_colors) - 1, -1, -1):
+            if sorted_colors[cid][1] not in selected:
+                selected.append(sorted_colors[cid][1])
+            if len(selected) == cost.any_dice_number + cost.elemental_dice_number:
+                break
+        else:
+            raise ValueError("Not enough dice")
     return selected
