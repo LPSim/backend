@@ -15,11 +15,11 @@ from tianshou.data import (
     Batch,
     ReplayBuffer,
 )
-from tianshou.env import (  # noqa
+from tianshou.env import (
     PettingZooEnv as TianshouPettingZooEnv,
     DummyVectorEnv,
     BaseVectorEnv,
-    SubprocVectorEnv,  # noqa
+    SubprocVectorEnv,
 )
 from tianshou.policy import MultiAgentPolicyManager, BasePolicy
 from tianshou.utils import MultipleLRSchedulers

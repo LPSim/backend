@@ -217,7 +217,7 @@ class CardBase(ObjectBase):
 
     name: str
     type: Literal[
-        ObjectType.CARD,
+        ObjectType.CARD,  # i.e. event card
         ObjectType.WEAPON,
         ObjectType.ARTIFACT,
         ObjectType.TALENT,
