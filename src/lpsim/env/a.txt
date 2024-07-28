@@ -1,0 +1,125 @@
+# 考虑如下收益类型：卡数量、杂骰、有效、伤害、回复、盾、能量
+# 上述收益的标准价值为：1, 1, 2, 1, 1, 1
+# 收益分为即时收益和持续收益，持续收益会有回合数，0表示永久。如果没有持续收益则不填写
+# 前两个是名称和ID，然后跟着6个即时收益，收益用逗号分隔，收益不会和标准价值加权。然后是持续收益，先是持续时间然后是6个收益
+# 不考虑使用时的花费，由使用时模型自己考虑
+# 牌还在手上的时候实际上不需要考虑价值。反正都标好了就拉倒了
+# TODO 和usage挂钩的怎么办？现在先标1usage的情形
+ARCANE/Covenant of Rock|646|0,2,0,0,0,0,0
+ARTIFACT/Flowing Rings|904|1,0,0,0,0,0,0|0|1,0,0,0,0,0,0
+ARTIFACT/Gambler's Earrings|647|0,0,0,0,0,0,0
+ARTIFACT/Gilded Dreams|1109|0,0,1,0,0,0,0
+ARTIFACT/Heart of Khvarena's Brilliance|906|1,0,0,0,0,0,0|0|1,0,0,0,0,0,0
+ARTIFACT/Shadow of the Sand King|828|1,0,0,0,0,0,0|0|1,0,0,0,0,0,0
+CARD/Adeptus' Temptation|82|0,0,0,3,0,0,0
+CARD/Butter Crab|479|0,0,0,0,0,4,0
+CARD/Fish and Chips|910|0,2,0,0,0,0,0
+CARD/I Haven't Lost Yet!|728|0,0,1,0,0,0,1
+CARD/Jueyun Guoba|102|0,0,0,1,0,0,0
+CARD/Leave It to Me!|103|0,0,0,0,0,0,0
+CARD/Lotus Flower Crisp|104|0,0,0,0,0,3,0
+CARD/Lyresong|829|0,2,0,0,0,0,0
+CARD/Matsutake Meat Rolls|1056|0,0,0,0,2,0,0|3|0,0,0,0,1,0,0
+CARD/Minty Meat Rolls|374|0,3,0,0,0,0,0
+CARD/Mondstadt Hash Brown|107|0,0,0,0,2,0,0
+CARD/Mushroom Pizza|108|0,0,0,0,1,0,0|2|0,0,0,0,1,0,0
+CARD/Northern Smoked Chicken|109|0,1,0,0,0,0,0
+CARD/Sashimi Platter|485|0,2,0,0,0,0,0
+CARD/Strategize|113|2,0,0,0,0,0,0
+CARD/Sunyata Flower|1057|2,1,0,0,0,0,0
+CARD/Sweet Madame|114|0,0,0,0,1,0,0
+CARD/Tandoori Roast Chicken|488|0,0,0,2,0,0,0
+CARD/Teyvat Fried Egg|765|0,0,0,0,1,0,0
+CARD/The Boar Princess|913|0,0,2,0,0,0,0
+CHARACTER/Azhdaha|916
+CHARACTER/Fatui Electro Cicin Mage|1113
+CHARACTER/Lyney|927
+CHARACTER/Millennial Pearl Seahorse|1059
+CHARACTER/Mona|136
+CHARACTER/Nahida|500
+CHARACTER_STATUS/Adeptus' Temptation|146|0,0,0,3,0,0,0
+CHARACTER_STATUS/Butter Crab|512|0,0,0,0,0,2,0
+CHARACTER_STATUS/Fish and Chips|937|0,1,0,0,0,0,0
+CHARACTER_STATUS/Fontemer Pearl|1064|0,0,0,0,0,1,0
+CHARACTER_STATUS/Jueyun Guoba|154|0,0,0,1,0,0,0
+CHARACTER_STATUS/Lotus Flower Crisp|156|0,0,0,0,0,3,0
+CHARACTER_STATUS/Matsutake Meat Rolls|1069|0,0,0,0,0,0,0|3|0,0,0,0,1,0,0
+CHARACTER_STATUS/Minty Meat Rolls|380|0,3,0,0,0,0,0
+CHARACTER_STATUS/Mushroom Pizza|158|0,0,0,0,0,0,0|2|0,0,0,0,1,0,0
+CHARACTER_STATUS/Northern Smoked Chicken|160|0,1,0,0,0,0,0
+CHARACTER_STATUS/Prop Surplus|944|0,0,0,1,1,0,0
+CHARACTER_STATUS/Sashimi Platter|524|0,2,0,0,0,0,0
+CHARACTER_STATUS/Satiated|167|0,0,0,0,0,0,0
+CHARACTER_STATUS/Seed of Skandha|525|0,0,0,0,-1,0,0
+CHARACTER_STATUS/Stone Facets: Elemental Absorption|948|0,0,0,0,0,0,0
+CHARACTER_STATUS/Stone Facets: Elemental Crystallization|949|0,0,1,0,0,0,0
+CHARACTER_STATUS/Surging Thunder|1120|0,0,0,3,0,0,0
+CHARACTER_STATUS/Tandoori Roast Chicken|526|0,0,0,2,0,0,0
+SUMMON/Electro Cicin|1136|0,0,0,0,0,0,0|1|0,0,0,2,0,0,0
+SUMMON/Grin-Malkin Hat|1012|0,0,0,0,0,0,0|1|0,0,0,2,0,0,0
+SUMMON/Reflection|279|0,0,0,0,0,0,0|1|0,0,0,2,0,1,0
+SUMMON/Resonant Coral Orb|1093|0,0,0,0,0,0,0|1|0,0,0,2,0,0,0
+SUPPORT/Chang the Ninth|283|2,0,0,0,0,0,0
+SUPPORT/Chef Mao|809|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+SUPPORT/Chinju Forest|592|0,0,0,0,0,0,0
+SUPPORT/Dawn Winery|285|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+SUPPORT/Dunyarzad|810|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+SUPPORT/Ellin|286|0,0,1,0,0,0,0|0|0,0,1,0,0,0,0
+SUPPORT/Favonius Cathedral|287|0,0,0,0,0,0,0|2|0,0,0,0,2,0,0
+SUPPORT/Fortress of Meropide|1138|0,0,0,0,0,0,0|0|0,0,0,0,0,0,0
+SUPPORT/Gandharva Ville|811|0,0,0,0,0,0,0
+SUPPORT/Golden House|749|0,1,0,0,0,0,0|2|0,1,0,0,0,0,0
+SUPPORT/Grand Narukami Shrine|467|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+SUPPORT/Hanachirusato|594|0,0,0,0,0,0,0
+SUPPORT/Iron Tongue Tian|288|0,0,0,0,0,0,0|2|0,0,0,0,0,0,1
+SUPPORT/Jade Chamber|1139|0,0,0,0,0,0,0
+SUPPORT/Jeht|1094|0,0,4,0,0,0,0
+SUPPORT/Katheryne|468|0,0,0,0,0,0,0
+SUPPORT/Kid Kujirai|595|0,0,0,0,0,0,0
+SUPPORT/Knights of Favonius Library|1140|0,0,0,0,0,0,0
+SUPPORT/Liben|292|2,-3,2,0,0,0,0
+SUPPORT/Liu Su|293|0,0,0,0,0,0,1|1|0,0,0,0,0,0,1
+SUPPORT/Liyue Harbor Wharf|294|0,0,0,0,0,0,0|2|2,0,0,0,0,0,0
+SUPPORT/Lumenstone Adjuvant|1141|1,0,1,0,0,0,0|2|1,0,1,0,0,0,0
+SUPPORT/Mamere|1017|1,0,0,0,0,0,0,0|2|1,0,0,0,0,0,0
+SUPPORT/Master Zhang|695|0,0,0,0,0,0,0
+SUPPORT/Memento Lens|1018|0,0,0,0,0,0,0
+SUPPORT/NRE|812|1,0,0,0,0,0,0|0|1,0,0,0,0,0,0
+SUPPORT/Opera Epiclese|1019|0,0,1,0,0,0,0|2|0,0,1,0,0,0,0
+SUPPORT/Paimon|296|0,0,0,0,0,0,0|2|0,0,2,0,0,0,0
+SUPPORT/Parametric Transformer|297|0,3,0,0,0,0,0
+SUPPORT/Rana|596|0,0,1,0,0,0,0|0|0,0,1,0,0,0,0
+SUPPORT/Red Feather Fan|597|0,0,0,0,0,0,0
+SUPPORT/Sangonomiya Shrine|598|0,0,0,0,2,0,0
+SUPPORT/Seed Dispensary|1020|0,1,0,0,0,0,0|2|0,1,0,0,0,0,0
+SUPPORT/Setaria|751|3,0,0,0,0,0,0
+SUPPORT/Silver and Melus|1095|0,0,0,0,0,0,0|1|3,0,0,0,0,0,0
+SUPPORT/Stormterror's Lair|875|0,0,1,0,0,0,0|2|0,0,1,0,0,0,0
+SUPPORT/Sumeru City|599|0,0,1,0,0,0,0|0|0,0,1,0,0,0,0
+SUPPORT/Tenshukaku|600|0,0,1,0,0,0,0|0|0,0,1,0,0,0,0
+SUPPORT/Timaeus|1021|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+SUPPORT/Timmie|299|0,0,0,0,0,0,0|1|1,0,1,0,0,0,0
+SUPPORT/Treasure-Seeking Seelie|601|0,0,0,0,0,0,0|1|3,0,0,0,0,0,0
+SUPPORT/Tubby|300|0,0,0,0,0,0,0
+SUPPORT/Vanarana|602|0,0,0,0,0,0,0
+SUPPORT/Wagner|1022|0,0,0,0,0,0,0
+SUPPORT/Wangshu Inn|302|0,0,0,0,0,0,0|2|0,0,0,0,2,0,0
+SUPPORT/Weeping Willow of the Lake|1023|0,0,0,0,0,0,0|2|2,0,0,0,0,0,0
+SUPPORT/Xudong|603|0,0,0,0,0,0,0
+SUPPORT/Yayoi Nanatsuki|813|0,1,0,0,0,0,0|0|0,1,0,0,0,0,0
+TALENT_Azhdaha/Lunar Cycles Unending|1026|0,2,1,0,0,0,0
+TALENT_Fatui Electro Cicin Mage/Electro Cicin's Gleam|1143|0,0,0,0,0,0,0|0|0,0,0,2,0,0,0
+TEAM_STATUS/Catalyzing Field|400|0,0,0,1,0,0,0
+TEAM_STATUS/Crystallize|341|0,0,0,0,0,1,0
+TEAM_STATUS/Dendro Core|342|0,0,0,2,0,0,0
+TEAM_STATUS/Electro Cicin Shield|1148|0,0,0,0,0,1,0
+TEAM_STATUS/Electro Cicin|1147|0,0,0,0,0,0,0
+TEAM_STATUS/Fortress of Meropide|1149|-1,0,0,0,0,0,0
+TEAM_STATUS/I Haven't Lost Yet!|756|0,0,0,0,0,0,0
+TEAM_STATUS/Illusory Bubble|349|0,0,0,3,0,0,0
+TEAM_STATUS/Leave It to Me!|353|0,0,0,0,0,0,0
+TEAM_STATUS/Lyresong|896|0,2,0,0,0,0,0
+TEAM_STATUS/Revive on cooldown|627|0,0,0,0,0,0,0
+TEAM_STATUS/Shrine of Maya|628|0,0,0,1,0,0,0|2|0,0,0,1,0,0,0
+TEAM_STATUS/Sunyata Flower|1106|0,1,0,0,0,0,0
+TEAM_STATUS/The Boar Princess|1045|0,0,2,0,0,0,0
