@@ -206,7 +206,7 @@ class TableAttnFCNet(nn.Module):
         responses = []
         for obs in batch.obs:
             if isinstance(obs, Match):
-                resp = self.agent.generate_response(obs)
+                raise NotImplementedError()
             elif isinstance(obs, Batch) and "requests" in obs:
                 # requests are set
                 fake_match = Match()

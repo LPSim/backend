@@ -10,7 +10,7 @@ from pettingzoo import AECEnv
 import torch
 
 from lpsim.agents.interaction_agent import InteractionAgent
-from lpsim.env.env import LPSimBaseV0Env
+from lpsim.env.env import LPSimBaseV0Env, LPSimRewardWrapper
 from lpsim.env.utils import cost_default_selector
 from lpsim.server.card.equipment.artifact.base import ArtifactBase
 from lpsim.server.card.equipment.weapon.base import WeaponBase
@@ -653,3 +653,34 @@ class AutoDiceWrapper(BaseWrapper):
             dice = sum([1 << x for x in dice_idx])
             action = action + [dice]
         return super().step(action)
+
+
+class WinnerRewardWrapper(LPSimRewardWrapper):
+    def __init__(self, env, win_reward: float = 1.0):
+        super().__init__(env)
+        self.win_reward = win_reward
+
+    def reward(
+        self,
+        env: LPSimBaseV0Env,
+        current_rewards: dict[str, float],
+        terminations: dict[str, bool],
+        truncations: dict[str, bool],
+    ) -> dict[str, float]:
+        new_rewards = current_rewards.copy()
+        match = env.match
+        assert match is not None
+        same, term = self._consistent_value(terminations)
+        assert same
+        same, trunc = self._consistent_value(truncations)
+        assert same
+        if term:
+            if match.winner == -1:
+                for agent in env.agents:
+                    new_rewards[agent] -= self.win_reward
+            else:
+                new_rewards[env.agents[match.winner]] += self.win_reward
+        elif trunc:
+            for agent in self.agents:
+                self.rewards[agent] -= self.win_reward
+        return new_rewards

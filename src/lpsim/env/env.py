@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Sequence
+import numpy as np
+from typing import Any, Callable, Sequence
 import gymnasium
 from pydantic import BaseModel
 
@@ -172,6 +173,9 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
             observe_without_copy (bool): Whether the observation should be a reference
                 to the internal state of the environment.
             max_steps (int): The maximum steps of the game.
+            win_reward (float): When win, how many reward received by the agent. Agents
+                lost will gain -win_reward, and if both lose or exceed max_steps, they
+                will both receive -win_reward.
             render_mode (str): The render mode of the environment.
 
         The init method takes in environment arguments and
@@ -201,6 +205,14 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
         # initialize match with config
         self.match_config = match_config
         self.match = None
+
+        # save reward wrapper functions
+        self.reward_wrapper_functions: list[
+            Callable[
+                ["LPSimBaseV0Env", dict[str, float], dict[str, bool], dict[str, bool]],
+                dict[str, float],
+            ]
+        ] = []
 
         # check lpsim version
         if lpsim.__version__ != self.metadata["lpsim_version"]:
@@ -237,7 +249,8 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
         assert self.match is not None
         round = self.match.round_number
         hps = [[y.hp for y in x.characters] for x in self.match.player_tables]
-        print(f"Round: {round}, HPs: {hps}")
+        string = f"Round: {round}, HPs: {hps}"
+        return string
 
     def observe(self, agent: int):
         """
@@ -305,8 +318,8 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
         assert "decks" in options, "The decks should be specified."
         decks = options["decks"]
         self.agents = self.possible_agents[:]
-        self.rewards = {agent: 0 for agent in self.agents}
-        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.rewards = {agent: 0.0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0.0 for agent in self.agents}
         self.terminations = {agent: False for agent in self.agents}
         self.truncations = {agent: False for agent in self.agents}
         self.history: dict[str, list[Responses]] = {agent: [] for agent in self.agents}
@@ -368,27 +381,53 @@ class LPSimBaseV0Env(AECEnv[str, Any, Any]):  # type: ignore
         self.total_step += 1
 
         if self.match.is_game_end():
-            # when game end, set rewards
-            for agent in self.agents:
-                self.rewards[agent] = -1
-            if self.match.winner != -1:
-                # anyone wins
-                self.rewards[self.agents[self.match.winner]] = 1
             self.terminations = {agent: True for agent in self.agents}
         elif self.total_step >= self.max_steps:
-            # when reach max steps, set rewards
-            for agent in self.agents:
-                self.rewards[agent] = -1
             self.truncations = {agent: True for agent in self.agents}
         else:
             # selects the next agent.
             self.agent_selection = self._agent_selector.next(self.match)
+
+        # apply reward wrappers
+        for func in self.reward_wrapper_functions:
+            new_rewards = func(self, self.rewards, self.terminations, self.truncations)
+            assert set(self.rewards.keys()) == set(new_rewards.keys())
+            print(self.rewards, new_rewards, func)
+            self.rewards = new_rewards
 
         # Adds .rewards to ._cumulative_rewards
         self._accumulate_rewards()
 
         if self.render_mode == "human":
             self.render()
+
+
+class LPSimRewardWrapper(BaseWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        u_env: LPSimBaseV0Env = env.unwrapped  # type: ignore
+        u_env.reward_wrapper_functions.append(self.reward)
+
+    @staticmethod
+    def _consistent_value(d: dict[str, Any]) -> tuple[bool, Any]:
+        """
+        check if values in dict is consistent.
+        return result, and if True also the value.
+        """
+        dd = np.unique(np.array(list(d.values())))
+        if len(dd) == 1:
+            return True, dd.item()
+        else:
+            return False, None
+
+    def reward(
+        self,
+        env: LPSimBaseV0Env,
+        current_rewards: dict[str, float],
+        terminations: dict[str, bool],
+        truncations: dict[str, bool],
+    ) -> dict[str, float]:
+        raise NotImplementedError()
 
 
 class LPSimAgentWrapper(BaseWrapper[str, Any, Any]):  # type: ignore
@@ -503,8 +542,11 @@ class ModelAgent(InteractionAgent):
 
 
 if __name__ == "__main__":
+    from lpsim.env.wrappers import WinnerRewardWrapper
+
     match_config = MatchConfig(max_round_number=999)
     env = LPSimBaseV0Env(match_config=match_config)
+    env = WinnerRewardWrapper(env, 9)
     random_agent = RandomAgent(player_idx=0)
     interact_agent = InteractionAgent(player_idx=1)
     env = LPSimAgentWrapper(env, [random_agent, interact_agent])
@@ -516,11 +558,15 @@ if __name__ == "__main__":
     )
     decks = [Deck.from_deck_code(mo_ying_cao_4_5), Deck.from_deck_code(lin_ma_long_4_5)]
     env.reset(options={"decks": decks})
+    counter = 10
     while True:
         obs, rew, term, trunc, info = env.last()
         print(env.total_step)
         if term or trunc:
-            break
+            counter -= 1
+            if counter == 0:
+                break
+            env.reset(options={"decks": decks})
         requests = env.match.requests
         agent_idx = env.agents.index(env.agent_selection)
         requests = [x for x in requests if x.player_idx == agent_idx]
