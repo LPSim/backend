@@ -2,6 +2,7 @@
 Wrappers for gymnasium. If want to use pettingzoo, may need to modify them.
 """
 
+import os  # noqa
 from typing import Type
 import numpy as np
 from pettingzoo.utils.wrappers import BaseWrapper
@@ -96,6 +97,8 @@ class ArrayLikeObservationWrapper(BaseWrapper):
         self.max_possible_deck_number = max_possible_deck_number
         self._init_name_to_id_map()
 
+        self.appear_names = set()
+
     @staticmethod
     def card_type(card: CardBase) -> int:
         if card.type == ObjectType.CARD:
@@ -164,7 +167,9 @@ class ArrayLikeObservationWrapper(BaseWrapper):
         else:
             desc_type: str = type.value
         key = f"{desc_type}/{obj.name}"
-        return self._name_to_id_map[self._get_key(key, obj.version)]  # type: ignore
+        id = self._name_to_id_map[self._get_key(key, obj.version)]  # type: ignore
+        self.appear_names.add(f"{key}|{id}")
+        return id
 
     @classmethod
     def element_id(cls, element_like: str):
@@ -173,6 +178,12 @@ class ArrayLikeObservationWrapper(BaseWrapper):
         """
         assert element_like in cls.element_like_lists, f"{element_like} not in lists"
         return cls.element_like_lists.index(element_like)
+
+    def reset(self, *argv, **kwargs):
+        super().reset(*argv, **kwargs)
+        # fname = f"logs/{os.getpid()}.txt"
+        # with open(fname, 'a') as f:
+        #     f.write('\n'.join(self.appear_names) + '\n')
 
     def team_status_observation(
         self, player_idx: int, team_status: list[TeamStatusBase]
