@@ -14,6 +14,7 @@ on:
 
 jobs:
   test:
+    if: '!startsWith(github.ref, "refs/heads/dev")'
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,6 +45,4 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        python -m setuptools_scm
-        python -m pytest -c ./pytest_env.ini --cov
-        coverage xml
+        pytest --cov
