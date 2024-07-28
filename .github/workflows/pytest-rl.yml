@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    if: "!startsWith(github.ref, 'refs/heads/dev')"
+    if: "!startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/wip')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
