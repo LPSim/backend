@@ -47,7 +47,7 @@ jobs:
         python -m build
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: package
         path: dist/*
@@ -90,7 +90,7 @@ jobs:
         python -m build
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: package
         path: dist/*
